@@ -3,37 +3,47 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.aliyun</groupId>
   <artifactId>alibabacloud-gateway-spi</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
   <name>alibabacloud-gateway-spi</name>
   <description>
-    </description>
-  <url/>
+    Aliyun Gateway SPI for Java
+
+    Copyright (C) Alibaba Cloud Computing
+    All rights reserved.
+
+    版权所有 （C）阿里云计算有限公司
+
+    http://www.aliyun.com
+  </description>
+  <url>http://www.aliyun.com</url>
   <licenses>
     <license>
-      <name/>
-      <url/>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
   <developers>
     <developer>
-      <id/>
-      <name/>
-      <email/>
+      <id>aliyunproducts</id>
+      <name>Aliyun SDK</name>
+      <email>aliyunsdk@aliyun.com</email>
     </developer>
   </developers>
   <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>snapshots</id>
-      <name>alibaba Repositories Group</name>
-      <url>http://mvnrepo.alibaba-inc.com/mvn/snapshots</url>
-      <layout>default</layout>
+      <id>sonatype-nexus-staging</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
   <scm>
-    <connection/>
-    <developerConnection/>
-    <url/>
+    <connection></connection>
+    <developerConnection></developerConnection>
+    <url></url>
   </scm>
   <dependencies>
     <dependency>
@@ -71,6 +81,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.3</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>sonatype-nexus-staging</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
