@@ -1,5 +1,5 @@
 // This file is auto-generated, don't edit it
-import SPI, * as $SPI from '@ali/gateway-spi';
+import SPI, * as $SPI from '@alicloud/gateway-spi';
 import Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
 import OSSUtil from '@alicloud/oss-util';
