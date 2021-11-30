@@ -1,5 +1,5 @@
 {
-  "name": "@ali/gateway-spi",
+  "name": "@alicloud/gateway-spi",
   "version": "0.0.8",
   "description": "",
   "main": "dist/client.js",
@@ -21,9 +21,6 @@
   "dependencies": {
     "@alicloud/tea-typescript": "^1.7.1",
     "@alicloud/credentials": "^2"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npm.alibaba-inc.com"
   },
   "files": [
     "dist",
