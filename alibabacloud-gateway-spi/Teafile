@@ -1,0 +1,75 @@
+{
+  "scope": "alibabacloud",
+  "name": "gateway-spi",
+  "version": "0.0.11",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "Credential": "alibabacloud:Credential:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-spi:^0.0.1",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-spi/golang/client:v0.0.1",
+    "java": "com.aliyun:alibabacloud-gateway-spi:0.0.1"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewaySpi",
+    "packageInfo": {
+      "description": "Alibaba Cloud Gateway SPI SDK Library for .NET",
+      "company": "Alibaba Cloud"
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.spi"
+  },
+  "go": {
+    "package": [
+      "io"
+    ],
+    "interface": true,
+    "clientName": "SPI"
+  },
+  "php": {
+    "package": "Darabonba.GatewaySpi",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-spi",
+      "desc": "Alibaba Cloud Gateway SPI Client",
+      "github": "https://github.com/aliyun/alibabacloud-gateway-spi"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_spi",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_spi",
+      "desc": "Alibaba Cloud Gateway SPI SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway-spi",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_spi",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_spi_py2",
+      "desc": "Alibaba Cloud Gateway SPI SDK Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway-spi",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-spi"
+      }
+    }
+  }
+}
