@@ -14,7 +14,7 @@
   },
   "releases": {
     "ts": "@alicloud/gateway-spi:^0.0.1",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-spi/golang/client:v0.0.1",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-spi/client:v0.0.1",
     "java": "com.aliyun:alibabacloud-gateway-spi:0.0.1"
   },
   "csharp": {

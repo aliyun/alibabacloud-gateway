@@ -1,4 +1,4 @@
-module gitlab.alibaba-inc.com/alicloud-sdk/alibabacloud-gateway-spi/golang
+module github.com/alibabacloud-go/alibabacloud-gateway-spi
 
 go 1.14
 
