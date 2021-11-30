@@ -1,6 +1,6 @@
 {
   "scope": "alibabacloud",
-  "name": "gateway-pop",
+  "name": "GatewayPOP",
   "version": "0.0.1",
   "main": "./main.tea",
   "maintainers": [
@@ -10,7 +10,7 @@
     }
   ],
   "libraries": {
-    "SPI": "alibabacloud:gateway-spi:*",
+    "SPI": "alibabacloud:GatewaySPI:*",
     "EndpointUtil": "alibabacloud:EndpointUtil:*",
     "Util": "darabonba:Util:*",
     "OpenApiUtil": "alibabacloud:OpenApiUtil:*",

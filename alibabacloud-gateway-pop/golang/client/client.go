@@ -2,6 +2,7 @@
 package client
 
 import (
+	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	endpointutil "github.com/alibabacloud-go/endpoint-util/service"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
 	util "github.com/alibabacloud-go/tea-utils/service"

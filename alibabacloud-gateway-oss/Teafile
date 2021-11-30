@@ -1,7 +1,7 @@
 {
     "scope": "alibabacloud",
-    "name": "gateway-oss",
-    "version": "0.0.4",
+    "name": "GatewayOSS",
+    "version": "0.0.1",
     "main": "./main.tea",
     "maintainers": [
       {
@@ -10,7 +10,7 @@
       }
     ],
     "libraries": {
-      "SPI": "alibabacloud:gateway-spi:*",
+      "SPI": "alibabacloud:GatewaySPI:*",
       "Util": "darabonba:Util:*",
       "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
       "Credential": "alibabacloud:Credential:*",
