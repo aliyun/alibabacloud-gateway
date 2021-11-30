@@ -39,7 +39,7 @@
     "packageInfo": {
       "name": "alibabacloud/gateway-spi",
       "desc": "Alibaba Cloud Gateway SPI Client",
-      "github": "https://github.com/aliyun/alibabacloud-gateway-spi"
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
     }
   },
   "python": {
@@ -48,7 +48,7 @@
     "packageInfo": {
       "name": "alibabacloud_gateway_spi",
       "desc": "Alibaba Cloud Gateway SPI SDK Library for Python",
-      "github": "https://github.com/aliyun/alibabacloud-gateway-spi",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
       "author": "Alibaba Cloud SDK",
       "email": "sdk-team@alibabacloud.com"
     }
@@ -59,7 +59,7 @@
     "packageInfo": {
       "name": "alibabacloud_gateway_spi_py2",
       "desc": "Alibaba Cloud Gateway SPI SDK Library for Python2",
-      "github": "https://github.com/aliyun/alibabacloud-gateway-spi",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
       "author": "Alibaba Cloud SDK",
       "email": "sdk-team@alibabacloud.com"
     }
