@@ -13,7 +13,7 @@
     "Credential": "alibabacloud:Credential:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-spi:^0.0.1",
+    "ts": "@alicloud/gateway-spi:^0.0.8",
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-spi/client:v0.0.1",
     "java": "com.aliyun:alibabacloud-gateway-spi:0.0.1"
   },
