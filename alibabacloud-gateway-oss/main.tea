@@ -1,0 +1,279 @@
+import SPI;
+import Credential;
+import Util;
+import OSSUtil;
+import OpenApiUtil;
+import XML;
+import String;
+import Map;
+import Array;
+import EncodeUtil;
+import SignatureUtil;
+
+extends SPI;
+
+type @default_signed_params = [ string ]
+type @except_signed_params = [ string ]
+
+init(){
+  super();
+  @default_signed_params = ['location', 'cors', 'objectMeta',
+  'uploadId', 'partNumber', 'security-token',
+  'position', 'img', 'style', 'styleName',
+  'replication', 'replicationProgress',
+  'replicationLocation', 'cname', 'qos',
+  'startTime', 'endTime', 'symlink',
+  'x-oss-process', 'response-content-type',
+  'response-content-language', 'response-expires',
+  'response-cache-control', 'response-content-disposition',
+  'response-content-encoding', 'udf', 'udfName', 'udfImage',
+  'udfId', 'udfImageDesc', 'udfApplication',
+  'udfApplicationLog', 'restore', 'callback', 'callback-var',
+  'policy', 'encryption', 'versions', 'versioning', 'versionId'];
+  @except_signed_params = ['list-type'];
+}
+
+async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var config = context.configuration;
+  config.endpoint = getEndpoint(config.regionId, config.network, config.endpoint);
+}
+
+async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var request = context.request;
+  var hostMap = request.hostMap;
+  var bucketName = hostMap.bucket;
+  if (Util.isUnset(bucketName)) {
+    bucketName = '';
+  }
+  var config = context.configuration;
+  var credential : Credential = request.credential;
+  var accessKeyId = credential.getAccessKeyId();
+  var accessKeySecret = credential.getAccessKeySecret();
+  var securityToken = credential.getSecurityToken();
+  if (!Util.empty(securityToken)) {
+      request.headers.x-oss-security-token = securityToken;
+  }
+  if (!Util.isUnset(request.body)) {
+    if (String.equals(request.reqBodyType, 'xml')) {
+      var reqBodyMap = Util.assertAsMap(request.body);
+      request.stream = XML.toXML(reqBodyMap);
+      request.headers.content-type = 'application/xml';
+    } else if (String.equals(request.reqBodyType, 'json')) {
+      var reqBodyStr = Util.toJSONString(request.body);
+      request.stream = reqBodyStr;
+      request.headers.content-type = 'application/json; charset=utf-8';
+    } else if (String.equals(request.reqBodyType, 'formData')) {
+      var reqBodyForm = Util.assertAsMap(request.body);
+      request.stream = OpenApiUtil.toForm(reqBodyForm);
+      request.headers.content-type = 'application/x-www-form-urlencoded';
+    } else if (String.equals(request.reqBodyType, 'binary')) {
+      request.stream = OSSUtil.inject(request.stream, attributeMap.key);
+      request.headers.content-type = 'application/octet-stream';
+    }
+  }
+  request.headers = {
+    host = getHost(config.endpointType, bucketName, config.endpoint),
+    date = Util.getDateUTCString(),
+    user-agent = request.userAgent,
+    ...request.headers
+  };
+  request.headers.authorization = getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+}
+
+async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var request = context.request;
+  var config = context.configuration;
+  var response = context.response;
+  var respMap : object = null;
+  var bodyStr : string = null;
+  if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
+    bodyStr = Util.readAsString(response.body);
+    respMap = OSSUtil.getErrMessage(bodyStr);
+    throw {
+      code = respMap.Code,
+      message = respMap.Message,
+      data = {
+        httpCode = response.statusCode,
+        requestId = respMap.RequestId,
+        hostId = respMap.HostId,
+      }
+    };
+  }
+  var ctx : map[string]string = attributeMap.key;
+  if (!Util.isUnset(ctx)) {
+    if (!Util.isUnset(ctx.crc)
+            && !Util.isUnset(response.headers.x-oss-hash-crc64ecma)
+            && !String.equals(ctx.crc, response.headers.x-oss-hash-crc64ecma)) {
+      throw {
+        code = 'CrcNotMatched',
+        data = {
+          clientCrc = ctx.crc,
+          serverCrc = response.headers.x-oss-hash-crc64ecma,
+        },
+      };
+    }
+    if (!Util.isUnset(ctx.md5)
+            && !Util.isUnset(response.headers.content-md5)
+            && !String.equals(ctx.md5, response.headers.content-md5)) {
+      throw {
+        code = 'MD5NotMatched',
+        data = {
+          clientMD5 = ctx.md5,
+          serverMD5 = response.headers.content-md5,
+        },
+      };
+    }
+  }
+  if (!Util.isUnset(response.body)) {
+    if (String.equals(request.bodyType, 'xml')) {
+      bodyStr = Util.readAsString(response.body);
+      var result : map[string]any = XML.parseXml(bodyStr, null);
+      var list : [string] = Map.keySet(result);
+      if (Util.equalNumber(Array.size(list), 1)) {
+        response.deserializedBody = result[list[0]];
+      } else {
+        response.deserializedBody = result;
+      }
+    } else if (Util.equalString(request.bodyType, 'binary')) {
+      response.deserializedBody = response.body;
+    } else if (Util.equalString(request.bodyType, 'byte')) {
+      var byt = Util.readAsBytes(response.body);
+      response.deserializedBody = byt;
+    } else if (Util.equalString(request.bodyType, 'string')) {
+      response.deserializedBody = Util.readAsString(response.body);
+    } else if (Util.equalString(request.bodyType, 'json')) {
+      var obj = Util.readAsJSON(response.body);
+      var res = Util.assertAsMap(obj);
+      response.deserializedBody = res;
+    } else if (Util.equalString(request.bodyType, 'array')) {
+      response.deserializedBody = Util.readAsJSON(response.body);
+    } else {
+      response.deserializedBody = Util.readAsString(response.body);
+    }
+  }
+}
+
+async function getEndpoint(regionId: string, network: string, endpoint: string) : string{
+  if (!Util.empty(endpoint)) {
+    return endpoint;
+  }
+  if (Util.empty(regionId)) {
+    regionId = 'cn-hangzhou';
+  }
+  if (!Util.empty(network)) {
+    if (String.contains(network, 'internal')) {
+      return `oss-${regionId}-internal.aliyuncs.com`;
+    } else if (String.contains(network, 'ipv6')) {
+      return `${regionId}oss.aliyuncs.com`;
+    } else if (String.contains(network, 'accelerate')) {
+      return `oss-${network}.aliyuncs.com`;
+    }
+  }
+  return `oss-${regionId}.aliyuncs.com`;
+}
+
+async function getHost(endpointType: string, bucketName: string, endpoint: string): string {
+  var host : string = `${bucketName}.${endpoint}`;
+  if (!Util.empty(endpointType)) {
+    if (String.equals(endpointType, 'ip')) {
+      host = `${endpoint}/${bucketName}`;
+    } else if (String.equals(endpointType, 'cname')) {
+      host = endpoint;
+    }
+  }
+  return host;
+}
+
+async function getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string): string {
+  if (Util.isUnset(signatureVersion) || String.equals(signatureVersion, 'v1')) {
+    return `OSS ${ak}:${getSignatureV1(bucketName, pathname, method, query, headers, secret)}`;
+  } else {
+    return `OSS2 AccessKeyId:${ak},Signature:${getSignatureV2(bucketName, pathname, method, query, headers, secret)}`;
+  }
+}
+
+async function getSignatureV1(bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {
+  var resource : string = '';
+  var stringToSign : string = '';
+  if (!Util.empty(bucketName)) {
+    resource = `/${bucketName}`;
+  }
+  resource = `${resource}${pathname}`;
+  var canonicalizedResource = buildCanonicalizedResource(resource, query);
+  var canonicalizedHeaders = buildCanonicalizedHeaders(headers);
+  stringToSign = `${method}\n${canonicalizedHeaders}${canonicalizedResource}`;
+  return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA1Sign(stringToSign, secret));
+}
+
+async function buildCanonicalizedResource(pathname: string, query: map[string]string): string {
+  var subResourcesMap : map[string]string = {};
+  var canonicalizedResource : string = pathname;
+  if (!Util.empty(pathname)) {
+    var paths : [string] = String.split(pathname, `\\?`, 2);
+    canonicalizedResource = paths[0];
+    if (Util.equalNumber(Array.size(paths), 2)) {
+      var subResources : [string] = String.split(paths[1], '&', 0);
+      for (var sub : subResources) {
+        for (var except : @except_signed_params) {
+          if (!String.contains(sub, except)) {
+            var item : [string] = String.split(sub, '&', 2);
+            var key : string = item[0];
+            var value : string = null;
+            if (Util.equalNumber(Array.size(item), 2)) {
+              value = item[1];
+            }
+            subResourcesMap[key] = value;
+          }
+        }
+      }
+    }
+  }
+  var subResourcesArray : [string] = Map.keySet(subResourcesMap);
+  var newQueryList : [string] = subResourcesArray;
+  if (!Util.isUnset(query)) {
+    var queryList : [string] = Map.keySet(query);
+    newQueryList = Array.concat(subResourcesArray, queryList);
+  }
+  var sortedParams = Array.ascSort(newQueryList);
+  var separator : string = '?';
+  for(var paramName : sortedParams) {
+    if (Array.contains(@default_signed_params, paramName)) {
+      canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
+      if (!Util.isUnset(query[paramName])) {
+        canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
+      }
+    } else if (Array.contains(subResourcesArray, paramName)) {
+      canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
+      if (!Util.isUnset(subResourcesMap[paramName])) {
+        canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
+      }
+    }
+    separator = '&';
+  }
+  return canonicalizedResource;
+}
+
+async function buildCanonicalizedHeaders(headers: map[string]string): string {
+  var canonicalizedHeaders : string = '';
+  var contentType = headers.content-type;
+  if (Util.isUnset(contentType)) {
+    contentType = '';
+  }
+  var contentMd5 = headers.content-md5;
+  if (Util.isUnset(contentMd5)) {
+    contentMd5 = '';
+  }
+  canonicalizedHeaders = `${canonicalizedHeaders}${contentMd5}\n${contentType}\n${headers.date}\n`;
+  var keys = Map.keySet(headers);
+  var sortedHeaders = Array.ascSort(keys);
+  for(var header : sortedHeaders) {
+    if (String.contains(String.toLower(header), 'x-oss-')) {
+      canonicalizedHeaders = `${canonicalizedHeaders}${header}:${headers[header]}\n`;
+    }
+  }
+  return canonicalizedHeaders;
+}
+
+async function getSignatureV2(bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {
+  return '';
+}
