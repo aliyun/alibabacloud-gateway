@@ -2,7 +2,6 @@
 package client
 
 import (
-	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	endpointutil "github.com/alibabacloud-go/endpoint-util/service"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
 	util "github.com/alibabacloud-go/tea-utils/service"
@@ -13,10 +12,18 @@ type Client struct {
 	spi.Client
 }
 
-func NewClient(config *spi.Config) (*Client, error) {
+func NewClient() (*Client, error) {
 	client := new(Client)
-	err := client.Init(config)
+	err := client.Init()
 	return client, err
+}
+
+func (client *Client) Init() (_err error) {
+	_err = client.Client.Init()
+	if _err != nil {
+		return _err
+	}
+	return nil
 }
 
 func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {

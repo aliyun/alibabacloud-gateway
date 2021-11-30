@@ -11,6 +11,11 @@ import com.aliyun.endpointutil.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
+    public Client() throws Exception {
+        super();
+    }
+
+
     public void modifyConfiguration(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
         InterceptorContext.InterceptorContextConfiguration config = context.configuration;

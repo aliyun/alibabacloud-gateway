@@ -9,6 +9,11 @@ import * as $tea from '@alicloud/tea-typescript';
 
 export default class Client extends SPI {
 
+  constructor() {
+    super();
+  }
+
+
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;

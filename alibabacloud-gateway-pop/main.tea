@@ -6,6 +6,10 @@ import EndpointUtil;
 
 extends SPI;
 
+init() {
+  super();
+}
+
 async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var config = context.configuration;
