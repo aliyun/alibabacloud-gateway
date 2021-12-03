@@ -32,7 +32,7 @@
       "io"
     ],
     "interface": true,
-    "clientName": "SPI"
+    "clientName": "Client"
   },
   "php": {
     "package": "Darabonba.GatewaySpi",

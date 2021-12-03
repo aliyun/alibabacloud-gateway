@@ -273,7 +273,7 @@ func (s *AttributeMap) SetKey(v map[string]*string) *AttributeMap {
 	return s
 }
 
-type SPIInterface interface {
+type ClientInterface interface {
 	modifyConfiguration(context *InterceptorContext, attributeMap *AttributeMap)
 	modifyRequest(context *InterceptorContext, attributeMap *AttributeMap)
 	modifyResponse(context *InterceptorContext, attributeMap *AttributeMap)
