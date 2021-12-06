@@ -214,8 +214,8 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
     if (Util.equalNumber(Array.size(paths), 2)) {
       var subResources : [string] = String.split(paths[1], '&', 0);
       for (var sub : subResources) {
-        for (var except : @except_signed_params) {
-          if (!String.contains(sub, except)) {
+        for (var excepts : @except_signed_params) {
+          if (!String.contains(sub, excepts)) {
             var item : [string] = String.split(sub, '&', 2);
             var key : string = item[0];
             var value : string = null;
