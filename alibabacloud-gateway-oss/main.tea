@@ -130,7 +130,8 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       var result : map[string]any = XML.parseXml(bodyStr, null);
       var list : [string] = Map.keySet(result);
       if (Util.equalNumber(Array.size(list), 1)) {
-        response.deserializedBody = result[list[0]];
+        var tmp = list[0];
+        response.deserializedBody = result[tmp];
       } else {
         response.deserializedBody = result;
       }

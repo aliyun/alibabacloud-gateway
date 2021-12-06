@@ -152,7 +152,8 @@ class Client(SPIClient):
                 result = XMLClient.parse_xml(body_str, None)
                 list = MapClient.key_set(result)
                 if UtilClient.equal_number(ArrayClient.size(list), 1):
-                    response.deserialized_body = result.get('list')
+                    tmp = list[0]
+                    response.deserialized_body = result.get(tmp)
                 else:
                     response.deserialized_body = result
             elif UtilClient.equal_string(request.body_type, 'binary'):
