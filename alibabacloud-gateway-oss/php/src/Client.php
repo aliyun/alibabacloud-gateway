@@ -1,0 +1,397 @@
+<?php
+
+// This file is auto-generated, don't edit it. Thanks.
+namespace Darabonba\GatewayOss;
+
+use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
+use AlibabaCloud\Tea\Utils\Utils;
+use AlibabaCloud\Darabonba\String\StringUtil;
+use AlibabaCloud\Tea\XML\XML;
+use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
+use AlibabaCloud\Tea\OSSUtils\OSSUtils;
+use AlibabaCloud\Tea\Tea;
+use AlibabaCloud\Tea\Exception\TeaError;
+use Map\Client as MapClient;
+use AlibabaCloud\Darabonba\Array_\ArrayUtil;
+use AlibabaCloud\Darabonba\SignatureUtil\Signer;
+use AlibabaCloud\Darabonba\EncodeUtil\Encoder;
+
+use Darabonba\GatewaySpi\Models\InterceptorContext;
+use Darabonba\GatewaySpi\Models\AttributeMap;
+
+class Client extends DarabonbaGatewaySpiClient {
+    protected $_default_signed_params;
+
+    protected $_except_signed_params;
+
+    public function __construct(){
+        parent::__construct();
+        $this->_default_signed_params = [
+            "location",
+            "cors",
+            "objectMeta",
+            "uploadId",
+            "partNumber",
+            "security-token",
+            "position",
+            "img",
+            "style",
+            "styleName",
+            "replication",
+            "replicationProgress",
+            "replicationLocation",
+            "cname",
+            "qos",
+            "startTime",
+            "endTime",
+            "symlink",
+            "x-oss-process",
+            "response-content-type",
+            "response-content-language",
+            "response-expires",
+            "response-cache-control",
+            "response-content-disposition",
+            "response-content-encoding",
+            "udf",
+            "udfName",
+            "udfImage",
+            "udfId",
+            "udfImageDesc",
+            "udfApplication",
+            "udfApplicationLog",
+            "restore",
+            "callback",
+            "callback-var",
+            "policy",
+            "encryption",
+            "versions",
+            "versioning",
+            "versionId"
+        ];
+        $this->_except_signed_params = [
+            "list-type"
+        ];
+    }
+
+    /**
+     * @param InterceptorContext $context
+     * @param AttributeMap $attributeMap
+     * @return void
+     */
+    public function modifyConfiguration($context, $attributeMap){
+        $config = $context->configuration;
+        $config->endpoint = $this->getEndpoint($config->regionId, $config->network, $config->endpoint);
+    }
+
+    /**
+     * @param InterceptorContext $context
+     * @param AttributeMap $attributeMap
+     * @return void
+     */
+    public function modifyRequest($context, $attributeMap){
+        $request = $context->request;
+        $hostMap = $request->hostMap;
+        $bucketName = @$hostMap["bucket"];
+        if (Utils::isUnset($bucketName)) {
+            $bucketName = "";
+        }
+        $config = $context->configuration;
+        $credential = $request->credential;
+        $accessKeyId = $credential->getAccessKeyId();
+        $accessKeySecret = $credential->getAccessKeySecret();
+        $securityToken = $credential->getSecurityToken();
+        if (!Utils::empty_($securityToken)) {
+            $request->headers["x-oss-security-token"] = $securityToken;
+        }
+        if (!Utils::isUnset($request->body)) {
+            if (StringUtil::equals($request->reqBodyType, "xml")) {
+                $reqBodyMap = Utils::assertAsMap($request->body);
+                $request->stream = XML::toXML($reqBodyMap);
+                $request->headers["content-type"] = "application/xml";
+            }
+            else if (StringUtil::equals($request->reqBodyType, "json")) {
+                $reqBodyStr = Utils::toJSONString($request->body);
+                $request->stream = $reqBodyStr;
+                $request->headers["content-type"] = "application/json; charset=utf-8";
+            }
+            else if (StringUtil::equals($request->reqBodyType, "formData")) {
+                $reqBodyForm = Utils::assertAsMap($request->body);
+                $request->stream = OpenApiUtilClient::toForm($reqBodyForm);
+                $request->headers["content-type"] = "application/x-www-form-urlencoded";
+            }
+            else if (StringUtil::equals($request->reqBodyType, "binary")) {
+                $request->stream = OSSUtils::inject($request->stream, $attributeMap->key);
+                $request->headers["content-type"] = "application/octet-stream";
+            }
+        }
+        $request->headers = Tea::merge([
+            "host" => $this->getHost($config->endpointType, $bucketName, $config->endpoint),
+            "date" => Utils::getDateUTCString(),
+            "user-agent" => $request->userAgent
+        ], $request->headers);
+        $request->headers["authorization"] = $this->getAuthorization($request->signatureVersion, $bucketName, $request->pathname, $request->method, $request->query, $request->headers, $accessKeyId, $accessKeySecret);
+    }
+
+    /**
+     * @param InterceptorContext $context
+     * @param AttributeMap $attributeMap
+     * @return void
+     * @throws TeaError
+     */
+    public function modifyResponse($context, $attributeMap){
+        $request = $context->request;
+        $config = $context->configuration;
+        $response = $context->response;
+        $respMap = null;
+        $bodyStr = null;
+        if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
+            $bodyStr = Utils::readAsString($response->body);
+            $respMap = OSSUtils::getErrMessage($bodyStr);
+            throw new TeaError([
+                "code" => @$respMap["Code"],
+                "message" => @$respMap["Message"],
+                "data" => [
+                    "httpCode" => $response->statusCode,
+                    "requestId" => @$respMap["RequestId"],
+                    "hostId" => @$respMap["HostId"]
+                ]
+            ]);
+        }
+        $ctx = $attributeMap->key;
+        if (!Utils::isUnset($ctx)) {
+            if (!Utils::isUnset(@$ctx["crc"]) && !Utils::isUnset(@$response->headers["x-oss-hash-crc64ecma"]) && !StringUtil::equals(@$ctx["crc"], @$response->headers["x-oss-hash-crc64ecma"])) {
+                throw new TeaError([
+                    "code" => "CrcNotMatched",
+                    "data" => [
+                        "clientCrc" => @$ctx["crc"],
+                        "serverCrc" => @$response->headers["x-oss-hash-crc64ecma"]
+                    ]
+                ]);
+            }
+            if (!Utils::isUnset(@$ctx["md5"]) && !Utils::isUnset(@$response->headers["content-md5"]) && !StringUtil::equals(@$ctx["md5"], @$response->headers["content-md5"])) {
+                throw new TeaError([
+                    "code" => "MD5NotMatched",
+                    "data" => [
+                        "clientMD5" => @$ctx["md5"],
+                        "serverMD5" => @$response->headers["content-md5"]
+                    ]
+                ]);
+            }
+        }
+        if (!Utils::isUnset($response->body)) {
+            if (StringUtil::equals($request->bodyType, "xml")) {
+                $bodyStr = Utils::readAsString($response->body);
+                $result = XML::parseXml($bodyStr, null);
+                $list = MapClient::keySet($result);
+                if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
+                    $tmp = @$list_[0];
+                    $response->deserializedBody = @$result[$tmp];
+                }
+                else {
+                    $response->deserializedBody = $result;
+                }
+            }
+            else if (Utils::equalString($request->bodyType, "binary")) {
+                $response->deserializedBody = $response->body;
+            }
+            else if (Utils::equalString($request->bodyType, "byte")) {
+                $byt = Utils::readAsBytes($response->body);
+                $response->deserializedBody = $byt;
+            }
+            else if (Utils::equalString($request->bodyType, "string")) {
+                $response->deserializedBody = Utils::readAsString($response->body);
+            }
+            else if (Utils::equalString($request->bodyType, "json")) {
+                $obj = Utils::readAsJSON($response->body);
+                $res = Utils::assertAsMap($obj);
+                $response->deserializedBody = $res;
+            }
+            else if (Utils::equalString($request->bodyType, "array")) {
+                $response->deserializedBody = Utils::readAsJSON($response->body);
+            }
+            else {
+                $response->deserializedBody = Utils::readAsString($response->body);
+            }
+        }
+    }
+
+    /**
+     * @param string $regionId
+     * @param string $network
+     * @param string $endpoint
+     * @return string
+     */
+    public function getEndpoint($regionId, $network, $endpoint){
+        if (!Utils::empty_($endpoint)) {
+            return $endpoint;
+        }
+        if (Utils::empty_($regionId)) {
+            $regionId = "cn-hangzhou";
+        }
+        if (!Utils::empty_($network)) {
+            if (StringUtil::contains($network, "internal")) {
+                return "oss-" . $regionId . "-internal.aliyuncs.com";
+            }
+            else if (StringUtil::contains($network, "ipv6")) {
+                return "" . $regionId . "oss.aliyuncs.com";
+            }
+            else if (StringUtil::contains($network, "accelerate")) {
+                return "oss-" . $network . ".aliyuncs.com";
+            }
+        }
+        return "oss-" . $regionId . ".aliyuncs.com";
+    }
+
+    /**
+     * @param string $endpointType
+     * @param string $bucketName
+     * @param string $endpoint
+     * @return string
+     */
+    public function getHost($endpointType, $bucketName, $endpoint){
+        $host = "" . $bucketName . "." . $endpoint . "";
+        if (!Utils::empty_($endpointType)) {
+            if (StringUtil::equals($endpointType, "ip")) {
+                $host = "" . $endpoint . "/" . $bucketName . "";
+            }
+            else if (StringUtil::equals($endpointType, "cname")) {
+                $host = $endpoint;
+            }
+        }
+        return $host;
+    }
+
+    /**
+     * @param string $signatureVersion
+     * @param string $bucketName
+     * @param string $pathname
+     * @param string $method
+     * @param string[] $query
+     * @param string[] $headers
+     * @param string $ak
+     * @param string $secret
+     * @return string
+     */
+    public function getAuthorization($signatureVersion, $bucketName, $pathname, $method, $query, $headers, $ak, $secret){
+        if (Utils::isUnset($signatureVersion) || StringUtil::equals($signatureVersion, "v1")) {
+            return "OSS " . $ak . ":" . $this->getSignatureV1($bucketName, $pathname, $method, $query, $headers, $secret) . "";
+        }
+        else {
+            return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret) . "";
+        }
+    }
+
+    /**
+     * @param string $bucketName
+     * @param string $pathname
+     * @param string $method
+     * @param string[] $query
+     * @param string[] $headers
+     * @param string $secret
+     * @return string
+     */
+    public function getSignatureV1($bucketName, $pathname, $method, $query, $headers, $secret){
+        $resource = "";
+        $stringToSign = "";
+        if (!Utils::empty_($bucketName)) {
+            $resource = "/" . $bucketName . "";
+        }
+        $resource = "" . $resource . "" . $pathname . "";
+        $canonicalizedResource = $this->buildCanonicalizedResource($resource, $query);
+        $canonicalizedHeaders = $this->buildCanonicalizedHeaders($headers);
+        $stringToSign = "" . $method . "\n" . $canonicalizedHeaders . "" . $canonicalizedResource . "";
+        return Encoder::base64EncodeToString(Signer::HmacSHA1Sign($stringToSign, $secret));
+    }
+
+    /**
+     * @param string $pathname
+     * @param string[] $query
+     * @return string
+     */
+    public function buildCanonicalizedResource($pathname, $query){
+        $subResourcesMap = [];
+        $canonicalizedResource = $pathname;
+        if (!Utils::empty_($pathname)) {
+            $paths = StringUtil::split($pathname, "\\?", 2);
+            $canonicalizedResource = @$paths[0];
+            if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
+                $subResources = StringUtil::split(@$paths[1], "&", 0);
+                foreach($subResources as $sub){
+                    foreach($this->_except_signed_params as $excepts){
+                        if (!StringUtil::contains($sub, $excepts)) {
+                            $item = StringUtil::split($sub, "&", 2);
+                            $key = @$item[0];
+                            $value = null;
+                            if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
+                                $value = @$item[1];
+                            }
+                            $subResourcesMap[$key] = $value;
+                        }
+                    }
+                }
+            }
+        }
+        $subResourcesArray = MapClient::keySet($subResourcesMap);
+        $newQueryList = $subResourcesArray;
+        if (!Utils::isUnset($query)) {
+            $queryList = MapClient::keySet($query);
+            $newQueryList = ArrayUtil::concat($subResourcesArray, $queryList);
+        }
+        $sortedParams = ArrayUtil::ascSort($newQueryList);
+        $separator = "?";
+        foreach($sortedParams as $paramName){
+            if (ArrayUtil::contains($this->_default_signed_params, $paramName)) {
+                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
+                if (!Utils::isUnset(@$query[$paramName])) {
+                    $canonicalizedResource = "" . $canonicalizedResource . "=" . @$query[$paramName] . "";
+                }
+            }
+            else if (ArrayUtil::contains($subResourcesArray, $paramName)) {
+                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
+                if (!Utils::isUnset(@$subResourcesMap[$paramName])) {
+                    $canonicalizedResource = "" . $canonicalizedResource . "=" . @$subResourcesMap[$paramName] . "";
+                }
+            }
+            $separator = "&";
+        }
+        return $canonicalizedResource;
+    }
+
+    /**
+     * @param string[] $headers
+     * @return string
+     */
+    public function buildCanonicalizedHeaders($headers){
+        $canonicalizedHeaders = "";
+        $contentType = @$headers["content-type"];
+        if (Utils::isUnset($contentType)) {
+            $contentType = "";
+        }
+        $contentMd5 = @$headers["content-md5"];
+        if (Utils::isUnset($contentMd5)) {
+            $contentMd5 = "";
+        }
+        $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $contentMd5 . "\n" . $contentType . "\n" . @$headers["date"] . "\n";
+        $keys = MapClient::keySet($headers);
+        $sortedHeaders = ArrayUtil::ascSort($keys);
+        foreach($sortedHeaders as $header){
+            if (StringUtil::contains(StringUtil::toLower($header), "x-oss-")) {
+                $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $header . ":" . @$headers[$header] . "\n";
+            }
+        }
+        return $canonicalizedHeaders;
+    }
+
+    /**
+     * @param string $bucketName
+     * @param string $pathname
+     * @param string $method
+     * @param string[] $query
+     * @param string[] $headers
+     * @param string $secret
+     * @return string
+     */
+    public function getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret){
+        return '';
+    }
+}
