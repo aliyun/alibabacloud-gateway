@@ -36,7 +36,7 @@ namespace AlibabaCloud.GatewaySls
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
             {
                 hostMap = request.HostMap;
             }
@@ -58,7 +58,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "protobuf"))
                 {
-                    Dictionary<string, object> bodyMap = AlibabaCloud.TeaUtil.Common.AssertAsMap(request.Body);
+                    // var bodyMap = Util.assertAsMap(request.body);
                     // 缺少body的Content-MD5计算，以及protobuf处理
                     request.Headers["content-type"] = "application/x-protobuf";
                 }
@@ -97,7 +97,7 @@ namespace AlibabaCloud.GatewaySls
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
             {
                 hostMap = request.HostMap;
             }
@@ -119,7 +119,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "protobuf"))
                 {
-                    Dictionary<string, object> bodyMap = AlibabaCloud.TeaUtil.Common.AssertAsMap(request.Body);
+                    // var bodyMap = Util.assertAsMap(request.body);
                     // 缺少body的Content-MD5计算，以及protobuf处理
                     request.Headers["content-type"] = "application/x-protobuf";
                 }
@@ -157,7 +157,6 @@ namespace AlibabaCloud.GatewaySls
         public void ModifyResponse(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
@@ -170,7 +169,7 @@ namespace AlibabaCloud.GatewaySls
                     {"data", new Dictionary<string, object>
                     {
                         {"httpCode", response.StatusCode},
-                        {"requestId", resMap.Get("x-log-requestid")},
+                        {"requestId", response.Headers.Get("x-log-requestid")},
                     }},
                 });
             }
@@ -209,7 +208,6 @@ namespace AlibabaCloud.GatewaySls
         public async Task ModifyResponseAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
@@ -222,7 +220,7 @@ namespace AlibabaCloud.GatewaySls
                     {"data", new Dictionary<string, object>
                     {
                         {"httpCode", response.StatusCode},
-                        {"requestId", resMap.Get("x-log-requestid")},
+                        {"requestId", response.Headers.Get("x-log-requestid")},
                     }},
                 });
             }

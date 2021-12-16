@@ -28,7 +28,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
         java.util.Map<String, String> hostMap = new java.util.HashMap<>();
-        if (com.aliyun.teautil.Common.isUnset(request.hostMap)) {
+        if (!com.aliyun.teautil.Common.isUnset(request.hostMap)) {
             hostMap = request.hostMap;
         }
 
@@ -48,7 +48,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
             if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "protobuf")) {
-                java.util.Map<String, Object> bodyMap = com.aliyun.teautil.Common.assertAsMap(request.body);
+                // var bodyMap = Util.assertAsMap(request.body);
                 // 缺少body的Content-MD5计算，以及protobuf处理
                 request.headers.put("content-type", "application/x-protobuf");
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
@@ -81,7 +81,6 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public void modifyResponse(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         InterceptorContext.InterceptorContextResponse response = context.response;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             Object error = com.aliyun.teautil.Common.readAsJSON(response.body);
@@ -91,7 +90,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 new TeaPair("message", resMap.get("errorMessage")),
                 new TeaPair("data", TeaConverter.buildMap(
                     new TeaPair("httpCode", response.statusCode),
-                    new TeaPair("requestId", resMap.get("x-log-requestid"))
+                    new TeaPair("requestId", response.headers.get("x-log-requestid"))
                 ))
             ));
         }

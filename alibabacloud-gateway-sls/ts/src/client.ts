@@ -26,7 +26,7 @@ export default class Client extends SPI {
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let hostMap : {[key: string ]: string} = { };
-    if (Util.isUnset(request.hostMap)) {
+    if (!Util.isUnset(request.hostMap)) {
       hostMap = request.hostMap;
     }
 
@@ -46,7 +46,7 @@ export default class Client extends SPI {
 
     if (!Util.isUnset(request.body)) {
       if (String.equals(request.reqBodyType, "protobuf")) {
-        let bodyMap = Util.assertAsMap(request.body);
+        // var bodyMap = Util.assertAsMap(request.body);
         // 缺少body的Content-MD5计算，以及protobuf处理
         request.headers["content-type"] = "application/x-protobuf";
       } else if (String.equals(request.reqBodyType, "json")) {
@@ -77,7 +77,6 @@ export default class Client extends SPI {
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
-    let config = context.configuration;
     let response = context.response;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       let error = await Util.readAsJSON(response.body);
@@ -87,7 +86,7 @@ export default class Client extends SPI {
         message: resMap["errorMessage"],
         data: {
           httpCode: response.statusCode,
-          requestId: resMap["x-log-requestid"],
+          requestId: response.headers["x-log-requestid"],
         },
       });
     }

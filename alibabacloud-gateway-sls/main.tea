@@ -22,7 +22,7 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
 async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var hostMap : map[string]string = {};
-  if (Util.isUnset(request.hostMap)) {
+  if (!Util.isUnset(request.hostMap)) {
     hostMap = request.hostMap;
   }
   var project = hostMap.project;
@@ -39,7 +39,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   }
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'protobuf')) {
-      var bodyMap = Util.assertAsMap(request.body);
+      // var bodyMap = Util.assertAsMap(request.body);
       // 缺少body的Content-MD5计算，以及protobuf处理
       request.headers['content-type'] = 'application/x-protobuf';
     } else if (String.equals(request.reqBodyType, 'json')) {
@@ -68,7 +68,6 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 
 async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
-  var config = context.configuration;
   var response = context.response;
   if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
     var error = Util.readAsJSON(response.body);
@@ -78,7 +77,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       message = resMap['errorMessage'],
       data = {
         httpCode = response.statusCode,
-        requestId = resMap['x-log-requestid'],
+        requestId = response.headers['x-log-requestid'],
       }
     };
   }

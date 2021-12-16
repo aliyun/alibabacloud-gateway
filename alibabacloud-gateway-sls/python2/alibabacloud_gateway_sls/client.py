@@ -26,7 +26,7 @@ class Client(SPIClient):
     def modify_request(self, context, attribute_map):
         request = context.request
         host_map = {}
-        if UtilClient.is_unset(request.host_map):
+        if not UtilClient.is_unset(request.host_map):
             host_map = request.host_map
         project = host_map.get('project')
         config = context.configuration
@@ -40,7 +40,7 @@ class Client(SPIClient):
             request.headers['x-acs-security-token'] = security_token
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'protobuf'):
-                body_map = UtilClient.assert_as_map(request.body)
+                # var bodyMap = Util.assertAsMap(request.body);
                 # 缺少body的Content-MD5计算，以及protobuf处理
                 request.headers['content-type'] = 'application/x-protobuf'
             elif StringClient.equals(request.req_body_type, 'json'):
@@ -65,7 +65,6 @@ class Client(SPIClient):
 
     def modify_response(self, context, attribute_map):
         request = context.request
-        config = context.configuration
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             error = UtilClient.read_as_json(response.body)
@@ -75,7 +74,7 @@ class Client(SPIClient):
                 'message': res_map.get('errorMessage'),
                 'data': {
                     'httpCode': response.status_code,
-                    'requestId': res_map.get('x-log-requestid')
+                    'requestId': response.headers.get('x-log-requestid')
                 }
             })
         if not UtilClient.is_unset(response.body):

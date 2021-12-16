@@ -1,93 +1,92 @@
 {
-    "scope": "alibabacloud",
-    "name": "GatewaySLS",
-    "version": "0.0.1",
-    "main": "./main.tea",
-    "maintainers": [
-      {
-        "name": "Alibaba Cloud SDK",
-        "email": "sdk-team@alibabacloud.com"
+  "scope": "alibabacloud",
+  "name": "gateway-sls-test",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "SPI": "alibabacloud:GatewaySPI:*",
+    "Util": "darabonba:Util:*",
+    "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
+    "Credential": "alibabacloud:Credential:*",
+    "String": "darabonba:String:*",
+    "Map": "darabonba:Map:*",
+    "Array": "darabonba:Array:*",
+    "EncodeUtil": "darabonba:EncodeUtil:*",
+    "SignatureUtil": "alibabacloud:SignatureUtil:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-sls:^0.0.1",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.1",
+    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.1",
+    "python": "alibabacloud_gateway_sls:0.0.1",
+    "python2": "alibabacloud_gateway_sls_py2:0.0.1",
+    "csharp": "AlibabaCloud.GatewaySls:0.0.1",
+    "php": "alibabacloud/gateway-sls:^0.0.1"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewaySls",
+    "packageInfo": {
+      "description": "Alibaba Cloud SLS Gateway Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun SLS Gateway",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
       }
-    ],
-    "libraries": {
-      "SPI": "alibabacloud:GatewaySPI:*",
-      "Util": "darabonba:Util:*",
-      "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
-      "Credential": "alibabacloud:Credential:*",
-      "String": "darabonba:String:*",
-      "Map": "darabonba:Map:*",
-      "Array": "darabonba:Array:*",
-      "EncodeUtil": "darabonba:EncodeUtil:*",
-      "SignatureUtil": "darabonba:SignatureUtil:*"
-    },
-    "releases": {
-      "ts": "@alicloud/gateway-sls:^0.0.1",
-      "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.1",
-      "java": "com.aliyun:alibabacloud-gateway-sls:0.0.1",
-      "python": "alibabacloud_gateway_sls:0.0.1",
-      "python2": "alibabacloud_gateway_sls_py2:0.0.1",
-      "csharp": "AlibabaCloud.GatewaySls:0.0.1",
-		  "php": "alibabacloud/gateway-sls:^0.0.1"
-    },
-    "csharp": {
-      "namespace": "AlibabaCloud.GatewaySls",
-      "packageInfo": {
-        "description": "Alibaba Cloud SLS Gateway Library for .NET",
-        "company": "Alibaba Cloud",
-        "property": {
-          "PackageTags": "Alibaba Aliyun SLS Gateway",
-          "Copyright": "©2009-present Alibaba Cloud",
-          "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
-          "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
-        }
-      }
-    },
-    "java": {
-      "package": "com.aliyun.gateway.sls",
-      "className": "Client"
-    },
-    "go": {
-      "package": [
-        "io"
-      ]
-    },
-    "php": {
-      "package": "Darabonba.GatewaySls",
-      "packageInfo": {
-        "name": "alibabacloud/gateway-sls",
-        "desc": "Alibaba Cloud SLS Gateway",
-        "github": "https://github.com/aliyun/alibabacloud-gateway"
-      }
-    },
-    "python": {
-      "package": "alibabacloud_gateway_sls",
-      "clientName": "client",
-      "packageInfo": {
-        "name": "alibabacloud_gateway_sls",
-        "desc": "Alibaba Cloud SLS Gateway Library for Python",
-        "github": "https://github.com/aliyun/alibabacloud-gateway",
-        "author": "Alibaba Cloud SDK",
-        "email": "sdk-team@alibabacloud.com"
-      }
-    },
-    "python2": {
-      "package": "alibabacloud_gateway_sls",
-      "clientName": "client",
-      "packageInfo": {
-        "name": "alibabacloud_gateway_sls_py2",
-        "desc": "Alibaba Cloud SLS Gateway Library for Python2",
-        "github": "https://github.com/aliyun/alibabacloud-gateway",
-        "author": "Alibaba Cloud SDK",
-        "email": "sdk-team@alibabacloud.com"
-      }
-    },
-    "cpp": {
-      "packageInfo": {
-        "git": {
-          "scope": "alibabacloud-sdk-cpp",
-          "project": "gateway-sls"
-        }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.sls",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewaySls",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-sls",
+      "desc": "Alibaba Cloud SLS Gateway",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_sls",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_sls",
+      "desc": "Alibaba Cloud SLS Gateway Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_sls",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_sls_py2",
+      "desc": "Alibaba Cloud SLS Gateway Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-sls"
       }
     }
   }
-  
+}

@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_sls_py2.
 
-Created on 11/12/2021
+Created on 16/12/2021
 
 @author: Alibaba Cloud SDK
 """
@@ -41,8 +41,8 @@ REQUIRES = [
     "alibabacloud_gateway_spi_py2>=0.0.1, <1.0.0",
     "alibabacloud_credentials_py2>=0.0.1, <1.0.0",
     "alibabacloud_tea_util_py2>=0.0.5, <1.0.0",
-    "alibabacloud_openapi_util_py2>=0.0.7, <1.0.0",
-    "alibabacloud_darabonba_string_py2>=0.0.3, <1.0.0",
+    "alibabacloud_openapi_util_py2>=0.0.8, <1.0.0",
+    "alibabacloud_darabonba_string_py2>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map_py2>=0.0.1, <1.0.0",
     "alibabacloud_darabonba_array_py2>=0.0.1, <1.0.0",
     "alibabacloud_darabonba_encode_util_py2>=0.0.1, <1.0.0",

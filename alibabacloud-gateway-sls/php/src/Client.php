@@ -39,7 +39,7 @@ class Client extends DarabonbaGatewaySpiClient {
     public function modifyRequest($context, $attributeMap){
         $request = $context->request;
         $hostMap = [];
-        if (Utils::isUnset($request->hostMap)) {
+        if (!Utils::isUnset($request->hostMap)) {
             $hostMap = $request->hostMap;
         }
         $project = @$hostMap["project"];
@@ -56,7 +56,7 @@ class Client extends DarabonbaGatewaySpiClient {
         }
         if (!Utils::isUnset($request->body)) {
             if (StringUtil::equals($request->reqBodyType, "protobuf")) {
-                $bodyMap = Utils::assertAsMap($request->body);
+                // var bodyMap = Util.assertAsMap(request.body);
                 // 缺少body的Content-MD5计算，以及protobuf处理
                 $request->headers["content-type"] = "application/x-protobuf";
             }
@@ -92,7 +92,6 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function modifyResponse($context, $attributeMap){
         $request = $context->request;
-        $config = $context->configuration;
         $response = $context->response;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $error = Utils::readAsJSON($response->body);
@@ -102,7 +101,7 @@ class Client extends DarabonbaGatewaySpiClient {
                 "message" => @$resMap["errorMessage"],
                 "data" => [
                     "httpCode" => $response->statusCode,
-                    "requestId" => @$resMap["x-log-requestid"]
+                    "requestId" => @$response->headers["x-log-requestid"]
                 ]
             ]);
         }
