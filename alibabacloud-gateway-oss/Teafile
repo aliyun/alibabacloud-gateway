@@ -1,95 +1,94 @@
 {
-    "scope": "alibabacloud",
-    "name": "GatewayOSS",
-    "version": "0.0.5",
-    "main": "./main.tea",
-    "maintainers": [
-      {
-        "name": "Alibaba Cloud SDK",
-        "email": "sdk-team@alibabacloud.com"
+  "scope": "alibabacloud",
+  "name": "GatewayOSS",
+  "version": "0.0.5",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "SPI": "alibabacloud:GatewaySPI:*",
+    "Util": "darabonba:Util:*",
+    "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
+    "Credential": "alibabacloud:Credential:*",
+    "OSSUtil": "alibabacloud:OSSUtil:*",
+    "XML": "darabonba:XML:*",
+    "String": "darabonba:String:*",
+    "Map": "darabonba:Map:*",
+    "Array": "darabonba:Array:*",
+    "EncodeUtil": "darabonba:EncodeUtil:*",
+    "SignatureUtil": "darabonba:SignatureUtil:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-oss:^0.0.2",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss/client:v0.0.2",
+    "java": "com.aliyun:alibabacloud-gateway-oss:0.0.2",
+    "python": "alibabacloud_gateway_oss:0.0.3",
+    "python2": "alibabacloud_gateway_oss_py2:0.0.3",
+    "csharp": "AlibabaCloud.GatewayOss:0.0.2",
+    "php": "alibabacloud/gateway-oss:^0.0.2"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayOss",
+    "packageInfo": {
+      "description": "Alibaba Cloud OSS SDK Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun OSS SDK",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
       }
-    ],
-    "libraries": {
-      "SPI": "alibabacloud:GatewaySPI:*",
-      "Util": "darabonba:Util:*",
-      "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
-      "Credential": "alibabacloud:Credential:*",
-      "OSSUtil": "alibabacloud:OSSUtil:*",
-      "XML": "darabonba:XML:*",
-      "String": "darabonba:String:*",
-      "Map": "darabonba:Map:*",
-      "Array": "darabonba:Array:*",
-      "EncodeUtil": "darabonba:EncodeUtil:*",
-      "SignatureUtil": "darabonba:SignatureUtil:*"
-    },
-    "releases": {
-      "ts": "@alicloud/gateway-oss:^0.0.2",
-      "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss/client:v0.0.2",
-      "java": "com.aliyun:alibabacloud-gateway-oss:0.0.2",
-      "python": "alibabacloud_gateway_oss:0.0.3",
-      "python2": "alibabacloud_gateway_oss_py2:0.0.3",
-      "csharp": "AlibabaCloud.GatewayOss:0.0.2",
-		  "php": "alibabacloud/gateway-oss:^0.0.2"
-    },
-    "csharp": {
-      "namespace": "AlibabaCloud.GatewayOss",
-      "packageInfo": {
-        "description": "Alibaba Cloud OSS SDK Library for .NET",
-        "company": "Alibaba Cloud",
-        "property": {
-          "PackageTags": "Alibaba Aliyun OSS SDK",
-          "Copyright": "©2009-present Alibaba Cloud",
-          "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
-          "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
-        }
-      }
-    },
-    "java": {
-      "package": "com.aliyun.gateway.oss",
-      "className": "Client"
-    },
-    "go": {
-      "package": [
-        "io"
-      ]
-    },
-    "php": {
-      "package": "Darabonba.GatewayOss",
-      "packageInfo": {
-        "name": "alibabacloud/gateway-oss",
-        "desc": "Alibaba Cloud OSS Client",
-        "github": "https://github.com/aliyun/alibabacloud-gateway"
-      }
-    },
-    "python": {
-      "package": "alibabacloud_gateway_oss",
-      "clientName": "client",
-      "packageInfo": {
-        "name": "alibabacloud_gateway_oss",
-        "desc": "Alibaba Cloud OSS SDK Library for Python",
-        "github": "https://github.com/aliyun/alibabacloud-gateway",
-        "author": "Alibaba Cloud SDK",
-        "email": "sdk-team@alibabacloud.com"
-      }
-    },
-    "python2": {
-      "package": "alibabacloud_gateway_oss",
-      "clientName": "client",
-      "packageInfo": {
-        "name": "alibabacloud_gateway_oss_py2",
-        "desc": "Alibaba Cloud OSS SDK Library for Python2",
-        "github": "https://github.com/aliyun/alibabacloud-gateway",
-        "author": "Alibaba Cloud SDK",
-        "email": "sdk-team@alibabacloud.com"
-      }
-    },
-    "cpp": {
-      "packageInfo": {
-        "git": {
-          "scope": "alibabacloud-sdk-cpp",
-          "project": "gateway-oss"
-        }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.oss",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewayOss",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-oss",
+      "desc": "Alibaba Cloud OSS Client",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_oss",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_oss",
+      "desc": "Alibaba Cloud OSS SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_oss",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_oss_py2",
+      "desc": "Alibaba Cloud OSS SDK Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-oss"
       }
     }
   }
-  
+}
