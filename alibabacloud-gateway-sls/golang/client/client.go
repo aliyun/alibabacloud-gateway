@@ -79,21 +79,24 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			request.Headers["content-type"] = tea.String("application/x-protobuf")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) {
 			bodyStr := util.ToJSONString(request.Body)
-			request.Headers["content-md5"] = string_.ToUpper(encodeutil.HexEncode(signatureutil.MD5Sign(bodyStr)))
+			request.Headers["content-md5"] = string_.ToUpper(encodeutil.HexEncode(signatureutil.Md5Sign(bodyStr)))
 			request.Stream = tea.ToReader(bodyStr)
 			request.Headers["content-type"] = tea.String("application/json")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
 			str := util.ToJSONString(request.Body)
-			request.Headers["content-md5"] = string_.ToUpper(encodeutil.HexEncode(signatureutil.MD5Sign(str)))
+			request.Headers["content-md5"] = string_.ToUpper(encodeutil.HexEncode(signatureutil.Md5Sign(str)))
 			request.Stream = tea.ToReader(str)
 			request.Headers["content-type"] = tea.String("application/json")
 		}
 
 	}
-
+	res, _err := client.GetHost(config.Network, project, config.Endpoint)
+	if _err != nil {
+		return _err
+	}
 	request.Headers = tea.Merge(map[string]*string{
 		"accept":            tea.String("application/json"),
-		"host":              client.GetHost(config.Network, project, config.Endpoint),
+		"host":              res,
 		"date":              util.GetDateUTCString(),
 		"user-agent":        request.UserAgent,
 		"x-log-apiversion":  tea.String("0.6.0"),
@@ -218,7 +221,11 @@ func (client *Client) GetHost(network *string, project *string, endpoint *string
 }
 
 func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, ak *string, secret *string) (_result *string, _err error) {
-	_result = tea.String("LOG " + tea.StringValue(ak) + ":" + tea.StringValue(client.GetSignature(pathname, method, query, headers, secret)))
+	res, _err := client.GetSignature(pathname, method, query, headers, secret)
+	if _err != nil {
+		return nil, _err
+	}
+	_result = tea.String("LOG " + tea.StringValue(ak) + ":" + tea.StringValue(res))
 	return _result, _err
 }
 
