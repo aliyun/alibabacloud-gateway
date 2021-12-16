@@ -1,6 +1,6 @@
 {
   "scope": "alibabacloud",
-  "name": "gateway-sls-test",
+  "name": "GatewaySLS",
   "version": "0.0.1",
   "main": "./main.tea",
   "maintainers": [
