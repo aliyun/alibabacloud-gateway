@@ -74,7 +74,11 @@ export default class Client extends SPI {
 
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
-    let hostMap = request.hostMap;
+    let hostMap : {[key: string ]: string} = { };
+    if (Util.isUnset(request.hostMap)) {
+      hostMap = request.hostMap;
+    }
+
     let bucketName = hostMap["bucket"];
     if (Util.isUnset(bucketName)) {
       bucketName = "";
@@ -120,13 +124,11 @@ export default class Client extends SPI {
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
-    let config = context.configuration;
     let response = context.response;
-    let respMap : {[key: string]: any} = null;
     let bodyStr : string = null;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       bodyStr = await Util.readAsString(response.body);
-      respMap = OSSUtil.getErrMessage(bodyStr);
+      let respMap : {[key: string ]: any} = XML.parseXml(bodyStr, null);
       throw $tea.newError({
         code: respMap["Code"],
         message: respMap["Message"],
@@ -168,7 +170,8 @@ export default class Client extends SPI {
         let result : {[key: string ]: any} = XML.parseXml(bodyStr, null);
         let list : string[] = Map.keySet(result);
         if (Util.equalNumber(Array.size(list), 1)) {
-          response.deserializedBody = result[list[0]];
+          let tmp = list[0];
+          response.deserializedBody = result[tmp];
         } else {
           response.deserializedBody = result;
         }
@@ -218,6 +221,10 @@ export default class Client extends SPI {
   }
 
   async getHost(endpointType: string, bucketName: string, endpoint: string): Promise<string> {
+    if (Util.empty(bucketName)) {
+      return endpoint;
+    }
+
     let host : string = `${bucketName}.${endpoint}`;
     if (!Util.empty(endpointType)) {
       if (String.equals(endpointType, "ip")) {
@@ -258,15 +265,15 @@ export default class Client extends SPI {
     let subResourcesMap : {[key: string ]: string} = { };
     let canonicalizedResource : string = pathname;
     if (!Util.empty(pathname)) {
-      let paths : string[] = String.split(pathname, `\\?`, 2);
+      let paths : string[] = String.split(pathname, `?`, 2);
       canonicalizedResource = paths[0];
       if (Util.equalNumber(Array.size(paths), 2)) {
         let subResources : string[] = String.split(paths[1], "&", 0);
 
         for (let sub of subResources) {
 
-          for (let except of this._except_signed_params) {
-            if (!String.contains(sub, except)) {
+          for (let excepts of this._except_signed_params) {
+            if (!String.contains(sub, excepts)) {
               let item : string[] = String.split(sub, "&", 2);
               let key : string = item[0];
               let value : string = null;

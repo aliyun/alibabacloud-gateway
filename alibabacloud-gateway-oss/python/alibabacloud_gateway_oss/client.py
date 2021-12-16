@@ -91,7 +91,9 @@ class Client(SPIClient):
         attribute_map: spi_models.AttributeMap,
     ) -> None:
         request = context.request
-        host_map = request.host_map
+        host_map = {}
+        if UtilClient.is_unset(request.host_map):
+            host_map = request.host_map
         bucket_name = host_map.get('bucket')
         if UtilClient.is_unset(bucket_name):
             bucket_name = ''
@@ -131,7 +133,9 @@ class Client(SPIClient):
         attribute_map: spi_models.AttributeMap,
     ) -> None:
         request = context.request
-        host_map = request.host_map
+        host_map = {}
+        if UtilClient.is_unset(request.host_map):
+            host_map = request.host_map
         bucket_name = host_map.get('bucket')
         if UtilClient.is_unset(bucket_name):
             bucket_name = ''
@@ -171,13 +175,11 @@ class Client(SPIClient):
         attribute_map: spi_models.AttributeMap,
     ) -> None:
         request = context.request
-        config = context.configuration
         response = context.response
-        resp_map = None
         body_str = None
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             body_str = UtilClient.read_as_string(response.body)
-            resp_map = OSSUtilClient.get_err_message(body_str)
+            resp_map = XMLClient.parse_xml(body_str, None)
             raise TeaException({
                 'code': resp_map.get('Code'),
                 'message': resp_map.get('Message'),
@@ -237,13 +239,11 @@ class Client(SPIClient):
         attribute_map: spi_models.AttributeMap,
     ) -> None:
         request = context.request
-        config = context.configuration
         response = context.response
-        resp_map = None
         body_str = None
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             body_str = await UtilClient.read_as_string_async(response.body)
-            resp_map = OSSUtilClient.get_err_message(body_str)
+            resp_map = XMLClient.parse_xml(body_str, None)
             raise TeaException({
                 'code': resp_map.get('Code'),
                 'message': resp_map.get('Message'),
@@ -341,6 +341,8 @@ class Client(SPIClient):
         bucket_name: str,
         endpoint: str,
     ) -> str:
+        if UtilClient.empty(bucket_name):
+            return endpoint
         host = f'{bucket_name}.{endpoint}'
         if not UtilClient.empty(endpoint_type):
             if StringClient.equals(endpoint_type, 'ip'):
@@ -355,6 +357,8 @@ class Client(SPIClient):
         bucket_name: str,
         endpoint: str,
     ) -> str:
+        if UtilClient.empty(bucket_name):
+            return endpoint
         host = f'{bucket_name}.{endpoint}'
         if not UtilClient.empty(endpoint_type):
             if StringClient.equals(endpoint_type, 'ip'):
@@ -441,7 +445,7 @@ class Client(SPIClient):
         sub_resources_map = {}
         canonicalized_resource = pathname
         if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'\\?', 2)
+            paths = StringClient.split(pathname, f'?', 2)
             canonicalized_resource = paths[0]
             if UtilClient.equal_number(ArrayClient.size(paths), 2):
                 sub_resources = StringClient.split(paths[1], '&', 0)
@@ -481,7 +485,7 @@ class Client(SPIClient):
         sub_resources_map = {}
         canonicalized_resource = pathname
         if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'\\?', 2)
+            paths = StringClient.split(pathname, f'?', 2)
             canonicalized_resource = paths[0]
             if UtilClient.equal_number(ArrayClient.size(paths), 2):
                 sub_resources = StringClient.split(paths[1], '&', 0)

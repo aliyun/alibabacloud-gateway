@@ -76,7 +76,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
-        java.util.Map<String, String> hostMap = request.hostMap;
+        java.util.Map<String, String> hostMap = new java.util.HashMap<>();
+        if (com.aliyun.teautil.Common.isUnset(request.hostMap)) {
+            hostMap = request.hostMap;
+        }
+
         String bucketName = hostMap.get("bucket");
         if (com.aliyun.teautil.Common.isUnset(bucketName)) {
             bucketName = "";
@@ -124,13 +128,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public void modifyResponse(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         InterceptorContext.InterceptorContextResponse response = context.response;
-        java.util.Map<String, Object> respMap = null;
         String bodyStr = null;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
-            respMap = com.aliyun.ossutil.Client.getErrMessage(bodyStr);
+            java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", respMap.get("Code")),
                 new TeaPair("message", respMap.get("Message")),
@@ -172,7 +174,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
                 java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
                 if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(list), 1)) {
-                    response.deserializedBody = result.get(list.get(0));
+                    String tmp = list.get(0);
+                    response.deserializedBody = result.get(tmp);
                 } else {
                     response.deserializedBody = result;
                 }
@@ -222,6 +225,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getHost(String endpointType, String bucketName, String endpoint) throws Exception {
+        if (com.aliyun.teautil.Common.empty(bucketName)) {
+            return endpoint;
+        }
+
         String host = "" + bucketName + "." + endpoint + "";
         if (!com.aliyun.teautil.Common.empty(endpointType)) {
             if (com.aliyun.darabonbastring.Client.equals(endpointType, "ip")) {
@@ -262,13 +269,13 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.Map<String, String> subResourcesMap = new java.util.HashMap<>();
         String canonicalizedResource = pathname;
         if (!com.aliyun.teautil.Common.empty(pathname)) {
-            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "\\?", 2);
+            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
             canonicalizedResource = paths.get(0);
             if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
                 java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
                 for (String sub : subResources) {
-                    for (String except : _except_signed_params) {
-                        if (!com.aliyun.darabonbastring.Client.contains(sub, except)) {
+                    for (String excepts : _except_signed_params) {
+                        if (!com.aliyun.darabonbastring.Client.contains(sub, excepts)) {
                             java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "&", 2);
                             String key = item.get(0);
                             String value = null;

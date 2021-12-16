@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_oss.
 
-Created on 06/12/2021
+Created on 16/12/2021
 
 @author: Alibaba Cloud SDK
 """
@@ -41,12 +41,13 @@ REQUIRES = [
     "alibabacloud_credentials>=0.2.0, <1.0.0",
     "alibabacloud_tea_util>=0.3.5, <1.0.0",
     "alibabacloud_oss_util>=0.0.5, <1.0.0",
-    "alibabacloud_openapi_util>=0.1.5, <1.0.0",
+    "alibabacloud_openapi_util>=0.1.6, <1.0.0",
     "alibabacloud_tea_xml>=0.0.2, <1.0.0",
-    "alibabacloud_darabonba_string>=0.0.1, <1.0.0",
+    "alibabacloud_darabonba_string>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map>=0.0.1, <1.0.0",
+    "alibabacloud_darabonba_array>=0.0.1, <1.0.0",
     "alibabacloud_darabonba_encode_util>=0.0.1, <1.0.0",
-    "alibabacloud_darabonba_signature_util>=0.0.1, <1.0.0"
+    "alibabacloud_darabonba_signature_util>=0.0.2, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''

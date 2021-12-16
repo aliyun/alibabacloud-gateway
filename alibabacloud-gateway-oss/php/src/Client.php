@@ -11,7 +11,7 @@ use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\OSSUtils\OSSUtils;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
-use Map\Client as MapClient;
+use AlibabaCloud\Darabonba\Map\MapUtil;
 use AlibabaCloud\Darabonba\Array_\ArrayUtil;
 use AlibabaCloud\Darabonba\SignatureUtil\Signer;
 use AlibabaCloud\Darabonba\EncodeUtil\Encoder;
@@ -90,7 +90,10 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function modifyRequest($context, $attributeMap){
         $request = $context->request;
-        $hostMap = $request->hostMap;
+        $hostMap = [];
+        if (Utils::isUnset($request->hostMap)) {
+            $hostMap = $request->hostMap;
+        }
         $bucketName = @$hostMap["bucket"];
         if (Utils::isUnset($bucketName)) {
             $bucketName = "";
@@ -140,13 +143,11 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function modifyResponse($context, $attributeMap){
         $request = $context->request;
-        $config = $context->configuration;
         $response = $context->response;
-        $respMap = null;
         $bodyStr = null;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $bodyStr = Utils::readAsString($response->body);
-            $respMap = OSSUtils::getErrMessage($bodyStr);
+            $respMap = XML::parseXml($bodyStr, null);
             throw new TeaError([
                 "code" => @$respMap["Code"],
                 "message" => @$respMap["Message"],
@@ -182,7 +183,7 @@ class Client extends DarabonbaGatewaySpiClient {
             if (StringUtil::equals($request->bodyType, "xml")) {
                 $bodyStr = Utils::readAsString($response->body);
                 $result = XML::parseXml($bodyStr, null);
-                $list = MapClient::keySet($result);
+                $list = MapUtil::keySet($result);
                 if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
                     $tmp = @$list_[0];
                     $response->deserializedBody = @$result[$tmp];
@@ -249,6 +250,9 @@ class Client extends DarabonbaGatewaySpiClient {
      * @return string
      */
     public function getHost($endpointType, $bucketName, $endpoint){
+        if (Utils::empty_($bucketName)) {
+            return $endpoint;
+        }
         $host = "" . $bucketName . "." . $endpoint . "";
         if (!Utils::empty_($endpointType)) {
             if (StringUtil::equals($endpointType, "ip")) {
@@ -312,7 +316,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $subResourcesMap = [];
         $canonicalizedResource = $pathname;
         if (!Utils::empty_($pathname)) {
-            $paths = StringUtil::split($pathname, "\\?", 2);
+            $paths = StringUtil::split($pathname, "?", 2);
             $canonicalizedResource = @$paths[0];
             if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
                 $subResources = StringUtil::split(@$paths[1], "&", 0);
@@ -331,10 +335,10 @@ class Client extends DarabonbaGatewaySpiClient {
                 }
             }
         }
-        $subResourcesArray = MapClient::keySet($subResourcesMap);
+        $subResourcesArray = MapUtil::keySet($subResourcesMap);
         $newQueryList = $subResourcesArray;
         if (!Utils::isUnset($query)) {
-            $queryList = MapClient::keySet($query);
+            $queryList = MapUtil::keySet($query);
             $newQueryList = ArrayUtil::concat($subResourcesArray, $queryList);
         }
         $sortedParams = ArrayUtil::ascSort($newQueryList);
@@ -372,7 +376,7 @@ class Client extends DarabonbaGatewaySpiClient {
             $contentMd5 = "";
         }
         $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $contentMd5 . "\n" . $contentType . "\n" . @$headers["date"] . "\n";
-        $keys = MapClient::keySet($headers);
+        $keys = MapUtil::keySet($headers);
         $sortedHeaders = ArrayUtil::ascSort($keys);
         foreach($sortedHeaders as $header){
             if (StringUtil::contains(StringUtil::toLower($header), "x-oss-")) {

@@ -11,16 +11,17 @@
   ],
   "require": {
     "php": ">5.5",
-    "alibabacloud/gateway-spi": "^*",
+    "alibabacloud/gateway-spi": "^0.0.1",
     "alibabacloud/credentials": "^1.1",
     "alibabacloud/tea-utils": "^0.2.0",
     "alibabacloud/tea-oss-utils": "^0.2.0",
-    "alibabacloud/openapi-util": "^0.1.9",
+    "alibabacloud/openapi-util": "^0.1.10",
     "alibabacloud/tea-xml": "^0.2",
-    "alibabacloud/darabonba-string": "^0.1.0",
-    "darabonba/map": "^*",
-    "alibabacloud/darabonba-array": "^*",
-    "darabonba/util": "^*"
+    "alibabacloud/darabonba-string": "^0.1.14",
+    "alibabacloud/darabonba-array": "^0.0.1",
+    "alibabacloud/darabonba-signature-util": "^0.0.2",
+    "alibabacloud/darabonba-encode-util": "^0.0.1",
+    "alibabacloud/darabonba-map": "^0.0.1"
   },
   "autoload": {
     "psr-4": {

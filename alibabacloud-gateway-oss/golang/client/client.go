@@ -50,7 +50,11 @@ func (client *Client) ModifyConfiguration (context *spi.InterceptorContext, attr
 
 func (client *Client) ModifyRequest (context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
   request := context.Request
-  hostMap := request.HostMap
+  hostMap := make(map[string]*string)
+  if tea.BoolValue(util.IsUnset(request.HostMap)) {
+    hostMap = request.HostMap
+  }
+
   bucketName := hostMap["bucket"]
   if tea.BoolValue(util.IsUnset(bucketName)) {
     bucketName = tea.String("")
@@ -112,9 +116,7 @@ func (client *Client) ModifyRequest (context *spi.InterceptorContext, attributeM
 
 func (client *Client) ModifyResponse (context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
   request := context.Request
-  config := context.Configuration
   response := context.Response
-  var respMap map[string]interface{}
   var bodyStr *string
   if tea.BoolValue(util.Is4xx(response.StatusCode)) || tea.BoolValue(util.Is5xx(response.StatusCode)) {
     bodyStr, _err = util.ReadAsString(response.Body)
@@ -122,7 +124,7 @@ func (client *Client) ModifyResponse (context *spi.InterceptorContext, attribute
       return _err
     }
 
-    respMap = ossutil.GetErrMessage(bodyStr)
+    respMap := xml.ParseXml(bodyStr, nil)
     _err = tea.NewSDKError(map[string]interface{}{
       "code": respMap["Code"],
       "message": respMap["Message"],
@@ -171,7 +173,8 @@ func (client *Client) ModifyResponse (context *spi.InterceptorContext, attribute
       result := xml.ParseXml(bodyStr, nil)
       list := map.KeySet(result)
       if tea.BoolValue(util.EqualNumber(array.Size(list), tea.Int(1))) {
-        response.DeserializedBody = result[list[0]]
+        tmp := list[0]
+        response.DeserializedBody = result[tmp]
       } else {
         response.DeserializedBody = result
       }
@@ -247,6 +250,11 @@ func (client *Client) GetEndpoint (regionId *string, network *string, endpoint *
 }
 
 func (client *Client) GetHost (endpointType *string, bucketName *string, endpoint *string) (_result *string, _err error) {
+  if tea.BoolValue(util.Empty(bucketName)) {
+    _result = endpoint
+    return _result , _err
+  }
+
   host := tea.String(tea.StringValue(bucketName) + "." + tea.StringValue(endpoint))
   if !tea.BoolValue(util.Empty(endpointType)) {
     if tea.BoolValue(string_.Equals(endpointType, tea.String("ip"))) {
@@ -300,13 +308,13 @@ func (client *Client) BuildCanonicalizedResource (pathname *string, query map[st
   subResourcesMap := make(map[string]*string)
   canonicalizedResource := pathname
   if !tea.BoolValue(util.Empty(pathname)) {
-    paths := string_.Split(pathname, tea.String("\\?"), tea.Int(2))
+    paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
     canonicalizedResource = paths[0]
     if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
       subResources := string_.Split(paths[1], tea.String("&"), tea.Int(0))
       for _, sub := range subResources {
-        for _, except := range client.Except_signed_params {
-          if !tea.BoolValue(string_.Contains(sub, except)) {
+        for _, excepts := range client.Except_signed_params {
+          if !tea.BoolValue(string_.Contains(sub, excepts)) {
             item := string_.Split(sub, tea.String("&"), tea.Int(2))
             key := item[0]
             var value *string

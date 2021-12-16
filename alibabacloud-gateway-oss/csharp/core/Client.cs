@@ -84,7 +84,11 @@ namespace AlibabaCloud.GatewayOss
         public void ModifyRequest(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            Dictionary<string, string> hostMap = request.HostMap;
+            Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
+            if (AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
+            {
+                hostMap = request.HostMap;
+            }
             string bucketName = hostMap.Get("bucket");
             if (AlibabaCloud.TeaUtil.Common.IsUnset(bucketName))
             {
@@ -141,7 +145,11 @@ namespace AlibabaCloud.GatewayOss
         public async Task ModifyRequestAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            Dictionary<string, string> hostMap = request.HostMap;
+            Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
+            if (AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
+            {
+                hostMap = request.HostMap;
+            }
             string bucketName = hostMap.Get("bucket");
             if (AlibabaCloud.TeaUtil.Common.IsUnset(bucketName))
             {
@@ -198,14 +206,12 @@ namespace AlibabaCloud.GatewayOss
         public void ModifyResponse(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
-            Dictionary<string, object> respMap = null;
             string bodyStr = null;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
                 bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                respMap = AlibabaCloud.OSSUtil.Common.GetErrMessage(bodyStr);
+                Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", respMap.Get("Code")},
@@ -296,14 +302,12 @@ namespace AlibabaCloud.GatewayOss
         public async Task ModifyResponseAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
-            Dictionary<string, object> respMap = null;
             string bodyStr = null;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
                 bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                respMap = AlibabaCloud.OSSUtil.Common.GetErrMessage(bodyStr);
+                Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", respMap.Get("Code")},
@@ -449,6 +453,10 @@ namespace AlibabaCloud.GatewayOss
 
         public string GetHost(string endpointType, string bucketName, string endpoint)
         {
+            if (AlibabaCloud.TeaUtil.Common.Empty(bucketName))
+            {
+                return endpoint;
+            }
             string host = "" + bucketName + "." + endpoint;
             if (!AlibabaCloud.TeaUtil.Common.Empty(endpointType))
             {
@@ -466,6 +474,10 @@ namespace AlibabaCloud.GatewayOss
 
         public async Task<string> GetHostAsync(string endpointType, string bucketName, string endpoint)
         {
+            if (AlibabaCloud.TeaUtil.Common.Empty(bucketName))
+            {
+                return endpoint;
+            }
             string host = "" + bucketName + "." + endpoint;
             if (!AlibabaCloud.TeaUtil.Common.Empty(endpointType))
             {
@@ -541,7 +553,7 @@ namespace AlibabaCloud.GatewayOss
             string canonicalizedResource = pathname;
             if (!AlibabaCloud.TeaUtil.Common.Empty(pathname))
             {
-                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "\\?", 2);
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "?", 2);
                 canonicalizedResource = paths[0];
                 if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
                 {
@@ -603,7 +615,7 @@ namespace AlibabaCloud.GatewayOss
             string canonicalizedResource = pathname;
             if (!AlibabaCloud.TeaUtil.Common.Empty(pathname))
             {
-                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "\\?", 2);
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "?", 2);
                 canonicalizedResource = paths[0];
                 if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
                 {
