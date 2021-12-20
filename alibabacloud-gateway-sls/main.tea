@@ -54,9 +54,10 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       request.headers['content-type'] = 'application/json';
     }
   }
+  var host = getHost(config.network, project, config.endpoint);
   request.headers = {
     accept = 'application/json',
-    host = getHost(config.network, project, config.endpoint),
+    host = host,
     date = Util.getDateUTCString(),
     user-agent = request.userAgent,
     x-log-apiversion = '0.6.0',
@@ -133,7 +134,8 @@ async function getHost(network: string, project: string, endpoint: string): stri
 }
 
 async function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string): string {
-  return `LOG ${ak}:${getSignature(pathname, method, query, headers, secret)}`;
+  var sign = getSignature(pathname, method, query, headers, secret);
+  return `LOG ${ak}:${sign}`;
 }
 
 async function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {

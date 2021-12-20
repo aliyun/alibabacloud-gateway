@@ -90,13 +90,15 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		}
 
 	}
-	res, _err := client.GetHost(config.Network, project, config.Endpoint)
+
+	host, _err := client.GetHost(config.Network, project, config.Endpoint)
 	if _err != nil {
 		return _err
 	}
+
 	request.Headers = tea.Merge(map[string]*string{
 		"accept":            tea.String("application/json"),
-		"host":              res,
+		"host":              host,
 		"date":              util.GetDateUTCString(),
 		"user-agent":        request.UserAgent,
 		"x-log-apiversion":  tea.String("0.6.0"),
@@ -221,11 +223,12 @@ func (client *Client) GetHost(network *string, project *string, endpoint *string
 }
 
 func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, ak *string, secret *string) (_result *string, _err error) {
-	res, _err := client.GetSignature(pathname, method, query, headers, secret)
+	sign, _err := client.GetSignature(pathname, method, query, headers, secret)
 	if _err != nil {
-		return nil, _err
+		return _result, _err
 	}
-	_result = tea.String("LOG " + tea.StringValue(ak) + ":" + tea.StringValue(res))
+
+	_result = tea.String("LOG " + tea.StringValue(ak) + ":" + tea.StringValue(sign))
 	return _result, _err
 }
 
