@@ -293,13 +293,13 @@ func (client *Client) Init() (_err error) {
 }
 
 func (client *Client) ModifyConfiguration(context *InterceptorContext, attributeMap *AttributeMap) (_err error) {
-	panic("No Support!")
+	return nil
 }
 
 func (client *Client) ModifyRequest(context *InterceptorContext, attributeMap *AttributeMap) (_err error) {
-	panic("No Support!")
+	return nil
 }
 
 func (client *Client) ModifyResponse(context *InterceptorContext, attributeMap *AttributeMap) (_err error) {
-	panic("No Support!")
+	return nil
 }
