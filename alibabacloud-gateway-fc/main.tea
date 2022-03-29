@@ -1,0 +1,317 @@
+import SPI;
+import Credential;
+import Util;
+import OpenApiUtil;
+import EndpointUtil;
+import EncodeUtil;
+import SignatureUtil;
+import String;
+import Map;
+import Array;
+
+extends SPI;
+
+init() {
+  super();
+}
+
+async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var request = context.request;
+  var config = context.configuration;
+  config.endpoint = getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
+}
+
+async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var config = context.configuration;
+  if (!String.hasSuffix(config.endpoint, 'aliyuncs.com')) {
+    signRequestForFc(context);
+  } else {
+    signRequestForPop(context);
+  }
+}
+
+async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var request = context.request;
+  var config = context.configuration;
+  var response = context.response;
+  if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
+    var _headers = Util.assertAsMap(response.headers);
+    var _res = Util.readAsJSON(response.body);
+    var err = Util.assertAsMap(_res);
+    throw {
+      code = err.ErrorCode,
+      message = `code: ${response.statusCode}, ${err.ErrorMessage} request id: ${_headers.x-fc-request-id}`,
+      data = err,
+    };
+  }
+
+  if (Util.equalString(request.bodyType, 'binary')) {
+    response.deserializedBody = response.body;
+  } else if (Util.equalString(request.bodyType, 'byte')) {
+    var byt = Util.readAsBytes(response.body);
+    response.deserializedBody = byt;
+  } else if (Util.equalString(request.bodyType, 'string')) {
+    var str = Util.readAsString(response.body);
+    response.deserializedBody = str;
+  } else if (Util.equalString(request.bodyType, 'json')) {
+    var obj = Util.readAsJSON(response.body);
+    var res = Util.assertAsMap(obj);
+    response.deserializedBody = res;
+  } else if (Util.equalString(request.bodyType, 'array')) {
+    var arr = Util.readAsJSON(response.body);
+    response.deserializedBody = arr;
+  } else {
+    response.deserializedBody = Util.readAsString(response.body);
+  }
+}
+
+function getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string) throws: string{
+  if (!Util.empty(endpoint)) {
+    return endpoint;
+  }
+
+  if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
+    return endpointMap[regionId];
+  }
+  return EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+}
+
+function defaultAny(inputValue: any, defaultValue: any): any {
+  if (Util.isUnset(inputValue)) {
+    return defaultValue;
+  }
+  return inputValue;
+}
+
+async function signRequestForFc(context: SPI.InterceptorContext): void {
+  var request = context.request;
+  var config = context.configuration;
+  request.headers = {
+    host = config.endpoint,
+    date = Util.getDateUTCString(),
+    accept = 'application/json',
+    user-agent = request.userAgent,
+    ...request.headers
+  };
+
+  request.headers.content-type = 'application/json';
+  if (!Util.isUnset(request.stream)) {
+    var tmp = Util.readAsBytes(request.stream);
+    request.stream = tmp;
+    request.headers.content-type = 'application/octet-stream';
+    request.headers.content-md5 = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(Util.toString(tmp)));
+  } else {
+    if (!Util.isUnset(request.body)) {
+      if (Util.equalString(request.reqBodyType, 'json')) {
+        var jsonObj = Util.toJSONString(request.body);
+        request.stream = jsonObj;
+        request.headers.content-type = 'application/json';
+        request.headers.content-md5 = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(jsonObj));
+      } else {
+        var m = Util.assertAsMap(request.body);
+        var formObj = OpenApiUtil.toForm(m);
+        request.stream = formObj;
+        request.headers.content-type = 'application/x-www-form-urlencoded';
+        request.headers.content-md5 = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(formObj));
+      }
+    }
+  }
+
+  var credential : Credential = request.credential;
+  var accessKeyId = credential.getAccessKeyId();
+  var accessKeySecret = credential.getAccessKeySecret();
+  var securityToken = credential.getSecurityToken();
+
+  if (!Util.empty(securityToken)) {
+    request.headers.x-fc-security-token = securityToken;
+  }
+  request.headers.Authorization = getAuthorizationForFc(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+}
+
+async function signRequestForPop(context: SPI.InterceptorContext): void {
+  var request = context.request;
+  var config = context.configuration;
+  request.headers = {
+    host = config.endpoint,
+    x-acs-version = request.version,
+    x-acs-action = request.action,
+    user-agent = request.userAgent,
+    x-acs-date = OpenApiUtil.getTimestamp(),
+    x-acs-signature-nonce = Util.getNonce(),
+    accept = 'application/json',
+    ...request.headers
+  };
+  var signatureAlgorithm : string = 'ACS3-HMAC-SHA256';
+  if (!Util.isUnset(request.signatureAlgorithm)) {
+    signatureAlgorithm = request.signatureAlgorithm;
+  }
+  var hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(''), signatureAlgorithm));
+
+  if (!Util.isUnset(request.stream)) {
+    var tmp = Util.readAsBytes(request.stream);
+    hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(tmp, signatureAlgorithm));
+    request.stream = tmp;
+    request.headers.content-type = 'application/octet-stream';
+  } else {
+    if (!Util.isUnset(request.body)) {
+      if (Util.equalString(request.reqBodyType, 'json')) {
+        var jsonObj = Util.toJSONString(request.body);
+        hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(jsonObj), signatureAlgorithm));
+        request.stream = jsonObj;
+        request.headers.content-type = 'application/json; charset=utf-8';
+      } else {
+        var m = Util.assertAsMap(request.body);
+        var formObj = OpenApiUtil.toForm(m);
+        hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(formObj), signatureAlgorithm));
+        request.stream = formObj;
+        request.headers.content-type = 'application/x-www-form-urlencoded';
+      }
+    }
+  }
+
+  request.headers.x-acs-content-sha256 = hashedRequestPayload;
+
+  if (!Util.equalString(request.authType, 'Anonymous')) {
+    var credential : Credential = request.credential;
+    var accessKeyId = credential.getAccessKeyId();
+    var accessKeySecret = credential.getAccessKeySecret();
+    var securityToken = credential.getSecurityToken();
+
+    if (!Util.empty(securityToken)) {
+      request.headers.x-acs-accesskey-id = accessKeyId;
+      request.headers.x-acs-security-token = securityToken;
+    }
+    request.headers.Authorization = getAuthorizationForPop(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, accessKeySecret);
+  }
+}
+
+async function getAuthorizationForFc(pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string): string {
+  var sign = getSignatureForFc(pathname, method, query, headers, secret);
+  return `FC ${ak}:${sign}`;
+}
+
+async function getSignatureForFc(pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {
+  var resource : string = pathname;
+  var contentMd5 = headers.content-md5;
+  if (Util.isUnset(contentMd5)) {
+    contentMd5 = '';
+  }
+  var contentType = headers.content-type;
+  if (Util.isUnset(contentType)) {
+    contentType = '';
+  }
+  var stringToSign : string = '';
+  var canonicalizedResource = buildCanonicalizedResourceForFc(resource, query);
+  var canonicalizedHeaders = buildCanonicalizedHeadersForFc(headers);
+  stringToSign = `${method}\n${contentMd5}\n${contentType}\n${headers.date}\n${canonicalizedHeaders}${canonicalizedResource}`;
+  return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, secret));
+}
+
+async function buildCanonicalizedResourceForFc(pathname: string, query: map[string]string): string {
+  var paths : [string] = String.split(pathname, `?`, 2);
+  var canonicalizedResource : string = paths[0];
+  var resources : [string] = [];
+  if (Util.equalNumber(Array.size(paths), 2)) {
+    resources = String.split(paths[1], '&', 0);
+  }
+  var subResources : [string] = [];
+  var tmp : string = '';
+  var separator : string = '';
+  if (!Util.isUnset(query)) {
+    var queryList : [string] = Map.keySet(query);
+    for(var paramName : queryList) {
+      tmp = `${tmp}${separator}${paramName}`;
+      if (!Util.isUnset(query[paramName])) {
+        tmp = `${tmp}=${query[paramName]}`;
+      }
+      separator = ';';
+    }
+    subResources = String.split(tmp, ';', 0);
+  }
+  var result : [string] = Array.concat(subResources, resources);
+  var sortedParams = Array.ascSort(result);
+  if (Util.equalNumber(Array.size(sortedParams), 0)) {
+    return `${canonicalizedResource}\n`;
+  }
+  return `${canonicalizedResource}\n${Array.join(sortedParams, '\\n')}`;
+}
+
+async function buildCanonicalizedHeadersForFc(headers: map[string]string): string {
+  var canonicalizedHeaders : string = '';
+  var keys = Map.keySet(headers);
+  var sortedHeaders = Array.ascSort(keys);
+  for(var header : sortedHeaders) {
+    if (String.contains(String.toLower(header), 'x-fc-')) {
+      canonicalizedHeaders = `${canonicalizedHeaders}${String.toLower(header)}:${headers[header]}\n`;
+    }
+  }
+  return canonicalizedHeaders;
+}
+
+async function getAuthorizationForPop(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, secret: string): string {
+  var signature = getSignatureForPop(pathname, method, query, headers, signatureAlgorithm, payload, secret);
+  return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${Array.join(getSignedHeaders(headers), ';')},Signature=${signature}`;
+}
+
+async function getSignatureForPop(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, secret: string): string {
+  var canonicalURI : string = '/';
+  if (!Util.empty(pathname)) {
+    canonicalURI = pathname;
+  }
+  var stringToSign : string = '';
+  var canonicalizedResource = buildCanonicalizedResourceForPop(query);
+  var canonicalizedHeaders = buildCanonicalizedHeadersForPop(headers);
+  var signedHeaders = getSignedHeaders(headers);
+  stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${Array.join(signedHeaders, ';')}\n${payload}`;
+  var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
+  stringToSign = `${signatureAlgorithm}\n${hex}`;
+  var signature = Util.toBytes('');
+  if (String.equals(signatureAlgorithm, 'ACS3-HMAC-SHA256')) {
+    signature = SignatureUtil.HmacSHA256Sign(stringToSign, secret);
+  } else if (String.equals(signatureAlgorithm, 'ACS3-HMAC-SM3')) {
+    signature = SignatureUtil.HmacSM3Sign(stringToSign, secret);
+  } else if (String.equals(signatureAlgorithm, 'ACS3-RSA-SHA256')) {
+    signature = SignatureUtil.SHA256withRSASign(stringToSign, secret);
+  }
+  return EncodeUtil.hexEncode(signature);
+}
+
+async function buildCanonicalizedResourceForPop(query: map[string]string): string {
+  var queryArray : [string] = Map.keySet(query);
+  var sortedQueryArray = Array.ascSort(queryArray);
+  var canonicalizedResource : string = '';
+  for(var key : sortedQueryArray) {
+    canonicalizedResource = `${canonicalizedResource}&${EncodeUtil.percentEncode(key)}`;
+    if (!Util.empty(query[key])) {
+      canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+    }
+  }
+  return canonicalizedResource;
+}
+
+async function buildCanonicalizedHeadersForPop(headers: map[string]string): string {
+  var canonicalizedHeaders : string = '';
+  var sortedHeaders : [string] = getSignedHeaders(headers);
+  for(var header : sortedHeaders) {
+    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
+  }
+  return canonicalizedHeaders;
+}
+
+async function getSignedHeaders(headers: map[string]string): [string] {
+  var headersArray : [string] = Map.keySet(headers);
+  var sortedHeadersArray = Array.ascSort(headersArray);
+  var tmp : string = '';
+  var separator : string = '';
+  for(var key : sortedHeadersArray) {
+    var lowerKey = String.toLower(key);
+    if (String.hasPrefix(lowerKey, 'x-acs-') || String.equals(lowerKey, 'host')
+            || String.equals(lowerKey, 'content-type')) {
+      if (!String.contains(tmp, lowerKey)) {
+        tmp = `${tmp}${separator}${lowerKey}`;
+        separator = ';';
+      }
+    }
+  }
+  return String.split(tmp, ';', 0);
+}
