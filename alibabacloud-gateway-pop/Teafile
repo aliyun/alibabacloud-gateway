@@ -14,7 +14,12 @@
     "EndpointUtil": "alibabacloud:EndpointUtil:*",
     "Util": "darabonba:Util:*",
     "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
-    "Credential": "alibabacloud:Credential:*"
+    "Credential": "alibabacloud:Credential:*",
+    "EncodeUtil": "darabonba:EncodeUtil:*",
+    "SignatureUtil": "darabonba:SignatureUtil:*",
+    "String": "darabonba:String:*",
+    "Map": "darabonba:Map:*",
+    "Array": "darabonba:Array:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-pop:^0.0.1",
