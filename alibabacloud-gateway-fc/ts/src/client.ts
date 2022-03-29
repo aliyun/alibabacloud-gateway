@@ -40,14 +40,25 @@ export default class Client extends SPI {
     let config = context.configuration;
     let response = context.response;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
-      let _headers = Util.assertAsMap(response.headers);
-      let _res = await Util.readAsJSON(response.body);
-      let err = Util.assertAsMap(_res);
-      throw $tea.newError({
-        code: err["ErrorCode"],
-        message: `code: ${response.statusCode}, ${err["ErrorMessage"]} request id: ${_headers["x-fc-request-id"]}`,
-        data: err,
-      });
+      if (String.hasPrefix(config.endpoint, "fc.") && String.hasSuffix(config.endpoint, ".aliyuncs.com")) {
+        let popRes = await Util.readAsJSON(response.body);
+        let popErr = Util.assertAsMap(popRes);
+        throw $tea.newError({
+          code: `${this.defaultAny(popErr["Code"], popErr["code"])}`,
+          message: `code: ${response.statusCode}, ${this.defaultAny(popErr["Message"], popErr["message"])} request id: ${this.defaultAny(popErr["RequestId"], popErr["requestId"])}`,
+          data: popErr,
+        });
+      } else {
+        let _headers = Util.assertAsMap(response.headers);
+        let fcRes = await Util.readAsJSON(response.body);
+        let fcErr = Util.assertAsMap(fcRes);
+        throw $tea.newError({
+          code: fcErr["ErrorCode"],
+          message: `code: ${response.statusCode}, ${fcErr["ErrorMessage"]} request id: ${_headers["x-fc-request-id"]}`,
+          data: fcErr,
+        });
+      }
+
     }
 
     if (Util.equalString(request.bodyType, "binary")) {
@@ -299,17 +310,20 @@ export default class Client extends SPI {
   }
 
   async buildCanonicalizedResourceForPop(query: {[key: string ]: string}): Promise<string> {
-    let queryArray : string[] = Map.keySet(query);
-    let sortedQueryArray = Array.ascSort(queryArray);
     let canonicalizedResource : string = "";
+    if (!Util.isUnset(query)) {
+      let queryArray : string[] = Map.keySet(query);
+      let sortedQueryArray = Array.ascSort(queryArray);
 
-    for (let key of sortedQueryArray) {
-      canonicalizedResource = `${canonicalizedResource}&${EncodeUtil.percentEncode(key)}`;
-      if (!Util.empty(query[key])) {
-        canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+      for (let key of sortedQueryArray) {
+        canonicalizedResource = `${canonicalizedResource}&${EncodeUtil.percentEncode(key)}`;
+        if (!Util.empty(query[key])) {
+          canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+        }
+
       }
-
     }
+
     return canonicalizedResource;
   }
 

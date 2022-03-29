@@ -67,15 +67,29 @@ namespace AlibabaCloud.GatewayFc
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
-                Dictionary<string, object> _headers = AlibabaCloud.TeaUtil.Common.AssertAsMap(response.Headers);
-                object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
-                throw new TeaException(new Dictionary<string, object>
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(config.Endpoint, "fc.") && AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(config.Endpoint, ".aliyuncs.com"))
                 {
-                    {"code", err.Get("ErrorCode")},
-                    {"message", "code: " + response.StatusCode + ", " + err.Get("ErrorMessage") + " request id: " + _headers.Get("x-fc-request-id")},
-                    {"data", err},
-                });
+                    object popRes = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    Dictionary<string, object> popErr = AlibabaCloud.TeaUtil.Common.AssertAsMap(popRes);
+                    throw new TeaException(new Dictionary<string, object>
+                    {
+                        {"code", "" + DefaultAny(popErr.Get("Code"), popErr.Get("code"))},
+                        {"message", "code: " + response.StatusCode + ", " + DefaultAny(popErr.Get("Message"), popErr.Get("message")) + " request id: " + DefaultAny(popErr.Get("RequestId"), popErr.Get("requestId"))},
+                        {"data", popErr},
+                    });
+                }
+                else
+                {
+                    Dictionary<string, object> _headers = AlibabaCloud.TeaUtil.Common.AssertAsMap(response.Headers);
+                    object fcRes = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    Dictionary<string, object> fcErr = AlibabaCloud.TeaUtil.Common.AssertAsMap(fcRes);
+                    throw new TeaException(new Dictionary<string, object>
+                    {
+                        {"code", fcErr.Get("ErrorCode")},
+                        {"message", "code: " + response.StatusCode + ", " + fcErr.Get("ErrorMessage") + " request id: " + _headers.Get("x-fc-request-id")},
+                        {"data", fcErr},
+                    });
+                }
             }
             if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
             {
@@ -115,15 +129,29 @@ namespace AlibabaCloud.GatewayFc
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
-                Dictionary<string, object> _headers = AlibabaCloud.TeaUtil.Common.AssertAsMap(response.Headers);
-                object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
-                throw new TeaException(new Dictionary<string, object>
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(config.Endpoint, "fc.") && AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(config.Endpoint, ".aliyuncs.com"))
                 {
-                    {"code", err.Get("ErrorCode")},
-                    {"message", "code: " + response.StatusCode + ", " + err.Get("ErrorMessage") + " request id: " + _headers.Get("x-fc-request-id")},
-                    {"data", err},
-                });
+                    object popRes = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    Dictionary<string, object> popErr = AlibabaCloud.TeaUtil.Common.AssertAsMap(popRes);
+                    throw new TeaException(new Dictionary<string, object>
+                    {
+                        {"code", "" + DefaultAny(popErr.Get("Code"), popErr.Get("code"))},
+                        {"message", "code: " + response.StatusCode + ", " + DefaultAny(popErr.Get("Message"), popErr.Get("message")) + " request id: " + DefaultAny(popErr.Get("RequestId"), popErr.Get("requestId"))},
+                        {"data", popErr},
+                    });
+                }
+                else
+                {
+                    Dictionary<string, object> _headers = AlibabaCloud.TeaUtil.Common.AssertAsMap(response.Headers);
+                    object fcRes = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    Dictionary<string, object> fcErr = AlibabaCloud.TeaUtil.Common.AssertAsMap(fcRes);
+                    throw new TeaException(new Dictionary<string, object>
+                    {
+                        {"code", fcErr.Get("ErrorCode")},
+                        {"message", "code: " + response.StatusCode + ", " + fcErr.Get("ErrorMessage") + " request id: " + _headers.Get("x-fc-request-id")},
+                        {"data", fcErr},
+                    });
+                }
             }
             if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
             {
@@ -658,15 +686,18 @@ namespace AlibabaCloud.GatewayFc
 
         public string BuildCanonicalizedResourceForPop(Dictionary<string, string> query)
         {
-            List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
-            List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
             string canonicalizedResource = "";
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(query))
+            {
+                List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
+                List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
 
-            foreach (var key in sortedQueryArray) {
-                canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
-                if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
-                {
-                    canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
+                foreach (var key in sortedQueryArray) {
+                    canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                    if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
+                    {
+                        canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
+                    }
                 }
             }
             return canonicalizedResource;
@@ -674,15 +705,18 @@ namespace AlibabaCloud.GatewayFc
 
         public async Task<string> BuildCanonicalizedResourceForPopAsync(Dictionary<string, string> query)
         {
-            List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
-            List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
             string canonicalizedResource = "";
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(query))
+            {
+                List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
+                List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
 
-            foreach (var key in sortedQueryArray) {
-                canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
-                if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
-                {
-                    canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
+                foreach (var key in sortedQueryArray) {
+                    canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                    if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
+                    {
+                        canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
+                    }
                 }
             }
             return canonicalizedResource;

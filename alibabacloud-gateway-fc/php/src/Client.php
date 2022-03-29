@@ -60,14 +60,25 @@ class Client extends DarabonbaGatewaySpiClient {
         $config = $context->configuration;
         $response = $context->response;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
-            $_headers = Utils::assertAsMap($response->headers);
-            $_res = Utils::readAsJSON($response->body);
-            $err = Utils::assertAsMap($_res);
-            throw new TeaError([
-                "code" => @$err["ErrorCode"],
-                "message" => "code: " . (string) ($response->statusCode) . ", " . (string) (@$err["ErrorMessage"]) . " request id: " . (string) (@$_headers["x-fc-request-id"]) . "",
-                "data" => $err
-            ]);
+            if (StringUtil::hasPrefix($config->endpoint, "fc.") && StringUtil::hasSuffix($config->endpoint, ".aliyuncs.com")) {
+                $popRes = Utils::readAsJSON($response->body);
+                $popErr = Utils::assertAsMap($popRes);
+                throw new TeaError([
+                    "code" => "" . (string) ($this->defaultAny(@$popErr["Code"], @$popErr["code"])) . "",
+                    "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$popErr["Message"], @$popErr["message"])) . " request id: " . (string) ($this->defaultAny(@$popErr["RequestId"], @$popErr["requestId"])) . "",
+                    "data" => $popErr
+                ]);
+            }
+            else {
+                $_headers = Utils::assertAsMap($response->headers);
+                $fcRes = Utils::readAsJSON($response->body);
+                $fcErr = Utils::assertAsMap($fcRes);
+                throw new TeaError([
+                    "code" => @$fcErr["ErrorCode"],
+                    "message" => "code: " . (string) ($response->statusCode) . ", " . (string) (@$fcErr["ErrorMessage"]) . " request id: " . (string) (@$_headers["x-fc-request-id"]) . "",
+                    "data" => $fcErr
+                ]);
+            }
         }
         if (Utils::equalString($request->bodyType, "binary")) {
             $response->deserializedBody = $response->body;
@@ -376,13 +387,15 @@ class Client extends DarabonbaGatewaySpiClient {
      * @return string
      */
     public function buildCanonicalizedResourceForPop($query){
-        $queryArray = MapUtil::keySet($query);
-        $sortedQueryArray = ArrayUtil::ascSort($queryArray);
         $canonicalizedResource = "";
-        foreach($sortedQueryArray as $key){
-            $canonicalizedResource = "" . $canonicalizedResource . "&" . Encoder::percentEncode($key) . "";
-            if (!Utils::empty_(@$query[$key])) {
-                $canonicalizedResource = "" . $canonicalizedResource . "=" . Encoder::percentEncode(@$query[$key]) . "";
+        if (!Utils::isUnset($query)) {
+            $queryArray = MapUtil::keySet($query);
+            $sortedQueryArray = ArrayUtil::ascSort($queryArray);
+            foreach($sortedQueryArray as $key){
+                $canonicalizedResource = "" . $canonicalizedResource . "&" . Encoder::percentEncode($key) . "";
+                if (!Utils::empty_(@$query[$key])) {
+                    $canonicalizedResource = "" . $canonicalizedResource . "=" . Encoder::percentEncode(@$query[$key]) . "";
+                }
             }
         }
         return $canonicalizedResource;

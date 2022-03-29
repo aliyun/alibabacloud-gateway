@@ -42,14 +42,25 @@ public class Client extends com.aliyun.gateway.spi.Client {
         InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         InterceptorContext.InterceptorContextResponse response = context.response;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
-            java.util.Map<String, Object> _headers = com.aliyun.teautil.Common.assertAsMap(response.headers);
-            Object _res = com.aliyun.teautil.Common.readAsJSON(response.body);
-            java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(_res);
-            throw new TeaException(TeaConverter.buildMap(
-                new TeaPair("code", err.get("ErrorCode")),
-                new TeaPair("message", "code: " + response.statusCode + ", " + err.get("ErrorMessage") + " request id: " + _headers.get("x-fc-request-id") + ""),
-                new TeaPair("data", err)
-            ));
+            if (com.aliyun.darabonbastring.Client.hasPrefix(config.endpoint, "fc.") && com.aliyun.darabonbastring.Client.hasSuffix(config.endpoint, ".aliyuncs.com")) {
+                Object popRes = com.aliyun.teautil.Common.readAsJSON(response.body);
+                java.util.Map<String, Object> popErr = com.aliyun.teautil.Common.assertAsMap(popRes);
+                throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", "" + this.defaultAny(popErr.get("Code"), popErr.get("code")) + ""),
+                    new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(popErr.get("Message"), popErr.get("message")) + " request id: " + this.defaultAny(popErr.get("RequestId"), popErr.get("requestId")) + ""),
+                    new TeaPair("data", popErr)
+                ));
+            } else {
+                java.util.Map<String, Object> _headers = com.aliyun.teautil.Common.assertAsMap(response.headers);
+                Object fcRes = com.aliyun.teautil.Common.readAsJSON(response.body);
+                java.util.Map<String, Object> fcErr = com.aliyun.teautil.Common.assertAsMap(fcRes);
+                throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", fcErr.get("ErrorCode")),
+                    new TeaPair("message", "code: " + response.statusCode + ", " + fcErr.get("ErrorMessage") + " request id: " + _headers.get("x-fc-request-id") + ""),
+                    new TeaPair("data", fcErr)
+                ));
+            }
+
         }
 
         if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
@@ -303,16 +314,19 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String buildCanonicalizedResourceForPop(java.util.Map<String, String> query) throws Exception {
-        java.util.List<String> queryArray = com.aliyun.darabonba.map.Client.keySet(query);
-        java.util.List<String> sortedQueryArray = com.aliyun.darabonba.array.Client.ascSort(queryArray);
         String canonicalizedResource = "";
-        for (String key : sortedQueryArray) {
-            canonicalizedResource = "" + canonicalizedResource + "&" + com.aliyun.darabonba.encode.Encoder.percentEncode(key) + "";
-            if (!com.aliyun.teautil.Common.empty(query.get(key))) {
-                canonicalizedResource = "" + canonicalizedResource + "=" + com.aliyun.darabonba.encode.Encoder.percentEncode(query.get(key)) + "";
-            }
+        if (!com.aliyun.teautil.Common.isUnset(query)) {
+            java.util.List<String> queryArray = com.aliyun.darabonba.map.Client.keySet(query);
+            java.util.List<String> sortedQueryArray = com.aliyun.darabonba.array.Client.ascSort(queryArray);
+            for (String key : sortedQueryArray) {
+                canonicalizedResource = "" + canonicalizedResource + "&" + com.aliyun.darabonba.encode.Encoder.percentEncode(key) + "";
+                if (!com.aliyun.teautil.Common.empty(query.get(key))) {
+                    canonicalizedResource = "" + canonicalizedResource + "=" + com.aliyun.darabonba.encode.Encoder.percentEncode(query.get(key)) + "";
+                }
 
+            }
         }
+
         return canonicalizedResource;
     }
 

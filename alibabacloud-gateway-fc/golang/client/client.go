@@ -68,19 +68,35 @@ func (client *Client) ModifyResponse (context *spi.InterceptorContext, attribute
   config := context.Configuration
   response := context.Response
   if tea.BoolValue(util.Is4xx(response.StatusCode)) || tea.BoolValue(util.Is5xx(response.StatusCode)) {
-    _headers := util.AssertAsMap(response.Headers)
-    _res, _err := util.ReadAsJSON(response.Body)
-    if _err != nil {
+    if tea.BoolValue(string_.HasPrefix(config.Endpoint, tea.String("fc."))) && tea.BoolValue(string_.HasSuffix(config.Endpoint, tea.String(".aliyuncs.com"))) {
+      popRes, _err := util.ReadAsJSON(response.Body)
+      if _err != nil {
+        return _err
+      }
+
+      popErr := util.AssertAsMap(popRes)
+      _err = tea.NewSDKError(map[string]interface{}{
+        "code": tea.ToString(client.DefaultAny(popErr["Code"], popErr["code"])),
+        "message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(popErr["Message"], popErr["message"])) + " request id: " + tea.ToString(client.DefaultAny(popErr["RequestId"], popErr["requestId"])),
+        "data": popErr,
+      })
+      return _err
+    } else {
+      _headers := util.AssertAsMap(response.Headers)
+      fcRes, _err := util.ReadAsJSON(response.Body)
+      if _err != nil {
+        return _err
+      }
+
+      fcErr := util.AssertAsMap(fcRes)
+      _err = tea.NewSDKError(map[string]interface{}{
+        "code": fcErr["ErrorCode"],
+        "message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(fcErr["ErrorMessage"]) + " request id: " + tea.ToString(_headers["x-fc-request-id"]),
+        "data": fcErr,
+      })
       return _err
     }
 
-    err := util.AssertAsMap(_res)
-    _err = tea.NewSDKError(map[string]interface{}{
-      "code": err["ErrorCode"],
-      "message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(err["ErrorMessage"]) + " request id: " + tea.ToString(_headers["x-fc-request-id"]),
-      "data": err,
-    })
-    return _err
   }
 
   if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
@@ -437,16 +453,19 @@ func (client *Client) GetSignatureForPop (pathname *string, method *string, quer
 }
 
 func (client *Client) BuildCanonicalizedResourceForPop (query map[string]*string) (_result *string, _err error) {
-  queryArray := map.KeySet(query)
-  sortedQueryArray := array.AscSort(queryArray)
   canonicalizedResource := tea.String("")
-  for _, key := range sortedQueryArray {
-    canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "&" + tea.StringValue(encodeutil.PercentEncode(key)))
-    if !tea.BoolValue(util.Empty(query[tea.StringValue(key)])) {
-      canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(encodeutil.PercentEncode(query[tea.StringValue(key)])))
-    }
+  if !tea.BoolValue(util.IsUnset(query)) {
+    queryArray := map.KeySet(query)
+    sortedQueryArray := array.AscSort(queryArray)
+    for _, key := range sortedQueryArray {
+      canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "&" + tea.StringValue(encodeutil.PercentEncode(key)))
+      if !tea.BoolValue(util.Empty(query[tea.StringValue(key)])) {
+        canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(encodeutil.PercentEncode(query[tea.StringValue(key)])))
+      }
 
+    }
   }
+
   _result = canonicalizedResource
   return _result , _err
 }

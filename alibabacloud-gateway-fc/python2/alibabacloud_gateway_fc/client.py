@@ -38,14 +38,23 @@ class Client(SPIClient):
         config = context.configuration
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
-            _headers = UtilClient.assert_as_map(response.headers)
-            _res = UtilClient.read_as_json(response.body)
-            err = UtilClient.assert_as_map(_res)
-            raise TeaException({
-                'code': err.get('ErrorCode'),
-                'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(err.get('ErrorMessage')), TeaConverter.to_unicode(_headers.get('x-fc-request-id'))),
-                'data': err
-            })
+            if StringClient.has_prefix(config.endpoint, 'fc.') and StringClient.has_suffix(config.endpoint, '.aliyuncs.com'):
+                pop_res = UtilClient.read_as_json(response.body)
+                pop_err = UtilClient.assert_as_map(pop_res)
+                raise TeaException({
+                    'code': '%s' % TeaConverter.to_unicode(self.default_any(pop_err.get('Code'), pop_err.get('code'))),
+                    'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(pop_err.get('Message'), pop_err.get('message'))), TeaConverter.to_unicode(self.default_any(pop_err.get('RequestId'), pop_err.get('requestId')))),
+                    'data': pop_err
+                })
+            else:
+                _headers = UtilClient.assert_as_map(response.headers)
+                fc_res = UtilClient.read_as_json(response.body)
+                fc_err = UtilClient.assert_as_map(fc_res)
+                raise TeaException({
+                    'code': fc_err.get('ErrorCode'),
+                    'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(fc_err.get('ErrorMessage')), TeaConverter.to_unicode(_headers.get('x-fc-request-id'))),
+                    'data': fc_err
+                })
         if UtilClient.equal_string(request.body_type, 'binary'):
             response.deserialized_body = response.body
         elif UtilClient.equal_string(request.body_type, 'byte'):
@@ -232,13 +241,14 @@ class Client(SPIClient):
         return Encoder.hex_encode(signature)
 
     def build_canonicalized_resource_for_pop(self, query):
-        query_array = MapClient.key_set(query)
-        sorted_query_array = ArrayClient.asc_sort(query_array)
         canonicalized_resource = ''
-        for key in sorted_query_array:
-            canonicalized_resource = '%s&%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(key)))
-            if not UtilClient.empty(query.get(key)):
-                canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(query.get(key))))
+        if not UtilClient.is_unset(query):
+            query_array = MapClient.key_set(query)
+            sorted_query_array = ArrayClient.asc_sort(query_array)
+            for key in sorted_query_array:
+                canonicalized_resource = '%s&%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(key)))
+                if not UtilClient.empty(query.get(key)):
+                    canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(query.get(key))))
         return canonicalized_resource
 
     def build_canonicalized_headers_for_pop(self, headers):
