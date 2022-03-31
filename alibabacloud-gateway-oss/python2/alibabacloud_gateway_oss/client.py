@@ -24,7 +24,7 @@ class Client(SPIClient):
 
     def __init__(self):
         super(Client, self).__init__()
-        self._default_signed_params = [
+        undefined._default_signed_params = [
             'location',
             'cors',
             'objectMeta',
@@ -66,8 +66,9 @@ class Client(SPIClient):
             'versioning',
             'versionId'
         ]
-        self._except_signed_params = [
-            'list-type'
+        undefined._except_signed_params = [
+            'list-type',
+            'regions'
         ]
 
     def modify_configuration(self, context, attribute_map):
@@ -77,7 +78,7 @@ class Client(SPIClient):
     def modify_request(self, context, attribute_map):
         request = context.request
         host_map = {}
-        if UtilClient.is_unset(request.host_map):
+        if not UtilClient.is_unset(request.host_map):
             host_map = request.host_map
         bucket_name = host_map.get('bucket')
         if UtilClient.is_unset(bucket_name):
@@ -105,8 +106,9 @@ class Client(SPIClient):
             elif StringClient.equals(request.req_body_type, 'binary'):
                 request.stream = OSSUtilClient.inject(request.stream, attribute_map.key)
                 request.headers['content-type'] = 'application/octet-stream'
+        host = self.get_host(config.endpoint_type, bucket_name, config.endpoint)
         request.headers = TeaCore.merge({
-            'host': self.get_host(config.endpoint_type, bucket_name, config.endpoint),
+            'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
@@ -198,10 +200,13 @@ class Client(SPIClient):
         return host
 
     def get_authorization(self, signature_version, bucket_name, pathname, method, query, headers, ak, secret):
+        sign = ''
         if UtilClient.is_unset(signature_version) or StringClient.equals(signature_version, 'v1'):
-            return 'OSS %s:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)))
+            sign = self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)
+            return 'OSS %s:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
         else:
-            return 'OSS2 AccessKeyId:%s,Signature:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)))
+            sign = self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)
+            return 'OSS2 AccessKeyId:%s,Signature:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
 
     def get_signature_v1(self, bucket_name, pathname, method, query, headers, secret):
         resource = ''

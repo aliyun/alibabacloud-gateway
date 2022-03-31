@@ -64,7 +64,8 @@ namespace AlibabaCloud.GatewayOss
             };
             this._except_signed_params = new List<string>
             {
-                "list-type"
+                "list-type",
+                "regions"
             };
         }
 
@@ -85,7 +86,7 @@ namespace AlibabaCloud.GatewayOss
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
             {
                 hostMap = request.HostMap;
             }
@@ -129,11 +130,12 @@ namespace AlibabaCloud.GatewayOss
                     request.Headers["content-type"] = "application/octet-stream";
                 }
             }
+            string host = GetHost(config.EndpointType, bucketName, config.Endpoint);
             request.Headers = TeaConverter.merge<string>
             (
                 new Dictionary<string, string>()
                 {
-                    {"host", GetHost(config.EndpointType, bucketName, config.Endpoint)},
+                    {"host", host},
                     {"date", AlibabaCloud.TeaUtil.Common.GetDateUTCString()},
                     {"user-agent", request.UserAgent},
                 },
@@ -146,7 +148,7 @@ namespace AlibabaCloud.GatewayOss
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
             {
                 hostMap = request.HostMap;
             }
@@ -190,11 +192,12 @@ namespace AlibabaCloud.GatewayOss
                     request.Headers["content-type"] = "application/octet-stream";
                 }
             }
+            string host = await GetHostAsync(config.EndpointType, bucketName, config.Endpoint);
             request.Headers = TeaConverter.merge<string>
             (
                 new Dictionary<string, string>()
                 {
-                    {"host", await GetHostAsync(config.EndpointType, bucketName, config.Endpoint)},
+                    {"host", host},
                     {"date", AlibabaCloud.TeaUtil.Common.GetDateUTCString()},
                     {"user-agent", request.UserAgent},
                 },
@@ -495,25 +498,31 @@ namespace AlibabaCloud.GatewayOss
 
         public string GetAuthorization(string signatureVersion, string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret)
         {
+            string sign = "";
             if (AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion) || AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v1"))
             {
-                return "OSS " + ak + ":" + GetSignatureV1(bucketName, pathname, method, query, headers, secret);
+                sign = GetSignatureV1(bucketName, pathname, method, query, headers, secret);
+                return "OSS " + ak + ":" + sign;
             }
             else
             {
-                return "OSS2 AccessKeyId:" + ak + ",Signature:" + GetSignatureV2(bucketName, pathname, method, query, headers, secret);
+                sign = GetSignatureV2(bucketName, pathname, method, query, headers, secret);
+                return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign;
             }
         }
 
         public async Task<string> GetAuthorizationAsync(string signatureVersion, string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret)
         {
+            string sign = "";
             if (AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion) || AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v1"))
             {
-                return "OSS " + ak + ":" + await GetSignatureV1Async(bucketName, pathname, method, query, headers, secret);
+                sign = await GetSignatureV1Async(bucketName, pathname, method, query, headers, secret);
+                return "OSS " + ak + ":" + sign;
             }
             else
             {
-                return "OSS2 AccessKeyId:" + ak + ",Signature:" + await GetSignatureV2Async(bucketName, pathname, method, query, headers, secret);
+                sign = await GetSignatureV2Async(bucketName, pathname, method, query, headers, secret);
+                return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign;
             }
         }
 

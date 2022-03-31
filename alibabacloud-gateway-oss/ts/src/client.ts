@@ -62,7 +62,8 @@ export default class Client extends SPI {
       "versionId"
     ];
     this._except_signed_params = [
-      "list-type"
+      "list-type",
+      "regions"
     ];
   }
 
@@ -75,7 +76,7 @@ export default class Client extends SPI {
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let hostMap : {[key: string ]: string} = { };
-    if (Util.isUnset(request.hostMap)) {
+    if (!Util.isUnset(request.hostMap)) {
       hostMap = request.hostMap;
     }
 
@@ -113,8 +114,9 @@ export default class Client extends SPI {
 
     }
 
+    let host = await this.getHost(config.endpointType, bucketName, config.endpoint);
     request.headers = {
-      host: await this.getHost(config.endpointType, bucketName, config.endpoint),
+      host: host,
       date: Util.getDateUTCString(),
       'user-agent': request.userAgent,
       ...request.headers,
@@ -239,10 +241,13 @@ export default class Client extends SPI {
   }
 
   async getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, ak: string, secret: string): Promise<string> {
+    let sign : string = "";
     if (Util.isUnset(signatureVersion) || String.equals(signatureVersion, "v1")) {
-      return `OSS ${ak}:${await this.getSignatureV1(bucketName, pathname, method, query, headers, secret)}`;
+      sign = await this.getSignatureV1(bucketName, pathname, method, query, headers, secret);
+      return `OSS ${ak}:${sign}`;
     } else {
-      return `OSS2 AccessKeyId:${ak},Signature:${await this.getSignatureV2(bucketName, pathname, method, query, headers, secret)}`;
+      sign = await this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
+      return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
     }
 
   }

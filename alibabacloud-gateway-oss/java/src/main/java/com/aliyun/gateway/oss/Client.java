@@ -64,7 +64,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
             "versionId"
         );
         this._except_signed_params = java.util.Arrays.asList(
-            "list-type"
+            "list-type",
+            "regions"
         );
     }
 
@@ -77,7 +78,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
         java.util.Map<String, String> hostMap = new java.util.HashMap<>();
-        if (com.aliyun.teautil.Common.isUnset(request.hostMap)) {
+        if (!com.aliyun.teautil.Common.isUnset(request.hostMap)) {
             hostMap = request.hostMap;
         }
 
@@ -115,9 +116,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
+        String host = this.getHost(config.endpointType, bucketName, config.endpoint);
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
-                new TeaPair("host", this.getHost(config.endpointType, bucketName, config.endpoint)),
+                new TeaPair("host", host),
                 new TeaPair("date", com.aliyun.teautil.Common.getDateUTCString()),
                 new TeaPair("user-agent", request.userAgent)
             ),
@@ -243,10 +245,13 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getAuthorization(String signatureVersion, String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String ak, String secret) throws Exception {
+        String sign = "";
         if (com.aliyun.teautil.Common.isUnset(signatureVersion) || com.aliyun.darabonbastring.Client.equals(signatureVersion, "v1")) {
-            return "OSS " + ak + ":" + this.getSignatureV1(bucketName, pathname, method, query, headers, secret) + "";
+            sign = this.getSignatureV1(bucketName, pathname, method, query, headers, secret);
+            return "OSS " + ak + ":" + sign + "";
         } else {
-            return "OSS2 AccessKeyId:" + ak + ",Signature:" + this.getSignatureV2(bucketName, pathname, method, query, headers, secret) + "";
+            sign = this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
+            return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign + "";
         }
 
     }

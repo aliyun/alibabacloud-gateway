@@ -69,7 +69,8 @@ class Client extends DarabonbaGatewaySpiClient {
             "versionId"
         ];
         $this->_except_signed_params = [
-            "list-type"
+            "list-type",
+            "regions"
         ];
     }
 
@@ -91,7 +92,7 @@ class Client extends DarabonbaGatewaySpiClient {
     public function modifyRequest($context, $attributeMap){
         $request = $context->request;
         $hostMap = [];
-        if (Utils::isUnset($request->hostMap)) {
+        if (!Utils::isUnset($request->hostMap)) {
             $hostMap = $request->hostMap;
         }
         $bucketName = @$hostMap["bucket"];
@@ -127,8 +128,9 @@ class Client extends DarabonbaGatewaySpiClient {
                 $request->headers["content-type"] = "application/octet-stream";
             }
         }
+        $host = $this->getHost($config->endpointType, $bucketName, $config->endpoint);
         $request->headers = Tea::merge([
-            "host" => $this->getHost($config->endpointType, $bucketName, $config->endpoint),
+            "host" => $host,
             "date" => Utils::getDateUTCString(),
             "user-agent" => $request->userAgent
         ], $request->headers);
@@ -277,11 +279,14 @@ class Client extends DarabonbaGatewaySpiClient {
      * @return string
      */
     public function getAuthorization($signatureVersion, $bucketName, $pathname, $method, $query, $headers, $ak, $secret){
+        $sign = "";
         if (Utils::isUnset($signatureVersion) || StringUtil::equals($signatureVersion, "v1")) {
-            return "OSS " . $ak . ":" . $this->getSignatureV1($bucketName, $pathname, $method, $query, $headers, $secret) . "";
+            $sign = $this->getSignatureV1($bucketName, $pathname, $method, $query, $headers, $secret);
+            return "OSS " . $ak . ":" . $sign . "";
         }
         else {
-            return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret) . "";
+            $sign = $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret);
+            return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $sign . "";
         }
     }
 

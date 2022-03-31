@@ -23,7 +23,7 @@ class Client(SPIClient):
 
     def __init__(self):
         super().__init__()
-        self._default_signed_params = [
+        undefined._default_signed_params = [
             'location',
             'cors',
             'objectMeta',
@@ -65,8 +65,9 @@ class Client(SPIClient):
             'versioning',
             'versionId'
         ]
-        self._except_signed_params = [
-            'list-type'
+        undefined._except_signed_params = [
+            'list-type',
+            'regions'
         ]
 
     def modify_configuration(
@@ -92,7 +93,7 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         host_map = {}
-        if UtilClient.is_unset(request.host_map):
+        if not UtilClient.is_unset(request.host_map):
             host_map = request.host_map
         bucket_name = host_map.get('bucket')
         if UtilClient.is_unset(bucket_name):
@@ -120,8 +121,9 @@ class Client(SPIClient):
             elif StringClient.equals(request.req_body_type, 'binary'):
                 request.stream = OSSUtilClient.inject(request.stream, attribute_map.key)
                 request.headers['content-type'] = 'application/octet-stream'
+        host = self.get_host(config.endpoint_type, bucket_name, config.endpoint)
         request.headers = TeaCore.merge({
-            'host': self.get_host(config.endpoint_type, bucket_name, config.endpoint),
+            'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
@@ -134,7 +136,7 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         host_map = {}
-        if UtilClient.is_unset(request.host_map):
+        if not UtilClient.is_unset(request.host_map):
             host_map = request.host_map
         bucket_name = host_map.get('bucket')
         if UtilClient.is_unset(bucket_name):
@@ -162,8 +164,9 @@ class Client(SPIClient):
             elif StringClient.equals(request.req_body_type, 'binary'):
                 request.stream = OSSUtilClient.inject(request.stream, attribute_map.key)
                 request.headers['content-type'] = 'application/octet-stream'
+        host = await self.get_host_async(config.endpoint_type, bucket_name, config.endpoint)
         request.headers = TeaCore.merge({
-            'host': await self.get_host_async(config.endpoint_type, bucket_name, config.endpoint),
+            'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
@@ -378,10 +381,13 @@ class Client(SPIClient):
         ak: str,
         secret: str,
     ) -> str:
+        sign = ''
         if UtilClient.is_unset(signature_version) or StringClient.equals(signature_version, 'v1'):
-            return f'OSS {ak}:{self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)}'
+            sign = self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)
+            return f'OSS {ak}:{sign}'
         else:
-            return f'OSS2 AccessKeyId:{ak},Signature:{self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)}'
+            sign = self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)
+            return f'OSS2 AccessKeyId:{ak},Signature:{sign}'
 
     async def get_authorization_async(
         self,
@@ -394,10 +400,13 @@ class Client(SPIClient):
         ak: str,
         secret: str,
     ) -> str:
+        sign = ''
         if UtilClient.is_unset(signature_version) or StringClient.equals(signature_version, 'v1'):
-            return f'OSS {ak}:{self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)}'
+            sign = await self.get_signature_v1_async(bucket_name, pathname, method, query, headers, secret)
+            return f'OSS {ak}:{sign}'
         else:
-            return f'OSS2 AccessKeyId:{ak},Signature:{self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)}'
+            sign = await self.get_signature_v2_async(bucket_name, pathname, method, query, headers, secret)
+            return f'OSS2 AccessKeyId:{ak},Signature:{sign}'
 
     def get_signature_v1(
         self,

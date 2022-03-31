@@ -42,9 +42,9 @@
     </PackageReference>
     <PackageReference Include="AlibabaCloud.GatewaySpi" Version="0.0.1"/>
     <PackageReference Include="Aliyun.Credentials" Version="1.3.1"/>
-    <PackageReference Include="AlibabaCloud.TeaUtil" Version="0.1.12"/>
+    <PackageReference Include="AlibabaCloud.TeaUtil" Version="0.1.13"/>
     <PackageReference Include="AlibabaCloud.OSSUtil" Version="0.0.3"/>
-    <PackageReference Include="AlibabaCloud.OpenApiUtil" Version="1.0.13"/>
+    <PackageReference Include="AlibabaCloud.OpenApiUtil" Version="1.0.14"/>
     <PackageReference Include="AlibabaCloud.TeaXML" Version="0.0.3"/>
     <PackageReference Include="AlibabaCloud.DarabonbaString" Version="1.0.3"/>
     <PackageReference Include="AlibabaCloud.DarabonbaMap" Version="0.0.2"/>

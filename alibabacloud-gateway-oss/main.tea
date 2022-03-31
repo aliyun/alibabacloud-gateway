@@ -30,7 +30,7 @@ init(){
   'udfId', 'udfImageDesc', 'udfApplication',
   'udfApplicationLog', 'restore', 'callback', 'callback-var',
   'policy', 'encryption', 'versions', 'versioning', 'versionId'];
-  @except_signed_params = ['list-type'];
+  @except_signed_params = ['list-type', 'regions'];
 }
 
 async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
@@ -41,7 +41,7 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
 async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var hostMap : map[string]string = {};
-  if (Util.isUnset(request.hostMap)) {
+  if (!Util.isUnset(request.hostMap)) {
     hostMap = request.hostMap;
   }
   var bucketName = hostMap.bucket;
@@ -74,8 +74,9 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       request.headers.content-type = 'application/octet-stream';
     }
   }
+  var host = getHost(config.endpointType, bucketName, config.endpoint);
   request.headers = {
-    host = getHost(config.endpointType, bucketName, config.endpoint),
+    host = host,
     date = Util.getDateUTCString(),
     user-agent = request.userAgent,
     ...request.headers
@@ -190,10 +191,13 @@ async function getHost(endpointType: string, bucketName: string, endpoint: strin
 }
 
 async function getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string): string {
+  var sign : string = '';
   if (Util.isUnset(signatureVersion) || String.equals(signatureVersion, 'v1')) {
-    return `OSS ${ak}:${getSignatureV1(bucketName, pathname, method, query, headers, secret)}`;
+    sign = getSignatureV1(bucketName, pathname, method, query, headers, secret);
+    return `OSS ${ak}:${sign}`;
   } else {
-    return `OSS2 AccessKeyId:${ak},Signature:${getSignatureV2(bucketName, pathname, method, query, headers, secret)}`;
+    sign = getSignatureV2(bucketName, pathname, method, query, headers, secret);
+    return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
   }
 }
 
