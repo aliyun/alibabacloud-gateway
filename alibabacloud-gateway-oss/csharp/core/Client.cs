@@ -611,7 +611,7 @@ namespace AlibabaCloud.GatewayOss
                     List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
 
                     foreach (var sub in subResources) {
-                        bool? hasExcepts = false;
+                        bool hasExcepts = false;
 
                         foreach (var excepts in _except_signed_params) {
                             if (AlibabaCloud.DarabonbaString.StringUtil.Contains(sub, excepts))
@@ -682,7 +682,7 @@ namespace AlibabaCloud.GatewayOss
                     List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
 
                     foreach (var sub in subResources) {
-                        bool? hasExcepts = false;
+                        bool hasExcepts = false;
 
                         foreach (var excepts in _except_signed_params) {
                             if (AlibabaCloud.DarabonbaString.StringUtil.Contains(sub, excepts))
