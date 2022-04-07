@@ -13,6 +13,7 @@ use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Darabonba\Map\MapUtil;
 use AlibabaCloud\Darabonba\Array_\ArrayUtil;
+use \Exception;
 use AlibabaCloud\Darabonba\SignatureUtil\Signer;
 use AlibabaCloud\Darabonba\EncodeUtil\Encoder;
 
@@ -150,6 +151,11 @@ class Client extends DarabonbaGatewaySpiClient {
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $bodyStr = Utils::readAsString($response->body);
             $respMap = XML::parseXml($bodyStr, null);
+            $errors = MapUtil::keySet($respMap);
+            if (Utils::equalNumber(ArrayUtil::size($errors), 1)) {
+                $error = @$errors[0];
+                $respMap = Utils::assertAsMap(@$respMap[$error]);
+            }
             throw new TeaError([
                 "code" => @$respMap["Code"],
                 "message" => @$respMap["Message"],
@@ -188,7 +194,15 @@ class Client extends DarabonbaGatewaySpiClient {
                 $list = MapUtil::keySet($result);
                 if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
                     $tmp = @$list_[0];
-                    $response->deserializedBody = @$result[$tmp];
+                    try {
+                        $response->deserializedBody = Utils::assertAsMap(@$result[$tmp]);
+                    }
+                    catch (Exception $error) {
+                        if (!($error instanceof TeaError)) {
+                            $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+                        }
+                        $response->deserializedBody = $result;
+                    }
                 }
                 else {
                     $response->deserializedBody = $result;
@@ -326,16 +340,20 @@ class Client extends DarabonbaGatewaySpiClient {
             if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
                 $subResources = StringUtil::split(@$paths[1], "&", 0);
                 foreach($subResources as $sub){
+                    $hasExcepts = false;
                     foreach($this->_except_signed_params as $excepts){
-                        if (!StringUtil::contains($sub, $excepts)) {
-                            $item = StringUtil::split($sub, "&", 2);
-                            $key = @$item[0];
-                            $value = null;
-                            if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
-                                $value = @$item[1];
-                            }
-                            $subResourcesMap[$key] = $value;
+                        if (StringUtil::contains($sub, $excepts)) {
+                            $hasExcepts = true;
                         }
+                    }
+                    if (!$hasExcepts) {
+                        $item = StringUtil::split($sub, "=", 0);
+                        $key = @$item[0];
+                        $value = null;
+                        if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
+                            $value = @$item[1];
+                        }
+                        $subResourcesMap[$key] = $value;
                     }
                 }
             }
@@ -351,8 +369,11 @@ class Client extends DarabonbaGatewaySpiClient {
         foreach($sortedParams as $paramName){
             if (ArrayUtil::contains($this->_default_signed_params, $paramName)) {
                 $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
-                if (!Utils::isUnset(@$query[$paramName])) {
+                if (!Utils::isUnset($query) && !Utils::isUnset(@$query[$paramName])) {
                     $canonicalizedResource = "" . $canonicalizedResource . "=" . @$query[$paramName] . "";
+                }
+                else if (!Utils::isUnset(@$subResourcesMap[$paramName])) {
+                    $canonicalizedResource = "" . $canonicalizedResource . "=" . @$subResourcesMap[$paramName] . "";
                 }
             }
             else if (ArrayUtil::contains($subResourcesArray, $paramName)) {

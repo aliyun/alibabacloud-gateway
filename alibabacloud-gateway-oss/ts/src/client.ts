@@ -131,6 +131,12 @@ export default class Client extends SPI {
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       bodyStr = await Util.readAsString(response.body);
       let respMap : {[key: string ]: any} = XML.parseXml(bodyStr, null);
+      let errors : string[] = Map.keySet(respMap);
+      if (Util.equalNumber(Array.size(errors), 1)) {
+        let error = errors[0];
+        respMap = Util.assertAsMap(respMap[error]);
+      }
+
       throw $tea.newError({
         code: respMap["Code"],
         message: respMap["Message"],
@@ -173,7 +179,11 @@ export default class Client extends SPI {
         let list : string[] = Map.keySet(result);
         if (Util.equalNumber(Array.size(list), 1)) {
           let tmp = list[0];
-          response.deserializedBody = result[tmp];
+          try {
+            response.deserializedBody = Util.assertAsMap(result[tmp]);
+          } catch (error) {
+            response.deserializedBody = result;
+          }          
         } else {
           response.deserializedBody = result;
         }
@@ -276,20 +286,25 @@ export default class Client extends SPI {
         let subResources : string[] = String.split(paths[1], "&", 0);
 
         for (let sub of subResources) {
+          let hasExcepts : boolean = false;
 
           for (let excepts of this._except_signed_params) {
-            if (!String.contains(sub, excepts)) {
-              let item : string[] = String.split(sub, "&", 2);
-              let key : string = item[0];
-              let value : string = null;
-              if (Util.equalNumber(Array.size(item), 2)) {
-                value = item[1];
-              }
-
-              subResourcesMap[key] = value;
+            if (String.contains(sub, excepts)) {
+              hasExcepts = true;
             }
 
           }
+          if (!hasExcepts) {
+            let item : string[] = String.split(sub, "=", 0);
+            let key : string = item[0];
+            let value : string = null;
+            if (Util.equalNumber(Array.size(item), 2)) {
+              value = item[1];
+            }
+
+            subResourcesMap[key] = value;
+          }
+
         }
       }
 
@@ -308,8 +323,10 @@ export default class Client extends SPI {
     for (let paramName of sortedParams) {
       if (Array.contains(this._default_signed_params, paramName)) {
         canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-        if (!Util.isUnset(query[paramName])) {
+        if (!Util.isUnset(query) && !Util.isUnset(query[paramName])) {
           canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
+        } else if (!Util.isUnset(subResourcesMap[paramName])) {
+          canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
         }
 
       } else if (Array.contains(subResourcesArray, paramName)) {

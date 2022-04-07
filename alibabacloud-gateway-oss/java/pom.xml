@@ -104,7 +104,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>darabonba-signature-util</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3</version>
     </dependency>
   </dependencies>
   <build>

@@ -91,6 +91,11 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
   if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
     bodyStr = Util.readAsString(response.body);
     var respMap : map[string]any = XML.parseXml(bodyStr, null);
+    var errors : [string] = Map.keySet(respMap);
+    if (Util.equalNumber(Array.size(errors), 1)) {
+      var error = errors[0];
+      respMap = Util.assertAsMap(respMap[error]);
+    }
     throw {
       code = respMap.Code,
       message = respMap.Message,
@@ -133,7 +138,11 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       var list : [string] = Map.keySet(result);
       if (Util.equalNumber(Array.size(list), 1)) {
         var tmp = list[0];
-        response.deserializedBody = result[tmp];
+        try {
+          response.deserializedBody = Util.assertAsMap(result[tmp]);
+        } catch (error) {
+          response.deserializedBody = result;
+        }
       } else {
         response.deserializedBody = result;
       }
@@ -223,16 +232,20 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
     if (Util.equalNumber(Array.size(paths), 2)) {
       var subResources : [string] = String.split(paths[1], '&', 0);
       for (var sub : subResources) {
+        var hasExcepts : boolean = false;
         for (var excepts : @except_signed_params) {
-          if (!String.contains(sub, excepts)) {
-            var item : [string] = String.split(sub, '&', 2);
-            var key : string = item[0];
-            var value : string = null;
-            if (Util.equalNumber(Array.size(item), 2)) {
-              value = item[1];
-            }
-            subResourcesMap[key] = value;
+          if (String.contains(sub, excepts)) {
+            hasExcepts = true;
           }
+        }
+        if (!hasExcepts) {
+          var item : [string] = String.split(sub, '=', 0);
+          var key : string = item[0];
+          var value : string = null;
+          if (Util.equalNumber(Array.size(item), 2)) {
+            value = item[1];
+          }
+          subResourcesMap[key] = value;
         }
       }
     }
@@ -248,8 +261,10 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
   for(var paramName : sortedParams) {
     if (Array.contains(@default_signed_params, paramName)) {
       canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-      if (!Util.isUnset(query[paramName])) {
+      if (!Util.isUnset(query) && !Util.isUnset(query[paramName])) {
         canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
+      } else if (!Util.isUnset(subResourcesMap[paramName])) {
+        canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
       }
     } else if (Array.contains(subResourcesArray, paramName)) {
       canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;

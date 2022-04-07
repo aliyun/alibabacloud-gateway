@@ -121,6 +121,10 @@ class Client(SPIClient):
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             body_str = UtilClient.read_as_string(response.body)
             resp_map = XMLClient.parse_xml(body_str, None)
+            errors = MapClient.key_set(resp_map)
+            if UtilClient.equal_number(ArrayClient.size(errors), 1):
+                error = errors[0]
+                resp_map = UtilClient.assert_as_map(resp_map.get(error))
             raise TeaException({
                 'code': resp_map.get('Code'),
                 'message': resp_map.get('Message'),
@@ -155,7 +159,10 @@ class Client(SPIClient):
                 list = MapClient.key_set(result)
                 if UtilClient.equal_number(ArrayClient.size(list), 1):
                     tmp = list[0]
-                    response.deserialized_body = result.get(tmp)
+                    try:
+                        response.deserialized_body = UtilClient.assert_as_map(result.get(tmp))
+                    except Exception as error:
+                        response.deserialized_body = result
                 else:
                     response.deserialized_body = result
             elif UtilClient.equal_string(request.body_type, 'binary'):
@@ -228,14 +235,17 @@ class Client(SPIClient):
             if UtilClient.equal_number(ArrayClient.size(paths), 2):
                 sub_resources = StringClient.split(paths[1], '&', 0)
                 for sub in sub_resources:
+                    has_excepts = False
                     for excepts in self._except_signed_params:
-                        if not StringClient.contains(sub, excepts):
-                            item = StringClient.split(sub, '&', 2)
-                            key = item[0]
-                            value = None
-                            if UtilClient.equal_number(ArrayClient.size(item), 2):
-                                value = item[1]
-                            sub_resources_map[key] = value
+                        if StringClient.contains(sub, excepts):
+                            has_excepts = True
+                    if not has_excepts:
+                        item = StringClient.split(sub, '=', 0)
+                        key = item[0]
+                        value = None
+                        if UtilClient.equal_number(ArrayClient.size(item), 2):
+                            value = item[1]
+                        sub_resources_map[key] = value
         sub_resources_array = MapClient.key_set(sub_resources_map)
         new_query_list = sub_resources_array
         if not UtilClient.is_unset(query):
@@ -246,8 +256,10 @@ class Client(SPIClient):
         for param_name in sorted_params:
             if ArrayClient.contains(self._default_signed_params, param_name):
                 canonicalized_resource = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(param_name))
-                if not UtilClient.is_unset(query.get(param_name)):
+                if not UtilClient.is_unset(query) and not UtilClient.is_unset(query.get(param_name)):
                     canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(query.get(param_name)))
+                elif not UtilClient.is_unset(sub_resources_map.get(param_name)):
+                    canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(sub_resources_map.get(param_name)))
             elif ArrayClient.contains(sub_resources_array, param_name):
                 canonicalized_resource = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(param_name))
                 if not UtilClient.is_unset(sub_resources_map.get(param_name)):

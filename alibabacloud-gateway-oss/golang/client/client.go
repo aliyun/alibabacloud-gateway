@@ -130,6 +130,12 @@ func (client *Client) ModifyResponse (context *spi.InterceptorContext, attribute
     }
 
     respMap := xml.ParseXml(bodyStr, nil)
+    errors := map.KeySet(respMap)
+    if tea.BoolValue(util.EqualNumber(array.Size(errors), tea.Int(1))) {
+      error := errors[0]
+      respMap = util.AssertAsMap(respMap[error])
+    }
+
     _err = tea.NewSDKError(map[string]interface{}{
       "code": respMap["Code"],
       "message": respMap["Message"],
@@ -179,7 +185,26 @@ func (client *Client) ModifyResponse (context *spi.InterceptorContext, attribute
       list := map.KeySet(result)
       if tea.BoolValue(util.EqualNumber(array.Size(list), tea.Int(1))) {
         tmp := list[0]
-        response.DeserializedBody = result[tmp]
+        tryErr := func()(_e error) {
+          defer func() {
+            if r := tea.Recover(recover()); r != nil {
+              _e = r
+            }
+          }()
+          response.DeserializedBody = util.AssertAsMap(result[tmp])
+
+          return nil
+        }()
+
+        if tryErr != nil {
+          var error = &tea.SDKError{}
+          if _t, ok := tryErr.(*tea.SDKError); ok {
+            error = _t
+          } else {
+            error.Message = tea.String(tryErr.Error())
+          }
+          response.DeserializedBody = result
+        }
       } else {
         response.DeserializedBody = result
       }
@@ -329,19 +354,24 @@ func (client *Client) BuildCanonicalizedResource (pathname *string, query map[st
     if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
       subResources := string_.Split(paths[1], tea.String("&"), tea.Int(0))
       for _, sub := range subResources {
+        hasExcepts := tea.Bool(false)
         for _, excepts := range client.Except_signed_params {
-          if !tea.BoolValue(string_.Contains(sub, excepts)) {
-            item := string_.Split(sub, tea.String("&"), tea.Int(2))
-            key := item[0]
-            var value *string
-            if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
-              value = item[1]
-            }
-
-            subResourcesMap[tea.StringValue(key)] = value
+          if tea.BoolValue(string_.Contains(sub, excepts)) {
+            hasExcepts = tea.Bool(true)
           }
 
         }
+        if !tea.BoolValue(hasExcepts) {
+          item := string_.Split(sub, tea.String("="), tea.Int(0))
+          key := item[0]
+          var value *string
+          if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
+            value = item[1]
+          }
+
+          subResourcesMap[tea.StringValue(key)] = value
+        }
+
       }
     }
 
@@ -359,8 +389,10 @@ func (client *Client) BuildCanonicalizedResource (pathname *string, query map[st
   for _, paramName := range sortedParams {
     if tea.BoolValue(array.Contains(client.Default_signed_params, paramName)) {
       canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(paramName))
-      if !tea.BoolValue(util.IsUnset(query[tea.StringValue(paramName)])) {
+      if !tea.BoolValue(util.IsUnset(query)) && !tea.BoolValue(util.IsUnset(query[tea.StringValue(paramName)])) {
         canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(query[tea.StringValue(paramName)]))
+      } else if !tea.BoolValue(util.IsUnset(subResourcesMap[tea.StringValue(paramName)])) {
+        canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(subResourcesMap[tea.StringValue(paramName)]))
       }
 
     } else if tea.BoolValue(array.Contains(subResourcesArray, paramName)) {

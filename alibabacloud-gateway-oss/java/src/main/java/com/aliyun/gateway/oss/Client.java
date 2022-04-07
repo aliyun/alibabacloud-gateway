@@ -135,6 +135,12 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
             java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
+            java.util.List<String> errors = com.aliyun.darabonba.map.Client.keySet(respMap);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(errors), 1)) {
+                String error = errors.get(0);
+                respMap = com.aliyun.teautil.Common.assertAsMap(respMap.get(error));
+            }
+
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", respMap.get("Code")),
                 new TeaPair("message", respMap.get("Message")),
@@ -177,7 +183,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
                 if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(list), 1)) {
                     String tmp = list.get(0);
-                    response.deserializedBody = result.get(tmp);
+                    try {
+                        response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result.get(tmp));
+                    } catch (TeaException error) {
+                        response.deserializedBody = result;
+                    } catch (Exception _error) {
+                        TeaException error = new TeaException(_error.getMessage(), _error);
+                        response.deserializedBody = result;
+                    }                    
                 } else {
                     response.deserializedBody = result;
                 }
@@ -279,19 +292,24 @@ public class Client extends com.aliyun.gateway.spi.Client {
             if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
                 java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
                 for (String sub : subResources) {
+                    Boolean hasExcepts = false;
                     for (String excepts : _except_signed_params) {
-                        if (!com.aliyun.darabonbastring.Client.contains(sub, excepts)) {
-                            java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "&", 2);
-                            String key = item.get(0);
-                            String value = null;
-                            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
-                                value = item.get(1);
-                            }
-
-                            subResourcesMap.put(key, value);
+                        if (com.aliyun.darabonbastring.Client.contains(sub, excepts)) {
+                            hasExcepts = true;
                         }
 
                     }
+                    if (!hasExcepts) {
+                        java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", 0);
+                        String key = item.get(0);
+                        String value = null;
+                        if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
+                            value = item.get(1);
+                        }
+
+                        subResourcesMap.put(key, value);
+                    }
+
                 }
             }
 
@@ -309,8 +327,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         for (String paramName : sortedParams) {
             if (com.aliyun.darabonba.array.Client.contains(_default_signed_params, paramName)) {
                 canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + paramName + "";
-                if (!com.aliyun.teautil.Common.isUnset(query.get(paramName))) {
+                if (!com.aliyun.teautil.Common.isUnset(query) && !com.aliyun.teautil.Common.isUnset(query.get(paramName))) {
                     canonicalizedResource = "" + canonicalizedResource + "=" + query.get(paramName) + "";
+                } else if (!com.aliyun.teautil.Common.isUnset(subResourcesMap.get(paramName))) {
+                    canonicalizedResource = "" + canonicalizedResource + "=" + subResourcesMap.get(paramName) + "";
                 }
 
             } else if (com.aliyun.darabonba.array.Client.contains(subResourcesArray, paramName)) {
