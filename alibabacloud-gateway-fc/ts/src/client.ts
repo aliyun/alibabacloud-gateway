@@ -11,6 +11,37 @@ import Map from '@alicloud/darabonba-map';
 import Array from '@alicloud/darabonba-array';
 import * as $tea from '@alicloud/tea-typescript';
 
+export class HttpRequest extends $tea.Model {
+  method: string;
+  path: string;
+  headers?: { [key: string]: any };
+  body?: Buffer;
+  reqBodyType?: string;
+  static names(): { [key: string]: string } {
+    return {
+      method: 'method',
+      path: 'path',
+      headers: 'headers',
+      body: 'body',
+      reqBodyType: 'reqBodyType',
+    };
+  }
+
+  static types(): { [key: string]: any } {
+    return {
+      method: 'string',
+      path: 'string',
+      headers: { 'type': 'map', 'keyType': 'string', 'valueType': 'any' },
+      body: 'Buffer',
+      reqBodyType: 'string',
+    };
+  }
+
+  constructor(map?: { [key: string]: any }) {
+    super(map);
+  }
+}
+
 
 export default class Client extends SPI {
 
@@ -117,7 +148,7 @@ export default class Client extends SPI {
       let tmp = await Util.readAsBytes(request.stream);
       request.stream = new $tea.BytesReadable(tmp);
       request.headers["content-type"] = "application/octet-stream";
-      request.headers["content-md5"] = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(Util.toString(tmp)));
+      request.headers["content-md5"] = EncodeUtil.base64EncodeToString(SignatureUtil.MD5SignForBytes(tmp));
     } else {
       if (!Util.isUnset(request.body)) {
         if (Util.equalString(request.reqBodyType, "json")) {
@@ -355,6 +386,85 @@ export default class Client extends SPI {
 
     }
     return String.split(tmp, ";", 0);
+  }
+
+  async signRequest(request: HttpRequest, credential: Credential): Promise<{[key: string ]: any}> {
+    let httpRequest : HttpRequest = new HttpRequest({
+      method: request.method,
+      path: request.path,
+      headers: request.headers,
+      body: request.body,
+      reqBodyType: request.reqBodyType,
+    });
+    httpRequest.headers["date"] = Util.getDateUTCString();
+    httpRequest.headers["accept"] = "application/json";
+    httpRequest.headers["content-type"] = "application/json";
+    if (!Util.isUnset(request.body)) {
+      if (Util.equalString(request.reqBodyType, "json")) {
+        httpRequest.headers["content-type"] = "application/json";
+      } else if (Util.equalString(request.reqBodyType, "form")) {
+        httpRequest.headers["content-type"] = "application/x-www-form-urlencoded";
+      } else if (Util.equalString(request.reqBodyType, "binary")) {
+        httpRequest.headers["content-type"] = "application/octet-stream";
+      }
+
+    }
+
+    let accessKeyId = await credential.getAccessKeyId();
+    let accessKeySecret = await credential.getAccessKeySecret();
+    let securityToken = await credential.getSecurityToken();
+    if (!Util.empty(securityToken)) {
+      httpRequest.headers["x-fc-security-token"] = securityToken;
+    }
+
+    let resource : string = request.path;
+    let contentMd5 = httpRequest.headers["content-md5"];
+    if (Util.isUnset(contentMd5)) {
+      contentMd5 = "";
+    }
+
+    let contentType = httpRequest.headers["content-type"];
+    if (Util.isUnset(contentType)) {
+      contentType = "";
+    }
+
+    let stringToSign : string = "";
+    let canonicalizedResource = await this.buildCanonicalizedResource(resource);
+    let canonicalizedHeaders = await this.buildCanonicalizedHeaders(httpRequest.headers);
+    stringToSign = `${request.method}\n${contentMd5}\n${contentType}\n${httpRequest.headers["date"]}\n${canonicalizedHeaders}${canonicalizedResource}`;
+    let signature = EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, accessKeySecret));
+    httpRequest.headers["Authorization"] = `FC ${accessKeyId}:${signature}`;
+    return httpRequest.headers;
+  }
+
+  async buildCanonicalizedResource(pathname: string): Promise<string> {
+    let paths : string[] = String.split(pathname, `?`, 2);
+    let canonicalizedResource : string = paths[0];
+    let resources : string[] = [ ];
+    if (Util.equalNumber(Array.size(paths), 2)) {
+      resources = String.split(paths[1], "&", 0);
+    }
+
+    let sortedParams = Array.ascSort(resources);
+    if (Util.equalNumber(Array.size(sortedParams), 0)) {
+      return `${canonicalizedResource}\n`;
+    }
+
+    return `${canonicalizedResource}\n${Array.join(sortedParams, "\n")}`;
+  }
+
+  async buildCanonicalizedHeaders(headers: {[key: string ]: any}): Promise<string> {
+    let canonicalizedHeaders : string = "";
+    let keys = Map.keySet(headers);
+    let sortedHeaders = Array.ascSort(keys);
+
+    for (let header of sortedHeaders) {
+      if (String.contains(String.toLower(header), "x-fc-")) {
+        canonicalizedHeaders = `${canonicalizedHeaders}${String.toLower(header)}:${headers[header]}\n`;
+      }
+
+    }
+    return canonicalizedHeaders;
   }
 
 }

@@ -14,9 +14,11 @@ use AlibabaCloud\Darabonba\EncodeUtil\Encoder;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Darabonba\Array_\ArrayUtil;
 use AlibabaCloud\Darabonba\Map\MapUtil;
+use AlibabaCloud\Credentials\Credential;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
+use Darabonba\GatewayFc\Models\HttpRequest;
 
 class Client extends DarabonbaGatewaySpiClient {
     public function __construct(){
@@ -155,7 +157,7 @@ class Client extends DarabonbaGatewaySpiClient {
             $tmp = Utils::readAsBytes($request->stream);
             $request->stream = $tmp;
             $request->headers["content-type"] = "application/octet-stream";
-            $request->headers["content-md5"] = Encoder::base64EncodeToString(Signer::MD5Sign(Utils::toString($tmp)));
+            $request->headers["content-md5"] = Encoder::base64EncodeToString(Signer::MD5SignForBytes($tmp));
         }
         else {
             if (!Utils::isUnset($request->body)) {
@@ -433,5 +435,90 @@ class Client extends DarabonbaGatewaySpiClient {
             }
         }
         return StringUtil::split($tmp, ";", 0);
+    }
+
+    /**
+     * @param HttpRequest $request
+     * @param Credential $credential
+     * @return array
+     */
+    public function signRequest($request, $credential){
+        $httpRequest = new HttpRequest([
+            "method" => $request->method,
+            "path" => $request->path,
+            "headers" => $request->headers,
+            "body" => $request->body,
+            "reqBodyType" => $request->reqBodyType
+        ]);
+        $httpRequest->headers["date"] = Utils::getDateUTCString();
+        $httpRequest->headers["accept"] = "application/json";
+        $httpRequest->headers["content-type"] = "application/json";
+        if (!Utils::isUnset($request->body)) {
+            if (Utils::equalString($request->reqBodyType, "json")) {
+                $httpRequest->headers["content-type"] = "application/json";
+            }
+            else if (Utils::equalString($request->reqBodyType, "form")) {
+                $httpRequest->headers["content-type"] = "application/x-www-form-urlencoded";
+            }
+            else if (Utils::equalString($request->reqBodyType, "binary")) {
+                $httpRequest->headers["content-type"] = "application/octet-stream";
+            }
+        }
+        $accessKeyId = $credential->getAccessKeyId();
+        $accessKeySecret = $credential->getAccessKeySecret();
+        $securityToken = $credential->getSecurityToken();
+        if (!Utils::empty_($securityToken)) {
+            $httpRequest->headers["x-fc-security-token"] = $securityToken;
+        }
+        $resource = $request->path;
+        $contentMd5 = @$httpRequest->headers["content-md5"];
+        if (Utils::isUnset($contentMd5)) {
+            $contentMd5 = "";
+        }
+        $contentType = @$httpRequest->headers["content-type"];
+        if (Utils::isUnset($contentType)) {
+            $contentType = "";
+        }
+        $stringToSign = "";
+        $canonicalizedResource = $this->buildCanonicalizedResource($resource);
+        $canonicalizedHeaders = $this->buildCanonicalizedHeaders($httpRequest->headers);
+        $stringToSign = "" . $request->method . "\n" . (string) ($contentMd5) . "\n" . (string) ($contentType) . "\n" . (string) (@$httpRequest->headers["date"]) . "\n" . $canonicalizedHeaders . "" . $canonicalizedResource . "";
+        $signature = Encoder::base64EncodeToString(Signer::HmacSHA256Sign($stringToSign, $accessKeySecret));
+        $httpRequest->headers["Authorization"] = "FC " . $accessKeyId . ":" . $signature . "";
+        return $httpRequest->headers;
+    }
+
+    /**
+     * @param string $pathname
+     * @return string
+     */
+    public function buildCanonicalizedResource($pathname){
+        $paths = StringUtil::split($pathname, "?", 2);
+        $canonicalizedResource = @$paths[0];
+        $resources = [];
+        if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
+            $resources = StringUtil::split(@$paths[1], "&", 0);
+        }
+        $sortedParams = ArrayUtil::ascSort($resources);
+        if (Utils::equalNumber(ArrayUtil::size($sortedParams), 0)) {
+            return "" . $canonicalizedResource . "\n";
+        }
+        return "" . $canonicalizedResource . "\n" . ArrayUtil::join($sortedParams, "\n") . "";
+    }
+
+    /**
+     * @param mixed[] $headers
+     * @return string
+     */
+    public function buildCanonicalizedHeaders($headers){
+        $canonicalizedHeaders = "";
+        $keys = MapUtil::keySet($headers);
+        $sortedHeaders = ArrayUtil::ascSort($keys);
+        foreach($sortedHeaders as $header){
+            if (StringUtil::contains(StringUtil::toLower($header), "x-fc-")) {
+                $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . StringUtil::toLower($header) . ":" . (string) (@$headers[$header]) . "\n";
+            }
+        }
+        return $canonicalizedHeaders;
     }
 }

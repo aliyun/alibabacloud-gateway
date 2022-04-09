@@ -15,6 +15,7 @@ from alibabacloud_endpoint_util.client import Client as EndpointUtilClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_darabonba_map.client import Client as MapClient
+from alibabacloud_gateway_fc import models as gateway_fc_models
 
 
 class Client(SPIClient):
@@ -99,7 +100,7 @@ class Client(SPIClient):
             tmp = UtilClient.read_as_bytes(request.stream)
             request.stream = tmp
             request.headers['content-type'] = 'application/octet-stream'
-            request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(UtilClient.to_string(tmp)))
+            request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign_for_bytes(tmp))
         else:
             if not UtilClient.is_unset(request.body):
                 if UtilClient.equal_string(request.req_body_type, 'json'):
@@ -270,3 +271,61 @@ class Client(SPIClient):
                     tmp = '%s%s%s' % (TeaConverter.to_unicode(tmp), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(lower_key))
                     separator = ';'
         return StringClient.split(tmp, ';', 0)
+
+    def sign_request(self, request, credential):
+        http_request = gateway_fc_models.HttpRequest(
+            method=request.method,
+            path=request.path,
+            headers=request.headers,
+            body=request.body,
+            req_body_type=request.req_body_type
+        )
+        http_request.headers['date'] = UtilClient.get_date_utcstring()
+        http_request.headers['accept'] = 'application/json'
+        http_request.headers['content-type'] = 'application/json'
+        if not UtilClient.is_unset(request.body):
+            if UtilClient.equal_string(request.req_body_type, 'json'):
+                http_request.headers['content-type'] = 'application/json'
+            elif UtilClient.equal_string(request.req_body_type, 'form'):
+                http_request.headers['content-type'] = 'application/x-www-form-urlencoded'
+            elif UtilClient.equal_string(request.req_body_type, 'binary'):
+                http_request.headers['content-type'] = 'application/octet-stream'
+        access_key_id = credential.get_access_key_id()
+        access_key_secret = credential.get_access_key_secret()
+        security_token = credential.get_security_token()
+        if not UtilClient.empty(security_token):
+            http_request.headers['x-fc-security-token'] = security_token
+        resource = request.path
+        content_md_5 = http_request.headers.get('content-md5')
+        if UtilClient.is_unset(content_md_5):
+            content_md_5 = ''
+        content_type = http_request.headers.get('content-type')
+        if UtilClient.is_unset(content_type):
+            content_type = ''
+        string_to_sign = ''
+        canonicalized_resource = self.build_canonicalized_resource(resource)
+        canonicalized_headers = self.build_canonicalized_headers(http_request.headers)
+        string_to_sign = '%s\n%s\n%s\n%s\n%s%s' % (TeaConverter.to_unicode(request.method), TeaConverter.to_unicode(content_md_5), TeaConverter.to_unicode(content_type), TeaConverter.to_unicode(http_request.headers.get('date')), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(canonicalized_resource))
+        signature = Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, access_key_secret))
+        http_request.headers['Authorization'] = 'FC %s:%s' % (TeaConverter.to_unicode(access_key_id), TeaConverter.to_unicode(signature))
+        return http_request.headers
+
+    def build_canonicalized_resource(self, pathname):
+        paths = StringClient.split(pathname, '?', 2)
+        canonicalized_resource = paths[0]
+        resources = {}
+        if UtilClient.equal_number(ArrayClient.size(paths), 2):
+            resources = StringClient.split(paths[1], '&', 0)
+        sorted_params = ArrayClient.asc_sort(resources)
+        if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
+            return '%s\n' % TeaConverter.to_unicode(canonicalized_resource)
+        return '%s\n%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(ArrayClient.join(sorted_params, '\n')))
+
+    def build_canonicalized_headers(self, headers):
+        canonicalized_headers = ''
+        keys = MapClient.key_set(headers)
+        sorted_headers = ArrayClient.asc_sort(keys)
+        for header in sorted_headers:
+            if StringClient.contains(StringClient.to_lower(header), 'x-fc-'):
+                canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(StringClient.to_lower(header)), TeaConverter.to_unicode(headers.get(header)))
+        return canonicalized_headers

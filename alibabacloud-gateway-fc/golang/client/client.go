@@ -15,6 +15,47 @@ import (
   "github.com/alibabacloud-go/tea/tea"
 )
 
+type HttpRequest struct {
+  Method *string `json:"method,omitempty" xml:"method,omitempty" require:"true"`
+  Path *string `json:"path,omitempty" xml:"path,omitempty" require:"true"`
+  Headers map[string]interface{} `json:"headers,omitempty" xml:"headers,omitempty"`
+  Body []byte `json:"body,omitempty" xml:"body,omitempty"`
+  ReqBodyType *string `json:"reqBodyType,omitempty" xml:"reqBodyType,omitempty"`
+}
+
+func (s HttpRequest) String() string {
+  return tea.Prettify(s)
+}
+
+func (s HttpRequest) GoString() string {
+  return s.String()
+}
+
+func (s *HttpRequest) SetMethod(v string) *HttpRequest {
+  s.Method = &v
+  return s
+}
+
+func (s *HttpRequest) SetPath(v string) *HttpRequest {
+  s.Path = &v
+  return s
+}
+
+func (s *HttpRequest) SetHeaders(v map[string]interface{}) *HttpRequest {
+  s.Headers = v
+  return s
+}
+
+func (s *HttpRequest) SetBody(v []byte) *HttpRequest {
+  s.Body = v
+  return s
+}
+
+func (s *HttpRequest) SetReqBodyType(v string) *HttpRequest {
+  s.ReqBodyType = &v
+  return s
+}
+
 type Client struct {
   spi.Client
 }
@@ -188,7 +229,7 @@ func (client *Client) SignRequestForFc (context *spi.InterceptorContext) (_err e
 
     request.Stream = tea.ToReader(tmp)
     request.Headers["content-type"] = tea.String("application/octet-stream")
-    request.Headers["content-md5"] = encodeutil.Base64EncodeToString(signatureutil.MD5Sign(util.ToString(tmp)))
+    request.Headers["content-md5"] = encodeutil.Base64EncodeToString(signatureutil.MD5SignForBytes(tmp))
   } else {
     if !tea.BoolValue(util.IsUnset(request.Body)) {
       if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("json"))) {
@@ -366,7 +407,10 @@ func (client *Client) BuildCanonicalizedResourceForFc (pathname *string, query m
   tmp := tea.String("")
   separator := tea.String("")
   if !tea.BoolValue(util.IsUnset(query)) {
-    queryList := map.KeySet(query)
+    var queryList []*string
+		for k := range query {
+			queryList = append(queryList, tea.String(k))
+		}
     for _, paramName := range queryList {
       tmp = tea.String(tea.StringValue(tmp) + tea.StringValue(separator) + tea.StringValue(paramName))
       if !tea.BoolValue(util.IsUnset(query[tea.StringValue(paramName)])) {
@@ -391,7 +435,10 @@ func (client *Client) BuildCanonicalizedResourceForFc (pathname *string, query m
 
 func (client *Client) BuildCanonicalizedHeadersForFc (headers map[string]*string) (_result *string, _err error) {
   canonicalizedHeaders := tea.String("")
-  keys := map.KeySet(headers)
+  var keys []*string
+	for k := range headers {
+		keys = append(keys, tea.String(k))
+	}
   sortedHeaders := array.AscSort(keys)
   for _, header := range sortedHeaders {
     if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-fc-"))) {
@@ -409,7 +456,11 @@ func (client *Client) GetAuthorizationForPop (pathname *string, method *string, 
     return _result, _err
   }
 
-  _result = tea.String(tea.StringValue(signatureAlgorithm) + "  Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(array.Join(client.GetSignedHeaders(headers), tea.String(";"))) + ",Signature=" + tea.StringValue(signature))
+  signedHeaders, _err := client.GetSignedHeaders(headers)
+  if _err != nil {
+    return _result, _err
+  }
+  _result = tea.String(tea.StringValue(signatureAlgorithm) + "  Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(array.Join(signedHeaders, tea.String(";"))) + ",Signature=" + tea.StringValue(signature))
   return _result, _err
 }
 
@@ -455,7 +506,10 @@ func (client *Client) GetSignatureForPop (pathname *string, method *string, quer
 func (client *Client) BuildCanonicalizedResourceForPop (query map[string]*string) (_result *string, _err error) {
   canonicalizedResource := tea.String("")
   if !tea.BoolValue(util.IsUnset(query)) {
-    queryArray := map.KeySet(query)
+    var queryArray []*string
+		for k := range query {
+			queryArray = append(queryArray, tea.String(k))
+		}
     sortedQueryArray := array.AscSort(queryArray)
     for _, key := range sortedQueryArray {
       canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "&" + tea.StringValue(encodeutil.PercentEncode(key)))
@@ -485,7 +539,10 @@ func (client *Client) BuildCanonicalizedHeadersForPop (headers map[string]*strin
 }
 
 func (client *Client) GetSignedHeaders (headers map[string]*string) (_result []*string, _err error) {
-  headersArray := map.KeySet(headers)
+  var headersArray []*string
+	for k := range headers {
+		headersArray = append(headersArray, tea.String(k))
+	}
   sortedHeadersArray := array.AscSort(headersArray)
   tmp := tea.String("")
   separator := tea.String("")
@@ -504,5 +561,107 @@ func (client *Client) GetSignedHeaders (headers map[string]*string) (_result []*
   _body := string_.Split(tmp, tea.String(";"), tea.Int(0))
   _result = _body
   return _result, _err
+}
+
+func (client *Client) SignRequest (request *HttpRequest, credential credential.Credential) (_result map[string]interface{}, _err error) {
+  httpRequest := &HttpRequest{
+    Method: request.Method,
+    Path: request.Path,
+    Headers: request.Headers,
+    Body: request.Body,
+    ReqBodyType: request.ReqBodyType,
+  }
+  httpRequest.Headers["date"] = util.GetDateUTCString()
+  httpRequest.Headers["accept"] = tea.String("application/json")
+  httpRequest.Headers["content-type"] = tea.String("application/json")
+  if !tea.BoolValue(util.IsUnset(request.Body)) {
+    if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("json"))) {
+      httpRequest.Headers["content-type"] = tea.String("application/json")
+    } else if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("form"))) {
+      httpRequest.Headers["content-type"] = tea.String("application/x-www-form-urlencoded")
+    } else if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("binary"))) {
+      httpRequest.Headers["content-type"] = tea.String("application/octet-stream")
+    }
+
+  }
+
+  accessKeyId, _err := credential.GetAccessKeyId()
+  if _err != nil {
+    return _result, _err
+  }
+
+  accessKeySecret, _err := credential.GetAccessKeySecret()
+  if _err != nil {
+    return _result, _err
+  }
+
+  securityToken, _err := credential.GetSecurityToken()
+  if _err != nil {
+    return _result, _err
+  }
+
+  if !tea.BoolValue(util.Empty(securityToken)) {
+    httpRequest.Headers["x-fc-security-token"] = securityToken
+  }
+
+  resource := request.Path
+  contentMd5 := httpRequest.Headers["content-md5"]
+  if tea.BoolValue(util.IsUnset(contentMd5)) {
+    contentMd5 = tea.String("")
+  }
+
+  contentType := httpRequest.Headers["content-type"]
+  if tea.BoolValue(util.IsUnset(contentType)) {
+    contentType = tea.String("")
+  }
+
+  stringToSign := tea.String("")
+  canonicalizedResource, _err := client.BuildCanonicalizedResource(resource)
+  if _err != nil {
+    return _result, _err
+  }
+
+  canonicalizedHeaders, _err := client.BuildCanonicalizedHeaders(httpRequest.Headers)
+  if _err != nil {
+    return _result, _err
+  }
+
+  stringToSign = tea.String(tea.StringValue(request.Method) + "\n" + tea.ToString(contentMd5) + "\n" + tea.ToString(contentType) + "\n" + tea.ToString(httpRequest.Headers["date"]) + "\n" + tea.StringValue(canonicalizedHeaders) + tea.StringValue(canonicalizedResource))
+  signature := encodeutil.Base64EncodeToString(signatureutil.HmacSHA256Sign(stringToSign, accessKeySecret))
+  httpRequest.Headers["Authorization"] = tea.String("FC " + tea.StringValue(accessKeyId) + ":" + tea.StringValue(signature))
+  _result = httpRequest.Headers
+  return _result , _err
+}
+
+func (client *Client) BuildCanonicalizedResource (pathname *string) (_result *string, _err error) {
+  paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
+  canonicalizedResource := paths[0]
+  resources := []*string{}
+  if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
+    resources = string_.Split(paths[1], tea.String("&"), tea.Int(0))
+  }
+
+  sortedParams := array.AscSort(resources)
+  if tea.BoolValue(util.EqualNumber(array.Size(sortedParams), tea.Int(0))) {
+    _result = tea.String(tea.StringValue(canonicalizedResource) + "\n")
+    return _result, _err
+  }
+
+  _result = tea.String(tea.StringValue(canonicalizedResource) + "\n" + tea.StringValue(array.Join(sortedParams, tea.String("\n"))))
+  return _result, _err
+}
+
+func (client *Client) BuildCanonicalizedHeaders (headers map[string]interface{}) (_result *string, _err error) {
+  canonicalizedHeaders := tea.String("")
+  keys := map_.KeySet(headers)
+  sortedHeaders := array.AscSort(keys)
+  for _, header := range sortedHeaders {
+    if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-fc-"))) {
+      canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(string_.ToLower(header)) + ":" + tea.ToString(headers[tea.StringValue(header)]) + "\n")
+    }
+
+  }
+  _result = canonicalizedHeaders
+  return _result , _err
 }
 

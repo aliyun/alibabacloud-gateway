@@ -14,6 +14,8 @@ from alibabacloud_endpoint_util.client import Client as EndpointUtilClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_darabonba_map.client import Client as MapClient
+from alibabacloud_gateway_fc import models as gateway_fc_models
+from alibabacloud_credentials.client import Client as CredentialClient
 
 
 class Client(SPIClient):
@@ -190,7 +192,7 @@ class Client(SPIClient):
             tmp = UtilClient.read_as_bytes(request.stream)
             request.stream = tmp
             request.headers['content-type'] = 'application/octet-stream'
-            request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(UtilClient.to_string(tmp)))
+            request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign_for_bytes(tmp))
         else:
             if not UtilClient.is_unset(request.body):
                 if UtilClient.equal_string(request.req_body_type, 'json'):
@@ -229,7 +231,7 @@ class Client(SPIClient):
             tmp = await UtilClient.read_as_bytes_async(request.stream)
             request.stream = tmp
             request.headers['content-type'] = 'application/octet-stream'
-            request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(UtilClient.to_string(tmp)))
+            request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign_for_bytes(tmp))
         else:
             if not UtilClient.is_unset(request.body):
                 if UtilClient.equal_string(request.req_body_type, 'json'):
@@ -656,3 +658,139 @@ class Client(SPIClient):
                     tmp = f'{tmp}{separator}{lower_key}'
                     separator = ';'
         return StringClient.split(tmp, ';', 0)
+
+    def sign_request(
+        self,
+        request: gateway_fc_models.HttpRequest,
+        credential: CredentialClient,
+    ) -> Dict[str, Any]:
+        http_request = gateway_fc_models.HttpRequest(
+            method=request.method,
+            path=request.path,
+            headers=request.headers,
+            body=request.body,
+            req_body_type=request.req_body_type
+        )
+        http_request.headers['date'] = UtilClient.get_date_utcstring()
+        http_request.headers['accept'] = 'application/json'
+        http_request.headers['content-type'] = 'application/json'
+        if not UtilClient.is_unset(request.body):
+            if UtilClient.equal_string(request.req_body_type, 'json'):
+                http_request.headers['content-type'] = 'application/json'
+            elif UtilClient.equal_string(request.req_body_type, 'form'):
+                http_request.headers['content-type'] = 'application/x-www-form-urlencoded'
+            elif UtilClient.equal_string(request.req_body_type, 'binary'):
+                http_request.headers['content-type'] = 'application/octet-stream'
+        access_key_id = credential.get_access_key_id()
+        access_key_secret = credential.get_access_key_secret()
+        security_token = credential.get_security_token()
+        if not UtilClient.empty(security_token):
+            http_request.headers['x-fc-security-token'] = security_token
+        resource = request.path
+        content_md_5 = http_request.headers.get('content-md5')
+        if UtilClient.is_unset(content_md_5):
+            content_md_5 = ''
+        content_type = http_request.headers.get('content-type')
+        if UtilClient.is_unset(content_type):
+            content_type = ''
+        string_to_sign = ''
+        canonicalized_resource = self.build_canonicalized_resource(resource)
+        canonicalized_headers = self.build_canonicalized_headers(http_request.headers)
+        string_to_sign = f"{request.method}\n{content_md_5}\n{content_type}\n{http_request.headers.get('date')}\n{canonicalized_headers}{canonicalized_resource}"
+        signature = Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, access_key_secret))
+        http_request.headers['Authorization'] = f'FC {access_key_id}:{signature}'
+        return http_request.headers
+
+    async def sign_request_async(
+        self,
+        request: gateway_fc_models.HttpRequest,
+        credential: CredentialClient,
+    ) -> Dict[str, Any]:
+        http_request = gateway_fc_models.HttpRequest(
+            method=request.method,
+            path=request.path,
+            headers=request.headers,
+            body=request.body,
+            req_body_type=request.req_body_type
+        )
+        http_request.headers['date'] = UtilClient.get_date_utcstring()
+        http_request.headers['accept'] = 'application/json'
+        http_request.headers['content-type'] = 'application/json'
+        if not UtilClient.is_unset(request.body):
+            if UtilClient.equal_string(request.req_body_type, 'json'):
+                http_request.headers['content-type'] = 'application/json'
+            elif UtilClient.equal_string(request.req_body_type, 'form'):
+                http_request.headers['content-type'] = 'application/x-www-form-urlencoded'
+            elif UtilClient.equal_string(request.req_body_type, 'binary'):
+                http_request.headers['content-type'] = 'application/octet-stream'
+        access_key_id = await credential.get_access_key_id_async()
+        access_key_secret = await credential.get_access_key_secret_async()
+        security_token = await credential.get_security_token_async()
+        if not UtilClient.empty(security_token):
+            http_request.headers['x-fc-security-token'] = security_token
+        resource = request.path
+        content_md_5 = http_request.headers.get('content-md5')
+        if UtilClient.is_unset(content_md_5):
+            content_md_5 = ''
+        content_type = http_request.headers.get('content-type')
+        if UtilClient.is_unset(content_type):
+            content_type = ''
+        string_to_sign = ''
+        canonicalized_resource = await self.build_canonicalized_resource_async(resource)
+        canonicalized_headers = await self.build_canonicalized_headers_async(http_request.headers)
+        string_to_sign = f"{request.method}\n{content_md_5}\n{content_type}\n{http_request.headers.get('date')}\n{canonicalized_headers}{canonicalized_resource}"
+        signature = Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, access_key_secret))
+        http_request.headers['Authorization'] = f'FC {access_key_id}:{signature}'
+        return http_request.headers
+
+    def build_canonicalized_resource(
+        self,
+        pathname: str,
+    ) -> str:
+        paths = StringClient.split(pathname, f'?', 2)
+        canonicalized_resource = paths[0]
+        resources = {}
+        if UtilClient.equal_number(ArrayClient.size(paths), 2):
+            resources = StringClient.split(paths[1], '&', 0)
+        sorted_params = ArrayClient.asc_sort(resources)
+        if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
+            return f'{canonicalized_resource}\n'
+        return f"{canonicalized_resource}\n{ArrayClient.join(sorted_params, '\n')}"
+
+    async def build_canonicalized_resource_async(
+        self,
+        pathname: str,
+    ) -> str:
+        paths = StringClient.split(pathname, f'?', 2)
+        canonicalized_resource = paths[0]
+        resources = {}
+        if UtilClient.equal_number(ArrayClient.size(paths), 2):
+            resources = StringClient.split(paths[1], '&', 0)
+        sorted_params = ArrayClient.asc_sort(resources)
+        if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
+            return f'{canonicalized_resource}\n'
+        return f"{canonicalized_resource}\n{ArrayClient.join(sorted_params, '\n')}"
+
+    def build_canonicalized_headers(
+        self,
+        headers: Dict[str, Any],
+    ) -> str:
+        canonicalized_headers = ''
+        keys = MapClient.key_set(headers)
+        sorted_headers = ArrayClient.asc_sort(keys)
+        for header in sorted_headers:
+            if StringClient.contains(StringClient.to_lower(header), 'x-fc-'):
+                canonicalized_headers = f'{canonicalized_headers}{StringClient.to_lower(header)}:{headers.get(header)}\n'
+        return canonicalized_headers
+
+    async def build_canonicalized_headers_async(
+        self,
+        headers: Dict[str, Any],
+    ) -> str:
+        canonicalized_headers = ''
+        keys = MapClient.key_set(headers)
+        sorted_headers = ArrayClient.asc_sort(keys)
+        for header in sorted_headers:
+            if StringClient.contains(StringClient.to_lower(header), 'x-fc-'):
+                canonicalized_headers = f'{canonicalized_headers}{StringClient.to_lower(header)}:{headers.get(header)}\n'
+        return canonicalized_headers

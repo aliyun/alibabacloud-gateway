@@ -109,7 +109,7 @@ async function signRequestForFc(context: SPI.InterceptorContext): void {
     var tmp = Util.readAsBytes(request.stream);
     request.stream = tmp;
     request.headers.content-type = 'application/octet-stream';
-    request.headers.content-md5 = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(Util.toString(tmp)));
+    request.headers.content-md5 = EncodeUtil.base64EncodeToString(SignatureUtil.MD5SignForBytes(tmp));
   } else {
     if (!Util.isUnset(request.body)) {
       if (Util.equalString(request.reqBodyType, 'json')) {
@@ -326,4 +326,84 @@ async function getSignedHeaders(headers: map[string]string): [string] {
     }
   }
   return String.split(tmp, ';', 0);
+}
+
+model HttpRequest = {
+  method: string,
+  path: string,
+  headers?: map[string]any,
+  body?: bytes,
+  reqBodyType?: string
+}
+
+async function signRequest(request: HttpRequest, credential: Credential): map[string]any {
+  var httpRequest : HttpRequest = new HttpRequest{
+    method = request.method,
+    path = request.path,
+    headers = request.headers,
+    body = request.body,
+    reqBodyType = request.reqBodyType
+  };
+  httpRequest.headers.date = Util.getDateUTCString();
+  httpRequest.headers.accept = 'application/json';
+  httpRequest.headers.content-type = 'application/json';
+  if (!Util.isUnset(request.body)) {
+    if (Util.equalString(request.reqBodyType, 'json')) {
+      httpRequest.headers.content-type = 'application/json';
+    } else if (Util.equalString(request.reqBodyType, 'form')) {
+      httpRequest.headers.content-type = 'application/x-www-form-urlencoded';
+    } else if (Util.equalString(request.reqBodyType, 'binary')) {
+      httpRequest.headers.content-type = 'application/octet-stream';
+    }
+  }
+
+  var accessKeyId = credential.getAccessKeyId();
+  var accessKeySecret = credential.getAccessKeySecret();
+  var securityToken = credential.getSecurityToken();
+  if (!Util.empty(securityToken)) {
+    httpRequest.headers.x-fc-security-token = securityToken;
+  }
+
+  var resource : string = request.path;
+  var contentMd5 = httpRequest.headers.content-md5;
+  if (Util.isUnset(contentMd5)) {
+    contentMd5 = '';
+  }
+  var contentType = httpRequest.headers.content-type;
+  if (Util.isUnset(contentType)) {
+    contentType = '';
+  }
+  var stringToSign : string = '';
+  var canonicalizedResource = buildCanonicalizedResource(resource);
+  var canonicalizedHeaders = buildCanonicalizedHeaders(httpRequest.headers);
+  stringToSign = `${request.method}\n${contentMd5}\n${contentType}\n${httpRequest.headers.date}\n${canonicalizedHeaders}${canonicalizedResource}`;
+  var signature = EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, accessKeySecret));
+  httpRequest.headers.Authorization = `FC ${accessKeyId}:${signature}`;
+  return httpRequest.headers;
+}
+
+async function buildCanonicalizedResource(pathname: string): string {
+  var paths : [string] = String.split(pathname, `?`, 2);
+  var canonicalizedResource : string = paths[0];
+  var resources : [string] = [];
+  if (Util.equalNumber(Array.size(paths), 2)) {
+    resources = String.split(paths[1], '&', 0);
+  }
+  var sortedParams = Array.ascSort(resources);
+  if (Util.equalNumber(Array.size(sortedParams), 0)) {
+    return `${canonicalizedResource}\n`;
+  }
+  return `${canonicalizedResource}\n${Array.join(sortedParams, '\\n')}`;
+}
+
+async function buildCanonicalizedHeaders(headers: map[string]any): string {
+  var canonicalizedHeaders : string = '';
+  var keys = Map.keySet(headers);
+  var sortedHeaders = Array.ascSort(keys);
+  for(var header : sortedHeaders) {
+    if (String.contains(String.toLower(header), 'x-fc-')) {
+      canonicalizedHeaders = `${canonicalizedHeaders}${String.toLower(header)}:${headers[header]}\n`;
+    }
+  }
+  return canonicalizedHeaders;
 }
