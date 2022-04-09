@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -18,7 +18,7 @@
     "Map": "darabonba:Map:*",
     "Array": "darabonba:Array:*",
     "EncodeUtil": "darabonba:EncodeUtil:*",
-    "SignatureUtil": "alibabacloud:SignatureUtil:*"
+    "SignatureUtil": "darabonba:SignatureUtil:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-sls:^0.0.1",
