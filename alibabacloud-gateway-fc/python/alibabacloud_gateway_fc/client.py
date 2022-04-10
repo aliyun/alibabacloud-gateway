@@ -440,7 +440,8 @@ class Client(SPIClient):
         sorted_params = ArrayClient.asc_sort(result)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return f'{canonicalized_resource}\n'
-        return f"{canonicalized_resource}\n{ArrayClient.join(sorted_params, '\n')}"
+        sub_res = ArrayClient.join(sorted_params, '\n')
+        return f'{canonicalized_resource}\n{sub_res}'
 
     async def build_canonicalized_resource_for_fc_async(
         self,
@@ -467,7 +468,8 @@ class Client(SPIClient):
         sorted_params = ArrayClient.asc_sort(result)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return f'{canonicalized_resource}\n'
-        return f"{canonicalized_resource}\n{ArrayClient.join(sorted_params, '\n')}"
+        sub_res = ArrayClient.join(sorted_params, '\n')
+        return f'{canonicalized_resource}\n{sub_res}'
 
     def build_canonicalized_headers_for_fc(
         self,
@@ -755,7 +757,8 @@ class Client(SPIClient):
         sorted_params = ArrayClient.asc_sort(resources)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return f'{canonicalized_resource}\n'
-        return f"{canonicalized_resource}\n{ArrayClient.join(sorted_params, '\n')}"
+        sub_resources = ArrayClient.join(sorted_params, '\n')
+        return f'{canonicalized_resource}\n{sub_resources}'
 
     async def build_canonicalized_resource_async(
         self,
@@ -769,7 +772,8 @@ class Client(SPIClient):
         sorted_params = ArrayClient.asc_sort(resources)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return f'{canonicalized_resource}\n'
-        return f"{canonicalized_resource}\n{ArrayClient.join(sorted_params, '\n')}"
+        sub_resources = ArrayClient.join(sorted_params, '\n')
+        return f'{canonicalized_resource}\n{sub_resources}'
 
     def build_canonicalized_headers(
         self,

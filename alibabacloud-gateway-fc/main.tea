@@ -243,7 +243,8 @@ async function buildCanonicalizedResourceForFc(pathname: string, query: map[stri
   if (Util.equalNumber(Array.size(sortedParams), 0)) {
     return `${canonicalizedResource}\n`;
   }
-  return `${canonicalizedResource}\n${Array.join(sortedParams, '\\n')}`;
+  var subRes = Array.join(sortedParams, '\\n');
+  return `${canonicalizedResource}\n${subRes}`;
 }
 
 async function buildCanonicalizedHeadersForFc(headers: map[string]string): string {
@@ -393,7 +394,8 @@ async function buildCanonicalizedResource(pathname: string): string {
   if (Util.equalNumber(Array.size(sortedParams), 0)) {
     return `${canonicalizedResource}\n`;
   }
-  return `${canonicalizedResource}\n${Array.join(sortedParams, '\\n')}`;
+  var subResources = Array.join(sortedParams, '\\n');
+  return `${canonicalizedResource}\n${subResources}`;
 }
 
 async function buildCanonicalizedHeaders(headers: map[string]any): string {
