@@ -75,7 +75,7 @@ namespace AlibabaCloud.GatewayFc
                     throw new TeaException(new Dictionary<string, object>
                     {
                         {"code", "" + DefaultAny(popErr.Get("Code"), popErr.Get("code"))},
-                        {"message", "code: " + response.StatusCode + ", " + DefaultAny(popErr.Get("Message"), popErr.Get("message")) + " request id: " + DefaultAny(popErr.Get("RequestId"), popErr.Get("requestId"))},
+                        {"message", "code: " + response.StatusCode + ", " + DefaultAny(popErr.Get("Message"), popErr.Get("message")) + " request id: " + DefaultAny(popErr.Get("RequestID"), popErr.Get("RequestId"))},
                         {"data", popErr},
                     });
                 }
@@ -137,7 +137,7 @@ namespace AlibabaCloud.GatewayFc
                     throw new TeaException(new Dictionary<string, object>
                     {
                         {"code", "" + DefaultAny(popErr.Get("Code"), popErr.Get("code"))},
-                        {"message", "code: " + response.StatusCode + ", " + DefaultAny(popErr.Get("Message"), popErr.Get("message")) + " request id: " + DefaultAny(popErr.Get("RequestId"), popErr.Get("requestId"))},
+                        {"message", "code: " + response.StatusCode + ", " + DefaultAny(popErr.Get("Message"), popErr.Get("message")) + " request id: " + DefaultAny(popErr.Get("RequestID"), popErr.Get("RequestId"))},
                         {"data", popErr},
                     });
                 }
@@ -541,7 +541,8 @@ namespace AlibabaCloud.GatewayFc
             {
                 return "" + canonicalizedResource + "\n";
             }
-            return "" + canonicalizedResource + "\n" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            string subRes = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            return "" + canonicalizedResource + "\n" + subRes;
         }
 
         public async Task<string> BuildCanonicalizedResourceForFcAsync(string pathname, Dictionary<string, string> query)
@@ -580,7 +581,8 @@ namespace AlibabaCloud.GatewayFc
             {
                 return "" + canonicalizedResource + "\n";
             }
-            return "" + canonicalizedResource + "\n" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            string subRes = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            return "" + canonicalizedResource + "\n" + subRes;
         }
 
         public string BuildCanonicalizedHeadersForFc(Dictionary<string, string> headers)
@@ -913,7 +915,8 @@ namespace AlibabaCloud.GatewayFc
             {
                 return "" + canonicalizedResource + "\n";
             }
-            return "" + canonicalizedResource + "\n" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            string subResources = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            return "" + canonicalizedResource + "\n" + subResources;
         }
 
         public async Task<string> BuildCanonicalizedResourceAsync(string pathname)
@@ -932,7 +935,8 @@ namespace AlibabaCloud.GatewayFc
             {
                 return "" + canonicalizedResource + "\n";
             }
-            return "" + canonicalizedResource + "\n" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            string subResources = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(sortedParams, "\n");
+            return "" + canonicalizedResource + "\n" + subResources;
         }
 
         public string BuildCanonicalizedHeaders(Dictionary<string, object> headers)

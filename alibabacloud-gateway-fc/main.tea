@@ -40,7 +40,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       var popErr = Util.assertAsMap(popRes);
       throw {
         code = `${defaultAny(popErr.Code, popErr.code)}`,
-        message = `code: ${response.statusCode}, ${defaultAny(popErr.Message, popErr.message)} request id: ${defaultAny(popErr.RequestId, popErr.requestId)}`,
+        message = `code: ${response.statusCode}, ${defaultAny(popErr.Message, popErr.message)} request id: ${defaultAny(popErr.RequestID, popErr.RequestId)}`,
         data = popErr,
       };
     } else {

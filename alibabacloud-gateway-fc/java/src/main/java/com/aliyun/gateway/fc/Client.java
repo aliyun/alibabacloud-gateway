@@ -48,7 +48,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 java.util.Map<String, Object> popErr = com.aliyun.teautil.Common.assertAsMap(popRes);
                 throw new TeaException(TeaConverter.buildMap(
                     new TeaPair("code", "" + this.defaultAny(popErr.get("Code"), popErr.get("code")) + ""),
-                    new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(popErr.get("Message"), popErr.get("message")) + " request id: " + this.defaultAny(popErr.get("RequestId"), popErr.get("requestId")) + ""),
+                    new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(popErr.get("Message"), popErr.get("message")) + " request id: " + this.defaultAny(popErr.get("RequestID"), popErr.get("RequestId")) + ""),
                     new TeaPair("data", popErr)
                 ));
             } else {
@@ -268,7 +268,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
             return "" + canonicalizedResource + "\n";
         }
 
-        return "" + canonicalizedResource + "\n" + com.aliyun.darabonba.array.Client.join(sortedParams, "\n") + "";
+        String subRes = com.aliyun.darabonba.array.Client.join(sortedParams, "\n");
+        return "" + canonicalizedResource + "\n" + subRes + "";
     }
 
     public String buildCanonicalizedHeadersForFc(java.util.Map<String, String> headers) throws Exception {
@@ -421,7 +422,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
             return "" + canonicalizedResource + "\n";
         }
 
-        return "" + canonicalizedResource + "\n" + com.aliyun.darabonba.array.Client.join(sortedParams, "\n") + "";
+        String subResources = com.aliyun.darabonba.array.Client.join(sortedParams, "\n");
+        return "" + canonicalizedResource + "\n" + subResources + "";
     }
 
     public String buildCanonicalizedHeaders(java.util.Map<String, ?> headers) throws Exception {

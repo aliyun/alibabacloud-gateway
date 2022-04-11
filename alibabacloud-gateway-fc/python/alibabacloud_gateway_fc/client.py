@@ -76,7 +76,7 @@ class Client(SPIClient):
                 pop_err = UtilClient.assert_as_map(pop_res)
                 raise TeaException({
                     'code': f"{self.default_any(pop_err.get('Code'), pop_err.get('code'))}",
-                    'message': f"code: {response.status_code}, {self.default_any(pop_err.get('Message'), pop_err.get('message'))} request id: {self.default_any(pop_err.get('RequestId'), pop_err.get('requestId'))}",
+                    'message': f"code: {response.status_code}, {self.default_any(pop_err.get('Message'), pop_err.get('message'))} request id: {self.default_any(pop_err.get('RequestID'), pop_err.get('RequestId'))}",
                     'data': pop_err
                 })
             else:
@@ -120,7 +120,7 @@ class Client(SPIClient):
                 pop_err = UtilClient.assert_as_map(pop_res)
                 raise TeaException({
                     'code': f"{self.default_any(pop_err.get('Code'), pop_err.get('code'))}",
-                    'message': f"code: {response.status_code}, {self.default_any(pop_err.get('Message'), pop_err.get('message'))} request id: {self.default_any(pop_err.get('RequestId'), pop_err.get('requestId'))}",
+                    'message': f"code: {response.status_code}, {self.default_any(pop_err.get('Message'), pop_err.get('message'))} request id: {self.default_any(pop_err.get('RequestID'), pop_err.get('RequestId'))}",
                     'data': pop_err
                 })
             else:

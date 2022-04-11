@@ -1,16 +1,21 @@
 <?php
 
 // This file is auto-generated, don't edit it. Thanks.
+
 namespace Darabonba\GatewayFc\Models;
 
 use AlibabaCloud\Tea\Model;
 
-class HttpRequest extends Model {
-    public function validate() {
+class HttpRequest extends Model
+{
+    public function validate()
+    {
         Model::validateRequired('method', $this->method, true);
         Model::validateRequired('path', $this->path, true);
     }
-    public function toMap() {
+
+    public function toMap()
+    {
         $res = [];
         if (null !== $this->method) {
             $res['method'] = $this->method;
@@ -27,31 +32,37 @@ class HttpRequest extends Model {
         if (null !== $this->reqBodyType) {
             $res['reqBodyType'] = $this->reqBodyType;
         }
+
         return $res;
     }
+
     /**
      * @param array $map
+     *
      * @return HttpRequest
      */
-    public static function fromMap($map = []) {
+    public static function fromMap($map = [])
+    {
         $model = new self();
-        if(isset($map['method'])){
+        if (isset($map['method'])) {
             $model->method = $map['method'];
         }
-        if(isset($map['path'])){
+        if (isset($map['path'])) {
             $model->path = $map['path'];
         }
-        if(isset($map['headers'])){
+        if (isset($map['headers'])) {
             $model->headers = $map['headers'];
         }
-        if(isset($map['body'])){
+        if (isset($map['body'])) {
             $model->body = $map['body'];
         }
-        if(isset($map['reqBodyType'])){
+        if (isset($map['reqBodyType'])) {
             $model->reqBodyType = $map['reqBodyType'];
         }
+
         return $model;
     }
+
     /**
      * @var string
      */
@@ -67,5 +78,4 @@ class HttpRequest extends Model {
     public $body;
 
     public $reqBodyType;
-
 }

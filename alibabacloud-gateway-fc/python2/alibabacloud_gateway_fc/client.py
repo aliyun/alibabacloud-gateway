@@ -44,7 +44,7 @@ class Client(SPIClient):
                 pop_err = UtilClient.assert_as_map(pop_res)
                 raise TeaException({
                     'code': '%s' % TeaConverter.to_unicode(self.default_any(pop_err.get('Code'), pop_err.get('code'))),
-                    'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(pop_err.get('Message'), pop_err.get('message'))), TeaConverter.to_unicode(self.default_any(pop_err.get('RequestId'), pop_err.get('requestId')))),
+                    'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(pop_err.get('Message'), pop_err.get('message'))), TeaConverter.to_unicode(self.default_any(pop_err.get('RequestID'), pop_err.get('RequestId')))),
                     'data': pop_err
                 })
             else:
@@ -206,7 +206,8 @@ class Client(SPIClient):
         sorted_params = ArrayClient.asc_sort(result)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return '%s\n' % TeaConverter.to_unicode(canonicalized_resource)
-        return '%s\n%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(ArrayClient.join(sorted_params, '\n')))
+        sub_res = ArrayClient.join(sorted_params, '\n')
+        return '%s\n%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(sub_res))
 
     def build_canonicalized_headers_for_fc(self, headers):
         canonicalized_headers = ''
@@ -319,7 +320,8 @@ class Client(SPIClient):
         sorted_params = ArrayClient.asc_sort(resources)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return '%s\n' % TeaConverter.to_unicode(canonicalized_resource)
-        return '%s\n%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(ArrayClient.join(sorted_params, '\n')))
+        sub_resources = ArrayClient.join(sorted_params, '\n')
+        return '%s\n%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(sub_resources))
 
     def build_canonicalized_headers(self, headers):
         canonicalized_headers = ''

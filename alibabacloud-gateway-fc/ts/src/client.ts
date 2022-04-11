@@ -76,7 +76,7 @@ export default class Client extends SPI {
         let popErr = Util.assertAsMap(popRes);
         throw $tea.newError({
           code: `${this.defaultAny(popErr["Code"], popErr["code"])}`,
-          message: `code: ${response.statusCode}, ${this.defaultAny(popErr["Message"], popErr["message"])} request id: ${this.defaultAny(popErr["RequestId"], popErr["requestId"])}`,
+          message: `code: ${response.statusCode}, ${this.defaultAny(popErr["Message"], popErr["message"])} request id: ${this.defaultAny(popErr["RequestID"], popErr["RequestId"])}`,
           data: popErr,
         });
       } else {
@@ -293,7 +293,8 @@ export default class Client extends SPI {
       return `${canonicalizedResource}\n`;
     }
 
-    return `${canonicalizedResource}\n${Array.join(sortedParams, "\n")}`;
+    let subRes = Array.join(sortedParams, "\n");
+    return `${canonicalizedResource}\n${subRes}`;
   }
 
   async buildCanonicalizedHeadersForFc(headers: {[key: string ]: string}): Promise<string> {
@@ -450,7 +451,8 @@ export default class Client extends SPI {
       return `${canonicalizedResource}\n`;
     }
 
-    return `${canonicalizedResource}\n${Array.join(sortedParams, "\n")}`;
+    let subResources = Array.join(sortedParams, "\n");
+    return `${canonicalizedResource}\n${subResources}`;
   }
 
   async buildCanonicalizedHeaders(headers: {[key: string ]: any}): Promise<string> {
