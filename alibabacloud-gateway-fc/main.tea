@@ -292,11 +292,13 @@ async function buildCanonicalizedResourceForPop(query: map[string]string): strin
   if (!Util.isUnset(query)) {
     var queryArray : [string] = Map.keySet(query);
     var sortedQueryArray = Array.ascSort(queryArray);
+    var separator : string = '';
     for(var key : sortedQueryArray) {
-      canonicalizedResource = `${canonicalizedResource}&${EncodeUtil.percentEncode(key)}`;
+      canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
       if (!Util.empty(query[key])) {
         canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
       }
+      separator = '&';
     }
   }
   return canonicalizedResource;

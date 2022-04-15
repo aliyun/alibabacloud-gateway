@@ -320,12 +320,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (!com.aliyun.teautil.Common.isUnset(query)) {
             java.util.List<String> queryArray = com.aliyun.darabonba.map.Client.keySet(query);
             java.util.List<String> sortedQueryArray = com.aliyun.darabonba.array.Client.ascSort(queryArray);
+            String separator = "";
             for (String key : sortedQueryArray) {
-                canonicalizedResource = "" + canonicalizedResource + "&" + com.aliyun.darabonba.encode.Encoder.percentEncode(key) + "";
+                canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + com.aliyun.darabonba.encode.Encoder.percentEncode(key) + "";
                 if (!com.aliyun.teautil.Common.empty(query.get(key))) {
                     canonicalizedResource = "" + canonicalizedResource + "=" + com.aliyun.darabonba.encode.Encoder.percentEncode(query.get(key)) + "";
                 }
 
+                separator = "&";
             }
         }
 

@@ -346,13 +346,15 @@ export default class Client extends SPI {
     if (!Util.isUnset(query)) {
       let queryArray : string[] = Map.keySet(query);
       let sortedQueryArray = Array.ascSort(queryArray);
+      let separator : string = "";
 
       for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}&${EncodeUtil.percentEncode(key)}`;
+        canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
         if (!Util.empty(query[key])) {
           canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
         }
 
+        separator = "&";
       }
     }
 
