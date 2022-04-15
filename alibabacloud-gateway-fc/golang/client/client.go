@@ -510,12 +510,14 @@ func (client *Client) BuildCanonicalizedResourceForPop(query map[string]*string)
 			queryArray = append(queryArray, tea.String(k))
 		}
 		sortedQueryArray := array.AscSort(queryArray)
+		separator := tea.String("")
 		for _, key := range sortedQueryArray {
-			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "&" + tea.StringValue(encodeutil.PercentEncode(key)))
+			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(encodeutil.PercentEncode(key)))
 			if !tea.BoolValue(util.Empty(query[tea.StringValue(key)])) {
 				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(encodeutil.PercentEncode(query[tea.StringValue(key)])))
 			}
 
+			separator = tea.String("&")
 		}
 	}
 

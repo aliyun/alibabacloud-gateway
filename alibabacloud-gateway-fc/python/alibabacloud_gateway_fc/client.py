@@ -589,10 +589,12 @@ class Client(SPIClient):
         if not UtilClient.is_unset(query):
             query_array = MapClient.key_set(query)
             sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
             for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}&{Encoder.percent_encode(key)}'
+                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}'
                 if not UtilClient.empty(query.get(key)):
                     canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                separator = '&'
         return canonicalized_resource
 
     async def build_canonicalized_resource_for_pop_async(
@@ -603,10 +605,12 @@ class Client(SPIClient):
         if not UtilClient.is_unset(query):
             query_array = MapClient.key_set(query)
             sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
             for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}&{Encoder.percent_encode(key)}'
+                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}'
                 if not UtilClient.empty(query.get(key)):
                     canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                separator = '&'
         return canonicalized_resource
 
     def build_canonicalized_headers_for_pop(

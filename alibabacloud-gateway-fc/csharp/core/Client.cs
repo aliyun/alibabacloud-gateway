@@ -694,13 +694,15 @@ namespace AlibabaCloud.GatewayFc
             {
                 List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
                 List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
+                string separator = "";
 
                 foreach (var key in sortedQueryArray) {
-                    canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                    canonicalizedResource = "" + canonicalizedResource + separator + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
                     if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
                     {
                         canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
                     }
+                    separator = "&";
                 }
             }
             return canonicalizedResource;
@@ -713,13 +715,15 @@ namespace AlibabaCloud.GatewayFc
             {
                 List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
                 List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
+                string separator = "";
 
                 foreach (var key in sortedQueryArray) {
-                    canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                    canonicalizedResource = "" + canonicalizedResource + separator + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
                     if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
                     {
                         canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
                     }
+                    separator = "&";
                 }
             }
             return canonicalizedResource;

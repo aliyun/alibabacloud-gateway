@@ -412,11 +412,13 @@ class Client extends DarabonbaGatewaySpiClient
         if (!Utils::isUnset($query)) {
             $queryArray = MapUtil::keySet($query);
             $sortedQueryArray = ArrayUtil::ascSort($queryArray);
+            $separator = '';
             foreach ($sortedQueryArray as $key) {
-                $canonicalizedResource = ''.$canonicalizedResource.'&'.Encoder::percentEncode($key).'';
+                $canonicalizedResource = ''.$canonicalizedResource.''.$separator.''.Encoder::percentEncode($key).'';
                 if (!Utils::empty_(@$query[$key])) {
                     $canonicalizedResource = ''.$canonicalizedResource.'='.Encoder::percentEncode(@$query[$key]).'';
                 }
+                $separator = '&';
             }
         }
 
