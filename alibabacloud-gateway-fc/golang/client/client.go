@@ -405,10 +405,7 @@ func (client *Client) BuildCanonicalizedResourceForFc(pathname *string, query ma
 	tmp := tea.String("")
 	separator := tea.String("")
 	if !tea.BoolValue(util.IsUnset(query)) {
-		var queryList []*string
-		for k := range query {
-			queryList = append(queryList, tea.String(k))
-		}
+		queryList := map_.KeySet(query)
 		for _, paramName := range queryList {
 			tmp = tea.String(tea.StringValue(tmp) + tea.StringValue(separator) + tea.StringValue(paramName))
 			if !tea.BoolValue(util.IsUnset(query[tea.StringValue(paramName)])) {
@@ -434,10 +431,7 @@ func (client *Client) BuildCanonicalizedResourceForFc(pathname *string, query ma
 
 func (client *Client) BuildCanonicalizedHeadersForFc(headers map[string]*string) (_result *string, _err error) {
 	canonicalizedHeaders := tea.String("")
-	var keys []*string
-	for k := range headers {
-		keys = append(keys, tea.String(k))
-	}
+	keys := map_.KeySet(headers)
 	sortedHeaders := array.AscSort(keys)
 	for _, header := range sortedHeaders {
 		if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-fc-"))) {
@@ -505,10 +499,7 @@ func (client *Client) GetSignatureForPop(pathname *string, method *string, query
 func (client *Client) BuildCanonicalizedResourceForPop(query map[string]*string) (_result *string, _err error) {
 	canonicalizedResource := tea.String("")
 	if !tea.BoolValue(util.IsUnset(query)) {
-		var queryArray []*string
-		for k := range query {
-			queryArray = append(queryArray, tea.String(k))
-		}
+		queryArray := map_.KeySet(query)
 		sortedQueryArray := array.AscSort(queryArray)
 		separator := tea.String("")
 		for _, key := range sortedQueryArray {
@@ -540,10 +531,7 @@ func (client *Client) BuildCanonicalizedHeadersForPop(headers map[string]*string
 }
 
 func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*string, _err error) {
-	var headersArray []*string
-	for k := range headers {
-		headersArray = append(headersArray, tea.String(k))
-	}
+	headersArray := map_.KeySet(headers)
 	sortedHeadersArray := array.AscSort(headersArray)
 	tmp := tea.String("")
 	separator := tea.String("")
