@@ -24,7 +24,7 @@ class Client(SPIClient):
 
     def __init__(self):
         super(Client, self).__init__()
-        undefined._default_signed_params = [
+        self._default_signed_params = [
             'location',
             'cors',
             'objectMeta',
@@ -66,7 +66,7 @@ class Client(SPIClient):
             'versioning',
             'versionId'
         ]
-        undefined._except_signed_params = [
+        self._except_signed_params = [
             'list-type',
             'regions'
         ]
@@ -121,17 +121,14 @@ class Client(SPIClient):
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             body_str = UtilClient.read_as_string(response.body)
             resp_map = XMLClient.parse_xml(body_str, None)
-            errors = MapClient.key_set(resp_map)
-            if UtilClient.equal_number(ArrayClient.size(errors), 1):
-                error = errors[0]
-                resp_map = UtilClient.assert_as_map(resp_map.get(error))
+            err = UtilClient.assert_as_map(resp_map.get('Error'))
             raise TeaException({
-                'code': resp_map.get('Code'),
-                'message': resp_map.get('Message'),
+                'code': err.get('Code'),
+                'message': err.get('Message'),
                 'data': {
                     'httpCode': response.status_code,
-                    'requestId': resp_map.get('RequestId'),
-                    'hostId': resp_map.get('HostId')
+                    'requestId': err.get('RequestId'),
+                    'hostId': err.get('HostId')
                 }
             })
         ctx = attribute_map.key

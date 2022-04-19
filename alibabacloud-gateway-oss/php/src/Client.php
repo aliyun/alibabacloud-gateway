@@ -11,11 +11,11 @@ use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\OSSUtils\OSSUtils;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
-use AlibabaCloud\Darabonba\Map\MapUtil;
-use AlibabaCloud\Darabonba\Array_\ArrayUtil;
+use AlibabaCloud\Darabonba\MapUtil\MapUtil;
+use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use \Exception;
-use AlibabaCloud\Darabonba\SignatureUtil\Signer;
-use AlibabaCloud\Darabonba\EncodeUtil\Encoder;
+use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
+use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
@@ -151,18 +151,14 @@ class Client extends DarabonbaGatewaySpiClient {
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $bodyStr = Utils::readAsString($response->body);
             $respMap = XML::parseXml($bodyStr, null);
-            $errors = MapUtil::keySet($respMap);
-            if (Utils::equalNumber(ArrayUtil::size($errors), 1)) {
-                $error = @$errors[0];
-                $respMap = Utils::assertAsMap(@$respMap[$error]);
-            }
+            $err = Utils::assertAsMap(@$respMap["Error"]);
             throw new TeaError([
-                "code" => @$respMap["Code"],
-                "message" => @$respMap["Message"],
+                "code" => @$err["Code"],
+                "message" => @$err["Message"],
                 "data" => [
                     "httpCode" => $response->statusCode,
-                    "requestId" => @$respMap["RequestId"],
-                    "hostId" => @$respMap["HostId"]
+                    "requestId" => @$err["RequestId"],
+                    "hostId" => @$err["HostId"]
                 ]
             ]);
         }
@@ -323,7 +319,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $canonicalizedResource = $this->buildCanonicalizedResource($resource, $query);
         $canonicalizedHeaders = $this->buildCanonicalizedHeaders($headers);
         $stringToSign = "" . $method . "\n" . $canonicalizedHeaders . "" . $canonicalizedResource . "";
-        return Encoder::base64EncodeToString(Signer::HmacSHA1Sign($stringToSign, $secret));
+        return EncodeUtil::base64EncodeToString(SignatureUtil::HmacSHA1Sign($stringToSign, $secret));
     }
 
     /**

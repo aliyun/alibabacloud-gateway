@@ -135,19 +135,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
             java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
-            java.util.List<String> errors = com.aliyun.darabonba.map.Client.keySet(respMap);
-            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(errors), 1)) {
-                String error = errors.get(0);
-                respMap = com.aliyun.teautil.Common.assertAsMap(respMap.get(error));
-            }
-
+            java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(respMap.get("Error"));
             throw new TeaException(TeaConverter.buildMap(
-                new TeaPair("code", respMap.get("Code")),
-                new TeaPair("message", respMap.get("Message")),
+                new TeaPair("code", err.get("Code")),
+                new TeaPair("message", err.get("Message")),
                 new TeaPair("data", TeaConverter.buildMap(
                     new TeaPair("httpCode", response.statusCode),
-                    new TeaPair("requestId", respMap.get("RequestId")),
-                    new TeaPair("hostId", respMap.get("HostId"))
+                    new TeaPair("requestId", err.get("RequestId")),
+                    new TeaPair("hostId", err.get("HostId"))
                 ))
             ));
         }

@@ -131,19 +131,14 @@ export default class Client extends SPI {
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       bodyStr = await Util.readAsString(response.body);
       let respMap : {[key: string ]: any} = XML.parseXml(bodyStr, null);
-      let errors : string[] = Map.keySet(respMap);
-      if (Util.equalNumber(Array.size(errors), 1)) {
-        let error = errors[0];
-        respMap = Util.assertAsMap(respMap[error]);
-      }
-
+      let err : {[key: string ]: any} = Util.assertAsMap(respMap["Error"]);
       throw $tea.newError({
-        code: respMap["Code"],
-        message: respMap["Message"],
+        code: err["Code"],
+        message: err["Message"],
         data: {
           httpCode: response.statusCode,
-          requestId: respMap["RequestId"],
-          hostId: respMap["HostId"],
+          requestId: err["RequestId"],
+          hostId: err["HostId"],
         },
       });
     }

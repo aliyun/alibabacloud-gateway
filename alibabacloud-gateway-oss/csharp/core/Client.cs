@@ -215,21 +215,16 @@ namespace AlibabaCloud.GatewayOss
             {
                 bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
                 Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                List<string> errors = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(respMap);
-                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(errors), 1))
-                {
-                    string error = errors[0];
-                    respMap = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get(error));
-                }
+                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
                 throw new TeaException(new Dictionary<string, object>
                 {
-                    {"code", respMap.Get("Code")},
-                    {"message", respMap.Get("Message")},
+                    {"code", err.Get("Code")},
+                    {"message", err.Get("Message")},
                     {"data", new Dictionary<string, object>
                     {
                         {"httpCode", response.StatusCode},
-                        {"requestId", respMap.Get("RequestId")},
-                        {"hostId", respMap.Get("HostId")},
+                        {"requestId", err.Get("RequestId")},
+                        {"hostId", err.Get("HostId")},
                     }},
                 });
             }
@@ -332,21 +327,16 @@ namespace AlibabaCloud.GatewayOss
             {
                 bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
                 Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                List<string> errors = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(respMap);
-                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(errors), 1))
-                {
-                    string error = errors[0];
-                    respMap = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get(error));
-                }
+                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
                 throw new TeaException(new Dictionary<string, object>
                 {
-                    {"code", respMap.Get("Code")},
-                    {"message", respMap.Get("Message")},
+                    {"code", err.Get("Code")},
+                    {"message", err.Get("Message")},
                     {"data", new Dictionary<string, object>
                     {
                         {"httpCode", response.StatusCode},
-                        {"requestId", respMap.Get("RequestId")},
-                        {"hostId", respMap.Get("HostId")},
+                        {"requestId", err.Get("RequestId")},
+                        {"hostId", err.Get("HostId")},
                     }},
                 });
             }
@@ -611,7 +601,7 @@ namespace AlibabaCloud.GatewayOss
                     List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
 
                     foreach (var sub in subResources) {
-                        bool hasExcepts = false;
+                        bool? hasExcepts = false;
 
                         foreach (var excepts in _except_signed_params) {
                             if (AlibabaCloud.DarabonbaString.StringUtil.Contains(sub, excepts))
@@ -682,7 +672,7 @@ namespace AlibabaCloud.GatewayOss
                     List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
 
                     foreach (var sub in subResources) {
-                        bool hasExcepts = false;
+                        bool? hasExcepts = false;
 
                         foreach (var excepts in _except_signed_params) {
                             if (AlibabaCloud.DarabonbaString.StringUtil.Contains(sub, excepts))
