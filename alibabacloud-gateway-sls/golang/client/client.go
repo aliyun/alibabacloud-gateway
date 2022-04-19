@@ -5,6 +5,7 @@ import (
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
 	encodeutil "github.com/alibabacloud-go/darabonba-encode-util/client"
+	map_ "github.com/alibabacloud-go/darabonba-map/client"
 	signatureutil "github.com/alibabacloud-go/darabonba-signature-util/client"
 	string_ "github.com/alibabacloud-go/darabonba-string/client"
 	util "github.com/alibabacloud-go/tea-utils/service"
@@ -254,10 +255,7 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 func (client *Client) BuildCanonicalizedResource(pathname *string, query map[string]*string) (_result *string, _err error) {
 	canonicalizedResource := pathname
 	if !tea.BoolValue(util.IsUnset(query)) {
-		var queryList []*string
-		for k := range query {
-			queryList = append(queryList, tea.String(k))
-		}
+		queryList := map_.KeySet(query)
 		sortedParams := array.AscSort(queryList)
 		separator := tea.String("?")
 		for _, paramName := range sortedParams {
@@ -287,10 +285,7 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 	}
 
 	canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(contentMd5) + "\n" + tea.StringValue(contentType) + "\n" + tea.StringValue(headers["date"]) + "\n")
-	var keys []*string
-	for k := range headers {
-		keys = append(keys, tea.String(k))
-	}
+	keys := map_.KeySet(headers)
 	sortedHeaders := array.AscSort(keys)
 	for _, header := range sortedHeaders {
 		if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-log-"))) || tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-acs-"))) {

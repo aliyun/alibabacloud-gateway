@@ -63,9 +63,10 @@ export default class Client extends SPI {
 
     }
 
+    let host = await this.getHost(config.network, project, config.endpoint);
     request.headers = {
       accept: "application/json",
-      host: await this.getHost(config.network, project, config.endpoint),
+      host: host,
       date: Util.getDateUTCString(),
       'user-agent': request.userAgent,
       'x-log-apiversion': "0.6.0",
@@ -151,7 +152,8 @@ export default class Client extends SPI {
   }
 
   async getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, ak: string, secret: string): Promise<string> {
-    return `LOG ${ak}:${await this.getSignature(pathname, method, query, headers, secret)}`;
+    let sign = await this.getSignature(pathname, method, query, headers, secret);
+    return `LOG ${ak}:${sign}`;
   }
 
   async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, secret: string): Promise<string> {

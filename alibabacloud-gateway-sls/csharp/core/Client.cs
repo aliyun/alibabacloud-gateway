@@ -77,12 +77,13 @@ namespace AlibabaCloud.GatewaySls
                     request.Headers["content-type"] = "application/json";
                 }
             }
+            string host = GetHost(config.Network, project, config.Endpoint);
             request.Headers = TeaConverter.merge<string>
             (
                 new Dictionary<string, string>()
                 {
                     {"accept", "application/json"},
-                    {"host", GetHost(config.Network, project, config.Endpoint)},
+                    {"host", host},
                     {"date", AlibabaCloud.TeaUtil.Common.GetDateUTCString()},
                     {"user-agent", request.UserAgent},
                     {"x-log-apiversion", "0.6.0"},
@@ -138,12 +139,13 @@ namespace AlibabaCloud.GatewaySls
                     request.Headers["content-type"] = "application/json";
                 }
             }
+            string host = await GetHostAsync(config.Network, project, config.Endpoint);
             request.Headers = TeaConverter.merge<string>
             (
                 new Dictionary<string, string>()
                 {
                     {"accept", "application/json"},
-                    {"host", await GetHostAsync(config.Network, project, config.Endpoint)},
+                    {"host", host},
                     {"date", AlibabaCloud.TeaUtil.Common.GetDateUTCString()},
                     {"user-agent", request.UserAgent},
                     {"x-log-apiversion", "0.6.0"},
@@ -348,12 +350,14 @@ namespace AlibabaCloud.GatewaySls
 
         public string GetAuthorization(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret)
         {
-            return "LOG " + ak + ":" + GetSignature(pathname, method, query, headers, secret);
+            string sign = GetSignature(pathname, method, query, headers, secret);
+            return "LOG " + ak + ":" + sign;
         }
 
         public async Task<string> GetAuthorizationAsync(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret)
         {
-            return "LOG " + ak + ":" + await GetSignatureAsync(pathname, method, query, headers, secret);
+            string sign = await GetSignatureAsync(pathname, method, query, headers, secret);
+            return "LOG " + ak + ":" + sign;
         }
 
         public string GetSignature(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string secret)

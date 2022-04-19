@@ -53,9 +53,10 @@ class Client(SPIClient):
                 request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(str)))
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
+        host = self.get_host(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
-            'host': self.get_host(config.network, project, config.endpoint),
+            'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent,
             'x-log-apiversion': '0.6.0',
@@ -118,7 +119,8 @@ class Client(SPIClient):
         return '%s.%s' % (TeaConverter.to_unicode(project), TeaConverter.to_unicode(endpoint))
 
     def get_authorization(self, pathname, method, query, headers, ak, secret):
-        return 'LOG %s:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(self.get_signature(pathname, method, query, headers, secret)))
+        sign = self.get_signature(pathname, method, query, headers, secret)
+        return 'LOG %s:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
 
     def get_signature(self, pathname, method, query, headers, secret):
         resource = pathname

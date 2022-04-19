@@ -65,10 +65,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
+        String host = this.getHost(config.network, project, config.endpoint);
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("accept", "application/json"),
-                new TeaPair("host", this.getHost(config.network, project, config.endpoint)),
+                new TeaPair("host", host),
                 new TeaPair("date", com.aliyun.teautil.Common.getDateUTCString()),
                 new TeaPair("user-agent", request.userAgent),
                 new TeaPair("x-log-apiversion", "0.6.0"),
@@ -155,7 +156,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getAuthorization(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String ak, String secret) throws Exception {
-        return "LOG " + ak + ":" + this.getSignature(pathname, method, query, headers, secret) + "";
+        String sign = this.getSignature(pathname, method, query, headers, secret);
+        return "LOG " + ak + ":" + sign + "";
     }
 
     public String getSignature(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String secret) throws Exception {

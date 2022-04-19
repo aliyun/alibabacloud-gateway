@@ -68,9 +68,10 @@ class Client(SPIClient):
                 request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(str)))
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
+        host = self.get_host(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
-            'host': self.get_host(config.network, project, config.endpoint),
+            'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent,
             'x-log-apiversion': '0.6.0',
@@ -112,9 +113,10 @@ class Client(SPIClient):
                 request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(str)))
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
+        host = await self.get_host_async(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
-            'host': await self.get_host_async(config.network, project, config.endpoint),
+            'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent,
             'x-log-apiversion': '0.6.0',
@@ -267,7 +269,8 @@ class Client(SPIClient):
         ak: str,
         secret: str,
     ) -> str:
-        return f'LOG {ak}:{self.get_signature(pathname, method, query, headers, secret)}'
+        sign = self.get_signature(pathname, method, query, headers, secret)
+        return f'LOG {ak}:{sign}'
 
     async def get_authorization_async(
         self,
@@ -278,7 +281,8 @@ class Client(SPIClient):
         ak: str,
         secret: str,
     ) -> str:
-        return f'LOG {ak}:{self.get_signature(pathname, method, query, headers, secret)}'
+        sign = await self.get_signature_async(pathname, method, query, headers, secret)
+        return f'LOG {ak}:{sign}'
 
     def get_signature(
         self,
