@@ -7,13 +7,13 @@ use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\Utils\Utils;
-use AlibabaCloud\Darabonba\EncodeUtil\Encoder;
+use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Endpoint\Endpoint;
-use AlibabaCloud\Darabonba\Array_\ArrayUtil;
+use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use AlibabaCloud\Darabonba\String\StringUtil;
-use AlibabaCloud\Darabonba\SignatureUtil\Signer;
-use AlibabaCloud\Darabonba\Map\MapUtil;
+use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
+use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
@@ -55,10 +55,10 @@ class Client extends DarabonbaGatewaySpiClient {
         if (!Utils::isUnset($request->signatureAlgorithm)) {
             $signatureAlgorithm = $request->signatureAlgorithm;
         }
-        $hashedRequestPayload = Encoder::hexEncode(Encoder::hash(Utils::toBytes(""), $signatureAlgorithm));
+        $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes(""), $signatureAlgorithm));
         if (!Utils::isUnset($request->stream)) {
             $tmp = Utils::readAsBytes($request->stream);
-            $hashedRequestPayload = Encoder::hexEncode(Encoder::hash($tmp, $signatureAlgorithm));
+            $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash($tmp, $signatureAlgorithm));
             $request->stream = $tmp;
             $request->headers["content-type"] = "application/octet-stream";
         }
@@ -66,14 +66,14 @@ class Client extends DarabonbaGatewaySpiClient {
             if (!Utils::isUnset($request->body)) {
                 if (Utils::equalString($request->reqBodyType, "json")) {
                     $jsonObj = Utils::toJSONString($request->body);
-                    $hashedRequestPayload = Encoder::hexEncode(Encoder::hash(Utils::toBytes($jsonObj), $signatureAlgorithm));
+                    $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($jsonObj), $signatureAlgorithm));
                     $request->stream = $jsonObj;
                     $request->headers["content-type"] = "application/json; charset=utf-8";
                 }
                 else {
                     $m = Utils::assertAsMap($request->body);
                     $formObj = OpenApiUtilClient::toForm($m);
-                    $hashedRequestPayload = Encoder::hexEncode(Encoder::hash(Utils::toBytes($formObj), $signatureAlgorithm));
+                    $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($formObj), $signatureAlgorithm));
                     $request->stream = $formObj;
                     $request->headers["content-type"] = "application/x-www-form-urlencoded";
                 }
@@ -101,7 +101,6 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function modifyResponse($context, $attributeMap){
         $request = $context->request;
-        $config = $context->configuration;
         $response = $context->response;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $_res = Utils::readAsJSON($response->body);
@@ -183,7 +182,9 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function getAuthorization($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $ak, $secret){
         $signature = $this->getSignature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $secret);
-        return "" . $signatureAlgorithm . "  Credential=" . $ak . ",SignedHeaders=" . ArrayUtil::join($this->getSignedHeaders($headers), ";") . ",Signature=" . $signature . "";
+        $signedHeaders = $this->getSignedHeaders($headers);
+        $signedHeadersStr = ArrayUtil::join($signedHeaders, ";");
+        return "" . $signatureAlgorithm . "  Credential=" . $ak . ",SignedHeaders=" . $signedHeadersStr . ",Signature=" . $signature . "";
     }
 
     /**
@@ -205,20 +206,21 @@ class Client extends DarabonbaGatewaySpiClient {
         $canonicalizedResource = $this->buildCanonicalizedResource($query);
         $canonicalizedHeaders = $this->buildCanonicalizedHeaders($headers);
         $signedHeaders = $this->getSignedHeaders($headers);
-        $stringToSign = "" . $method . "\n" . $canonicalURI . "\n" . $canonicalizedResource . "\n" . $canonicalizedHeaders . "\n" . ArrayUtil::join($signedHeaders, ";") . "\n" . $payload . "";
-        $hex = Encoder::hexEncode(Encoder::hash(Utils::toBytes($stringToSign), $signatureAlgorithm));
+        $signedHeadersStr = ArrayUtil::join($signedHeaders, ";");
+        $stringToSign = "" . $method . "\n" . $canonicalURI . "\n" . $canonicalizedResource . "\n" . $canonicalizedHeaders . "\n" . $signedHeadersStr . "\n" . $payload . "";
+        $hex = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($stringToSign), $signatureAlgorithm));
         $stringToSign = "" . $signatureAlgorithm . "\n" . $hex . "";
         $signature = Utils::toBytes("");
         if (StringUtil::equals($signatureAlgorithm, "ACS3-HMAC-SHA256")) {
-            $signature = Signer::HmacSHA256Sign($stringToSign, $secret);
+            $signature = SignatureUtil::HmacSHA256Sign($stringToSign, $secret);
         }
         else if (StringUtil::equals($signatureAlgorithm, "ACS3-HMAC-SM3")) {
-            $signature = Signer::HmacSM3Sign($stringToSign, $secret);
+            $signature = SignatureUtil::HmacSM3Sign($stringToSign, $secret);
         }
         else if (StringUtil::equals($signatureAlgorithm, "ACS3-RSA-SHA256")) {
-            $signature = Signer::SHA256withRSASign($stringToSign, $secret);
+            $signature = SignatureUtil::SHA256withRSASign($stringToSign, $secret);
         }
-        return Encoder::hexEncode($signature);
+        return EncodeUtil::hexEncode($signature);
     }
 
     /**
@@ -230,11 +232,13 @@ class Client extends DarabonbaGatewaySpiClient {
         if (!Utils::isUnset($query)) {
             $queryArray = MapUtil::keySet($query);
             $sortedQueryArray = ArrayUtil::ascSort($queryArray);
+            $separator = "";
             foreach($sortedQueryArray as $key){
-                $canonicalizedResource = "" . $canonicalizedResource . "&" . Encoder::percentEncode($key) . "";
+                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . EncodeUtil::percentEncode($key) . "";
                 if (!Utils::empty_(@$query[$key])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "=" . Encoder::percentEncode(@$query[$key]) . "";
+                    $canonicalizedResource = "" . $canonicalizedResource . "=" . EncodeUtil::percentEncode(@$query[$key]) . "";
                 }
+                $separator = "&";
             }
         }
         return $canonicalizedResource;

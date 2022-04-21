@@ -173,7 +173,6 @@ namespace AlibabaCloud.GatewayPop
         public void ModifyResponse(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
@@ -221,7 +220,6 @@ namespace AlibabaCloud.GatewayPop
         public async Task ModifyResponseAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
@@ -291,13 +289,17 @@ namespace AlibabaCloud.GatewayPop
         public string GetAuthorization(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, string secret)
         {
             string signature = GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(GetSignedHeaders(headers), ";") + ",Signature=" + signature;
+            List<string> signedHeaders = GetSignedHeaders(headers);
+            string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
+            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
         }
 
         public async Task<string> GetAuthorizationAsync(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, string secret)
         {
             string signature = await GetSignatureAsync(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(await GetSignedHeadersAsync(headers), ";") + ",Signature=" + signature;
+            List<string> signedHeaders = await GetSignedHeadersAsync(headers);
+            string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
+            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
         }
 
         public string GetSignature(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string secret)
@@ -311,7 +313,8 @@ namespace AlibabaCloud.GatewayPop
             string canonicalizedResource = BuildCanonicalizedResource(query);
             string canonicalizedHeaders = BuildCanonicalizedHeaders(headers);
             List<string> signedHeaders = GetSignedHeaders(headers);
-            stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";") + "\n" + payload;
+            string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
+            stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
             string hex = AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(stringToSign), signatureAlgorithm));
             stringToSign = "" + signatureAlgorithm + "\n" + hex;
             byte[] signature = AlibabaCloud.TeaUtil.Common.ToBytes("");
@@ -341,7 +344,8 @@ namespace AlibabaCloud.GatewayPop
             string canonicalizedResource = await BuildCanonicalizedResourceAsync(query);
             string canonicalizedHeaders = await BuildCanonicalizedHeadersAsync(headers);
             List<string> signedHeaders = await GetSignedHeadersAsync(headers);
-            stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";") + "\n" + payload;
+            string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
+            stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
             string hex = AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(stringToSign), signatureAlgorithm));
             stringToSign = "" + signatureAlgorithm + "\n" + hex;
             byte[] signature = AlibabaCloud.TeaUtil.Common.ToBytes("");
@@ -367,13 +371,15 @@ namespace AlibabaCloud.GatewayPop
             {
                 List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
                 List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
+                string separator = "";
 
                 foreach (var key in sortedQueryArray) {
-                    canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                    canonicalizedResource = "" + canonicalizedResource + separator + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
                     if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
                     {
                         canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
                     }
+                    separator = "&";
                 }
             }
             return canonicalizedResource;
@@ -386,13 +392,15 @@ namespace AlibabaCloud.GatewayPop
             {
                 List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
                 List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
+                string separator = "";
 
                 foreach (var key in sortedQueryArray) {
-                    canonicalizedResource = "" + canonicalizedResource + "&" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                    canonicalizedResource = "" + canonicalizedResource + separator + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
                     if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(key)))
                     {
                         canonicalizedResource = "" + canonicalizedResource + "=" + AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(key));
                     }
+                    separator = "&";
                 }
             }
             return canonicalizedResource;

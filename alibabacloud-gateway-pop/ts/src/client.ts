@@ -86,7 +86,6 @@ export default class Client extends SPI {
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
-    let config = context.configuration;
     let response = context.response;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       let _res = await Util.readAsJSON(response.body);
@@ -142,7 +141,9 @@ export default class Client extends SPI {
 
   async getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, secret: string): Promise<string> {
     let signature = await this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-    return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${Array.join(await this.getSignedHeaders(headers), ";")},Signature=${signature}`;
+    let signedHeaders = await this.getSignedHeaders(headers);
+    let signedHeadersStr = Array.join(signedHeaders, ";");
+    return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
   async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, secret: string): Promise<string> {
@@ -155,7 +156,8 @@ export default class Client extends SPI {
     let canonicalizedResource = await this.buildCanonicalizedResource(query);
     let canonicalizedHeaders = await this.buildCanonicalizedHeaders(headers);
     let signedHeaders = await this.getSignedHeaders(headers);
-    stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${Array.join(signedHeaders, ";")}\n${payload}`;
+    let signedHeadersStr = Array.join(signedHeaders, ";");
+    stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
     let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
     let signature = Util.toBytes("");
@@ -175,13 +177,15 @@ export default class Client extends SPI {
     if (!Util.isUnset(query)) {
       let queryArray : string[] = Map.keySet(query);
       let sortedQueryArray = Array.ascSort(queryArray);
+      let separator : string = "";
 
       for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}&${EncodeUtil.percentEncode(key)}`;
+        canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
         if (!Util.empty(query[key])) {
           canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
         }
 
+        separator = "&";
       }
     }
 

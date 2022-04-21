@@ -41,9 +41,9 @@
     </repository>
   </distributionManagement>
   <scm>
-    <connection></connection>
-    <developerConnection></developerConnection>
-    <url></url>
+    <connection/>
+    <developerConnection/>
+    <url/>
   </scm>
   <dependencies>
     <dependency>
@@ -84,7 +84,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>darabonba-signature-util</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3</version>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>

@@ -142,7 +142,6 @@ class Client(SPIClient):
         attribute_map: spi_models.AttributeMap,
     ) -> None:
         request = context.request
-        config = context.configuration
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             _res = UtilClient.read_as_json(response.body)
@@ -177,7 +176,6 @@ class Client(SPIClient):
         attribute_map: spi_models.AttributeMap,
     ) -> None:
         request = context.request
-        config = context.configuration
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             _res = await UtilClient.read_as_json_async(response.body)
@@ -243,7 +241,9 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, secret)
-        return f"{signature_algorithm}  Credential={ak},SignedHeaders={ArrayClient.join(self.get_signed_headers(headers), ';')},Signature={signature}"
+        signed_headers = self.get_signed_headers(headers)
+        signed_headers_str = ArrayClient.join(signed_headers, ';')
+        return f'{signature_algorithm}  Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
 
     async def get_authorization_async(
         self,
@@ -257,7 +257,9 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         signature = await self.get_signature_async(pathname, method, query, headers, signature_algorithm, payload, secret)
-        return f"{signature_algorithm}  Credential={ak},SignedHeaders={ArrayClient.join(self.get_signed_headers(headers), ';')},Signature={signature}"
+        signed_headers = await self.get_signed_headers_async(headers)
+        signed_headers_str = ArrayClient.join(signed_headers, ';')
+        return f'{signature_algorithm}  Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
 
     def get_signature(
         self,
@@ -276,7 +278,8 @@ class Client(SPIClient):
         canonicalized_resource = self.build_canonicalized_resource(query)
         canonicalized_headers = self.build_canonicalized_headers(headers)
         signed_headers = self.get_signed_headers(headers)
-        string_to_sign = f"{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{ArrayClient.join(signed_headers, ';')}\n{payload}"
+        signed_headers_str = ArrayClient.join(signed_headers, ';')
+        string_to_sign = f'{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = UtilClient.to_bytes('')
@@ -305,7 +308,8 @@ class Client(SPIClient):
         canonicalized_resource = await self.build_canonicalized_resource_async(query)
         canonicalized_headers = await self.build_canonicalized_headers_async(headers)
         signed_headers = await self.get_signed_headers_async(headers)
-        string_to_sign = f"{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{ArrayClient.join(signed_headers, ';')}\n{payload}"
+        signed_headers_str = ArrayClient.join(signed_headers, ';')
+        string_to_sign = f'{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = UtilClient.to_bytes('')
@@ -325,10 +329,12 @@ class Client(SPIClient):
         if not UtilClient.is_unset(query):
             query_array = MapClient.key_set(query)
             sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
             for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}&{Encoder.percent_encode(key)}'
+                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}'
                 if not UtilClient.empty(query.get(key)):
                     canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                separator = '&'
         return canonicalized_resource
 
     async def build_canonicalized_resource_async(
@@ -339,10 +345,12 @@ class Client(SPIClient):
         if not UtilClient.is_unset(query):
             query_array = MapClient.key_set(query)
             sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
             for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}&{Encoder.percent_encode(key)}'
+                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}'
                 if not UtilClient.empty(query.get(key)):
                     canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                separator = '&'
         return canonicalized_resource
 
     def build_canonicalized_headers(

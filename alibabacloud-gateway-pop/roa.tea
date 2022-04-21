@@ -26,56 +26,52 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   var request = context.request;
   var config = context.configuration;
   request.headers = {
+    date = Util.getDateUTCString(),
     host = config.endpoint,
     x-acs-version = request.version,
     x-acs-action = request.action,
     user-agent = request.userAgent,
-    x-acs-date = OpenApiUtil.getTimestamp(),
     x-acs-signature-nonce = Util.getNonce(),
+    x-acs-signature-method = 'HMAC-SHA1',
+    x-acs-signature-version = '1.0',
     accept = 'application/json',
     ...request.headers
   };
-  var signatureAlgorithm : string = 'ACS3-HMAC-SHA256';
-  if (!Util.isUnset(request.signatureAlgorithm)) {
-    signatureAlgorithm = request.signatureAlgorithm;
-  }
-  var hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(''), signatureAlgorithm));
 
   if (!Util.isUnset(request.stream)) {
     var tmp = Util.readAsBytes(request.stream);
-    hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(tmp, signatureAlgorithm));
     request.stream = tmp;
     request.headers.content-type = 'application/octet-stream';
   } else {
     if (!Util.isUnset(request.body)) {
       if (Util.equalString(request.reqBodyType, 'json')) {
         var jsonObj = Util.toJSONString(request.body);
-        hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(jsonObj), signatureAlgorithm));
         request.stream = jsonObj;
         request.headers.content-type = 'application/json; charset=utf-8';
       } else {
         var m = Util.assertAsMap(request.body);
         var formObj = OpenApiUtil.toForm(m);
-        hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(formObj), signatureAlgorithm));
         request.stream = formObj;
         request.headers.content-type = 'application/x-www-form-urlencoded';
       }
     }
   }
 
-  request.headers.x-acs-content-sha256 = hashedRequestPayload;
-
   if (!Util.equalString(request.authType, 'Anonymous')) {
     var credential : Credential = request.credential;
     var accessKeyId = credential.getAccessKeyId();
     var accessKeySecret = credential.getAccessKeySecret();
     var securityToken = credential.getSecurityToken();
-
-    if (!Util.empty(securityToken)) {
-      request.headers.x-acs-accesskey-id = accessKeyId;
-      request.headers.x-acs-security-token = securityToken;
+    var bearerToken = credential.getBearerToken();
+    if (!Util.empty(bearerToken)) {
+        request.headers.x-acs-bearer-token = bearerToken;
+        request.headers.Authorization = `Bearer ${bearerToken}`;
+    } else {
+        if (!Util.empty(securityToken)) {
+          request.headers.x-acs-security-token = securityToken;
+        }
+        request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
     }
-    request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, accessKeySecret);
   }
 }
 
@@ -130,47 +126,30 @@ function defaultAny(inputValue: any, defaultValue: any): any {
   return inputValue;
 }
 
-async function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, secret: string): string {
-  var signature = getSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-  var signedHeaders = getSignedHeaders(headers);
-  var signedHeadersStr = Array.join(signedHeaders, ';');
-  return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+async function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string): string {
+  var signature = getSignature(pathname, method, query, headers, secret);
+  return `acs ${ak}:${signature}`;
 }
 
-async function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, secret: string): string {
-  var canonicalURI : string = '/';
-  if (!Util.empty(pathname)) {
-    canonicalURI = pathname;
-  }
+async function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {
   var stringToSign : string = '';
-  var canonicalizedResource = buildCanonicalizedResource(query);
+  var canonicalizedResource = buildCanonicalizedResource(pathname, query);
   var canonicalizedHeaders = buildCanonicalizedHeaders(headers);
-  var signedHeaders = getSignedHeaders(headers);
-  var signedHeadersStr = Array.join(signedHeaders, ';');
-  stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
-  var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
-  stringToSign = `${signatureAlgorithm}\n${hex}`;
-  var signature = Util.toBytes('');
-  if (String.equals(signatureAlgorithm, 'ACS3-HMAC-SHA256')) {
-    signature = SignatureUtil.HmacSHA256Sign(stringToSign, secret);
-  } else if (String.equals(signatureAlgorithm, 'ACS3-HMAC-SM3')) {
-    signature = SignatureUtil.HmacSM3Sign(stringToSign, secret);
-  } else if (String.equals(signatureAlgorithm, 'ACS3-RSA-SHA256')) {
-    signature = SignatureUtil.SHA256withRSASign(stringToSign, secret);
-  }
-  return EncodeUtil.hexEncode(signature);
+  stringToSign = `${method}\n${canonicalizedHeaders}${canonicalizedResource}`;
+  var signature = SignatureUtil.HmacSHA1Sign(stringToSign, secret);
+  return EncodeUtil.base64EncodeToString(signature);
 }
 
-async function buildCanonicalizedResource(query: map[string]string): string {
-  var canonicalizedResource : string = '';
+async function buildCanonicalizedResource(pathname: string, query: map[string]string): string {
+  var canonicalizedResource : string = pathname;
   if (!Util.isUnset(query)) {
     var queryArray : [string] = Map.keySet(query);
     var sortedQueryArray = Array.ascSort(queryArray);
-    var separator : string = '';
+    var separator : string = '?';
     for(var key : sortedQueryArray) {
-      canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
+      canonicalizedResource = `${canonicalizedResource}${separator}${key}`;
       if (!Util.empty(query[key])) {
-        canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+        canonicalizedResource = `${canonicalizedResource}=${query[key]}`;
       }
       separator = '&';
     }
@@ -179,10 +158,28 @@ async function buildCanonicalizedResource(query: map[string]string): string {
 }
 
 async function buildCanonicalizedHeaders(headers: map[string]string): string {
-  var canonicalizedHeaders : string = '';
+  var accept = headers.accept;
+  if (Util.isUnset(accept)) {
+    accept = '';
+  }
+  var contentMd5 = headers.content-md5;
+  if (Util.isUnset(contentMd5)) {
+    contentMd5 = '';
+  }
+  var contentType = headers.content-type;
+  if (Util.isUnset(contentType)) {
+    contentType = '';
+  }
+  var date = headers.date;
+  if (Util.isUnset(date)) {
+    date = '';
+  }
+  var canonicalizedHeaders : string = `${accept}\n${contentMd5}\n${contentType}\n${date}\n`;
   var sortedHeaders : [string] = getSignedHeaders(headers);
   for(var header : sortedHeaders) {
-    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
+    var value = headers[header];
+    var valueTrim = String.trim(value);
+    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${valueTrim}\n`;
   }
   return canonicalizedHeaders;
 }
@@ -194,8 +191,7 @@ async function getSignedHeaders(headers: map[string]string): [string] {
   var separator : string = '';
   for(var key : sortedHeadersArray) {
     var lowerKey = String.toLower(key);
-    if (String.hasPrefix(lowerKey, 'x-acs-') || String.equals(lowerKey, 'host')
-            || String.equals(lowerKey, 'content-type')) {
+    if (String.hasPrefix(lowerKey, 'x-acs-')) {
       if (!String.contains(tmp, lowerKey)) {
         tmp = `${tmp}${separator}${lowerKey}`;
         separator = ';';

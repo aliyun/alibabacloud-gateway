@@ -73,7 +73,6 @@ class Client(SPIClient):
 
     def modify_response(self, context, attribute_map):
         request = context.request
-        config = context.configuration
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             _res = UtilClient.read_as_json(response.body)
@@ -116,7 +115,9 @@ class Client(SPIClient):
 
     def get_authorization(self, pathname, method, query, headers, signature_algorithm, payload, ak, secret):
         signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, secret)
-        return '%s  Credential=%s,SignedHeaders=%s,Signature=%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(ak), TeaConverter.to_unicode(ArrayClient.join(self.get_signed_headers(headers), ';')), TeaConverter.to_unicode(signature))
+        signed_headers = self.get_signed_headers(headers)
+        signed_headers_str = ArrayClient.join(signed_headers, ';')
+        return '%s  Credential=%s,SignedHeaders=%s,Signature=%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(ak), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(signature))
 
     def get_signature(self, pathname, method, query, headers, signature_algorithm, payload, secret):
         canonical_uri = '/'
@@ -126,7 +127,8 @@ class Client(SPIClient):
         canonicalized_resource = self.build_canonicalized_resource(query)
         canonicalized_headers = self.build_canonicalized_headers(headers)
         signed_headers = self.get_signed_headers(headers)
-        string_to_sign = '%s\n%s\n%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(method), TeaConverter.to_unicode(canonical_uri), TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(ArrayClient.join(signed_headers, ';')), TeaConverter.to_unicode(payload))
+        signed_headers_str = ArrayClient.join(signed_headers, ';')
+        string_to_sign = '%s\n%s\n%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(method), TeaConverter.to_unicode(canonical_uri), TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(payload))
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = '%s\n%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(hex))
         signature = UtilClient.to_bytes('')
@@ -143,10 +145,12 @@ class Client(SPIClient):
         if not UtilClient.is_unset(query):
             query_array = MapClient.key_set(query)
             sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
             for key in sorted_query_array:
-                canonicalized_resource = '%s&%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(key)))
+                canonicalized_resource = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(Encoder.percent_encode(key)))
                 if not UtilClient.empty(query.get(key)):
                     canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(query.get(key))))
+                separator = '&'
         return canonicalized_resource
 
     def build_canonicalized_headers(self, headers):

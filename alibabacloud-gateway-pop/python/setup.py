@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_pop.
 
-Created on 29/03/2022
+Created on 21/04/2022
 
 @author: Alibaba Cloud SDK
 """
@@ -43,10 +43,10 @@ REQUIRES = [
     "alibabacloud_openapi_util>=0.1.6, <1.0.0",
     "alibabacloud_endpoint_util>=0.0.3, <1.0.0",
     "alibabacloud_darabonba_encode_util>=0.0.1, <1.0.0",
-    "alibabacloud_darabonba_signature_util>=0.0.2, <1.0.0",
+    "alibabacloud_darabonba_signature_util>=0.0.3, <1.0.0",
     "alibabacloud_darabonba_string>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map>=0.0.1, <1.0.0",
-    "alibabacloud_darabonba_array>=0.0.1, <1.0.0"
+    "alibabacloud_darabonba_array>=0.0.4, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''
