@@ -287,7 +287,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public String getAuthorizationForPop(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, String ak, String secret) throws Exception {
         String signature = this.getSignatureForPop(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-        return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + com.aliyun.darabonba.array.Client.join(this.getSignedHeaders(headers), ";") + ",Signature=" + signature + "";
+        java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
+        return "" + signatureAlgorithm + " Credential=" + ak + ",SignedHeaders=" + com.aliyun.darabonba.array.Client.join(signedHeaders, ";") + ",Signature=" + signature + "";
     }
 
     public String getSignatureForPop(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, String secret) throws Exception {

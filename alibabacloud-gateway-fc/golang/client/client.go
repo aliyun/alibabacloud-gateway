@@ -453,7 +453,8 @@ func (client *Client) GetAuthorizationForPop(pathname *string, method *string, q
 	if _err != nil {
 		return _result, _err
 	}
-	_result = tea.String(tea.StringValue(signatureAlgorithm) + "  Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(array.Join(signedHeaders, tea.String(";"))) + ",Signature=" + tea.StringValue(signature))
+
+	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(array.Join(signedHeaders, tea.String(";"))) + ",Signature=" + tea.StringValue(signature))
 	return _result, _err
 }
 
@@ -647,7 +648,7 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]interface{}) 
 	sortedHeaders := array.AscSort(keys)
 	for _, header := range sortedHeaders {
 		if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-fc-"))) {
-			canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(string_.ToLower(header)) + ":" + tea.ToString(headers[tea.StringValue(header)]) + "\n")
+			canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(string_.ToLower(header)) + ":" + tea.ToString(headers[header]) + "\n")
 		}
 
 	}

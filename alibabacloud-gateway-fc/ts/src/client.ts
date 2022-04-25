@@ -313,7 +313,8 @@ export default class Client extends SPI {
 
   async getAuthorizationForPop(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, secret: string): Promise<string> {
     let signature = await this.getSignatureForPop(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-    return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${Array.join(await this.getSignedHeaders(headers), ";")},Signature=${signature}`;
+    let signedHeaders = await this.getSignedHeaders(headers);
+    return `${signatureAlgorithm} Credential=${ak},SignedHeaders=${Array.join(signedHeaders, ";")},Signature=${signature}`;
   }
 
   async getSignatureForPop(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, secret: string): Promise<string> {

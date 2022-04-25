@@ -361,8 +361,9 @@ class Client extends DarabonbaGatewaySpiClient
     public function getAuthorizationForPop($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $ak, $secret)
     {
         $signature = $this->getSignatureForPop($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $secret);
+        $signedHeaders = $this->getSignedHeaders($headers);
 
-        return ''.$signatureAlgorithm.'  Credential='.$ak.',SignedHeaders='.ArrayUtil::join($this->getSignedHeaders($headers), ';').',Signature='.$signature.'';
+        return ''.$signatureAlgorithm.' Credential='.$ak.',SignedHeaders='.ArrayUtil::join($signedHeaders, ';').',Signature='.$signature.'';
     }
 
     /**

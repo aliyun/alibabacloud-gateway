@@ -618,13 +618,15 @@ namespace AlibabaCloud.GatewayFc
         public string GetAuthorizationForPop(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, string secret)
         {
             string signature = GetSignatureForPop(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(GetSignedHeaders(headers), ";") + ",Signature=" + signature;
+            List<string> signedHeaders = GetSignedHeaders(headers);
+            return "" + signatureAlgorithm + " Credential=" + ak + ",SignedHeaders=" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";") + ",Signature=" + signature;
         }
 
         public async Task<string> GetAuthorizationForPopAsync(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, string secret)
         {
             string signature = await GetSignatureForPopAsync(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(await GetSignedHeadersAsync(headers), ";") + ",Signature=" + signature;
+            List<string> signedHeaders = await GetSignedHeadersAsync(headers);
+            return "" + signatureAlgorithm + " Credential=" + ak + ",SignedHeaders=" + AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";") + ",Signature=" + signature;
         }
 
         public string GetSignatureForPop(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string secret)

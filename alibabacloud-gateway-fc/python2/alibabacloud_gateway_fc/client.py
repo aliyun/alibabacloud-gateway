@@ -220,7 +220,8 @@ class Client(SPIClient):
 
     def get_authorization_for_pop(self, pathname, method, query, headers, signature_algorithm, payload, ak, secret):
         signature = self.get_signature_for_pop(pathname, method, query, headers, signature_algorithm, payload, secret)
-        return '%s  Credential=%s,SignedHeaders=%s,Signature=%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(ak), TeaConverter.to_unicode(ArrayClient.join(self.get_signed_headers(headers), ';')), TeaConverter.to_unicode(signature))
+        signed_headers = self.get_signed_headers(headers)
+        return '%s Credential=%s,SignedHeaders=%s,Signature=%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(ak), TeaConverter.to_unicode(ArrayClient.join(signed_headers, ';')), TeaConverter.to_unicode(signature))
 
     def get_signature_for_pop(self, pathname, method, query, headers, signature_algorithm, payload, secret):
         canonical_uri = '/'

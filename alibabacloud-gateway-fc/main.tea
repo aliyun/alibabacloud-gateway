@@ -261,7 +261,8 @@ async function buildCanonicalizedHeadersForFc(headers: map[string]string): strin
 
 async function getAuthorizationForPop(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, secret: string): string {
   var signature = getSignatureForPop(pathname, method, query, headers, signatureAlgorithm, payload, secret);
-  return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${Array.join(getSignedHeaders(headers), ';')},Signature=${signature}`;
+  var signedHeaders = getSignedHeaders(headers);
+  return `${signatureAlgorithm} Credential=${ak},SignedHeaders=${Array.join(signedHeaders, ';')},Signature=${signature}`;
 }
 
 async function getSignatureForPop(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, secret: string): string {

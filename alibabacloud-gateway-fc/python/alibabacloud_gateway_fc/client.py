@@ -507,7 +507,8 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         signature = self.get_signature_for_pop(pathname, method, query, headers, signature_algorithm, payload, secret)
-        return f"{signature_algorithm}  Credential={ak},SignedHeaders={ArrayClient.join(self.get_signed_headers(headers), ';')},Signature={signature}"
+        signed_headers = self.get_signed_headers(headers)
+        return f"{signature_algorithm} Credential={ak},SignedHeaders={ArrayClient.join(signed_headers, ';')},Signature={signature}"
 
     async def get_authorization_for_pop_async(
         self,
@@ -521,7 +522,8 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         signature = await self.get_signature_for_pop_async(pathname, method, query, headers, signature_algorithm, payload, secret)
-        return f"{signature_algorithm}  Credential={ak},SignedHeaders={ArrayClient.join(self.get_signed_headers(headers), ';')},Signature={signature}"
+        signed_headers = await self.get_signed_headers_async(headers)
+        return f"{signature_algorithm} Credential={ak},SignedHeaders={ArrayClient.join(signed_headers, ';')},Signature={signature}"
 
     def get_signature_for_pop(
         self,
