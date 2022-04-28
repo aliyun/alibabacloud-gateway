@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayFC",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -22,13 +22,13 @@
     "Array": "darabonba:Array:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-fc:^0.0.4",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-fc/client:v0.0.5",
-    "java": "com.aliyun:alibabacloud-gateway-fc:0.0.4",
-    "python": "alibabacloud_gateway_fc:0.0.4",
-    "python2": "alibabacloud_gateway_fc_py2:0.0.4",
-    "csharp": "AlibabaCloud.GatewayFc:0.0.4",
-    "php": "alibabacloud/gateway-fc:^0.0.4"
+    "ts": "@alicloud/gateway-fc:^0.0.5",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-fc/client:v0.0.6",
+    "java": "com.aliyun:alibabacloud-gateway-fc:0.0.5",
+    "python": "alibabacloud_gateway_fc:0.0.5",
+    "python2": "alibabacloud_gateway_fc_py2:0.0.5",
+    "csharp": "AlibabaCloud.GatewayFc:0.0.5",
+    "php": "alibabacloud/gateway-fc:^0.0.5"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayFc",
