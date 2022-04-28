@@ -704,7 +704,7 @@ class Client(SPIClient):
         string_to_sign = ''
         canonicalized_resource = self.build_canonicalized_resource(resource)
         canonicalized_headers = self.build_canonicalized_headers(http_request.headers)
-        string_to_sign = f"{request.method}\n{content_md_5}\n{content_type}\n{http_request.headers.get('date')}\n{canonicalized_headers}{canonicalized_resource}"
+        string_to_sign = f"{request.method}\n{UtilClient.to_jsonstring(content_md_5)}\n{UtilClient.to_jsonstring(content_type)}\n{UtilClient.to_jsonstring(http_request.headers.get('date'))}\n{canonicalized_headers}{canonicalized_resource}"
         signature = Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, access_key_secret))
         http_request.headers['Authorization'] = f'FC {access_key_id}:{signature}'
         return http_request.headers
@@ -746,7 +746,7 @@ class Client(SPIClient):
         string_to_sign = ''
         canonicalized_resource = await self.build_canonicalized_resource_async(resource)
         canonicalized_headers = await self.build_canonicalized_headers_async(http_request.headers)
-        string_to_sign = f"{request.method}\n{content_md_5}\n{content_type}\n{http_request.headers.get('date')}\n{canonicalized_headers}{canonicalized_resource}"
+        string_to_sign = f"{request.method}\n{UtilClient.to_jsonstring(content_md_5)}\n{UtilClient.to_jsonstring(content_type)}\n{UtilClient.to_jsonstring(http_request.headers.get('date'))}\n{canonicalized_headers}{canonicalized_resource}"
         signature = Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, access_key_secret))
         http_request.headers['Authorization'] = f'FC {access_key_id}:{signature}'
         return http_request.headers
@@ -790,7 +790,7 @@ class Client(SPIClient):
         sorted_headers = ArrayClient.asc_sort(keys)
         for header in sorted_headers:
             if StringClient.contains(StringClient.to_lower(header), 'x-fc-'):
-                canonicalized_headers = f'{canonicalized_headers}{StringClient.to_lower(header)}:{headers.get(header)}\n'
+                canonicalized_headers = f'{canonicalized_headers}{StringClient.to_lower(header)}:{UtilClient.to_jsonstring(headers.get(header))}\n'
         return canonicalized_headers
 
     async def build_canonicalized_headers_async(
@@ -802,5 +802,5 @@ class Client(SPIClient):
         sorted_headers = ArrayClient.asc_sort(keys)
         for header in sorted_headers:
             if StringClient.contains(StringClient.to_lower(header), 'x-fc-'):
-                canonicalized_headers = f'{canonicalized_headers}{StringClient.to_lower(header)}:{headers.get(header)}\n'
+                canonicalized_headers = f'{canonicalized_headers}{StringClient.to_lower(header)}:{UtilClient.to_jsonstring(headers.get(header))}\n'
         return canonicalized_headers

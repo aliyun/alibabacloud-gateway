@@ -616,7 +616,7 @@ func (client *Client) SignRequest(request *HttpRequest, credential credential.Cr
 		return _result, _err
 	}
 
-	stringToSign = tea.String(tea.StringValue(request.Method) + "\n" + tea.ToString(contentMd5) + "\n" + tea.ToString(contentType) + "\n" + tea.ToString(httpRequest.Headers["date"]) + "\n" + tea.StringValue(canonicalizedHeaders) + tea.StringValue(canonicalizedResource))
+	stringToSign = tea.String(tea.StringValue(request.Method) + "\n" + tea.StringValue(util.ToJSONString(contentMd5)) + "\n" + tea.StringValue(util.ToJSONString(contentType)) + "\n" + tea.StringValue(util.ToJSONString(httpRequest.Headers["date"])) + "\n" + tea.StringValue(canonicalizedHeaders) + tea.StringValue(canonicalizedResource))
 	signature := encodeutil.Base64EncodeToString(signatureutil.HmacSHA256Sign(stringToSign, accessKeySecret))
 	httpRequest.Headers["Authorization"] = tea.String("FC " + tea.StringValue(accessKeyId) + ":" + tea.StringValue(signature))
 	_result = httpRequest.Headers
@@ -648,7 +648,7 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]interface{}) 
 	sortedHeaders := array.AscSort(keys)
 	for _, header := range sortedHeaders {
 		if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-fc-"))) {
-			canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(string_.ToLower(header)) + ":" + tea.ToString(headers[tea.StringValue(header)]) + "\n")
+			canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(string_.ToLower(header)) + ":" + tea.StringValue(util.ToJSONString(headers[tea.StringValue(header)])) + "\n")
 		}
 
 	}

@@ -309,7 +309,7 @@ class Client(SPIClient):
         string_to_sign = ''
         canonicalized_resource = self.build_canonicalized_resource(resource)
         canonicalized_headers = self.build_canonicalized_headers(http_request.headers)
-        string_to_sign = '%s\n%s\n%s\n%s\n%s%s' % (TeaConverter.to_unicode(request.method), TeaConverter.to_unicode(content_md_5), TeaConverter.to_unicode(content_type), TeaConverter.to_unicode(http_request.headers.get('date')), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(canonicalized_resource))
+        string_to_sign = '%s\n%s\n%s\n%s\n%s%s' % (TeaConverter.to_unicode(request.method), TeaConverter.to_unicode(UtilClient.to_jsonstring(content_md_5)), TeaConverter.to_unicode(UtilClient.to_jsonstring(content_type)), TeaConverter.to_unicode(UtilClient.to_jsonstring(http_request.headers.get('date'))), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(canonicalized_resource))
         signature = Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, access_key_secret))
         http_request.headers['Authorization'] = 'FC %s:%s' % (TeaConverter.to_unicode(access_key_id), TeaConverter.to_unicode(signature))
         return http_request.headers
@@ -332,5 +332,5 @@ class Client(SPIClient):
         sorted_headers = ArrayClient.asc_sort(keys)
         for header in sorted_headers:
             if StringClient.contains(StringClient.to_lower(header), 'x-fc-'):
-                canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(StringClient.to_lower(header)), TeaConverter.to_unicode(headers.get(header)))
+                canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(StringClient.to_lower(header)), TeaConverter.to_unicode(UtilClient.to_jsonstring(headers.get(header))))
         return canonicalized_headers

@@ -511,7 +511,7 @@ class Client extends DarabonbaGatewaySpiClient
         $stringToSign = '';
         $canonicalizedResource = $this->buildCanonicalizedResource($resource);
         $canonicalizedHeaders = $this->buildCanonicalizedHeaders($httpRequest->headers);
-        $stringToSign = ''.$request->method."\n".(string) ($contentMd5)."\n".(string) ($contentType)."\n".(string) (@$httpRequest->headers['date'])."\n".$canonicalizedHeaders.''.$canonicalizedResource.'';
+        $stringToSign = ''.$request->method."\n".Utils::toJSONString($contentMd5)."\n".Utils::toJSONString($contentType)."\n".Utils::toJSONString(@$httpRequest->headers['date'])."\n".$canonicalizedHeaders.''.$canonicalizedResource.'';
         $signature = EncodeUtil::base64EncodeToString(SignatureUtil::HmacSHA256Sign($stringToSign, $accessKeySecret));
         $httpRequest->headers['Authorization'] = 'FC '.$accessKeyId.':'.$signature.'';
 
@@ -552,7 +552,7 @@ class Client extends DarabonbaGatewaySpiClient
         $sortedHeaders = ArrayUtil::ascSort($keys);
         foreach ($sortedHeaders as $header) {
             if (StringUtil::contains(StringUtil::toLower($header), 'x-fc-')) {
-                $canonicalizedHeaders = ''.$canonicalizedHeaders.''.StringUtil::toLower($header).':'.(string) (@$headers[$header])."\n";
+                $canonicalizedHeaders = ''.$canonicalizedHeaders.''.StringUtil::toLower($header).':'.Utils::toJSONString(@$headers[$header])."\n";
             }
         }
 

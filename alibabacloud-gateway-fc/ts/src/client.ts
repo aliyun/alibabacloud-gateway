@@ -435,7 +435,7 @@ export default class Client extends SPI {
     let stringToSign : string = "";
     let canonicalizedResource = await this.buildCanonicalizedResource(resource);
     let canonicalizedHeaders = await this.buildCanonicalizedHeaders(httpRequest.headers);
-    stringToSign = `${request.method}\n${contentMd5}\n${contentType}\n${httpRequest.headers["date"]}\n${canonicalizedHeaders}${canonicalizedResource}`;
+    stringToSign = `${request.method}\n${Util.toJSONString(contentMd5)}\n${Util.toJSONString(contentType)}\n${Util.toJSONString(httpRequest.headers["date"])}\n${canonicalizedHeaders}${canonicalizedResource}`;
     let signature = EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, accessKeySecret));
     httpRequest.headers["Authorization"] = `FC ${accessKeyId}:${signature}`;
     return httpRequest.headers;
@@ -465,7 +465,7 @@ export default class Client extends SPI {
 
     for (let header of sortedHeaders) {
       if (String.contains(String.toLower(header), "x-fc-")) {
-        canonicalizedHeaders = `${canonicalizedHeaders}${String.toLower(header)}:${headers[header]}\n`;
+        canonicalizedHeaders = `${canonicalizedHeaders}${String.toLower(header)}:${Util.toJSONString(headers[header])}\n`;
       }
 
     }

@@ -844,7 +844,7 @@ namespace AlibabaCloud.GatewayFc
             string stringToSign = "";
             string canonicalizedResource = BuildCanonicalizedResource(resource);
             string canonicalizedHeaders = BuildCanonicalizedHeaders(httpRequest.Headers);
-            stringToSign = "" + request.Method + "\n" + contentMd5 + "\n" + contentType + "\n" + httpRequest.Headers.Get("date") + "\n" + canonicalizedHeaders + canonicalizedResource;
+            stringToSign = "" + request.Method + "\n" + AlibabaCloud.TeaUtil.Common.ToJSONString(contentMd5) + "\n" + AlibabaCloud.TeaUtil.Common.ToJSONString(contentType) + "\n" + AlibabaCloud.TeaUtil.Common.ToJSONString(httpRequest.Headers.Get("date")) + "\n" + canonicalizedHeaders + canonicalizedResource;
             string signature = AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256Sign(stringToSign, accessKeySecret));
             httpRequest.Headers["Authorization"] = "FC " + accessKeyId + ":" + signature;
             return httpRequest.Headers;
@@ -899,7 +899,7 @@ namespace AlibabaCloud.GatewayFc
             string stringToSign = "";
             string canonicalizedResource = await BuildCanonicalizedResourceAsync(resource);
             string canonicalizedHeaders = await BuildCanonicalizedHeadersAsync(httpRequest.Headers);
-            stringToSign = "" + request.Method + "\n" + contentMd5 + "\n" + contentType + "\n" + httpRequest.Headers.Get("date") + "\n" + canonicalizedHeaders + canonicalizedResource;
+            stringToSign = "" + request.Method + "\n" + AlibabaCloud.TeaUtil.Common.ToJSONString(contentMd5) + "\n" + AlibabaCloud.TeaUtil.Common.ToJSONString(contentType) + "\n" + AlibabaCloud.TeaUtil.Common.ToJSONString(httpRequest.Headers.Get("date")) + "\n" + canonicalizedHeaders + canonicalizedResource;
             string signature = AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256Sign(stringToSign, accessKeySecret));
             httpRequest.Headers["Authorization"] = "FC " + accessKeyId + ":" + signature;
             return httpRequest.Headers;
@@ -954,7 +954,7 @@ namespace AlibabaCloud.GatewayFc
             foreach (var header in sortedHeaders) {
                 if (AlibabaCloud.DarabonbaString.StringUtil.Contains(AlibabaCloud.DarabonbaString.StringUtil.ToLower(header), "x-fc-"))
                 {
-                    canonicalizedHeaders = "" + canonicalizedHeaders + AlibabaCloud.DarabonbaString.StringUtil.ToLower(header) + ":" + headers.Get(header) + "\n";
+                    canonicalizedHeaders = "" + canonicalizedHeaders + AlibabaCloud.DarabonbaString.StringUtil.ToLower(header) + ":" + AlibabaCloud.TeaUtil.Common.ToJSONString(headers.Get(header)) + "\n";
                 }
             }
             return canonicalizedHeaders;
@@ -969,7 +969,7 @@ namespace AlibabaCloud.GatewayFc
             foreach (var header in sortedHeaders) {
                 if (AlibabaCloud.DarabonbaString.StringUtil.Contains(AlibabaCloud.DarabonbaString.StringUtil.ToLower(header), "x-fc-"))
                 {
-                    canonicalizedHeaders = "" + canonicalizedHeaders + AlibabaCloud.DarabonbaString.StringUtil.ToLower(header) + ":" + headers.Get(header) + "\n";
+                    canonicalizedHeaders = "" + canonicalizedHeaders + AlibabaCloud.DarabonbaString.StringUtil.ToLower(header) + ":" + AlibabaCloud.TeaUtil.Common.ToJSONString(headers.Get(header)) + "\n";
                 }
             }
             return canonicalizedHeaders;

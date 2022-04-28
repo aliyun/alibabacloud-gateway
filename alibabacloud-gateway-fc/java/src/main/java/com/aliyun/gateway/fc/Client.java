@@ -406,7 +406,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String stringToSign = "";
         String canonicalizedResource = this.buildCanonicalizedResource(resource);
         String canonicalizedHeaders = this.buildCanonicalizedHeaders(httpRequest.headers);
-        stringToSign = "" + request.method + "\n" + contentMd5 + "\n" + contentType + "\n" + httpRequest.headers.get("date") + "\n" + canonicalizedHeaders + "" + canonicalizedResource + "";
+        stringToSign = "" + request.method + "\n" + com.aliyun.teautil.Common.toJSONString(contentMd5) + "\n" + com.aliyun.teautil.Common.toJSONString(contentType) + "\n" + com.aliyun.teautil.Common.toJSONString(httpRequest.headers.get("date")) + "\n" + canonicalizedHeaders + "" + canonicalizedResource + "";
         String signature = com.aliyun.darabonba.encode.Encoder.base64EncodeToString(com.aliyun.darabonba.signature.Signer.HmacSHA256Sign(stringToSign, accessKeySecret));
         httpRequest.headers.put("Authorization", "FC " + accessKeyId + ":" + signature + "");
         return httpRequest.headers;
@@ -435,7 +435,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.List<String> sortedHeaders = com.aliyun.darabonba.array.Client.ascSort(keys);
         for (String header : sortedHeaders) {
             if (com.aliyun.darabonbastring.Client.contains(com.aliyun.darabonbastring.Client.toLower(header), "x-fc-")) {
-                canonicalizedHeaders = "" + canonicalizedHeaders + "" + com.aliyun.darabonbastring.Client.toLower(header) + ":" + headers.get(header) + "\n";
+                canonicalizedHeaders = "" + canonicalizedHeaders + "" + com.aliyun.darabonbastring.Client.toLower(header) + ":" + com.aliyun.teautil.Common.toJSONString(headers.get(header)) + "\n";
             }
 
         }
