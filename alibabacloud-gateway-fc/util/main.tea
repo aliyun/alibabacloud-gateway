@@ -1,0 +1,17 @@
+typedef HttpRequest;
+typedef HttpResponse;
+typedef HttpHeader;
+
+static function InvokeHTTPTrigger(accessKeyId: string, accessKeySecret: string, url: string, method: string, body: bytes, headers: HttpHeader): HttpResponse
+
+static function InvokeAnonymousHTTPTrigger(url: string, method: string, body: bytes, headers: HttpHeader): HttpResponse
+
+static function SendHTTPRequestWithAuthorization(accessKeyId: string, accessKeySecret: string, req: HttpRequest): HttpResponse
+
+static function SendHTTPRequest(req: HttpRequest): HttpResponse
+
+static function SignRequest(accessKeyId: string, accessKeySecret: string, req: HttpRequest): HttpRequest
+
+static function SignRequestWithContentMD5(accessKeyId: string, accessKeySecret: string, req: HttpRequest, contentMD5: string): HttpRequest
+
+static function BuildHTTPRequest(url: string, method: string, body: bytes, headers: HttpHeader): HttpRequest

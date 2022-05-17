@@ -1,0 +1,89 @@
+{
+  "scope": "alibabacloud",
+  "name": "GatewayFC_Util",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-fc-util:^0.0.1",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-fc-util/client:v0.0.1",
+    "java": "com.aliyun:alibabacloud-gateway-fc-util:0.0.1",
+    "python": "alibabacloud_gateway_fc_util:0.0.1",
+    "python2": "alibabacloud_gateway_fc_util_py2:0.0.1",
+    "csharp": "AlibabaCloud.GatewayFc_Util:0.0.1",
+    "php": "alibabacloud/gateway-fc-util:^0.0.1"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayFc_Util",
+    "packageInfo": {
+      "description": "Alibaba Cloud FC Util Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun FC Util",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
+      }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.fc.util",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io",
+      "net/http"
+    ],
+    "typeMap": {
+      "HttpRequest": "http.Request",
+      "HttpResponse": "http.Response",
+      "HttpHeader": "http.Header"
+    }
+  },
+  "php": {
+    "package": "Darabonba.GatewayFc.Util",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-fc-util",
+      "desc": "Alibaba Cloud FC Util",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_fc_util",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_fc_util",
+      "desc": "Alibaba Cloud FC Util Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_fc_util",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_fc_util_py2",
+      "desc": "Alibaba Cloud FC Util Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-fc-util"
+      }
+    }
+  }
+}
