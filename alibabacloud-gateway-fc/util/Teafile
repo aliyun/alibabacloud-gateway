@@ -39,13 +39,21 @@
   },
   "go": {
     "package": [
-      "io",
-      "net/http"
+      "io"
     ],
-    "typeMap": {
-      "HttpRequest": "http.Request",
-      "HttpResponse": "http.Response",
-      "HttpHeader": "http.Header"
+    "typedef": {
+      "HttpRequest": {
+        "import": "net/http",
+        "type": "http.Request"
+      },
+      "HttpResponse": {
+        "import": "net/http",
+        "type": "http.Response"
+      },
+      "HttpHeader": {
+        "import": "net/http",
+        "type": "http.Header"
+      }
     }
   },
   "php": {
