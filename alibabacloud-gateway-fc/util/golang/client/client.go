@@ -34,6 +34,8 @@ const (
 	HTTPHeaderContentType = "Content-Type"
 	// HTTPHeaderAuthorization key in request headers
 	HTTPHeaderAuthorization = "Authorization"
+	// HTTPHeaderSecurityToken key in request headers
+	HTTPHeaderSecurityToken = "x-fc-security-token"
 )
 
 func TeeReader(r io.Reader, w io.Writer) io.Reader {
@@ -115,13 +117,11 @@ func SignRequestWithContentMD5(credential credential.Credential, req *http.Reque
 	params := req.URL.Query()
 	pathWithQuery = getSignResourceWithQueries(req.URL.Path, params)
 	// Build Authorization header
-	accessKeyId, _err := credential.GetAccessKeyId()
-	accessKeySecret, _err := credential.GetAccessKeySecret()
-	// todo
-	// securityToken, _err := credential.GetSecurityToken()
-	if _err != nil {
-		// todo
-		return nil
+	accessKeyId, _ := credential.GetAccessKeyId()
+	accessKeySecret, _ := credential.GetAccessKeySecret()
+	securityToken, _ := credential.GetSecurityToken()
+	if securityToken != nil && len(*securityToken) != 0 {
+		req.Header.Set(HTTPHeaderSecurityToken, tea.StringValue(accessKeyId))
 	}
 	authStr := getAuthString(tea.StringValue(accessKeyId), tea.StringValue(accessKeySecret), req.Method, headerParams, pathWithQuery)
 	req.Header.Set(HTTPHeaderAuthorization, authStr)
@@ -203,7 +203,7 @@ func getSignature(key string, method string, req map[string]string, path string)
 	signStr := method + "\n" + lowerKeyHeaders[strings.ToLower(HTTPHeaderContentMD5)] + "\n" + lowerKeyHeaders[strings.ToLower(HTTPHeaderContentType)] + "\n" + date + "\n" + fcHeaders + path
 
 	h := hmac.New(sha256.New, []byte(key))
-	io.WriteString(h, signStr)
+	_, _ = io.WriteString(h, signStr)
 	signedStr := base64.StdEncoding.EncodeToString(h.Sum(nil))
 	return signedStr
 }
