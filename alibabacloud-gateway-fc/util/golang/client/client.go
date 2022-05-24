@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/alibabacloud-go/tea/tea"
+	credential "github.com/aliyun/credentials-go/credentials"
 	"github.com/pkg/errors"
 )
 
@@ -55,9 +56,9 @@ func (t *teeReader) Read(p []byte) (n int, err error) {
 }
 
 // InvokeHTTPTrigger invoke a http trigger
-func InvokeHTTPTrigger(accessKeyId *string, accessKeySecret *string, url *string, method *string, body []byte, headers *http.Header) (_result *http.Response) {
+func InvokeHTTPTrigger(credential credential.Credential, url *string, method *string, body []byte, headers *http.Header) (_result *http.Response) {
 	req := BuildHTTPRequest(url, method, body, headers)
-	return SendHTTPRequestWithAuthorization(accessKeyId, accessKeySecret, req)
+	return SendHTTPRequestWithAuthorization(credential, req)
 }
 
 // InvokeAnonymousHTTPTrigger invoke an anonymous http trigger
@@ -66,8 +67,8 @@ func InvokeAnonymousHTTPTrigger(url *string, method *string, body []byte, header
 	return SendHTTPRequest(req)
 }
 
-func SendHTTPRequestWithAuthorization(accessKeyId *string, accessKeySecret *string, req *http.Request) (_result *http.Response) {
-	signedRequest := SignRequest(accessKeyId, accessKeySecret, req)
+func SendHTTPRequestWithAuthorization(credential credential.Credential, req *http.Request) (_result *http.Response) {
+	signedRequest := SignRequest(credential, req)
 	return SendHTTPRequest(signedRequest)
 }
 
@@ -79,7 +80,7 @@ func SendHTTPRequest(req *http.Request) (_result *http.Response) {
 	return res
 }
 
-func SignRequest(accessKeyId *string, accessKeySecret *string, req *http.Request) (_result *http.Request) {
+func SignRequest(credential credential.Credential, req *http.Request) (_result *http.Request) {
 	var (
 		contentMD5 = ""
 		err        error
@@ -94,10 +95,10 @@ func SignRequest(accessKeyId *string, accessKeySecret *string, req *http.Request
 		}
 		req.Body = ioutil.NopCloser(bodyNew)
 	}
-	return SignRequestWithContentMD5(accessKeyId, accessKeySecret, req, tea.String(contentMD5))
+	return SignRequestWithContentMD5(credential, req, tea.String(contentMD5))
 }
 
-func SignRequestWithContentMD5(accessKeyId *string, accessKeySecret *string, req *http.Request, contentMD5 *string) (_result *http.Request) {
+func SignRequestWithContentMD5(credential credential.Credential, req *http.Request, contentMD5 *string) (_result *http.Request) {
 	headerParams := make(map[string]string)
 	if req.Header != nil {
 		for k, _ := range req.Header {
@@ -114,6 +115,14 @@ func SignRequestWithContentMD5(accessKeyId *string, accessKeySecret *string, req
 	params := req.URL.Query()
 	pathWithQuery = getSignResourceWithQueries(req.URL.Path, params)
 	// Build Authorization header
+	accessKeyId, _err := credential.GetAccessKeyId()
+	accessKeySecret, _err := credential.GetAccessKeySecret()
+	// todo
+	// securityToken, _err := credential.GetSecurityToken()
+	if _err != nil {
+		// todo
+		return nil
+	}
 	authStr := getAuthString(tea.StringValue(accessKeyId), tea.StringValue(accessKeySecret), req.Method, headerParams, pathWithQuery)
 	req.Header.Set(HTTPHeaderAuthorization, authStr)
 	return req

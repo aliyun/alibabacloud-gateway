@@ -10,6 +10,7 @@
     }
   ],
   "libraries": {
+    "Credential": "alibabacloud:Credential:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-fc-util:^0.0.1",
