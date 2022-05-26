@@ -74,6 +74,20 @@
       "github": "https://github.com/aliyun/alibabacloud-gateway",
       "author": "Alibaba Cloud SDK",
       "email": "sdk-team@alibabacloud.com"
+    },
+    "typedef": {
+      "HttpRequest": {
+        "import": "requests",
+        "type": "Request"
+      },
+      "HttpResponse": {
+        "import": "requests",
+        "type": "Response"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "Dict[str, Any]"
+      }
     }
   },
   "python2": {
