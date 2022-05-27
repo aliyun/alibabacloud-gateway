@@ -121,7 +121,7 @@ func SignRequestWithContentMD5(credential credential.Credential, req *http.Reque
 	accessKeySecret, _ := credential.GetAccessKeySecret()
 	securityToken, _ := credential.GetSecurityToken()
 	if securityToken != nil && len(*securityToken) != 0 {
-		req.Header.Set(HTTPHeaderSecurityToken, tea.StringValue(accessKeyId))
+		req.Header.Set(HTTPHeaderSecurityToken, tea.StringValue(securityToken))
 	}
 	authStr := getAuthString(tea.StringValue(accessKeyId), tea.StringValue(accessKeySecret), req.Method, headerParams, pathWithQuery)
 	req.Header.Set(HTTPHeaderAuthorization, authStr)
