@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+from typing import Dict
 import base64
 import hashlib
 import hmac
 import logging
 import urllib.parse
-import urllib.request
+from http.client import HTTPResponse
+from urllib.request import Request
 
 from alibabacloud_credentials.client import Client as CredentialClient
-from requests import Request
-from requests import Response
 
 # HTTPHeaderContentMD5 key in request headers
 HTTPHeaderContentMD5 = "content-md5"
@@ -37,8 +37,8 @@ class Client:
             url: str,
             method: str,
             body: bytes,
-            headers: Dict[str, Any],
-    ) -> Response:
+            headers: Dict[str, any],
+    ) -> HTTPResponse:
         req = Client.build_httprequest(url, method, body, headers)
         return Client.send_httprequest_with_authorization(credential, req)
 
@@ -47,8 +47,8 @@ class Client:
             url: str,
             method: str,
             body: bytes,
-            headers: Dict[str, Any],
-    ) -> Response:
+            headers: Dict[str, any],
+    ) -> HTTPResponse:
         req = Client.build_httprequest(url, method, body, headers)
         return Client.send_httprequest(req)
 
@@ -56,14 +56,14 @@ class Client:
     def send_httprequest_with_authorization(
             credential: CredentialClient,
             req: Request,
-    ) -> Response:
+    ) -> HTTPResponse:
         signedRequest = Client.sign_request(credential, req)
         return Client.send_httprequest(signedRequest)
 
     @staticmethod
     def send_httprequest(
             req: Request,
-    ) -> Response:
+    ) -> HTTPResponse:
         return urllib.request.urlopen(req)
 
     @staticmethod
@@ -167,7 +167,7 @@ class Client:
             url: str,
             method: str,
             body: bytes,
-            headers: Dict[str, Any],
+            headers: Dict[str, any],
     ) -> Request:
         return Request(
             url=url,

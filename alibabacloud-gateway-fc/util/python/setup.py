@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_fc_util.
 
-Created on 26/05/2022
+Created on 30/05/2022
 
 @author: Alibaba Cloud SDK
 """
@@ -37,7 +37,6 @@ AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
-    'requests>=2.21.0, <3.0.0',
     "alibabacloud_credentials>=0.2.0, <1.0.0"
 ]
 

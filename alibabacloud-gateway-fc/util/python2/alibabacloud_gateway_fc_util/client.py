@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from requests import Request
+from typing import Dict
+from http.client import HTTPResponse
+from urllib.request import Request
 
 
 class Client(object):
