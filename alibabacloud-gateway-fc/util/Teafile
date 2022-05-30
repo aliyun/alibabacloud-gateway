@@ -78,15 +78,18 @@
     "typedef": {
       "HttpRequest": {
         "import": "requests",
-        "type": "Request"
+        "type": "Request",
+        "package": "requests:2.21.0"
       },
       "HttpResponse": {
         "import": "requests",
-        "type": "Response"
+        "type": "Response",
+        "package": "requests:2.21.0"
       },
       "HttpHeader": {
         "import": null,
-        "type": "Dict[str, Any]"
+        "type": "Dict[str, Any]",
+        "package": null
       }
     }
   },
@@ -99,6 +102,23 @@
       "github": "https://github.com/aliyun/alibabacloud-gateway",
       "author": "Alibaba Cloud SDK",
       "email": "sdk-team@alibabacloud.com"
+    },
+    "typedef": {
+      "HttpRequest": {
+        "import": "requests",
+        "type": "Request",
+        "package": "requests:2.21.0"
+      },
+      "HttpResponse": {
+        "import": "requests",
+        "type": "Response",
+        "package": "requests:2.21.0"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "Dict[str, Any]",
+        "package": null
+      }
     }
   },
   "cpp": {
