@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from typing import Dict
 import base64
 import hashlib
 import hmac
 import logging
 import urllib.parse
-from requests import Response, Request
+from typing import (
+    Dict,
+    List,
+    Any,
+)
+import requests
+from requests import (
+    Response,
+    Request,
+)
 
 from alibabacloud_credentials.client import Client as CredentialClient
 
@@ -63,7 +71,9 @@ class Client:
     def send_httprequest(
             req: Request,
     ) -> Response:
-        return urllib.request.urlopen(req)
+        with requests.Session() as s:
+            p=s.prepare_request(req)
+            return s.send(p)
 
     @staticmethod
     def sign_request(
@@ -115,7 +125,7 @@ class Client:
         access_key_id = credential.get_access_key_id()
         access_key_secret = credential.get_access_key_secret()
 
-        if isinstance(unescaped_queries, dict):
+        if isinstance(unescaped_queries, Dict):
             canonical_resource = Client.get_sign_resource(unescaped_path, unescaped_queries)
         string_to_sign = '\n'.join(
             [method.upper(), content_md5, content_type, date, canonical_headers + canonical_resource])
@@ -144,8 +154,8 @@ class Client:
 
     @staticmethod
     def get_sign_resource(unescaped_path, unescaped_queries):
-        if not isinstance(unescaped_queries, dict):
-            raise TypeError("`dict` type required for queries")
+        if not isinstance(unescaped_queries, Dict):
+            raise TypeError("`Dict` type required for queries")
         params = []
         for key, values in unescaped_queries.items():
             if isinstance(values, str):
