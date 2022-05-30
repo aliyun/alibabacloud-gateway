@@ -6,8 +6,7 @@ import hashlib
 import hmac
 import logging
 import urllib.parse
-from http.client import HTTPResponse
-from urllib.request import Request
+from requests import Response, Request
 
 from alibabacloud_credentials.client import Client as CredentialClient
 
@@ -37,8 +36,8 @@ class Client:
             url: str,
             method: str,
             body: bytes,
-            headers: Dict[str, any],
-    ) -> HTTPResponse:
+            headers: Dict[str, str],
+    ) -> Response:
         req = Client.build_httprequest(url, method, body, headers)
         return Client.send_httprequest_with_authorization(credential, req)
 
@@ -47,8 +46,8 @@ class Client:
             url: str,
             method: str,
             body: bytes,
-            headers: Dict[str, any],
-    ) -> HTTPResponse:
+            headers: Dict[str, str],
+    ) -> Response:
         req = Client.build_httprequest(url, method, body, headers)
         return Client.send_httprequest(req)
 
@@ -56,14 +55,14 @@ class Client:
     def send_httprequest_with_authorization(
             credential: CredentialClient,
             req: Request,
-    ) -> HTTPResponse:
+    ) -> Response:
         signedRequest = Client.sign_request(credential, req)
         return Client.send_httprequest(signedRequest)
 
     @staticmethod
     def send_httprequest(
             req: Request,
-    ) -> HTTPResponse:
+    ) -> Response:
         return urllib.request.urlopen(req)
 
     @staticmethod
@@ -96,7 +95,7 @@ class Client:
     def auth_string(credential: CredentialClient,
                     method: str,
                     unescaped_path: str,
-                    headers: Request.headers,
+                    headers: Dict[str, str],
                     unescaped_queries: str):
         """
         Sign the request. See the spec for reference.
@@ -167,7 +166,7 @@ class Client:
             url: str,
             method: str,
             body: bytes,
-            headers: Dict[str, any],
+            headers: Dict[str, str],
     ) -> Request:
         return Request(
             url=url,

@@ -94,16 +94,19 @@
     },
     "typedef": {
       "HttpRequest": {
-        "import": "urllib.request",
-        "type": "Request"
+        "import": "requests",
+        "type": "Request",
+        "package": "requests:2.21.0"
       },
       "HttpResponse": {
-        "import": "http.client",
-        "type": "HTTPResponse"
+        "import": "requests",
+        "type": "Response",
+        "package": "requests:2.21.0"
       },
       "HttpHeader": {
         "import": null,
-        "type": "Dict[str, any]"
+        "type": "Dict[str, str]",
+        "package": null
       }
     }
   },
@@ -119,16 +122,19 @@
     },
     "typedef": {
       "HttpRequest": {
-        "import": "urllib.request",
-        "type": "Request"
+        "import": "requests",
+        "type": "Request",
+        "package": "requests:2.21.0"
       },
       "HttpResponse": {
-        "import": "http.client",
-        "type": "HTTPResponse"
+        "import": "requests",
+        "type": "Response",
+        "package": "requests:2.21.0"
       },
       "HttpHeader": {
         "import": null,
-        "type": "Dict[str, any]"
+        "type": "Dict[str, str]",
+        "package": null
       }
     }
   },

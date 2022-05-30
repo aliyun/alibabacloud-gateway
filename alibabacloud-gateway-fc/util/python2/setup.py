@@ -38,7 +38,8 @@ AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
-    "alibabacloud_credentials_py2>=0.0.1, <1.0.0"
+    "alibabacloud_credentials_py2>=0.0.1, <1.0.0",
+    "requests>=2.21.0, <3.0.0"
 ]
 
 LONG_DESCRIPTION = ''
