@@ -63,6 +63,23 @@
       "name": "alibabacloud/gateway-fc-util",
       "desc": "Alibaba Cloud FC Util",
       "github": "https://github.com/aliyun/alibabacloud-gateway"
+    },
+    "typedef": {
+      "HttpRequest": {
+        "import": "GuzzleHttp\\Psr7",
+        "type": "Request",
+        "package": "guzzlehttp/psr7:^1.8.5 || ^2.2.1"
+      },
+      "HttpResponse": {
+        "import": "GuzzleHttp\\Psr7",
+        "type": "Response",
+        "package": "guzzlehttp/psr7:^1.8.5 || ^2.2.1"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "array",
+        "package": null
+      }
     }
   },
   "python": {
