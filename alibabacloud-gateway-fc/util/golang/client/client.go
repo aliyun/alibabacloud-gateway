@@ -133,7 +133,7 @@ func BuildHTTPRequest(url *string, method *string, body []byte, headers *http.He
 	if err != nil {
 		return nil
 	}
-	if len(*headers) != 0 {
+	if headers != nil && len(*headers) != 0 {
 		res.Header = *headers
 	}
 	return res
