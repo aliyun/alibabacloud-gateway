@@ -4,16 +4,22 @@ typedef HttpRequest;
 typedef HttpResponse;
 typedef HttpHeader;
 
-static function InvokeHTTPTrigger(credential: Credential, url: string, method: string, body: bytes, headers: HttpHeader): HttpResponse
+type @credential = Credential;
 
-static function InvokeAnonymousHTTPTrigger(url: string, method: string, body: bytes, headers: HttpHeader): HttpResponse
+init(cred: Credential){
+    @credential = cred;
+}
 
-static function SendHTTPRequestWithAuthorization(credential: Credential, req: HttpRequest): HttpResponse
+async function InvokeHTTPTrigger(url: string, method: string, body: bytes, headers: HttpHeader): HttpResponse
 
-static function SendHTTPRequest(req: HttpRequest): HttpResponse
+async function InvokeAnonymousHTTPTrigger(url: string, method: string, body: bytes, headers: HttpHeader): HttpResponse
 
-static function SignRequest(credential: Credential, req: HttpRequest): HttpRequest
+async function SendHTTPRequestWithAuthorization(req: HttpRequest): HttpResponse
 
-static function SignRequestWithContentMD5(credential: Credential, req: HttpRequest, contentMD5: string): HttpRequest
+async function SendHTTPRequest(req: HttpRequest): HttpResponse
 
-static function BuildHTTPRequest(url: string, method: string, body: bytes, headers: HttpHeader): HttpRequest
+async function SignRequest(req: HttpRequest): HttpRequest
+
+async function SignRequestWithContentMD5(req: HttpRequest, contentMD5: string): HttpRequest
+
+async function BuildHTTPRequest(url: string, method: string, body: bytes, headers: HttpHeader): HttpRequest

@@ -38,6 +38,21 @@ const (
 	HTTPHeaderSecurityToken = "x-fc-security-token"
 )
 
+type Client struct {
+	Credential credential.Credential
+}
+
+func NewClient(cred credential.Credential) (*Client, error) {
+	client := new(Client)
+	err := client.Init(cred)
+	return client, err
+}
+
+func (client *Client) Init(cred credential.Credential) (_err error) {
+	client.Credential = cred
+	return nil
+}
+
 func TeeReader(r io.Reader, w io.Writer) io.Reader {
 	return &teeReader{r, w}
 }
@@ -58,31 +73,40 @@ func (t *teeReader) Read(p []byte) (n int, err error) {
 }
 
 // InvokeHTTPTrigger invoke a http trigger
-func InvokeHTTPTrigger(credential credential.Credential, url *string, method *string, body []byte, headers *http.Header) (_result *http.Response) {
-	req := BuildHTTPRequest(url, method, body, headers)
-	return SendHTTPRequestWithAuthorization(credential, req)
+func (client *Client) InvokeHTTPTrigger(url *string, method *string, body []byte, headers *http.Header) (_result *http.Response, _err error) {
+	req, err := client.BuildHTTPRequest(url, method, body, headers)
+	if err != nil {
+		return nil, err
+	}
+	return client.SendHTTPRequestWithAuthorization(req)
 }
 
 // InvokeAnonymousHTTPTrigger invoke an anonymous http trigger
-func InvokeAnonymousHTTPTrigger(url *string, method *string, body []byte, headers *http.Header) (_result *http.Response) {
-	req := BuildHTTPRequest(url, method, body, headers)
-	return SendHTTPRequest(req)
+func (client *Client) InvokeAnonymousHTTPTrigger(url *string, method *string, body []byte, headers *http.Header) (_result *http.Response, _err error) {
+	req, err := client.BuildHTTPRequest(url, method, body, headers)
+	if err != nil {
+		return nil, err
+	}
+	return client.SendHTTPRequest(req)
 }
 
-func SendHTTPRequestWithAuthorization(credential credential.Credential, req *http.Request) (_result *http.Response) {
-	signedRequest := SignRequest(credential, req)
-	return SendHTTPRequest(signedRequest)
+func (client *Client) SendHTTPRequestWithAuthorization(req *http.Request) (_result *http.Response, _err error) {
+	signedRequest, err := client.SignRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	return client.SendHTTPRequest(signedRequest)
 }
 
-func SendHTTPRequest(req *http.Request) (_result *http.Response) {
+func (client *Client) SendHTTPRequest(req *http.Request) (_result *http.Response, _err error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return res
+	return res, nil
 }
 
-func SignRequest(credential credential.Credential, req *http.Request) (_result *http.Request) {
+func (client *Client) SignRequest(req *http.Request) (_result *http.Request, _err error) {
 	var (
 		contentMD5 = ""
 		err        error
@@ -93,14 +117,14 @@ func SignRequest(credential credential.Credential, req *http.Request) (_result *
 		tee := TeeReader(req.Body, bodyNew)
 		contentMD5, err = md5Digest(tee)
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		req.Body = ioutil.NopCloser(bodyNew)
 	}
-	return SignRequestWithContentMD5(credential, req, tea.String(contentMD5))
+	return client.SignRequestWithContentMD5(req, tea.String(contentMD5))
 }
 
-func SignRequestWithContentMD5(credential credential.Credential, req *http.Request, contentMD5 *string) (_result *http.Request) {
+func (client *Client) SignRequestWithContentMD5(req *http.Request, contentMD5 *string) (_result *http.Request, _err error) {
 	headerParams := make(map[string]string)
 	req.Header.Set(HTTPHeaderDate, time.Now().UTC().Format(http.TimeFormat))
 	if len(tea.StringValue(contentMD5)) != 0 {
@@ -116,26 +140,26 @@ func SignRequestWithContentMD5(credential credential.Credential, req *http.Reque
 	params := req.URL.Query()
 	pathWithQuery = getSignResourceWithQueries(req.URL.Path, params)
 	// Build Authorization header
-	accessKeyId, _ := credential.GetAccessKeyId()
-	accessKeySecret, _ := credential.GetAccessKeySecret()
-	securityToken, _ := credential.GetSecurityToken()
+	accessKeyId, _ := client.Credential.GetAccessKeyId()
+	accessKeySecret, _ := client.Credential.GetAccessKeySecret()
+	securityToken, _ := client.Credential.GetSecurityToken()
 	if securityToken != nil && len(*securityToken) != 0 {
 		req.Header.Set(HTTPHeaderSecurityToken, tea.StringValue(securityToken))
 	}
 	authStr := getAuthString(tea.StringValue(accessKeyId), tea.StringValue(accessKeySecret), req.Method, headerParams, pathWithQuery)
 	req.Header.Set(HTTPHeaderAuthorization, authStr)
-	return req
+	return req, nil
 }
 
-func BuildHTTPRequest(url *string, method *string, body []byte, headers *http.Header) (_result *http.Request) {
+func (client *Client) BuildHTTPRequest(url *string, method *string, body []byte, headers *http.Header) (_result *http.Request, _err error) {
 	res, err := http.NewRequest(tea.StringValue(method), tea.StringValue(url), bytes.NewReader(body))
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	if headers != nil && len(*headers) != 0 {
 		res.Header = *headers
 	}
-	return res
+	return res, nil
 }
 
 func md5Digest(reader io.Reader) (string, error) {

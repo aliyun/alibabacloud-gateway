@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_fc_util_py2.
 
-Created on 30/05/2022
+Created on 01/06/2022
 
 @author: Alibaba Cloud SDK
 """
