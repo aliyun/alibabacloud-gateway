@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 import base64
+import email.utils
 import hashlib
 import hmac
 import logging
 import urllib.parse
 from typing import (
     Dict,
-    List,
-    Any,
 )
+
 import requests
+from alibabacloud_credentials.client import Client as CredentialClient
 from requests import (
     Response,
     Request,
 )
-
-from alibabacloud_credentials.client import Client as CredentialClient
 
 # HTTPHeaderContentMD5 key in request headers
 HTTPHeaderContentMD5 = "content-md5"
@@ -72,7 +71,7 @@ class Client:
             req: Request,
     ) -> Response:
         with requests.Session() as s:
-            p=s.prepare_request(req)
+            p = s.prepare_request(req)
             return s.send(p)
 
     @staticmethod
@@ -94,6 +93,7 @@ class Client:
             req.headers[HTTPHeaderSecurityToken] = security_token
         if content_md5:
             req.headers[HTTPHeaderContentMD5] = content_md5
+        req.headers[HTTPHeaderDate] = email.utils.formatdate(usegmt=True)
         result = urllib.parse.urlparse(req.url)
         auth_string = Client.auth_string(credential,
                                          req.method, urllib.parse.unquote(result.path),
@@ -121,12 +121,12 @@ class Client:
         content_type = headers.get('content-type', '')
         date = headers.get('date', '')
         canonical_headers = Client.build_canonical_headers(headers)
-        canonical_resource = unescaped_path
+        canonical_resource = unescaped_path + '\n'
         access_key_id = credential.get_access_key_id()
         access_key_secret = credential.get_access_key_secret()
 
-        if isinstance(unescaped_queries, Dict):
-            canonical_resource = Client.get_sign_resource(unescaped_path, unescaped_queries)
+        if unescaped_queries:
+            canonical_resource += '\n'.join(unescaped_queries.split('&'))
         string_to_sign = '\n'.join(
             [method.upper(), content_md5, content_type, date, canonical_headers + canonical_resource])
         logging.debug('string to sign:{0}'.format(string_to_sign))
