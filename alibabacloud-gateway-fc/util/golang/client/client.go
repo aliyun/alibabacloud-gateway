@@ -102,16 +102,15 @@ func SignRequest(credential credential.Credential, req *http.Request) (_result *
 
 func SignRequestWithContentMD5(credential credential.Credential, req *http.Request, contentMD5 *string) (_result *http.Request) {
 	headerParams := make(map[string]string)
+	req.Header.Set(HTTPHeaderDate, time.Now().UTC().Format(http.TimeFormat))
+	if len(tea.StringValue(contentMD5)) != 0 {
+		req.Header.Set(HTTPHeaderContentMD5, tea.StringValue(contentMD5))
+	}
 	if req.Header != nil {
 		for k, _ := range req.Header {
 			headerParams[k] = req.Header.Get(k)
 		}
 	}
-	if len(tea.StringValue(contentMD5)) != 0 {
-		headerParams[HTTPHeaderContentMD5] = tea.StringValue(contentMD5)
-	}
-	// DATE
-	headerParams[HTTPHeaderDate] = time.Now().UTC().Format(http.TimeFormat)
 	// Canonicalized
 	pathWithQuery := req.URL.Path
 	params := req.URL.Query()
@@ -143,7 +142,7 @@ func md5Digest(reader io.Reader) (string, error) {
 	ctx := md5.New()
 	buffer := make([]byte, 8*1024)
 	for {
-		if c, err := reader.Read(buffer); err != nil {
+		if c, err := reader.Read(buffer); err == nil {
 			ctx.Write(buffer[:c])
 		} else if err == io.EOF {
 			break
