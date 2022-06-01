@@ -6,7 +6,7 @@
 
 ```bash
 # install alibabacloud_fc_open20210406
-pip install alibabacloud_fc_open20210406
+pip install -U alibabacloud_fc_open20210406
 ```
 
 ### Usage
@@ -80,7 +80,8 @@ req = requests.Request(
 )
 req = client.sign_request(req)
 with requests.Session() as s:
-    reponse = s.send(req)
+    prep=s.prepare_request(req)
+    resp = s.send(prep)
 
 ```
 
