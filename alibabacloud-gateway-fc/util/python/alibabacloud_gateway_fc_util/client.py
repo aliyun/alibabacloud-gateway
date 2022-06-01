@@ -37,99 +37,99 @@ class Client:
     _credential: CredentialClient = None
 
     def __init__(
-        self,
-        cred: CredentialClient,
+            self,
+            cred: CredentialClient,
     ):
         self._credential = cred
 
     def invoke_httptrigger(
-        self,
-        url: str,
-        method: str,
-        body: bytes,
-        headers: Dict[str, str],
+            self,
+            url: str,
+            method: str,
+            body: bytes,
+            headers: Dict[str, str],
     ) -> Response:
         req = self.build_httprequest(url, method, body, headers)
         return self.send_httprequest_with_authorization(req)
 
     async def invoke_httptrigger_async(
-        self,
-        url: str,
-        method: str,
-        body: bytes,
-        headers: Dict[str, str],
+            self,
+            url: str,
+            method: str,
+            body: bytes,
+            headers: Dict[str, str],
     ) -> Response:
         req = await self.build_httprequest_async(url, method, body, headers)
         return await self.send_httprequest_with_authorization_async(req)
 
     def invoke_anonymous_httptrigger(
-        self,
-        url: str,
-        method: str,
-        body: bytes,
-        headers: Dict[str, str],
+            self,
+            url: str,
+            method: str,
+            body: bytes,
+            headers: Dict[str, str],
     ) -> Response:
         req = self.build_httprequest(url, method, body, headers)
         return self.send_httprequest(req)
 
     async def invoke_anonymous_httptrigger_async(
-        self,
-        url: str,
-        method: str,
-        body: bytes,
-        headers: Dict[str, str],
+            self,
+            url: str,
+            method: str,
+            body: bytes,
+            headers: Dict[str, str],
     ) -> Response:
         req = await self.build_httprequest_async(url, method, body, headers)
         return await self.send_httprequest_async(req)
 
     def send_httprequest_with_authorization(
-        self,
-        req: Request,
+            self,
+            req: Request,
     ) -> Response:
         signedRequest = self.sign_request(req)
         return self.send_httprequest(signedRequest)
 
     async def send_httprequest_with_authorization_async(
-        self,
-        req: Request,
+            self,
+            req: Request,
     ) -> Response:
         signedRequest = await self.sign_request_async(req)
         return await self.send_httprequest_async(signedRequest)
 
     def send_httprequest(
-        self,
-        req: Request,
+            self,
+            req: Request,
     ) -> Response:
         with requests.Session() as s:
             p = s.prepare_request(req)
             return s.send(p)
 
     async def send_httprequest_async(
-        self,
-        req: Request,
+            self,
+            req: Request,
     ) -> Response:
         with requests.Session() as s:
             p = s.prepare_request(req)
             return s.send(p)
 
     def sign_request(
-        self,
-        req: Request,
+            self,
+            req: Request,
     ) -> Request:
         # FIXME Request.data is too flexible, and we can't calculate the md5 value of it properly.
         return self.sign_request_with_content_md5(req, '')
 
     async def sign_request_async(
-        self,
-        req: Request,
+            self,
+            req: Request,
     ) -> Request:
         # FIXME Request.data is too flexible, and we can't calculate the md5 value of it properly.
         return await self.sign_request_with_content_md5_async(req, '')
 
     def sign_request_with_content_md5(
-        self,
-        req: Request,
-        content_md5: str,
+            self,
+            req: Request,
+            content_md5: str,
     ) -> Request:
         security_token = self._credential.get_security_token()
         if security_token:
@@ -144,9 +144,9 @@ class Client:
         return req
 
     async def sign_request_with_content_md5_async(
-        self,
-        req: Request,
-        content_md5: str,
+            self,
+            req: Request,
+            content_md5: str,
     ) -> Request:
         security_token = self._credential.get_security_token()
         if security_token:
@@ -190,7 +190,7 @@ class Client:
         h = hmac.new(access_key_secret.encode('utf-8'),
                      string_to_sign.encode('utf-8'), hashlib.sha256)
         signature = 'FC ' + access_key_id + ':' + \
-            base64.b64encode(h.digest()).decode('utf-8')
+                    base64.b64encode(h.digest()).decode('utf-8')
         return signature
 
     @staticmethod
@@ -231,11 +231,11 @@ class Client:
         return resource
 
     def build_httprequest(
-        self,
-        url: str,
-        method: str,
-        body: bytes,
-        headers: Dict[str, str],
+            self,
+            url: str,
+            method: str,
+            body: bytes,
+            headers: Dict[str, str],
     ) -> Request:
         return Request(
             url=url,
@@ -245,11 +245,11 @@ class Client:
         )
 
     async def build_httprequest_async(
-        self,
-        url: str,
-        method: str,
-        body: bytes,
-        headers: Dict[str, str],
+            self,
+            url: str,
+            method: str,
+            body: bytes,
+            headers: Dict[str, str],
     ) -> Request:
         return Request(
             url=url,
