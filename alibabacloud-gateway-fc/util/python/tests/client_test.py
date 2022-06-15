@@ -5,7 +5,7 @@ import unittest
 
 import requests
 from alibabacloud_credentials import credentials
-from client import Client
+from alibabacloud_gateway_fc_util.client import Client
 
 
 class TestClient(unittest.TestCase):
