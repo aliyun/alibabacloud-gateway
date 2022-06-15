@@ -178,6 +178,8 @@ class Client:
         content_type = headers.get('content-type', '')
         date = headers.get('date', '')
         canonical_headers = Client.build_canonical_headers(headers)
+        if not unescaped_path:
+            unescaped_path = '/'
         canonical_resource = unescaped_path + '\n'
         access_key_id = self._credential.get_access_key_id()
         access_key_secret = self._credential.get_access_key_secret()

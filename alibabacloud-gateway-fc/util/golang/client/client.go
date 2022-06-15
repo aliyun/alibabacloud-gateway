@@ -247,6 +247,9 @@ func getExpiresFromURLQueries(path string) (string, bool) {
 }
 
 func getSignResourceWithQueries(path string, queries map[string][]string) string {
+	if len(path) == 0 {
+		path = "/"
+	}
 	return path + "\n" + getSignQueries(queries)
 }
 
