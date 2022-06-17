@@ -92,8 +92,8 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       response.deserializedBody = Util.readAsString(response.body);
     } else if (Util.equalString(request.bodyType, 'json')) {
       var obj = Util.readAsJSON(response.body);
-      var res = Util.assertAsMap(obj);
-      response.deserializedBody = res;
+      // var res = Util.assertAsMap(obj);
+      response.deserializedBody = obj;
     } else if (Util.equalString(request.bodyType, 'array')) {
       response.deserializedBody = Util.readAsJSON(response.body);
     } else {
