@@ -179,6 +179,7 @@ namespace AlibabaCloud.GatewayPop
                 object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
                 Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
                 object requestId = DefaultAny(err.Get("RequestId"), err.Get("requestId"));
+                err["statusCode"] = response.StatusCode;
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
@@ -226,6 +227,7 @@ namespace AlibabaCloud.GatewayPop
                 object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
                 Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
                 object requestId = DefaultAny(err.Get("RequestId"), err.Get("requestId"));
+                err["statusCode"] = response.StatusCode;
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
@@ -291,7 +293,7 @@ namespace AlibabaCloud.GatewayPop
             string signature = GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
             List<string> signedHeaders = GetSignedHeaders(headers);
             string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
-            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
+            return "" + signatureAlgorithm + " Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
         }
 
         public async Task<string> GetAuthorizationAsync(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, string secret)
@@ -299,7 +301,7 @@ namespace AlibabaCloud.GatewayPop
             string signature = await GetSignatureAsync(pathname, method, query, headers, signatureAlgorithm, payload, secret);
             List<string> signedHeaders = await GetSignedHeadersAsync(headers);
             string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
-            return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
+            return "" + signatureAlgorithm + " Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
         }
 
         public string GetSignature(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string secret)

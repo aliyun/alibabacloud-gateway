@@ -78,6 +78,7 @@ class Client(SPIClient):
             _res = UtilClient.read_as_json(response.body)
             err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
+            err['statusCode'] = response.status_code
             raise TeaException({
                 'code': '%s' % TeaConverter.to_unicode(self.default_any(err.get('Code'), err.get('code'))),
                 'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(err.get('Message'), err.get('message'))), TeaConverter.to_unicode(request_id)),
@@ -117,7 +118,7 @@ class Client(SPIClient):
         signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, secret)
         signed_headers = self.get_signed_headers(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return '%s  Credential=%s,SignedHeaders=%s,Signature=%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(ak), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(signature))
+        return '%s Credential=%s,SignedHeaders=%s,Signature=%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(ak), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(signature))
 
     def get_signature(self, pathname, method, query, headers, signature_algorithm, payload, secret):
         canonical_uri = '/'

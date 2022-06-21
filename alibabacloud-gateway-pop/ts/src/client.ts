@@ -91,6 +91,7 @@ export default class Client extends SPI {
       let _res = await Util.readAsJSON(response.body);
       let err = Util.assertAsMap(_res);
       let requestId = this.defaultAny(err["RequestId"], err["requestId"]);
+      err["statusCode"] = response.statusCode;
       throw $tea.newError({
         code: `${this.defaultAny(err["Code"], err["code"])}`,
         message: `code: ${response.statusCode}, ${this.defaultAny(err["Message"], err["message"])} request id: ${requestId}`,
@@ -143,7 +144,7 @@ export default class Client extends SPI {
     let signature = await this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
     let signedHeaders = await this.getSignedHeaders(headers);
     let signedHeadersStr = Array.join(signedHeaders, ";");
-    return `${signatureAlgorithm}  Credential=${ak},SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+    return `${signatureAlgorithm} Credential=${ak},SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
   async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, secret: string): Promise<string> {

@@ -95,6 +95,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             Object _res = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(_res);
             Object requestId = this.defaultAny(err.get("RequestId"), err.get("requestId"));
+            err.put("statusCode", response.statusCode);
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", "" + this.defaultAny(err.get("Code"), err.get("code")) + ""),
                 new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(err.get("Message"), err.get("message")) + " request id: " + requestId + ""),
@@ -147,7 +148,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String signature = this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
         java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
         String signedHeadersStr = com.aliyun.darabonba.array.Client.join(signedHeaders, ";");
-        return "" + signatureAlgorithm + "  Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
+        return "" + signatureAlgorithm + " Credential=" + ak + ",SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
     }
 
     public String getSignature(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, String secret) throws Exception {

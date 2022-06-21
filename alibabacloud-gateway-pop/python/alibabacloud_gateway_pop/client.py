@@ -147,6 +147,7 @@ class Client(SPIClient):
             _res = UtilClient.read_as_json(response.body)
             err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
+            err['statusCode'] = response.status_code
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
@@ -181,6 +182,7 @@ class Client(SPIClient):
             _res = await UtilClient.read_as_json_async(response.body)
             err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
+            err['statusCode'] = response.status_code
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
@@ -243,7 +245,7 @@ class Client(SPIClient):
         signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, secret)
         signed_headers = self.get_signed_headers(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm}  Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
 
     async def get_authorization_async(
         self,
@@ -259,7 +261,7 @@ class Client(SPIClient):
         signature = await self.get_signature_async(pathname, method, query, headers, signature_algorithm, payload, secret)
         signed_headers = await self.get_signed_headers_async(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm}  Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
 
     def get_signature(
         self,

@@ -133,6 +133,7 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 		err := util.AssertAsMap(_res)
 		requestId := client.DefaultAny(err["RequestId"], err["requestId"])
+		err["statusCode"] = response.StatusCode
 		_err = tea.NewSDKError(map[string]interface{}{
 			"code":    tea.ToString(client.DefaultAny(err["Code"], err["code"])),
 			"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(requestId),
@@ -224,7 +225,7 @@ func (client *Client) GetAuthorization(pathname *string, method *string, query m
 	}
 
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
-	_result = tea.String(tea.StringValue(signatureAlgorithm) + "  Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
+	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
 	return _result, _err
 }
 

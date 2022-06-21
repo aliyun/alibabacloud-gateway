@@ -106,6 +106,7 @@ class Client extends DarabonbaGatewaySpiClient {
             $_res = Utils::readAsJSON($response->body);
             $err = Utils::assertAsMap($_res);
             $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
+            @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",
                 "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . (string) ($requestId) . "",
@@ -184,7 +185,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $signature = $this->getSignature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $secret);
         $signedHeaders = $this->getSignedHeaders($headers);
         $signedHeadersStr = ArrayUtil::join($signedHeaders, ";");
-        return "" . $signatureAlgorithm . "  Credential=" . $ak . ",SignedHeaders=" . $signedHeadersStr . ",Signature=" . $signature . "";
+        return "" . $signatureAlgorithm . " Credential=" . $ak . ",SignedHeaders=" . $signedHeadersStr . ",Signature=" . $signature . "";
     }
 
     /**
