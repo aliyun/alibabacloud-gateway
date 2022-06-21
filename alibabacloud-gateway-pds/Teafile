@@ -1,0 +1,92 @@
+{
+  "scope": "alibabacloud",
+  "name": "GatewayPDS",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "SPI": "alibabacloud:GatewaySPI:*",
+    "Util": "darabonba:Util:*",
+    "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
+    "Credential": "alibabacloud:Credential:*",
+    "EncodeUtil": "darabonba:EncodeUtil:*",
+    "SignatureUtil": "darabonba:SignatureUtil:*",
+    "String": "darabonba:String:*",
+    "Map": "darabonba:Map:*",
+    "Array": "darabonba:Array:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-pds:^0.0.1",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pds/client:v0.0.1",
+    "java": "com.aliyun:alibabacloud-gateway-pds:0.0.1",
+    "python": "alibabacloud_gateway_pds:0.0.1",
+    "python2": "alibabacloud_gateway_pds_py2:0.0.1",
+    "csharp": "AlibabaCloud.GatewayPds:0.0.1",
+    "php": "alibabacloud/gateway-pds:^0.0.1"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayPds",
+    "packageInfo": {
+      "description": "Alibaba Cloud POP SDK Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun PDS SDK",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
+      }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.pds",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewayPds",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-pds",
+      "desc": "Alibaba Cloud POP Client",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_pds",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_pds",
+      "desc": "Alibaba Cloud PDS SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_pds",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_pds_py2",
+      "desc": "Alibaba Cloud PDS SDK Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-pds"
+      }
+    }
+  }
+}
