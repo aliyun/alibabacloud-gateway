@@ -88,6 +88,7 @@ export default class Client extends SPI {
         data: {
           httpCode: response.statusCode,
           requestId: response.headers["x-log-requestid"],
+          statusCode: response.statusCode,
         },
       });
     }
@@ -102,8 +103,8 @@ export default class Client extends SPI {
         response.deserializedBody = await Util.readAsString(response.body);
       } else if (Util.equalString(request.bodyType, "json")) {
         let obj = await Util.readAsJSON(response.body);
-        let res = Util.assertAsMap(obj);
-        response.deserializedBody = res;
+        // var res = Util.assertAsMap(obj);
+        response.deserializedBody = obj;
       } else if (Util.equalString(request.bodyType, "array")) {
         response.deserializedBody = await Util.readAsJSON(response.body);
       } else {

@@ -91,7 +91,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 new TeaPair("message", resMap.get("errorMessage")),
                 new TeaPair("data", TeaConverter.buildMap(
                     new TeaPair("httpCode", response.statusCode),
-                    new TeaPair("requestId", response.headers.get("x-log-requestid"))
+                    new TeaPair("requestId", response.headers.get("x-log-requestid")),
+                    new TeaPair("statusCode", response.statusCode)
                 ))
             ));
         }
@@ -106,8 +107,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsString(response.body);
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
                 Object obj = com.aliyun.teautil.Common.readAsJSON(response.body);
-                java.util.Map<String, Object> res = com.aliyun.teautil.Common.assertAsMap(obj);
-                response.deserializedBody = res;
+                // var res = Util.assertAsMap(obj);
+                response.deserializedBody = obj;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
             } else {

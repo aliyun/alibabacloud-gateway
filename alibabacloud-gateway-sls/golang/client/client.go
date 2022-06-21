@@ -127,8 +127,9 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			"code":    resMap["errorCode"],
 			"message": resMap["errorMessage"],
 			"data": map[string]interface{}{
-				"httpCode":  tea.IntValue(response.StatusCode),
-				"requestId": tea.StringValue(response.Headers["x-log-requestid"]),
+				"httpCode":   tea.IntValue(response.StatusCode),
+				"requestId":  tea.StringValue(response.Headers["x-log-requestid"]),
+				"statusCode": tea.IntValue(response.StatusCode),
 			},
 		})
 		return _err
@@ -156,8 +157,8 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return _err
 			}
 
-			res := util.AssertAsMap(obj)
-			response.DeserializedBody = res
+			// var res = Util.assertAsMap(obj);
+			response.DeserializedBody = obj
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
 			response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
 			if _err != nil {

@@ -172,6 +172,7 @@ namespace AlibabaCloud.GatewaySls
                     {
                         {"httpCode", response.StatusCode},
                         {"requestId", response.Headers.Get("x-log-requestid")},
+                        {"statusCode", response.StatusCode},
                     }},
                 });
             }
@@ -193,8 +194,8 @@ namespace AlibabaCloud.GatewaySls
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
                 {
                     object obj = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-                    Dictionary<string, object> res = AlibabaCloud.TeaUtil.Common.AssertAsMap(obj);
-                    response.DeserializedBody = res;
+                    // var res = Util.assertAsMap(obj);
+                    response.DeserializedBody = obj;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "array"))
                 {
@@ -223,6 +224,7 @@ namespace AlibabaCloud.GatewaySls
                     {
                         {"httpCode", response.StatusCode},
                         {"requestId", response.Headers.Get("x-log-requestid")},
+                        {"statusCode", response.StatusCode},
                     }},
                 });
             }
@@ -244,8 +246,8 @@ namespace AlibabaCloud.GatewaySls
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
                 {
                     object obj = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-                    Dictionary<string, object> res = AlibabaCloud.TeaUtil.Common.AssertAsMap(obj);
-                    response.DeserializedBody = res;
+                    // var res = Util.assertAsMap(obj);
+                    response.DeserializedBody = obj;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "array"))
                 {

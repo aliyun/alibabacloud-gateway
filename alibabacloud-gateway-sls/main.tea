@@ -79,6 +79,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       data = {
         httpCode = response.statusCode,
         requestId = response.headers['x-log-requestid'],
+        statusCode = response.statusCode,
       }
     };
   }

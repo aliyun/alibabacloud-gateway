@@ -139,7 +139,8 @@ class Client(SPIClient):
                 'message': res_map.get('errorMessage'),
                 'data': {
                     'httpCode': response.status_code,
-                    'requestId': response.headers.get('x-log-requestid')
+                    'requestId': response.headers.get('x-log-requestid'),
+                    'statusCode': response.status_code
                 }
             })
         if not UtilClient.is_unset(response.body):
@@ -152,8 +153,8 @@ class Client(SPIClient):
                 response.deserialized_body = UtilClient.read_as_string(response.body)
             elif UtilClient.equal_string(request.body_type, 'json'):
                 obj = UtilClient.read_as_json(response.body)
-                res = UtilClient.assert_as_map(obj)
-                response.deserialized_body = res
+                # var res = Util.assertAsMap(obj);
+                response.deserialized_body = obj
             elif UtilClient.equal_string(request.body_type, 'array'):
                 response.deserialized_body = UtilClient.read_as_json(response.body)
             else:
@@ -174,7 +175,8 @@ class Client(SPIClient):
                 'message': res_map.get('errorMessage'),
                 'data': {
                     'httpCode': response.status_code,
-                    'requestId': response.headers.get('x-log-requestid')
+                    'requestId': response.headers.get('x-log-requestid'),
+                    'statusCode': response.status_code
                 }
             })
         if not UtilClient.is_unset(response.body):
@@ -187,8 +189,8 @@ class Client(SPIClient):
                 response.deserialized_body = await UtilClient.read_as_string_async(response.body)
             elif UtilClient.equal_string(request.body_type, 'json'):
                 obj = await UtilClient.read_as_json_async(response.body)
-                res = UtilClient.assert_as_map(obj)
-                response.deserialized_body = res
+                # var res = Util.assertAsMap(obj);
+                response.deserialized_body = obj
             elif UtilClient.equal_string(request.body_type, 'array'):
                 response.deserialized_body = await UtilClient.read_as_json_async(response.body)
             else:

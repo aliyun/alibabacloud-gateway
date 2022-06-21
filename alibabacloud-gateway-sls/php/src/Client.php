@@ -102,7 +102,8 @@ class Client extends DarabonbaGatewaySpiClient {
                 "message" => @$resMap["errorMessage"],
                 "data" => [
                     "httpCode" => $response->statusCode,
-                    "requestId" => @$response->headers["x-log-requestid"]
+                    "requestId" => @$response->headers["x-log-requestid"],
+                    "statusCode" => $response->statusCode
                 ]
             ]);
         }
@@ -119,8 +120,8 @@ class Client extends DarabonbaGatewaySpiClient {
             }
             else if (Utils::equalString($request->bodyType, "json")) {
                 $obj = Utils::readAsJSON($response->body);
-                $res = Utils::assertAsMap($obj);
-                $response->deserializedBody = $res;
+                // var res = Util.assertAsMap(obj);
+                $response->deserializedBody = $obj;
             }
             else if (Utils::equalString($request->bodyType, "array")) {
                 $response->deserializedBody = Utils::readAsJSON($response->body);
