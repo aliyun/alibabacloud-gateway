@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 from Tea.exceptions import TeaException
 from alibabacloud_darabonba_signature_util.signer import Signer
 from alibabacloud_darabonba_encode_util.encoder import Encoder
-from Tea.converter import TeaConverter
 from Tea.core import TeaCore
+from Tea.converter import TeaConverter
 
 from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_tea_util.client import Client as UtilClient
@@ -27,16 +27,9 @@ class Client(SPIClient):
     def modify_request(self, context, attribute_map):
         request = context.request
         config = context.configuration
-        host_map = {}
-        if not UtilClient.is_unset(request.host_map):
-            host_map = request.host_map
-        domain_id = host_map.get('domain_id')
-        if UtilClient.is_unset(domain_id):
-            domain_id = ''
-        host = '%s.%s' % (TeaConverter.to_unicode(domain_id), TeaConverter.to_unicode(config.endpoint))
         request.headers = TeaCore.merge({
             'date': UtilClient.get_date_utcstring(),
-            'host': host,
+            'host': config.endpoint,
             'x-acs-version': request.version,
             'x-acs-action': request.action,
             'user-agent': request.user_agent,
@@ -105,9 +98,8 @@ class Client(SPIClient):
         if not UtilClient.empty(endpoint):
             real_endpoint = endpoint
         if not UtilClient.empty(network) and StringClient.equals(network, 'vpc'):
-            url = StringClient.split(real_endpoint, '.', 0)
-            tmp = url[0]
-            real_endpoint = '%s-vpc.aliyunpds.com' % TeaConverter.to_unicode(tmp)
+            real_endpoint = StringClient.replace(real_endpoint, 'api.aliyunpds.com', 'api-vpc.aliyunpds.com', None)
+            real_endpoint = StringClient.replace(real_endpoint, 'admin.aliyunpds.com', 'admin-vpc.aliyunpds.com', None)
         return real_endpoint
 
     def default_any(self, input_value, default_value):

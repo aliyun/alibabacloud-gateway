@@ -26,20 +26,9 @@ export default class Client extends SPI {
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
-    let hostMap : {[key: string ]: string} = { };
-    if (!Util.isUnset(request.hostMap)) {
-      hostMap = request.hostMap;
-    }
-
-    let domainId = hostMap["domain_id"];
-    if (Util.isUnset(domainId)) {
-      domainId = "";
-    }
-
-    let host = `${domainId}.${config.endpoint}`;
     request.headers = {
       date: Util.getDateUTCString(),
-      host: host,
+      host: config.endpoint,
       'x-acs-version': request.version,
       'x-acs-action': request.action,
       'user-agent': request.userAgent,
@@ -129,9 +118,8 @@ export default class Client extends SPI {
     }
 
     if (!Util.empty(network) && String.equals(network, "vpc")) {
-      let url : string[] = String.split(realEndpoint, ".", 0);
-      let tmp = url[0];
-      realEndpoint = `${tmp}-vpc.aliyunpds.com`;
+      realEndpoint = String.replace(realEndpoint, "api.aliyunpds.com", "api-vpc.aliyunpds.com", null);
+      realEndpoint = String.replace(realEndpoint, "admin.aliyunpds.com", "admin-vpc.aliyunpds.com", null);
     }
 
     return realEndpoint;

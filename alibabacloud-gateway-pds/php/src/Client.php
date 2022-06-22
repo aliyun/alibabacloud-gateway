@@ -4,8 +4,8 @@
 namespace Darabonba\GatewayPds;
 
 use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
-use AlibabaCloud\Tea\Utils\Utils;
 use AlibabaCloud\Tea\Tea;
+use AlibabaCloud\Tea\Utils\Utils;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Darabonba\String\StringUtil;
@@ -40,18 +40,9 @@ class Client extends DarabonbaGatewaySpiClient {
     public function modifyRequest($context, $attributeMap){
         $request = $context->request;
         $config = $context->configuration;
-        $hostMap = [];
-        if (!Utils::isUnset($request->hostMap)) {
-            $hostMap = $request->hostMap;
-        }
-        $domainId = @$hostMap["domain_id"];
-        if (Utils::isUnset($domainId)) {
-            $domainId = "";
-        }
-        $host = "" . $domainId . "." . $config->endpoint . "";
         $request->headers = Tea::merge([
             "date" => Utils::getDateUTCString(),
-            "host" => $host,
+            "host" => $config->endpoint,
             "x-acs-version" => $request->version,
             "x-acs-action" => $request->action,
             "user-agent" => $request->userAgent,
@@ -149,9 +140,8 @@ class Client extends DarabonbaGatewaySpiClient {
             $realEndpoint = $endpoint;
         }
         if (!Utils::empty_($network) && StringUtil::equals($network, "vpc")) {
-            $url = StringUtil::split($realEndpoint, ".", 0);
-            $tmp = @$url[0];
-            $realEndpoint = "" . $tmp . "-vpc.aliyunpds.com";
+            $realEndpoint = StringUtil::replace($realEndpoint, "api.aliyunpds.com", "api-vpc.aliyunpds.com", null);
+            $realEndpoint = StringUtil::replace($realEndpoint, "admin.aliyunpds.com", "admin-vpc.aliyunpds.com", null);
         }
         return $realEndpoint;
     }

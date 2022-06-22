@@ -28,21 +28,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
         InterceptorContext.InterceptorContextRequest request = context.request;
         InterceptorContext.InterceptorContextConfiguration config = context.configuration;
-        java.util.Map<String, String> hostMap = new java.util.HashMap<>();
-        if (!com.aliyun.teautil.Common.isUnset(request.hostMap)) {
-            hostMap = request.hostMap;
-        }
-
-        String domainId = hostMap.get("domain_id");
-        if (com.aliyun.teautil.Common.isUnset(domainId)) {
-            domainId = "";
-        }
-
-        String host = "" + domainId + "." + config.endpoint + "";
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("date", com.aliyun.teautil.Common.getDateUTCString()),
-                new TeaPair("host", host),
+                new TeaPair("host", config.endpoint),
                 new TeaPair("x-acs-version", request.version),
                 new TeaPair("x-acs-action", request.action),
                 new TeaPair("user-agent", request.userAgent),
@@ -133,9 +122,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
         }
 
         if (!com.aliyun.teautil.Common.empty(network) && com.aliyun.darabonbastring.Client.equals(network, "vpc")) {
-            java.util.List<String> url = com.aliyun.darabonbastring.Client.split(realEndpoint, ".", 0);
-            String tmp = url.get(0);
-            realEndpoint = "" + tmp + "-vpc.aliyunpds.com";
+            realEndpoint = com.aliyun.darabonbastring.Client.replace(realEndpoint, "api.aliyunpds.com", "api-vpc.aliyunpds.com", null);
+            realEndpoint = com.aliyun.darabonbastring.Client.replace(realEndpoint, "admin.aliyunpds.com", "admin-vpc.aliyunpds.com", null);
         }
 
         return realEndpoint;

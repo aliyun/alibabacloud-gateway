@@ -44,20 +44,9 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
 	request := context.Request
 	config := context.Configuration
-	hostMap := make(map[string]*string)
-	if !tea.BoolValue(util.IsUnset(request.HostMap)) {
-		hostMap = request.HostMap
-	}
-
-	domainId := hostMap["domain_id"]
-	if tea.BoolValue(util.IsUnset(domainId)) {
-		domainId = tea.String("")
-	}
-
-	host := tea.String(tea.StringValue(domainId) + "." + tea.StringValue(config.Endpoint))
 	request.Headers = tea.Merge(map[string]*string{
 		"date":                    util.GetDateUTCString(),
-		"host":                    host,
+		"host":                    config.Endpoint,
 		"x-acs-version":           request.Version,
 		"x-acs-action":            request.Action,
 		"user-agent":              request.UserAgent,
@@ -189,9 +178,8 @@ func (client *Client) GetEndpoint(network *string, endpoint *string) (_result *s
 	}
 
 	if !tea.BoolValue(util.Empty(network)) && tea.BoolValue(string_.Equals(network, tea.String("vpc"))) {
-		url := string_.Split(realEndpoint, tea.String("."), tea.Int(0))
-		tmp := url[0]
-		realEndpoint = tea.String(tea.StringValue(tmp) + "-vpc.aliyunpds.com")
+		realEndpoint = string_.Replace(realEndpoint, tea.String("api.aliyunpds.com"), tea.String("api-vpc.aliyunpds.com"), nil)
+		realEndpoint = string_.Replace(realEndpoint, tea.String("admin.aliyunpds.com"), tea.String("admin-vpc.aliyunpds.com"), nil)
 	}
 
 	_result = realEndpoint

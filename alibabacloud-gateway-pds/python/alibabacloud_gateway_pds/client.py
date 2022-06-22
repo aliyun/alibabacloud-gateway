@@ -42,16 +42,9 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        host_map = {}
-        if not UtilClient.is_unset(request.host_map):
-            host_map = request.host_map
-        domain_id = host_map.get('domain_id')
-        if UtilClient.is_unset(domain_id):
-            domain_id = ''
-        host = f'{domain_id}.{config.endpoint}'
         request.headers = TeaCore.merge({
             'date': UtilClient.get_date_utcstring(),
-            'host': host,
+            'host': config.endpoint,
             'x-acs-version': request.version,
             'x-acs-action': request.action,
             'user-agent': request.user_agent,
@@ -96,16 +89,9 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        host_map = {}
-        if not UtilClient.is_unset(request.host_map):
-            host_map = request.host_map
-        domain_id = host_map.get('domain_id')
-        if UtilClient.is_unset(domain_id):
-            domain_id = ''
-        host = f'{domain_id}.{config.endpoint}'
         request.headers = TeaCore.merge({
             'date': UtilClient.get_date_utcstring(),
-            'host': host,
+            'host': config.endpoint,
             'x-acs-version': request.version,
             'x-acs-action': request.action,
             'user-agent': request.user_agent,
@@ -212,9 +198,8 @@ class Client(SPIClient):
         if not UtilClient.empty(endpoint):
             real_endpoint = endpoint
         if not UtilClient.empty(network) and StringClient.equals(network, 'vpc'):
-            url = StringClient.split(real_endpoint, '.', 0)
-            tmp = url[0]
-            real_endpoint = f'{tmp}-vpc.aliyunpds.com'
+            real_endpoint = StringClient.replace(real_endpoint, 'api.aliyunpds.com', 'api-vpc.aliyunpds.com', None)
+            real_endpoint = StringClient.replace(real_endpoint, 'admin.aliyunpds.com', 'admin-vpc.aliyunpds.com', None)
         return real_endpoint
 
     async def get_endpoint_async(
@@ -226,9 +211,8 @@ class Client(SPIClient):
         if not UtilClient.empty(endpoint):
             real_endpoint = endpoint
         if not UtilClient.empty(network) and StringClient.equals(network, 'vpc'):
-            url = StringClient.split(real_endpoint, '.', 0)
-            tmp = url[0]
-            real_endpoint = f'{tmp}-vpc.aliyunpds.com'
+            real_endpoint = StringClient.replace(real_endpoint, 'api.aliyunpds.com', 'api-vpc.aliyunpds.com', None)
+            real_endpoint = StringClient.replace(real_endpoint, 'admin.aliyunpds.com', 'admin-vpc.aliyunpds.com', None)
         return real_endpoint
 
     def default_any(

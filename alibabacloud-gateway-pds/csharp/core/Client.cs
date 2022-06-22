@@ -36,23 +36,12 @@ namespace AlibabaCloud.GatewayPds
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
-            {
-                hostMap = request.HostMap;
-            }
-            string domainId = hostMap.Get("domain_id");
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(domainId))
-            {
-                domainId = "";
-            }
-            string host = "" + domainId + "." + config.Endpoint;
             request.Headers = TeaConverter.merge<string>
             (
                 new Dictionary<string, string>()
                 {
                     {"date", AlibabaCloud.TeaUtil.Common.GetDateUTCString()},
-                    {"host", host},
+                    {"host", config.Endpoint},
                     {"x-acs-version", request.Version},
                     {"x-acs-action", request.Action},
                     {"user-agent", request.UserAgent},
@@ -115,23 +104,12 @@ namespace AlibabaCloud.GatewayPds
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            Dictionary<string, string> hostMap = new Dictionary<string, string>(){};
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.HostMap))
-            {
-                hostMap = request.HostMap;
-            }
-            string domainId = hostMap.Get("domain_id");
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(domainId))
-            {
-                domainId = "";
-            }
-            string host = "" + domainId + "." + config.Endpoint;
             request.Headers = TeaConverter.merge<string>
             (
                 new Dictionary<string, string>()
                 {
                     {"date", AlibabaCloud.TeaUtil.Common.GetDateUTCString()},
-                    {"host", host},
+                    {"host", config.Endpoint},
                     {"x-acs-version", request.Version},
                     {"x-acs-action", request.Action},
                     {"user-agent", request.UserAgent},
@@ -281,9 +259,8 @@ namespace AlibabaCloud.GatewayPds
             }
             if (!AlibabaCloud.TeaUtil.Common.Empty(network) && AlibabaCloud.DarabonbaString.StringUtil.Equals(network, "vpc"))
             {
-                List<string> url = AlibabaCloud.DarabonbaString.StringUtil.Split(realEndpoint, ".", 0);
-                string tmp = url[0];
-                realEndpoint = "" + tmp + "-vpc.aliyunpds.com";
+                realEndpoint = AlibabaCloud.DarabonbaString.StringUtil.Replace(realEndpoint, "api.aliyunpds.com", "api-vpc.aliyunpds.com", null);
+                realEndpoint = AlibabaCloud.DarabonbaString.StringUtil.Replace(realEndpoint, "admin.aliyunpds.com", "admin-vpc.aliyunpds.com", null);
             }
             return realEndpoint;
         }
@@ -297,9 +274,8 @@ namespace AlibabaCloud.GatewayPds
             }
             if (!AlibabaCloud.TeaUtil.Common.Empty(network) && AlibabaCloud.DarabonbaString.StringUtil.Equals(network, "vpc"))
             {
-                List<string> url = AlibabaCloud.DarabonbaString.StringUtil.Split(realEndpoint, ".", 0);
-                string tmp = url[0];
-                realEndpoint = "" + tmp + "-vpc.aliyunpds.com";
+                realEndpoint = AlibabaCloud.DarabonbaString.StringUtil.Replace(realEndpoint, "api.aliyunpds.com", "api-vpc.aliyunpds.com", null);
+                realEndpoint = AlibabaCloud.DarabonbaString.StringUtil.Replace(realEndpoint, "admin.aliyunpds.com", "admin-vpc.aliyunpds.com", null);
             }
             return realEndpoint;
         }
