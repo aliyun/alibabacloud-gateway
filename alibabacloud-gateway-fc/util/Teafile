@@ -39,19 +39,16 @@
     "className": "Client",
     "typedef": {
       "HttpRequest": {
-        "import": "org.apache.hc.core5.http.HttpRequest",
-        "type": "HttpRequest",
-        "package": "org.apache.httpcomponents.core5:httpcore5:5.1.3"
+        "import": "okhttp3.Request",
+        "type": "Request"
       },
       "HttpResponse": {
-        "import": "org.apache.hc.core5.http.HttpResponse",
-        "type": "HttpResponse",
-        "package": "org.apache.httpcomponents.core5:httpcore5:5.1.3"
+        "import": "okhttp3.Response",
+        "type": "Response"
       },
       "HttpHeader": {
-        "import": "org.apache.hc.core5.http.HttpHeaders",
-        "type": "HttpHeaders",
-        "package": "org.apache.httpcomponents.core5:httpcore5:5.1.3"
+        "import": "okhttp3.Headers",
+        "type": "Headers"
       }
     }
   },

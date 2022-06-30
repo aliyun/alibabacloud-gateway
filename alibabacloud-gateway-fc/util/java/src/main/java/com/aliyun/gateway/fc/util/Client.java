@@ -3,9 +3,9 @@ package com.aliyun.gateway.fc.util;
 
 import com.aliyun.tea.*;
 import com.aliyun.credentials.*;
-import org.apache.hc.core5.http.HttpRequest;
-import org.apache.hc.core5.http.HttpResponse;
-import org.apache.hc.core5.http.HttpHeaders;
+import okhttp3.Headers;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Client {
 
@@ -15,24 +15,24 @@ public class Client {
     }
 
 
-    public HttpResponse InvokeHTTPTrigger(String url, String method, byte[] body, HttpHeaders headers) throws Exception {
+    public Response InvokeHTTPTrigger(String url, String method, byte[] body, Headers headers) throws Exception {
     }
 
-    public HttpResponse InvokeAnonymousHTTPTrigger(String url, String method, byte[] body, HttpHeaders headers) throws Exception {
+    public Response InvokeAnonymousHTTPTrigger(String url, String method, byte[] body, Headers headers) throws Exception {
     }
 
-    public HttpResponse SendHTTPRequestWithAuthorization(HttpRequest req) throws Exception {
+    public Response SendHTTPRequestWithAuthorization(Request req) throws Exception {
     }
 
-    public HttpResponse SendHTTPRequest(HttpRequest req) throws Exception {
+    public Response SendHTTPRequest(Request req) throws Exception {
     }
 
-    public HttpRequest SignRequest(HttpRequest req) throws Exception {
+    public Request SignRequest(Request req) throws Exception {
     }
 
-    public HttpRequest SignRequestWithContentMD5(HttpRequest req, String contentMD5) throws Exception {
+    public Request SignRequestWithContentMD5(Request req, String contentMD5) throws Exception {
     }
 
-    public HttpRequest BuildHTTPRequest(String url, String method, byte[] body, HttpHeaders headers) throws Exception {
+    public Request BuildHTTPRequest(String url, String method, byte[] body, Headers headers) throws Exception {
     }
 }
