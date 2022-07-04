@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayFC_Util",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -40,15 +40,15 @@
     "typedef": {
       "HttpRequest": {
         "import": "okhttp3.Request",
-        "type": "Request"
+        "type": null
       },
       "HttpResponse": {
         "import": "okhttp3.Response",
-        "type": "Response"
+        "type": null
       },
       "HttpHeader": {
         "import": "okhttp3.Headers",
-        "type": "Headers"
+        "type": null
       }
     }
   },
