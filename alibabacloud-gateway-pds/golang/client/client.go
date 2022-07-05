@@ -138,32 +138,35 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		return _err
 	}
 
-	if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
-		response.DeserializedBody = response.Body
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
-		byt, _err := util.ReadAsBytes(response.Body)
-		if _err != nil {
-			return _err
-		}
+	if !tea.BoolValue(util.IsUnset(response.Body)) && !tea.BoolValue(util.EqualNumber(response.StatusCode, tea.Int(204))) {
+		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
+			response.DeserializedBody = response.Body
+		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
+			byt, _err := util.ReadAsBytes(response.Body)
+			if _err != nil {
+				return _err
+			}
 
-		response.DeserializedBody = byt
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("string"))) {
-		str, _err := util.ReadAsString(response.Body)
-		if _err != nil {
-			return _err
-		}
+			response.DeserializedBody = byt
+		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("string"))) {
+			str, _err := util.ReadAsString(response.Body)
+			if _err != nil {
+				return _err
+			}
 
-		response.DeserializedBody = str
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("json"))) {
-		response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
-		if _err != nil {
-			return _err
-		}
+			response.DeserializedBody = str
+		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("json"))) {
+			response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
+			if _err != nil {
+				return _err
+			}
 
-	} else {
-		response.DeserializedBody, _err = util.ReadAsString(response.Body)
-		if _err != nil {
-			return _err
+		} else {
+			response.DeserializedBody, _err = util.ReadAsString(response.Body)
+			if _err != nil {
+				return _err
+			}
+
 		}
 
 	}

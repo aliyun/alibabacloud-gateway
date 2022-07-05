@@ -95,18 +95,21 @@ export default class Client extends SPI {
       });
     }
 
-    if (Util.equalString(request.bodyType, "binary")) {
-      response.deserializedBody = response.body;
-    } else if (Util.equalString(request.bodyType, "byte")) {
-      let byt = await Util.readAsBytes(response.body);
-      response.deserializedBody = byt;
-    } else if (Util.equalString(request.bodyType, "string")) {
-      let str = await Util.readAsString(response.body);
-      response.deserializedBody = str;
-    } else if (Util.equalString(request.bodyType, "json")) {
-      response.deserializedBody = await Util.readAsJSON(response.body);
-    } else {
-      response.deserializedBody = await Util.readAsString(response.body);
+    if (!Util.isUnset(response.body) && !Util.equalNumber(response.statusCode, 204)) {
+      if (Util.equalString(request.bodyType, "binary")) {
+        response.deserializedBody = response.body;
+      } else if (Util.equalString(request.bodyType, "byte")) {
+        let byt = await Util.readAsBytes(response.body);
+        response.deserializedBody = byt;
+      } else if (Util.equalString(request.bodyType, "string")) {
+        let str = await Util.readAsString(response.body);
+        response.deserializedBody = str;
+      } else if (Util.equalString(request.bodyType, "json")) {
+        response.deserializedBody = await Util.readAsJSON(response.body);
+      } else {
+        response.deserializedBody = await Util.readAsString(response.body);
+      }
+
     }
 
   }

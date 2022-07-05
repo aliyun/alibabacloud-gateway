@@ -99,18 +99,21 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ));
         }
 
-        if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
-            response.deserializedBody = response.body;
-        } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "byte")) {
-            byte[] byt = com.aliyun.teautil.Common.readAsBytes(response.body);
-            response.deserializedBody = byt;
-        } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "string")) {
-            String str = com.aliyun.teautil.Common.readAsString(response.body);
-            response.deserializedBody = str;
-        } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
-            response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
-        } else {
-            response.deserializedBody = com.aliyun.teautil.Common.readAsString(response.body);
+        if (!com.aliyun.teautil.Common.isUnset(response.body) && !com.aliyun.teautil.Common.equalNumber(response.statusCode, 204)) {
+            if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
+                response.deserializedBody = response.body;
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "byte")) {
+                byte[] byt = com.aliyun.teautil.Common.readAsBytes(response.body);
+                response.deserializedBody = byt;
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "string")) {
+                String str = com.aliyun.teautil.Common.readAsString(response.body);
+                response.deserializedBody = str;
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
+                response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
+            } else {
+                response.deserializedBody = com.aliyun.teautil.Common.readAsString(response.body);
+            }
+
         }
 
     }

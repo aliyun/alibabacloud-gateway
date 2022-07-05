@@ -146,18 +146,19 @@ class Client(SPIClient):
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
                 'data': err
             })
-        if UtilClient.equal_string(request.body_type, 'binary'):
-            response.deserialized_body = response.body
-        elif UtilClient.equal_string(request.body_type, 'byte'):
-            byt = UtilClient.read_as_bytes(response.body)
-            response.deserialized_body = byt
-        elif UtilClient.equal_string(request.body_type, 'string'):
-            str = UtilClient.read_as_string(response.body)
-            response.deserialized_body = str
-        elif UtilClient.equal_string(request.body_type, 'json'):
-            response.deserialized_body = UtilClient.read_as_json(response.body)
-        else:
-            response.deserialized_body = UtilClient.read_as_string(response.body)
+        if not UtilClient.is_unset(response.body) and not UtilClient.equal_number(response.status_code, 204):
+            if UtilClient.equal_string(request.body_type, 'binary'):
+                response.deserialized_body = response.body
+            elif UtilClient.equal_string(request.body_type, 'byte'):
+                byt = UtilClient.read_as_bytes(response.body)
+                response.deserialized_body = byt
+            elif UtilClient.equal_string(request.body_type, 'string'):
+                str = UtilClient.read_as_string(response.body)
+                response.deserialized_body = str
+            elif UtilClient.equal_string(request.body_type, 'json'):
+                response.deserialized_body = UtilClient.read_as_json(response.body)
+            else:
+                response.deserialized_body = UtilClient.read_as_string(response.body)
 
     async def modify_response_async(
         self,
@@ -176,18 +177,19 @@ class Client(SPIClient):
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
                 'data': err
             })
-        if UtilClient.equal_string(request.body_type, 'binary'):
-            response.deserialized_body = response.body
-        elif UtilClient.equal_string(request.body_type, 'byte'):
-            byt = await UtilClient.read_as_bytes_async(response.body)
-            response.deserialized_body = byt
-        elif UtilClient.equal_string(request.body_type, 'string'):
-            str = await UtilClient.read_as_string_async(response.body)
-            response.deserialized_body = str
-        elif UtilClient.equal_string(request.body_type, 'json'):
-            response.deserialized_body = await UtilClient.read_as_json_async(response.body)
-        else:
-            response.deserialized_body = await UtilClient.read_as_string_async(response.body)
+        if not UtilClient.is_unset(response.body) and not UtilClient.equal_number(response.status_code, 204):
+            if UtilClient.equal_string(request.body_type, 'binary'):
+                response.deserialized_body = response.body
+            elif UtilClient.equal_string(request.body_type, 'byte'):
+                byt = await UtilClient.read_as_bytes_async(response.body)
+                response.deserialized_body = byt
+            elif UtilClient.equal_string(request.body_type, 'string'):
+                str = await UtilClient.read_as_string_async(response.body)
+                response.deserialized_body = str
+            elif UtilClient.equal_string(request.body_type, 'json'):
+                response.deserialized_body = await UtilClient.read_as_json_async(response.body)
+            else:
+                response.deserialized_body = await UtilClient.read_as_string_async(response.body)
 
     def get_endpoint(
         self,

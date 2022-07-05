@@ -110,22 +110,24 @@ class Client extends DarabonbaGatewaySpiClient {
                 "data" => $err
             ]);
         }
-        if (Utils::equalString($request->bodyType, "binary")) {
-            $response->deserializedBody = $response->body;
-        }
-        else if (Utils::equalString($request->bodyType, "byte")) {
-            $byt = Utils::readAsBytes($response->body);
-            $response->deserializedBody = $byt;
-        }
-        else if (Utils::equalString($request->bodyType, "string")) {
-            $str = Utils::readAsString($response->body);
-            $response->deserializedBody = $str;
-        }
-        else if (Utils::equalString($request->bodyType, "json")) {
-            $response->deserializedBody = Utils::readAsJSON($response->body);
-        }
-        else {
-            $response->deserializedBody = Utils::readAsString($response->body);
+        if (!Utils::isUnset($response->body) && !Utils::equalNumber($response->statusCode, 204)) {
+            if (Utils::equalString($request->bodyType, "binary")) {
+                $response->deserializedBody = $response->body;
+            }
+            else if (Utils::equalString($request->bodyType, "byte")) {
+                $byt = Utils::readAsBytes($response->body);
+                $response->deserializedBody = $byt;
+            }
+            else if (Utils::equalString($request->bodyType, "string")) {
+                $str = Utils::readAsString($response->body);
+                $response->deserializedBody = $str;
+            }
+            else if (Utils::equalString($request->bodyType, "json")) {
+                $response->deserializedBody = Utils::readAsJSON($response->body);
+            }
+            else {
+                $response->deserializedBody = Utils::readAsString($response->body);
+            }
         }
     }
 
