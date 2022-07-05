@@ -86,18 +86,21 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       data = err,
     };
   }
-  if (Util.equalString(request.bodyType, 'binary')) {
-    response.deserializedBody = response.body;
-  } else if (Util.equalString(request.bodyType, 'byte')) {
-    var byt = Util.readAsBytes(response.body);
-    response.deserializedBody = byt;
-  } else if (Util.equalString(request.bodyType, 'string')) {
-    var str = Util.readAsString(response.body);
-    response.deserializedBody = str;
-  } else if (Util.equalString(request.bodyType, 'json')) {
-    response.deserializedBody = Util.readAsJSON(response.body);
-  } else {
-    response.deserializedBody = Util.readAsString(response.body);
+
+  if (!Util.isUnset(response.body)) {
+    if (Util.equalString(request.bodyType, 'binary')) {
+      response.deserializedBody = response.body;
+    } else if (Util.equalString(request.bodyType, 'byte')) {
+      var byt = Util.readAsBytes(response.body);
+      response.deserializedBody = byt;
+    } else if (Util.equalString(request.bodyType, 'string')) {
+      var str = Util.readAsString(response.body);
+      response.deserializedBody = str;
+    } else if (Util.equalString(request.bodyType, 'json')) {
+      response.deserializedBody = Util.readAsJSON(response.body);
+    } else {
+      response.deserializedBody = Util.readAsString(response.body);
+    }
   }
 }
 
