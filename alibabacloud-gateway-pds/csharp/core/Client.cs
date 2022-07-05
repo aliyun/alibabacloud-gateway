@@ -185,27 +185,30 @@ namespace AlibabaCloud.GatewayPds
                     {"data", err},
                 });
             }
-            if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body) && !AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
             {
-                response.DeserializedBody = response.Body;
-            }
-            else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "byte"))
-            {
-                byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(response.Body);
-                response.DeserializedBody = byt;
-            }
-            else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "string"))
-            {
-                string str = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                response.DeserializedBody = str;
-            }
-            else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
-            {
-                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-            }
-            else
-            {
-                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
+                {
+                    response.DeserializedBody = response.Body;
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "byte"))
+                {
+                    byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(response.Body);
+                    response.DeserializedBody = byt;
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "string"))
+                {
+                    string str = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    response.DeserializedBody = str;
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
+                {
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                }
+                else
+                {
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                }
             }
         }
 
@@ -226,27 +229,30 @@ namespace AlibabaCloud.GatewayPds
                     {"data", err},
                 });
             }
-            if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body) && !AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
             {
-                response.DeserializedBody = response.Body;
-            }
-            else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "byte"))
-            {
-                byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(response.Body);
-                response.DeserializedBody = byt;
-            }
-            else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "string"))
-            {
-                string str = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                response.DeserializedBody = str;
-            }
-            else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
-            {
-                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-            }
-            else
-            {
-                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
+                {
+                    response.DeserializedBody = response.Body;
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "byte"))
+                {
+                    byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(response.Body);
+                    response.DeserializedBody = byt;
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "string"))
+                {
+                    string str = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    response.DeserializedBody = str;
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
+                {
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                }
+                else
+                {
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                }
             }
         }
 

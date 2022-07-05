@@ -87,7 +87,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     };
   }
 
-  if (!Util.isUnset(response.body)) {
+  if (!Util.isUnset(response.body) && !Util.equalNumber(response.statusCode, 204)) {
     if (Util.equalString(request.bodyType, 'binary')) {
       response.deserializedBody = response.body;
     } else if (Util.equalString(request.bodyType, 'byte')) {
