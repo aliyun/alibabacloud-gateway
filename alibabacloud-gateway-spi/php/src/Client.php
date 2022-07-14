@@ -9,6 +9,8 @@ use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
 
 abstract class Client {
+    public function __construct(){
+    }
 
     /**
      * @param InterceptorContext $context
