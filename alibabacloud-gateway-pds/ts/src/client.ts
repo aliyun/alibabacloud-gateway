@@ -106,6 +106,8 @@ export default class Client extends SPI {
         response.deserializedBody = str;
       } else if (Util.equalString(request.bodyType, "json")) {
         response.deserializedBody = await Util.readAsJSON(response.body);
+      } else if (Util.equalString(request.bodyType, "array")) {
+        response.deserializedBody = await Util.readAsJSON(response.body);
       } else {
         response.deserializedBody = await Util.readAsString(response.body);
       }

@@ -205,6 +205,10 @@ namespace AlibabaCloud.GatewayPds
                 {
                     response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
                 }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "array"))
+                {
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                }
                 else
                 {
                     response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
@@ -246,6 +250,10 @@ namespace AlibabaCloud.GatewayPds
                     response.DeserializedBody = str;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
+                {
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "array"))
                 {
                     response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
                 }

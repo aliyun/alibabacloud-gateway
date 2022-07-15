@@ -161,6 +161,12 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return _err
 			}
 
+		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
+			response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
+			if _err != nil {
+				return _err
+			}
+
 		} else {
 			response.DeserializedBody, _err = util.ReadAsString(response.Body)
 			if _err != nil {

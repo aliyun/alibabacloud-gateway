@@ -125,6 +125,9 @@ class Client extends DarabonbaGatewaySpiClient {
             else if (Utils::equalString($request->bodyType, "json")) {
                 $response->deserializedBody = Utils::readAsJSON($response->body);
             }
+            else if (Utils::equalString($request->bodyType, "array")) {
+                $response->deserializedBody = Utils::readAsJSON($response->body);
+            }
             else {
                 $response->deserializedBody = Utils::readAsString($response->body);
             }

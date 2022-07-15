@@ -157,6 +157,8 @@ class Client(SPIClient):
                 response.deserialized_body = str
             elif UtilClient.equal_string(request.body_type, 'json'):
                 response.deserialized_body = UtilClient.read_as_json(response.body)
+            elif UtilClient.equal_string(request.body_type, 'array'):
+                response.deserialized_body = UtilClient.read_as_json(response.body)
             else:
                 response.deserialized_body = UtilClient.read_as_string(response.body)
 
@@ -187,6 +189,8 @@ class Client(SPIClient):
                 str = await UtilClient.read_as_string_async(response.body)
                 response.deserialized_body = str
             elif UtilClient.equal_string(request.body_type, 'json'):
+                response.deserialized_body = await UtilClient.read_as_json_async(response.body)
+            elif UtilClient.equal_string(request.body_type, 'array'):
                 response.deserialized_body = await UtilClient.read_as_json_async(response.body)
             else:
                 response.deserialized_body = await UtilClient.read_as_string_async(response.body)

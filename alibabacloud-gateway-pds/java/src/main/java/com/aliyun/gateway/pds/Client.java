@@ -110,6 +110,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 response.deserializedBody = str;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
+                response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
             } else {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsString(response.body);
             }
