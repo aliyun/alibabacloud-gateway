@@ -156,8 +156,9 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
     var separator : string = '?';
     for(var paramName : sortedParams) {
       canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-      if (!Util.isUnset(query[paramName])) {
-        canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
+      var paramValue = query[paramName];
+      if (!Util.isUnset(paramValue)) {
+        canonicalizedResource = `${canonicalizedResource}=${paramValue}`;
       }
       separator = '&';
     }

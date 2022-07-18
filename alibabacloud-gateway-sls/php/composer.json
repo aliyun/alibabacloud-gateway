@@ -11,9 +11,9 @@
   ],
   "require": {
     "php": ">5.5",
-    "alibabacloud/gateway-spi": "^0.0.1",
+    "alibabacloud/gateway-spi": "^0.0.2",
     "alibabacloud/credentials": "^1.1",
-    "alibabacloud/tea-utils": "^0.2.0",
+    "alibabacloud/tea-utils": "^0.2.16",
     "alibabacloud/openapi-util": "^0.1.10",
     "alibabacloud/darabonba-string": "^0.1.14",
     "alibabacloud/darabonba-map": "^0.0.1",

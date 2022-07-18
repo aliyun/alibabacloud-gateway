@@ -222,8 +222,9 @@ class Client extends DarabonbaGatewaySpiClient {
             $separator = "?";
             foreach($sortedParams as $paramName){
                 $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
-                if (!Utils::isUnset(@$query[$paramName])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "=" . @$query[$paramName] . "";
+                $paramValue = @$query[$paramName];
+                if (!Utils::isUnset($paramValue)) {
+                    $canonicalizedResource = "" . $canonicalizedResource . "=" . $paramValue . "";
                 }
                 $separator = "&";
             }
