@@ -159,5 +159,24 @@
         "project": "gateway-fc-util"
       }
     }
+  },
+  "ts": {
+    "typedef": {
+      "HttpRequest": {
+        "import": "http",
+        "type": "http.ClientRequest",
+        "package": "@types/node:^14"
+      },
+      "HttpResponse": {
+        "import": "http",
+        "type": "http.IncomingMessage",
+        "package": "@types/node:^14"
+      },
+      "HttpHeader": {
+        "import": "http",
+        "type": "http.OutgoingHttpHeaders",
+        "package": "@types/node:^14"
+      }
+    }
   }
 }
