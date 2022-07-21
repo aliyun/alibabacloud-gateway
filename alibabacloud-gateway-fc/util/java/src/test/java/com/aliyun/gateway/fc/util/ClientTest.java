@@ -70,5 +70,33 @@ public class ClientTest {
         assert respBody.contains("\"body\": \"mybodystring\"");
     }
 
+    @Test
+    public void testInvokePostWithEmptyBody() throws Exception {
+        Response resp = client.InvokeHTTPTrigger(url, "POST", new byte[]{}, new Headers.Builder()
+                .add("k1", "v1")
+                .add("k1", "v2")
+                .add("k2", "v2")
+                .build());
+        assert resp.toString().contains("code=200");
+        String respBody = new String(resp.body().bytes(), Charset.defaultCharset());
+        assert respBody.contains("\"method\": \"POST\"");
+        assert respBody.contains("\"path\": \"/\",");
+        assert respBody.contains("\"k1\": \"v1, v2\",\n" +
+                "        \"k2\": \"v2\",");
+    }
 
+    @Test
+    public void testInvokeDELETEWithEmptyBody() throws Exception {
+        Response resp = client.InvokeHTTPTrigger(url, "DELETE", null, new Headers.Builder()
+                .add("k1", "v1")
+                .add("k1", "v2")
+                .add("k2", "v2")
+                .build());
+        assert resp.toString().contains("code=200");
+        String respBody = new String(resp.body().bytes(), Charset.defaultCharset());
+        assert respBody.contains("\"method\": \"DELETE\"");
+        assert respBody.contains("\"path\": \"/\",");
+        assert respBody.contains("\"k1\": \"v1, v2\",\n" +
+                "        \"k2\": \"v2\",");
+    }
 }

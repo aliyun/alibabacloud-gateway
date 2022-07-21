@@ -295,6 +295,8 @@ public class Client {
         builder.url(url);
         if (body != null) {
             builder.method(method, RequestBody.create(MediaType.parse("application/json"), body));
+        } else {
+            builder.method(method, null);
         }
         builder.headers(headers);
         return builder.build();
