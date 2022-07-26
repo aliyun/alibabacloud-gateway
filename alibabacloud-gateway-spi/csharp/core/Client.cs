@@ -13,43 +13,19 @@ using AlibabaCloud.GatewaySpi.Models;
 
 namespace AlibabaCloud.GatewaySpi
 {
-    public class Client 
+    public interface Client 
     {
+        void ModifyConfiguration(InterceptorContext context, AttributeMap attributeMap);
 
-        public Client()
-        {
-        }
+        Task ModifyConfigurationAsync(InterceptorContext context, AttributeMap attributeMap);
 
+        void ModifyRequest(InterceptorContext context, AttributeMap attributeMap);
 
-        public void ModifyConfiguration(InterceptorContext context, AttributeMap attributeMap)
-        {
-            throw new NotImplementedException();
-        }
+        Task ModifyRequestAsync(InterceptorContext context, AttributeMap attributeMap);
 
-        public async Task ModifyConfigurationAsync(InterceptorContext context, AttributeMap attributeMap)
-        {
-            throw new NotImplementedException();
-        }
+        void ModifyResponse(InterceptorContext context, AttributeMap attributeMap);
 
-        public void ModifyRequest(InterceptorContext context, AttributeMap attributeMap)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task ModifyRequestAsync(InterceptorContext context, AttributeMap attributeMap)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ModifyResponse(InterceptorContext context, AttributeMap attributeMap)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task ModifyResponseAsync(InterceptorContext context, AttributeMap attributeMap)
-        {
-            throw new NotImplementedException();
-        }
+        Task ModifyResponseAsync(InterceptorContext context, AttributeMap attributeMap);
 
     }
 }
