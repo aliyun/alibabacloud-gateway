@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayPDS",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -26,7 +26,7 @@
     "java": "com.aliyun:alibabacloud-gateway-pds:0.0.4",
     "python": "alibabacloud_gateway_pds:0.0.4",
     "python2": "alibabacloud_gateway_pds_py2:0.0.4",
-    "csharp": "AlibabaCloud.GatewayPds:0.0.4",
+    "csharp": "AlibabaCloud.GatewayPds:0.0.5",
     "php": "alibabacloud/gateway-pds:^0.0.5"
   },
   "csharp": {

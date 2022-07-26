@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -26,7 +26,7 @@
     "java": "com.aliyun:alibabacloud-gateway-sls:0.0.3",
     "python": "alibabacloud_gateway_sls:0.0.3",
     "python2": "alibabacloud_gateway_sls_py2:0.0.3",
-    "csharp": "AlibabaCloud.GatewaySls:0.0.3",
+    "csharp": "AlibabaCloud.GatewaySls:0.0.4",
     "php": "alibabacloud/gateway-sls:^0.0.5"
   },
   "csharp": {

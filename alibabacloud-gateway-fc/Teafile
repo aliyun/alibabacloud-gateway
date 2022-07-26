@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayFC",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -27,7 +27,7 @@
     "java": "com.aliyun:alibabacloud-gateway-fc:0.0.5",
     "python": "alibabacloud_gateway_fc:0.0.5",
     "python2": "alibabacloud_gateway_fc_py2:0.0.5",
-    "csharp": "AlibabaCloud.GatewayFc:0.0.5",
+    "csharp": "AlibabaCloud.GatewayFc:0.0.6",
     "php": "alibabacloud/gateway-fc:^0.0.6"
   },
   "csharp": {
