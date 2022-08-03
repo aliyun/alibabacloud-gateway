@@ -126,6 +126,11 @@ namespace AlibabaCloud.GatewayOss
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "binary"))
                 {
+                    attributeMap.Key = new Dictionary<string, string>
+                    {
+                        {"crc", ""},
+                        {"md5", ""},
+                    };
                     request.Stream = AlibabaCloud.OSSUtil.Common.Inject(request.Stream, attributeMap.Key);
                     request.Headers["content-type"] = "application/octet-stream";
                 }
@@ -188,6 +193,11 @@ namespace AlibabaCloud.GatewayOss
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "binary"))
                 {
+                    attributeMap.Key = new Dictionary<string, string>
+                    {
+                        {"crc", ""},
+                        {"md5", ""},
+                    };
                     request.Stream = AlibabaCloud.OSSUtil.Common.Inject(request.Stream, attributeMap.Key);
                     request.Headers["content-type"] = "application/octet-stream";
                 }
@@ -222,7 +232,7 @@ namespace AlibabaCloud.GatewayOss
                     {"message", err.Get("Message")},
                     {"data", new Dictionary<string, object>
                     {
-                        {"httpCode", response.StatusCode},
+                        {"statusCode", response.StatusCode},
                         {"requestId", err.Get("RequestId")},
                         {"hostId", err.Get("HostId")},
                     }},
@@ -334,7 +344,7 @@ namespace AlibabaCloud.GatewayOss
                     {"message", err.Get("Message")},
                     {"data", new Dictionary<string, object>
                     {
-                        {"httpCode", response.StatusCode},
+                        {"statusCode", response.StatusCode},
                         {"requestId", err.Get("RequestId")},
                         {"hostId", err.Get("HostId")},
                     }},
@@ -628,7 +638,7 @@ namespace AlibabaCloud.GatewayOss
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(query))
             {
                 List<string> queryList = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
-                newQueryList = AlibabaCloud.DarabonbaArray.ArrayUtil.Concat(subResourcesArray, queryList);
+                newQueryList = AlibabaCloud.DarabonbaArray.ArrayUtil.Concat(queryList, subResourcesArray);
             }
             List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(newQueryList);
             string separator = "?";
@@ -699,7 +709,7 @@ namespace AlibabaCloud.GatewayOss
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(query))
             {
                 List<string> queryList = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
-                newQueryList = AlibabaCloud.DarabonbaArray.ArrayUtil.Concat(subResourcesArray, queryList);
+                newQueryList = AlibabaCloud.DarabonbaArray.ArrayUtil.Concat(queryList, subResourcesArray);
             }
             List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(newQueryList);
             string separator = "?";

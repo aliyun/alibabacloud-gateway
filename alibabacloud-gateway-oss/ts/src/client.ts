@@ -108,6 +108,10 @@ export default class Client extends SPI {
         request.stream = new $tea.BytesReadable(OpenApiUtil.toForm(reqBodyForm));
         request.headers["content-type"] = "application/x-www-form-urlencoded";
       } else if (String.equals(request.reqBodyType, "binary")) {
+        attributeMap.key = {
+          crc: "",
+          md5: "",
+        };
         request.stream = OSSUtil.inject(request.stream, attributeMap.key);
         request.headers["content-type"] = "application/octet-stream";
       }
@@ -136,7 +140,7 @@ export default class Client extends SPI {
         code: err["Code"],
         message: err["Message"],
         data: {
-          httpCode: response.statusCode,
+          statusCode: response.statusCode,
           requestId: err["RequestId"],
           hostId: err["HostId"],
         },
@@ -309,7 +313,7 @@ export default class Client extends SPI {
     let newQueryList : string[] = subResourcesArray;
     if (!Util.isUnset(query)) {
       let queryList : string[] = Map.keySet(query);
-      newQueryList = Array.concat(subResourcesArray, queryList);
+      newQueryList = Array.concat(queryList, subResourcesArray);
     }
 
     let sortedParams = Array.ascSort(newQueryList);

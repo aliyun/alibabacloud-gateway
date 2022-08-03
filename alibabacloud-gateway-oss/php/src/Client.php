@@ -125,6 +125,10 @@ class Client extends DarabonbaGatewaySpiClient {
                 $request->headers["content-type"] = "application/x-www-form-urlencoded";
             }
             else if (StringUtil::equals($request->reqBodyType, "binary")) {
+                $attributeMap->key = [
+                    "crc" => "",
+                    "md5" => ""
+                ];
                 $request->stream = OSSUtils::inject($request->stream, $attributeMap->key);
                 $request->headers["content-type"] = "application/octet-stream";
             }
@@ -156,7 +160,7 @@ class Client extends DarabonbaGatewaySpiClient {
                 "code" => @$err["Code"],
                 "message" => @$err["Message"],
                 "data" => [
-                    "httpCode" => $response->statusCode,
+                    "statusCode" => $response->statusCode,
                     "requestId" => @$err["RequestId"],
                     "hostId" => @$err["HostId"]
                 ]
@@ -358,7 +362,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $newQueryList = $subResourcesArray;
         if (!Utils::isUnset($query)) {
             $queryList = MapUtil::keySet($query);
-            $newQueryList = ArrayUtil::concat($subResourcesArray, $queryList);
+            $newQueryList = ArrayUtil::concat($queryList, $subResourcesArray);
         }
         $sortedParams = ArrayUtil::ascSort($newQueryList);
         $separator = "?";

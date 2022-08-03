@@ -94,6 +94,10 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			request.Stream = tea.ToReader(openapiutil.ToForm(reqBodyForm))
 			request.Headers["content-type"] = tea.String("application/x-www-form-urlencoded")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("binary"))) {
+			attributeMap.Key = map[string]*string{
+				"crc": tea.String(""),
+				"md5": tea.String(""),
+			}
 			request.Stream = ossutil.Inject(request.Stream, attributeMap.Key)
 			request.Headers["content-type"] = tea.String("application/octet-stream")
 		}
@@ -134,9 +138,9 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			"code":    err["Code"],
 			"message": err["Message"],
 			"data": map[string]interface{}{
-				"httpCode":  tea.IntValue(response.StatusCode),
-				"requestId": err["RequestId"],
-				"hostId":    err["HostId"],
+				"statusCode": tea.IntValue(response.StatusCode),
+				"requestId":  err["RequestId"],
+				"hostId":     err["HostId"],
 			},
 		})
 		return _err
@@ -375,7 +379,7 @@ func (client *Client) BuildCanonicalizedResource(pathname *string, query map[str
 	newQueryList := subResourcesArray
 	if !tea.BoolValue(util.IsUnset(query)) {
 		queryList := map_.KeySet(query)
-		newQueryList = array.Concat(subResourcesArray, queryList)
+		newQueryList = array.Concat(queryList, subResourcesArray)
 	}
 
 	sortedParams := array.AscSort(newQueryList)

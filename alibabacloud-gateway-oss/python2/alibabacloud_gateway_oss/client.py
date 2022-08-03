@@ -104,6 +104,10 @@ class Client(SPIClient):
                 request.stream = OpenApiUtilClient.to_form(req_body_form)
                 request.headers['content-type'] = 'application/x-www-form-urlencoded'
             elif StringClient.equals(request.req_body_type, 'binary'):
+                attribute_map.key = {
+                    'crc': '',
+                    'md5': ''
+                }
                 request.stream = OSSUtilClient.inject(request.stream, attribute_map.key)
                 request.headers['content-type'] = 'application/octet-stream'
         host = self.get_host(config.endpoint_type, bucket_name, config.endpoint)
@@ -126,7 +130,7 @@ class Client(SPIClient):
                 'code': err.get('Code'),
                 'message': err.get('Message'),
                 'data': {
-                    'httpCode': response.status_code,
+                    'statusCode': response.status_code,
                     'requestId': err.get('RequestId'),
                     'hostId': err.get('HostId')
                 }
@@ -247,7 +251,7 @@ class Client(SPIClient):
         new_query_list = sub_resources_array
         if not UtilClient.is_unset(query):
             query_list = MapClient.key_set(query)
-            new_query_list = ArrayClient.concat(sub_resources_array, query_list)
+            new_query_list = ArrayClient.concat(query_list, sub_resources_array)
         sorted_params = ArrayClient.asc_sort(new_query_list)
         separator = '?'
         for param_name in sorted_params:
