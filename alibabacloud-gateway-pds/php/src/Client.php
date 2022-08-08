@@ -102,16 +102,20 @@ class Client extends DarabonbaGatewaySpiClient {
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $_res = Utils::readAsJSON($response->body);
             $err = Utils::assertAsMap($_res);
-            $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
+            $headers = $response->headers;
+            $requestId = @$headers["x-ca-request-id"];
             @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",
-                "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . (string) ($requestId) . "",
+                "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . $requestId . "",
                 "data" => $err
             ]);
         }
-        if (!Utils::isUnset($response->body) && !Utils::equalNumber($response->statusCode, 204)) {
-            if (Utils::equalString($request->bodyType, "binary")) {
+        if (!Utils::isUnset($response->body)) {
+            if (Utils::equalNumber($response->statusCode, 204)) {
+                Utils::readAsString($response->body);
+            }
+            else if (Utils::equalString($request->bodyType, "binary")) {
                 $response->deserializedBody = $response->body;
             }
             else if (Utils::equalString($request->bodyType, "byte")) {

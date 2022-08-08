@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_pds_py2.
 
-Created on 15/07/2022
+Created on 08/08/2022
 
 @author: Alibaba Cloud SDK
 """
@@ -46,7 +46,7 @@ REQUIRES = [
     "alibabacloud_darabonba_signature_util_py2>=0.0.3, <1.0.0",
     "alibabacloud_darabonba_string_py2>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map_py2>=0.0.1, <1.0.0",
-    "alibabacloud_darabonba_array_py2>=0.0.4, <1.0.0"
+    "alibabacloud_darabonba_array_py2>=0.0.5, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''

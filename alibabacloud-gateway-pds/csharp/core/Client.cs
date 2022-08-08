@@ -176,7 +176,8 @@ namespace AlibabaCloud.GatewayPds
             {
                 object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
                 Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
-                object requestId = DefaultAny(err.Get("RequestId"), err.Get("requestId"));
+                Dictionary<string, string> headers = response.Headers;
+                string requestId = headers.Get("x-ca-request-id");
                 err["statusCode"] = response.StatusCode;
                 throw new TeaException(new Dictionary<string, object>
                 {
@@ -185,9 +186,13 @@ namespace AlibabaCloud.GatewayPds
                     {"data", err},
                 });
             }
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body) && !AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body))
             {
-                if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
+                {
+                    AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
                     response.DeserializedBody = response.Body;
                 }
@@ -224,7 +229,8 @@ namespace AlibabaCloud.GatewayPds
             {
                 object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
                 Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
-                object requestId = DefaultAny(err.Get("RequestId"), err.Get("requestId"));
+                Dictionary<string, string> headers = response.Headers;
+                string requestId = headers.Get("x-ca-request-id");
                 err["statusCode"] = response.StatusCode;
                 throw new TeaException(new Dictionary<string, object>
                 {
@@ -233,9 +239,13 @@ namespace AlibabaCloud.GatewayPds
                     {"data", err},
                 });
             }
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body) && !AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body))
             {
-                if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
+                {
+                    AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                }
+                else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
                     response.DeserializedBody = response.Body;
                 }

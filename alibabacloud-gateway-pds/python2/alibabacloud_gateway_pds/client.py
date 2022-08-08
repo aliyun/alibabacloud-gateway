@@ -73,15 +73,18 @@ class Client(SPIClient):
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             _res = UtilClient.read_as_json(response.body)
             err = UtilClient.assert_as_map(_res)
-            request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
+            headers = response.headers
+            request_id = headers.get('x-ca-request-id')
             err['statusCode'] = response.status_code
             raise TeaException({
                 'code': '%s' % TeaConverter.to_unicode(self.default_any(err.get('Code'), err.get('code'))),
                 'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(err.get('Message'), err.get('message'))), TeaConverter.to_unicode(request_id)),
                 'data': err
             })
-        if not UtilClient.is_unset(response.body) and not UtilClient.equal_number(response.status_code, 204):
-            if UtilClient.equal_string(request.body_type, 'binary'):
+        if not UtilClient.is_unset(response.body):
+            if UtilClient.equal_number(response.status_code, 204):
+                UtilClient.read_as_string(response.body)
+            elif UtilClient.equal_string(request.body_type, 'binary'):
                 response.deserialized_body = response.body
             elif UtilClient.equal_string(request.body_type, 'byte'):
                 byt = UtilClient.read_as_bytes(response.body)

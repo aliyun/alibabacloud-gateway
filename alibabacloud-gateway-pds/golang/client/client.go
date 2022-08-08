@@ -128,18 +128,24 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		}
 
 		err := util.AssertAsMap(_res)
-		requestId := client.DefaultAny(err["RequestId"], err["requestId"])
+		headers := response.Headers
+		requestId := headers["x-ca-request-id"]
 		err["statusCode"] = response.StatusCode
 		_err = tea.NewSDKError(map[string]interface{}{
 			"code":    tea.ToString(client.DefaultAny(err["Code"], err["code"])),
-			"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(requestId),
+			"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.StringValue(requestId),
 			"data":    err,
 		})
 		return _err
 	}
 
-	if !tea.BoolValue(util.IsUnset(response.Body)) && !tea.BoolValue(util.EqualNumber(response.StatusCode, tea.Int(204))) {
-		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
+	if !tea.BoolValue(util.IsUnset(response.Body)) {
+		if tea.BoolValue(util.EqualNumber(response.StatusCode, tea.Int(204))) {
+			_, _err = util.ReadAsString(response.Body)
+			if _err != nil {
+				return _err
+			}
+		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
 			response.DeserializedBody = response.Body
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
 			byt, _err := util.ReadAsBytes(response.Body)

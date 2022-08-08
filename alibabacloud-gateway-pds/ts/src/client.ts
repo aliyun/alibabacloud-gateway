@@ -86,7 +86,8 @@ export default class Client extends SPI {
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       let _res = await Util.readAsJSON(response.body);
       let err = Util.assertAsMap(_res);
-      let requestId = this.defaultAny(err["RequestId"], err["requestId"]);
+      let headers : {[key: string ]: string} = response.headers;
+      let requestId = headers["x-ca-request-id"];
       err["statusCode"] = response.statusCode;
       throw $tea.newError({
         code: `${this.defaultAny(err["Code"], err["code"])}`,
@@ -95,8 +96,10 @@ export default class Client extends SPI {
       });
     }
 
-    if (!Util.isUnset(response.body) && !Util.equalNumber(response.statusCode, 204)) {
-      if (Util.equalString(request.bodyType, "binary")) {
+    if (!Util.isUnset(response.body)) {
+      if (Util.equalNumber(response.statusCode, 204)) {
+        await Util.readAsString(response.body);
+      } else if (Util.equalString(request.bodyType, "binary")) {
         response.deserializedBody = response.body;
       } else if (Util.equalString(request.bodyType, "byte")) {
         let byt = await Util.readAsBytes(response.body);

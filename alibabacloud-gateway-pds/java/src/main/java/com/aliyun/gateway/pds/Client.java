@@ -90,7 +90,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             Object _res = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(_res);
-            Object requestId = this.defaultAny(err.get("RequestId"), err.get("requestId"));
+            java.util.Map<String, String> headers = response.headers;
+            String requestId = headers.get("x-ca-request-id");
             err.put("statusCode", response.statusCode);
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", "" + this.defaultAny(err.get("Code"), err.get("code")) + ""),
@@ -99,8 +100,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ));
         }
 
-        if (!com.aliyun.teautil.Common.isUnset(response.body) && !com.aliyun.teautil.Common.equalNumber(response.statusCode, 204)) {
-            if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
+        if (!com.aliyun.teautil.Common.isUnset(response.body)) {
+            if (com.aliyun.teautil.Common.equalNumber(response.statusCode, 204)) {
+                com.aliyun.teautil.Common.readAsString(response.body);
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
                 response.deserializedBody = response.body;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "byte")) {
                 byte[] byt = com.aliyun.teautil.Common.readAsBytes(response.body);

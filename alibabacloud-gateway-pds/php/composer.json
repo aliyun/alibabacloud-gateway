@@ -19,7 +19,7 @@
     "alibabacloud/darabonba-signature-util": "^0.0.3",
     "alibabacloud/darabonba-string": "^0.1.14",
     "alibabacloud/darabonba-map": "^0.0.1",
-    "alibabacloud/darabonba-array": "^0.0.1"
+    "alibabacloud/darabonba-array": "^0.0.2"
   },
   "autoload": {
     "psr-4": {
