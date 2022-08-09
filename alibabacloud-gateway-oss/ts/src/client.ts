@@ -134,17 +134,31 @@ export default class Client extends SPI {
     let bodyStr : string = null;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       bodyStr = await Util.readAsString(response.body);
-      let respMap : {[key: string ]: any} = XML.parseXml(bodyStr, null);
-      let err : {[key: string ]: any} = Util.assertAsMap(respMap["Error"]);
-      throw $tea.newError({
-        code: err["Code"],
-        message: err["Message"],
-        data: {
-          statusCode: response.statusCode,
-          requestId: err["RequestId"],
-          hostId: err["HostId"],
-        },
-      });
+      if (!Util.empty(bodyStr)) {
+        let respMap : {[key: string ]: any} = XML.parseXml(bodyStr, null);
+        let err : {[key: string ]: any} = Util.assertAsMap(respMap["Error"]);
+        throw $tea.newError({
+          code: err["Code"],
+          message: err["Message"],
+          data: {
+            statusCode: response.statusCode,
+            requestId: err["RequestId"],
+            hostId: err["HostId"],
+          },
+        });
+      } else {
+        let headers : {[key: string ]: string} = response.headers;
+        let requestId = headers["x-oss-request-id"];
+        throw $tea.newError({
+          code: response.statusCode,
+          message: null,
+          data: {
+            statusCode: response.statusCode,
+            requestId: `${requestId}`,
+          },
+        });
+      }
+
     }
 
     let ctx : {[key: string ]: string} = attributeMap.key;
@@ -172,7 +186,9 @@ export default class Client extends SPI {
     }
 
     if (!Util.isUnset(response.body)) {
-      if (String.equals(request.bodyType, "xml")) {
+      if (Util.equalNumber(response.statusCode, 204)) {
+        await Util.readAsString(response.body);
+      } else if (String.equals(request.bodyType, "xml")) {
         bodyStr = await Util.readAsString(response.body);
         let result : {[key: string ]: any} = XML.parseXml(bodyStr, null);
         let list : string[] = Map.keySet(result);

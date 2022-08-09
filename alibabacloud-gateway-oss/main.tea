@@ -94,17 +94,31 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
   var bodyStr : string = null;
   if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
     bodyStr = Util.readAsString(response.body);
-    var respMap : map[string]any = XML.parseXml(bodyStr, null);
-    var err : map[string]any = Util.assertAsMap(respMap.Error);
-    throw {
-      code = err.Code,
-      message = err.Message,
-      data = {
-        statusCode = response.statusCode,
-        requestId = err.RequestId,
-        hostId = err.HostId,
-      }
-    };
+    if (!Util.empty(bodyStr)) {
+      var respMap : map[string]any = XML.parseXml(bodyStr, null);
+      var err : map[string]any = Util.assertAsMap(respMap.Error);
+      throw {
+        code = err.Code,
+        message = err.Message,
+        data = {
+          statusCode = response.statusCode,
+          requestId = err.RequestId,
+          hostId = err.HostId,
+        }
+      };
+    } else {
+      var headers : map[string]string = response.headers;
+      var requestId = headers.x-oss-request-id;
+      throw {
+        code = response.statusCode,
+        message = null,
+        data = {
+          statusCode = response.statusCode,
+          requestId = `${requestId}`,
+        }
+      };
+    }
+    
   }
   var ctx : map[string]string = attributeMap.key;
   if (!Util.isUnset(ctx)) {
@@ -132,7 +146,9 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     }
   }
   if (!Util.isUnset(response.body)) {
-    if (String.equals(request.bodyType, 'xml')) {
+    if (Util.equalNumber(response.statusCode, 204)) {
+      Util.readAsString(response.body);
+    } else if (String.equals(request.bodyType, 'xml')) {
       bodyStr = Util.readAsString(response.body);
       var result : map[string]any = XML.parseXml(bodyStr, null);
       var list : [string] = Map.keySet(result);

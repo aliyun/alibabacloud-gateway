@@ -224,19 +224,37 @@ namespace AlibabaCloud.GatewayOss
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
                 bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
-                throw new TeaException(new Dictionary<string, object>
+                if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                 {
-                    {"code", err.Get("Code")},
-                    {"message", err.Get("Message")},
-                    {"data", new Dictionary<string, object>
+                    Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
+                    Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
+                    throw new TeaException(new Dictionary<string, object>
                     {
-                        {"statusCode", response.StatusCode},
-                        {"requestId", err.Get("RequestId")},
-                        {"hostId", err.Get("HostId")},
-                    }},
-                });
+                        {"code", err.Get("Code")},
+                        {"message", err.Get("Message")},
+                        {"data", new Dictionary<string, object>
+                        {
+                            {"statusCode", response.StatusCode},
+                            {"requestId", err.Get("RequestId")},
+                            {"hostId", err.Get("HostId")},
+                        }},
+                    });
+                }
+                else
+                {
+                    Dictionary<string, string> headers = response.Headers;
+                    string requestId = headers.Get("x-oss-request-id");
+                    throw new TeaException(new Dictionary<string, object>
+                    {
+                        {"code", response.StatusCode},
+                        {"message", null},
+                        {"data", new Dictionary<string, object>
+                        {
+                            {"statusCode", response.StatusCode},
+                            {"requestId", "" + requestId},
+                        }},
+                    });
+                }
             }
             Dictionary<string, string> ctx = attributeMap.Key;
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(ctx))
@@ -268,7 +286,11 @@ namespace AlibabaCloud.GatewayOss
             }
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body))
             {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.BodyType, "xml"))
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
+                {
+                    AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                }
+                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.BodyType, "xml"))
                 {
                     bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
                     Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
@@ -336,19 +358,37 @@ namespace AlibabaCloud.GatewayOss
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
                 bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
-                throw new TeaException(new Dictionary<string, object>
+                if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                 {
-                    {"code", err.Get("Code")},
-                    {"message", err.Get("Message")},
-                    {"data", new Dictionary<string, object>
+                    Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
+                    Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
+                    throw new TeaException(new Dictionary<string, object>
                     {
-                        {"statusCode", response.StatusCode},
-                        {"requestId", err.Get("RequestId")},
-                        {"hostId", err.Get("HostId")},
-                    }},
-                });
+                        {"code", err.Get("Code")},
+                        {"message", err.Get("Message")},
+                        {"data", new Dictionary<string, object>
+                        {
+                            {"statusCode", response.StatusCode},
+                            {"requestId", err.Get("RequestId")},
+                            {"hostId", err.Get("HostId")},
+                        }},
+                    });
+                }
+                else
+                {
+                    Dictionary<string, string> headers = response.Headers;
+                    string requestId = headers.Get("x-oss-request-id");
+                    throw new TeaException(new Dictionary<string, object>
+                    {
+                        {"code", response.StatusCode},
+                        {"message", null},
+                        {"data", new Dictionary<string, object>
+                        {
+                            {"statusCode", response.StatusCode},
+                            {"requestId", "" + requestId},
+                        }},
+                    });
+                }
             }
             Dictionary<string, string> ctx = attributeMap.Key;
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(ctx))
@@ -380,7 +420,11 @@ namespace AlibabaCloud.GatewayOss
             }
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body))
             {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.BodyType, "xml"))
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
+                {
+                    AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                }
+                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.BodyType, "xml"))
                 {
                     bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
                     Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);

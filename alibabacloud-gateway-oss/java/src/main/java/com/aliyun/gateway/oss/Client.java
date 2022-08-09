@@ -110,6 +110,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 request.stream = Tea.toReadable(com.aliyun.openapiutil.Client.toForm(reqBodyForm));
                 request.headers.put("content-type", "application/x-www-form-urlencoded");
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "binary")) {
+                attributeMap.key = TeaConverter.buildMap(
+                    new TeaPair("crc", ""),
+                    new TeaPair("md5", "")
+                );
                 request.stream = com.aliyun.ossutil.Client.inject(request.stream, attributeMap.key);
                 request.headers.put("content-type", "application/octet-stream");
             }
@@ -134,17 +138,31 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String bodyStr = null;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
-            java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
-            java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(respMap.get("Error"));
-            throw new TeaException(TeaConverter.buildMap(
-                new TeaPair("code", err.get("Code")),
-                new TeaPair("message", err.get("Message")),
-                new TeaPair("data", TeaConverter.buildMap(
-                    new TeaPair("httpCode", response.statusCode),
-                    new TeaPair("requestId", err.get("RequestId")),
-                    new TeaPair("hostId", err.get("HostId"))
-                ))
-            ));
+            if (!com.aliyun.teautil.Common.empty(bodyStr)) {
+                java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
+                java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(respMap.get("Error"));
+                throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", err.get("Code")),
+                    new TeaPair("message", err.get("Message")),
+                    new TeaPair("data", TeaConverter.buildMap(
+                        new TeaPair("statusCode", response.statusCode),
+                        new TeaPair("requestId", err.get("RequestId")),
+                        new TeaPair("hostId", err.get("HostId"))
+                    ))
+                ));
+            } else {
+                java.util.Map<String, String> headers = response.headers;
+                String requestId = headers.get("x-oss-request-id");
+                throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", response.statusCode),
+                    new TeaPair("message", null),
+                    new TeaPair("data", TeaConverter.buildMap(
+                        new TeaPair("statusCode", response.statusCode),
+                        new TeaPair("requestId", "" + requestId + "")
+                    ))
+                ));
+            }
+
         }
 
         java.util.Map<String, String> ctx = attributeMap.key;
@@ -172,7 +190,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         }
 
         if (!com.aliyun.teautil.Common.isUnset(response.body)) {
-            if (com.aliyun.darabonbastring.Client.equals(request.bodyType, "xml")) {
+            if (com.aliyun.teautil.Common.equalNumber(response.statusCode, 204)) {
+                com.aliyun.teautil.Common.readAsString(response.body);
+            } else if (com.aliyun.darabonbastring.Client.equals(request.bodyType, "xml")) {
                 bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
                 java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
                 java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
@@ -314,7 +334,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.List<String> newQueryList = subResourcesArray;
         if (!com.aliyun.teautil.Common.isUnset(query)) {
             java.util.List<String> queryList = com.aliyun.darabonba.map.Client.keySet(query);
-            newQueryList = com.aliyun.darabonba.array.Client.concat(subResourcesArray, queryList);
+            newQueryList = com.aliyun.darabonba.array.Client.concat(queryList, subResourcesArray);
         }
 
         java.util.List<String> sortedParams = com.aliyun.darabonba.array.Client.ascSort(newQueryList);

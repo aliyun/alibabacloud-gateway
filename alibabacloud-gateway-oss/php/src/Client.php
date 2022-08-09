@@ -154,17 +154,31 @@ class Client extends DarabonbaGatewaySpiClient {
         $bodyStr = null;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $bodyStr = Utils::readAsString($response->body);
-            $respMap = XML::parseXml($bodyStr, null);
-            $err = Utils::assertAsMap(@$respMap["Error"]);
-            throw new TeaError([
-                "code" => @$err["Code"],
-                "message" => @$err["Message"],
-                "data" => [
-                    "statusCode" => $response->statusCode,
-                    "requestId" => @$err["RequestId"],
-                    "hostId" => @$err["HostId"]
-                ]
-            ]);
+            if (!Utils::empty_($bodyStr)) {
+                $respMap = XML::parseXml($bodyStr, null);
+                $err = Utils::assertAsMap(@$respMap["Error"]);
+                throw new TeaError([
+                    "code" => @$err["Code"],
+                    "message" => @$err["Message"],
+                    "data" => [
+                        "statusCode" => $response->statusCode,
+                        "requestId" => @$err["RequestId"],
+                        "hostId" => @$err["HostId"]
+                    ]
+                ]);
+            }
+            else {
+                $headers = $response->headers;
+                $requestId = @$headers["x-oss-request-id"];
+                throw new TeaError([
+                    "code" => $response->statusCode,
+                    "message" => null,
+                    "data" => [
+                        "statusCode" => $response->statusCode,
+                        "requestId" => "" . $requestId . ""
+                    ]
+                ]);
+            }
         }
         $ctx = $attributeMap->key;
         if (!Utils::isUnset($ctx)) {
@@ -188,7 +202,10 @@ class Client extends DarabonbaGatewaySpiClient {
             }
         }
         if (!Utils::isUnset($response->body)) {
-            if (StringUtil::equals($request->bodyType, "xml")) {
+            if (Utils::equalNumber($response->statusCode, 204)) {
+                Utils::readAsString($response->body);
+            }
+            else if (StringUtil::equals($request->bodyType, "xml")) {
                 $bodyStr = Utils::readAsString($response->body);
                 $result = XML::parseXml($bodyStr, null);
                 $list = MapUtil::keySet($result);

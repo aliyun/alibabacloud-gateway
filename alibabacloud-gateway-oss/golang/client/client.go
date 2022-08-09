@@ -132,18 +132,33 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
-		respMap := xml.ParseXml(bodyStr, nil)
-		err := util.AssertAsMap(respMap["Error"])
-		_err = tea.NewSDKError(map[string]interface{}{
-			"code":    err["Code"],
-			"message": err["Message"],
-			"data": map[string]interface{}{
-				"statusCode": tea.IntValue(response.StatusCode),
-				"requestId":  err["RequestId"],
-				"hostId":     err["HostId"],
-			},
-		})
-		return _err
+		if !tea.BoolValue(util.Empty(bodyStr)) {
+			respMap := xml.ParseXml(bodyStr, nil)
+			err := util.AssertAsMap(respMap["Error"])
+			_err = tea.NewSDKError(map[string]interface{}{
+				"code":    err["Code"],
+				"message": err["Message"],
+				"data": map[string]interface{}{
+					"statusCode": tea.IntValue(response.StatusCode),
+					"requestId":  err["RequestId"],
+					"hostId":     err["HostId"],
+				},
+			})
+			return _err
+		} else {
+			headers := response.Headers
+			requestId := headers["x-oss-request-id"]
+			_err = tea.NewSDKError(map[string]interface{}{
+				"code":    tea.IntValue(response.StatusCode),
+				"message": nil,
+				"data": map[string]interface{}{
+					"statusCode": tea.IntValue(response.StatusCode),
+					"requestId":  tea.StringValue(requestId),
+				},
+			})
+			return _err
+		}
+
 	}
 
 	ctx := attributeMap.Key
@@ -173,7 +188,12 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 	}
 
 	if !tea.BoolValue(util.IsUnset(response.Body)) {
-		if tea.BoolValue(string_.Equals(request.BodyType, tea.String("xml"))) {
+		if tea.BoolValue(util.EqualNumber(response.StatusCode, tea.Int(204))) {
+			_, _err = util.ReadAsString(response.Body)
+			if _err != nil {
+				return _err
+			}
+		} else if tea.BoolValue(string_.Equals(request.BodyType, tea.String("xml"))) {
 			bodyStr, _err = util.ReadAsString(response.Body)
 			if _err != nil {
 				return _err

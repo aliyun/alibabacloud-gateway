@@ -190,17 +190,29 @@ class Client(SPIClient):
         body_str = None
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             body_str = UtilClient.read_as_string(response.body)
-            resp_map = XMLClient.parse_xml(body_str, None)
-            err = UtilClient.assert_as_map(resp_map.get('Error'))
-            raise TeaException({
-                'code': err.get('Code'),
-                'message': err.get('Message'),
-                'data': {
-                    'statusCode': response.status_code,
-                    'requestId': err.get('RequestId'),
-                    'hostId': err.get('HostId')
-                }
-            })
+            if not UtilClient.empty(body_str):
+                resp_map = XMLClient.parse_xml(body_str, None)
+                err = UtilClient.assert_as_map(resp_map.get('Error'))
+                raise TeaException({
+                    'code': err.get('Code'),
+                    'message': err.get('Message'),
+                    'data': {
+                        'statusCode': response.status_code,
+                        'requestId': err.get('RequestId'),
+                        'hostId': err.get('HostId')
+                    }
+                })
+            else:
+                headers = response.headers
+                request_id = headers.get('x-oss-request-id')
+                raise TeaException({
+                    'code': response.status_code,
+                    'message': None,
+                    'data': {
+                        'statusCode': response.status_code,
+                        'requestId': f'{request_id}'
+                    }
+                })
         ctx = attribute_map.key
         if not UtilClient.is_unset(ctx):
             if not UtilClient.is_unset(ctx.get('crc')) and not UtilClient.is_unset(response.headers.get('x-oss-hash-crc64ecma')) and not StringClient.equals(ctx.get('crc'), response.headers.get('x-oss-hash-crc64ecma')):
@@ -220,7 +232,9 @@ class Client(SPIClient):
                     }
                 })
         if not UtilClient.is_unset(response.body):
-            if StringClient.equals(request.body_type, 'xml'):
+            if UtilClient.equal_number(response.status_code, 204):
+                UtilClient.read_as_string(response.body)
+            elif StringClient.equals(request.body_type, 'xml'):
                 body_str = UtilClient.read_as_string(response.body)
                 result = XMLClient.parse_xml(body_str, None)
                 list = MapClient.key_set(result)
@@ -258,17 +272,29 @@ class Client(SPIClient):
         body_str = None
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             body_str = await UtilClient.read_as_string_async(response.body)
-            resp_map = XMLClient.parse_xml(body_str, None)
-            err = UtilClient.assert_as_map(resp_map.get('Error'))
-            raise TeaException({
-                'code': err.get('Code'),
-                'message': err.get('Message'),
-                'data': {
-                    'statusCode': response.status_code,
-                    'requestId': err.get('RequestId'),
-                    'hostId': err.get('HostId')
-                }
-            })
+            if not UtilClient.empty(body_str):
+                resp_map = XMLClient.parse_xml(body_str, None)
+                err = UtilClient.assert_as_map(resp_map.get('Error'))
+                raise TeaException({
+                    'code': err.get('Code'),
+                    'message': err.get('Message'),
+                    'data': {
+                        'statusCode': response.status_code,
+                        'requestId': err.get('RequestId'),
+                        'hostId': err.get('HostId')
+                    }
+                })
+            else:
+                headers = response.headers
+                request_id = headers.get('x-oss-request-id')
+                raise TeaException({
+                    'code': response.status_code,
+                    'message': None,
+                    'data': {
+                        'statusCode': response.status_code,
+                        'requestId': f'{request_id}'
+                    }
+                })
         ctx = attribute_map.key
         if not UtilClient.is_unset(ctx):
             if not UtilClient.is_unset(ctx.get('crc')) and not UtilClient.is_unset(response.headers.get('x-oss-hash-crc64ecma')) and not StringClient.equals(ctx.get('crc'), response.headers.get('x-oss-hash-crc64ecma')):
@@ -288,7 +314,9 @@ class Client(SPIClient):
                     }
                 })
         if not UtilClient.is_unset(response.body):
-            if StringClient.equals(request.body_type, 'xml'):
+            if UtilClient.equal_number(response.status_code, 204):
+                await UtilClient.read_as_string_async(response.body)
+            elif StringClient.equals(request.body_type, 'xml'):
                 body_str = await UtilClient.read_as_string_async(response.body)
                 result = XMLClient.parse_xml(body_str, None)
                 list = MapClient.key_set(result)
