@@ -10,8 +10,8 @@ use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
 use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
-use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
+use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
@@ -216,13 +216,30 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function buildCanonicalizedResource($pathname, $query){
         $canonicalizedResource = $pathname;
-        if (!Utils::isUnset($query)) {
-            $queryList = MapUtil::keySet($query);
+        $paramsMap = Tea::merge($query);
+        if (!Utils::empty_($pathname)) {
+            $paths = StringUtil::split($pathname, "?", 2);
+            $canonicalizedResource = @$paths[0];
+            if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
+                $params = StringUtil::split(@$paths[1], "&", 0);
+                foreach($params as $sub){
+                    $item = StringUtil::split($sub, "=", 0);
+                    $key = @$item[0];
+                    $value = null;
+                    if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
+                        $value = @$item[1];
+                    }
+                    $paramsMap[$key] = $value;
+                }
+            }
+        }
+        if (!Utils::isUnset($paramsMap)) {
+            $queryList = MapUtil::keySet($paramsMap);
             $sortedParams = ArrayUtil::ascSort($queryList);
             $separator = "?";
             foreach($sortedParams as $paramName){
                 $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
-                $paramValue = @$query[$paramName];
+                $paramValue = @$paramsMap[$paramName];
                 if (!Utils::isUnset($paramValue)) {
                     $canonicalizedResource = "" . $canonicalizedResource . "=" . $paramValue . "";
                 }

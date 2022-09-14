@@ -385,17 +385,42 @@ namespace AlibabaCloud.GatewaySls
         public string BuildCanonicalizedResource(string pathname, Dictionary<string, string> query)
         {
             string canonicalizedResource = pathname;
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(query))
+            Dictionary<string, string> paramsMap = TeaConverter.merge<string>
+            (
+                query
+            );
+            if (!AlibabaCloud.TeaUtil.Common.Empty(pathname))
             {
-                List<string> queryList = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "?", 2);
+                canonicalizedResource = paths[0];
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
+                {
+                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+
+                    foreach (var sub in params_) {
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", 0);
+                        string key = item[0];
+                        string value = null;
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
+                        {
+                            value = item[1];
+                        }
+                        paramsMap[key] = value;
+                    }
+                }
+            }
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(paramsMap))
+            {
+                List<string> queryList = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(paramsMap);
                 List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryList);
                 string separator = "?";
 
                 foreach (var paramName in sortedParams) {
                     canonicalizedResource = "" + canonicalizedResource + separator + paramName;
-                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(query.Get(paramName)))
+                    string paramValue = paramsMap.Get(paramName);
+                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(paramValue))
                     {
-                        canonicalizedResource = "" + canonicalizedResource + "=" + query.Get(paramName);
+                        canonicalizedResource = "" + canonicalizedResource + "=" + paramValue;
                     }
                     separator = "&";
                 }
@@ -406,17 +431,42 @@ namespace AlibabaCloud.GatewaySls
         public async Task<string> BuildCanonicalizedResourceAsync(string pathname, Dictionary<string, string> query)
         {
             string canonicalizedResource = pathname;
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(query))
+            Dictionary<string, string> paramsMap = TeaConverter.merge<string>
+            (
+                query
+            );
+            if (!AlibabaCloud.TeaUtil.Common.Empty(pathname))
             {
-                List<string> queryList = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query);
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "?", 2);
+                canonicalizedResource = paths[0];
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
+                {
+                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+
+                    foreach (var sub in params_) {
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", 0);
+                        string key = item[0];
+                        string value = null;
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
+                        {
+                            value = item[1];
+                        }
+                        paramsMap[key] = value;
+                    }
+                }
+            }
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(paramsMap))
+            {
+                List<string> queryList = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(paramsMap);
                 List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryList);
                 string separator = "?";
 
                 foreach (var paramName in sortedParams) {
                     canonicalizedResource = "" + canonicalizedResource + separator + paramName;
-                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(query.Get(paramName)))
+                    string paramValue = paramsMap.Get(paramName);
+                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(paramValue))
                     {
-                        canonicalizedResource = "" + canonicalizedResource + "=" + query.Get(paramName);
+                        canonicalizedResource = "" + canonicalizedResource + "=" + paramValue;
                     }
                     separator = "&";
                 }

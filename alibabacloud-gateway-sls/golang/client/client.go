@@ -255,14 +255,35 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 
 func (client *Client) BuildCanonicalizedResource(pathname *string, query map[string]*string) (_result *string, _err error) {
 	canonicalizedResource := pathname
-	if !tea.BoolValue(util.IsUnset(query)) {
-		queryList := map_.KeySet(query)
+	paramsMap := tea.Merge(query)
+	if !tea.BoolValue(util.Empty(pathname)) {
+		paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
+		canonicalizedResource = paths[0]
+		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
+			params := string_.Split(paths[1], tea.String("&"), tea.Int(0))
+			for _, sub := range params {
+				item := string_.Split(sub, tea.String("="), tea.Int(0))
+				key := item[0]
+				var value *string
+				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
+					value = item[1]
+				}
+
+				paramsMap[tea.StringValue(key)] = value
+			}
+		}
+
+	}
+
+	if !tea.BoolValue(util.IsUnset(paramsMap)) {
+		queryList := map_.KeySet(paramsMap)
 		sortedParams := array.AscSort(queryList)
 		separator := tea.String("?")
 		for _, paramName := range sortedParams {
 			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(paramName))
-			if !tea.BoolValue(util.IsUnset(query[tea.StringValue(paramName)])) {
-				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(query[tea.StringValue(paramName)]))
+			paramValue := paramsMap[tea.StringValue(paramName)]
+			if !tea.BoolValue(util.IsUnset(paramValue)) {
+				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(paramValue))
 			}
 
 			separator = tea.String("&")
