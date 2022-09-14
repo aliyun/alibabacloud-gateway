@@ -150,7 +150,7 @@ async function getSignature(pathname: string, method: string, query: map[string]
 
 async function buildCanonicalizedResource(pathname: string, query: map[string]string): string {
   var canonicalizedResource : string = pathname;
-  var paramsMap : map[string]string = query;
+  var paramsMap : map[string]string = {...query};
   if (!Util.empty(pathname)) {
     var paths : [string] = String.split(pathname, `?`, 2);
     canonicalizedResource = paths[0];
