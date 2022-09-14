@@ -22,7 +22,7 @@
     "@alicloud/tea-typescript": "^1.7.1",
     "@alicloud/gateway-spi": "^0.0.8",
     "@alicloud/credentials": "^2",
-    "@alicloud/tea-util": "^1.4.0",
+    "@alicloud/tea-util": "^1.4.4",
     "@alicloud/openapi-util": "^0.2.9",
     "@alicloud/darabonba-string": "^1.0.2",
     "@alicloud/darabonba-map": "^0.0.1",

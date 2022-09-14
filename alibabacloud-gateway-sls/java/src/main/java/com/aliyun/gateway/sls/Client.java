@@ -2,16 +2,6 @@
 package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
-import com.aliyun.gateway.spi.*;
-import com.aliyun.gateway.spi.models.*;
-import com.aliyun.credentials.*;
-import com.aliyun.teautil.*;
-import com.aliyun.openapiutil.*;
-import com.aliyun.darabonbastring.*;
-import com.aliyun.darabonba.map.*;
-import com.aliyun.darabonba.array.*;
-import com.aliyun.darabonba.encode.*;
-import com.aliyun.darabonba.signature.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
@@ -20,20 +10,20 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
 
-    public void modifyConfiguration(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         config.endpoint = this.getEndpoint(config.regionId, config.network, config.endpoint);
     }
 
-    public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
+    public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         java.util.Map<String, String> hostMap = new java.util.HashMap<>();
         if (!com.aliyun.teautil.Common.isUnset(request.hostMap)) {
             hostMap = request.hostMap;
         }
 
         String project = hostMap.get("project");
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         com.aliyun.credentials.Client credential = request.credential;
         String accessKeyId = credential.getAccessKeyId();
         String accessKeySecret = credential.getAccessKeySecret();
@@ -80,9 +70,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         request.headers.put("authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
     }
 
-    public void modifyResponse(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextResponse response = context.response;
+    public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             Object error = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> resMap = com.aliyun.teautil.Common.assertAsMap(error);
@@ -172,14 +162,37 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public String buildCanonicalizedResource(String pathname, java.util.Map<String, String> query) throws Exception {
         String canonicalizedResource = pathname;
-        if (!com.aliyun.teautil.Common.isUnset(query)) {
-            java.util.List<String> queryList = com.aliyun.darabonba.map.Client.keySet(query);
+        java.util.Map<String, String> paramsMap = TeaConverter.merge(String.class,
+            query
+        );
+        if (!com.aliyun.teautil.Common.empty(pathname)) {
+            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
+            canonicalizedResource = paths.get(0);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
+                java.util.List<String> params = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
+                for (String sub : params) {
+                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", 0);
+                    String key = item.get(0);
+                    String value = null;
+                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
+                        value = item.get(1);
+                    }
+
+                    paramsMap.put(key, value);
+                }
+            }
+
+        }
+
+        if (!com.aliyun.teautil.Common.isUnset(paramsMap)) {
+            java.util.List<String> queryList = com.aliyun.darabonba.map.Client.keySet(paramsMap);
             java.util.List<String> sortedParams = com.aliyun.darabonba.array.Client.ascSort(queryList);
             String separator = "?";
             for (String paramName : sortedParams) {
                 canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + paramName + "";
-                if (!com.aliyun.teautil.Common.isUnset(query.get(paramName))) {
-                    canonicalizedResource = "" + canonicalizedResource + "=" + query.get(paramName) + "";
+                String paramValue = paramsMap.get(paramName);
+                if (!com.aliyun.teautil.Common.isUnset(paramValue)) {
+                    canonicalizedResource = "" + canonicalizedResource + "=" + paramValue + "";
                 }
 
                 separator = "&";

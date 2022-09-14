@@ -10,8 +10,8 @@ from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_gateway_spi import models as spi_models
 from alibabacloud_tea_util.client import Client as UtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
-from alibabacloud_darabonba_map.client import Client as MapClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
+from alibabacloud_darabonba_map.client import Client as MapClient
 
 
 class Client(SPIClient):
@@ -322,14 +322,28 @@ class Client(SPIClient):
         query: Dict[str, str],
     ) -> str:
         canonicalized_resource = pathname
-        if not UtilClient.is_unset(query):
-            query_list = MapClient.key_set(query)
+        params_map = TeaCore.merge(query)
+        if not UtilClient.empty(pathname):
+            paths = StringClient.split(pathname, f'?', 2)
+            canonicalized_resource = paths[0]
+            if UtilClient.equal_number(ArrayClient.size(paths), 2):
+                params = StringClient.split(paths[1], '&', 0)
+                for sub in params:
+                    item = StringClient.split(sub, '=', 0)
+                    key = item[0]
+                    value = None
+                    if UtilClient.equal_number(ArrayClient.size(item), 2):
+                        value = item[1]
+                    params_map[key] = value
+        if not UtilClient.is_unset(params_map):
+            query_list = MapClient.key_set(params_map)
             sorted_params = ArrayClient.asc_sort(query_list)
             separator = '?'
             for param_name in sorted_params:
                 canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                if not UtilClient.is_unset(query.get(param_name)):
-                    canonicalized_resource = f'{canonicalized_resource}={query.get(param_name)}'
+                param_value = params_map.get(param_name)
+                if not UtilClient.is_unset(param_value):
+                    canonicalized_resource = f'{canonicalized_resource}={param_value}'
                 separator = '&'
         return canonicalized_resource
 
@@ -339,14 +353,28 @@ class Client(SPIClient):
         query: Dict[str, str],
     ) -> str:
         canonicalized_resource = pathname
-        if not UtilClient.is_unset(query):
-            query_list = MapClient.key_set(query)
+        params_map = TeaCore.merge(query)
+        if not UtilClient.empty(pathname):
+            paths = StringClient.split(pathname, f'?', 2)
+            canonicalized_resource = paths[0]
+            if UtilClient.equal_number(ArrayClient.size(paths), 2):
+                params = StringClient.split(paths[1], '&', 0)
+                for sub in params:
+                    item = StringClient.split(sub, '=', 0)
+                    key = item[0]
+                    value = None
+                    if UtilClient.equal_number(ArrayClient.size(item), 2):
+                        value = item[1]
+                    params_map[key] = value
+        if not UtilClient.is_unset(params_map):
+            query_list = MapClient.key_set(params_map)
             sorted_params = ArrayClient.asc_sort(query_list)
             separator = '?'
             for param_name in sorted_params:
                 canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                if not UtilClient.is_unset(query.get(param_name)):
-                    canonicalized_resource = f'{canonicalized_resource}={query.get(param_name)}'
+                param_value = params_map.get(param_name)
+                if not UtilClient.is_unset(param_value):
+                    canonicalized_resource = f'{canonicalized_resource}={param_value}'
                 separator = '&'
         return canonicalized_resource
 

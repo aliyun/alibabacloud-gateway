@@ -168,15 +168,39 @@ export default class Client extends SPI {
 
   async buildCanonicalizedResource(pathname: string, query: {[key: string ]: string}): Promise<string> {
     let canonicalizedResource : string = pathname;
-    if (!Util.isUnset(query)) {
-      let queryList : string[] = Map.keySet(query);
+    let paramsMap : {[key: string ]: string} = {
+      ...query,
+    };
+    if (!Util.empty(pathname)) {
+      let paths : string[] = String.split(pathname, `?`, 2);
+      canonicalizedResource = paths[0];
+      if (Util.equalNumber(Array.size(paths), 2)) {
+        let params : string[] = String.split(paths[1], "&", 0);
+
+        for (let sub of params) {
+          let item : string[] = String.split(sub, "=", 0);
+          let key : string = item[0];
+          let value : string = null;
+          if (Util.equalNumber(Array.size(item), 2)) {
+            value = item[1];
+          }
+
+          paramsMap[key] = value;
+        }
+      }
+
+    }
+
+    if (!Util.isUnset(paramsMap)) {
+      let queryList : string[] = Map.keySet(paramsMap);
       let sortedParams = Array.ascSort(queryList);
       let separator : string = "?";
 
       for (let paramName of sortedParams) {
         canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-        if (!Util.isUnset(query[paramName])) {
-          canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
+        let paramValue = paramsMap[paramName];
+        if (!Util.isUnset(paramValue)) {
+          canonicalizedResource = `${canonicalizedResource}=${paramValue}`;
         }
 
         separator = "&";
