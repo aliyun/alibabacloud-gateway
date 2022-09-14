@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -21,13 +21,13 @@
     "SignatureUtil": "darabonba:SignatureUtil:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-sls:^0.0.3",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.3",
-    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.3",
-    "python": "alibabacloud_gateway_sls:0.0.3",
-    "python2": "alibabacloud_gateway_sls_py2:0.0.3",
-    "csharp": "AlibabaCloud.GatewaySls:0.0.4",
-    "php": "alibabacloud/gateway-sls:^0.0.5"
+    "ts": "@alicloud/gateway-sls:^0.0.4",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.4",
+    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.4",
+    "python": "alibabacloud_gateway_sls:0.0.4",
+    "python2": "alibabacloud_gateway_sls_py2:0.0.4",
+    "csharp": "AlibabaCloud.GatewaySls:0.0.5",
+    "php": "alibabacloud/gateway-sls:^0.0.6"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewaySls",
