@@ -10,7 +10,7 @@ import (
 	string_ "github.com/alibabacloud-go/darabonba-string/client"
 	endpointutil "github.com/alibabacloud-go/endpoint-util/service"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
-	util "github.com/alibabacloud-go/tea-utils/service"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
 )
 
@@ -29,6 +29,8 @@ func (client *Client) Init() (_err error) {
 	if _err != nil {
 		return _err
 	}
+	client.Sha256 = tea.String("ACS4-HMAC-SHA256")
+	client.Sm3 = tea.String("ACS4-HMAC-SM3")
 	return nil
 }
 
@@ -46,20 +48,17 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
 	request := context.Request
 	config := context.Configuration
+	date := openapiutil.GetTimestamp()
 	request.Headers = tea.Merge(map[string]*string{
 		"host":                  config.Endpoint,
 		"x-acs-version":         request.Version,
 		"x-acs-action":          request.Action,
 		"user-agent":            request.UserAgent,
-		"x-acs-date":            openapiutil.GetTimestamp(),
+		"x-acs-date":            date,
 		"x-acs-signature-nonce": util.GetNonce(),
 		"accept":                tea.String("application/json"),
 	}, request.Headers)
-	signatureAlgorithm := tea.String("ACS3-HMAC-SHA256")
-	if !tea.BoolValue(util.IsUnset(request.SignatureAlgorithm)) {
-		signatureAlgorithm = request.SignatureAlgorithm
-	}
-
+	signatureAlgorithm := util.DefaultString(request.SignatureAlgorithm, client.Sha256)
 	hashedRequestPayload := encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(tea.String("")), signatureAlgorithm))
 	if !tea.BoolValue(util.IsUnset(request.Stream)) {
 		tmp, _err := util.ReadAsBytes(request.Stream)
@@ -78,7 +77,11 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 				request.Stream = tea.ToReader(jsonObj)
 				request.Headers["content-type"] = tea.String("application/json; charset=utf-8")
 			} else {
-				m := util.AssertAsMap(request.Body)
+				m, _err := util.AssertAsMap(request.Body)
+				if _err != nil {
+					return _err
+				}
+
 				formObj := openapiutil.ToForm(m)
 				hashedRequestPayload = encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(formObj), signatureAlgorithm))
 				request.Stream = tea.ToReader(formObj)
@@ -89,7 +92,12 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	}
 
-	request.Headers["x-acs-content-sha256"] = hashedRequestPayload
+	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+		request.Headers["x-acs-content-sm3"] = hashedRequestPayload
+	} else {
+		request.Headers["x-acs-content-sha256"] = hashedRequestPayload
+	}
+
 	if !tea.BoolValue(util.EqualString(request.AuthType, tea.String("Anonymous"))) {
 		credential := request.Credential
 		accessKeyId, _err := credential.GetAccessKeyId()
@@ -112,7 +120,15 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			request.Headers["x-acs-security-token"] = securityToken
 		}
 
-		request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, accessKeySecret)
+		dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
+		dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
+		region := client.GetRegion(request.ProductId, config.Endpoint)
+		signingkey, _err := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
+		if _err != nil {
+			return _err
+		}
+
+		request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
 		if _err != nil {
 			return _err
 		}
@@ -131,8 +147,16 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
-		err := util.AssertAsMap(_res)
+		err, _err := util.AssertAsMap(_res)
+		if _err != nil {
+			return _err
+		}
+
 		requestId := client.DefaultAny(err["RequestId"], err["requestId"])
+		if !tea.BoolValue(util.IsUnset(response.Headers["x-acs-request-id"])) {
+			requestId = response.Headers["x-acs-request-id"]
+		}
+
 		err["statusCode"] = response.StatusCode
 		_err = tea.NewSDKError(map[string]interface{}{
 			"code":    tea.ToString(client.DefaultAny(err["Code"], err["code"])),
@@ -142,7 +166,12 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		return _err
 	}
 
-	if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
+	if tea.BoolValue(util.EqualNumber(response.StatusCode, tea.Int(204))) {
+		_, _err = util.ReadAsString(response.Body)
+		if _err != nil {
+			return _err
+		}
+	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
 		response.DeserializedBody = response.Body
 	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
 		byt, _err := util.ReadAsBytes(response.Body)
@@ -164,7 +193,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
-		res := util.AssertAsMap(obj)
+		res, _err := util.AssertAsMap(obj)
+		if _err != nil {
+			return _err
+		}
+
 		response.DeserializedBody = res
 	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
 		arr, _err := util.ReadAsJSON(response.Body)
@@ -213,8 +246,8 @@ func (client *Client) DefaultAny(inputValue interface{}, defaultValue interface{
 	return _result
 }
 
-func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, secret *string) (_result *string, _err error) {
-	signature, _err := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret)
+func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string) (_result *string, _err error) {
+	signature, _err := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey)
 	if _err != nil {
 		return _result, _err
 	}
@@ -225,11 +258,11 @@ func (client *Client) GetAuthorization(pathname *string, method *string, query m
 	}
 
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
-	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + ",SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
+	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + "/" + tea.StringValue(date) + "/" + tea.StringValue(region) + "/" + tea.StringValue(product) + "/aliyun_v4_request,SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
 	return _result, _err
 }
 
-func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, secret *string) (_result *string, _err error) {
+func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string, _err error) {
 	canonicalURI := tea.String("/")
 	if !tea.BoolValue(util.Empty(pathname)) {
 		canonicalURI = pathname
@@ -256,17 +289,68 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 	hex := encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(stringToSign), signatureAlgorithm))
 	stringToSign = tea.String(tea.StringValue(signatureAlgorithm) + "\n" + tea.StringValue(hex))
 	signature := util.ToBytes(tea.String(""))
-	if tea.BoolValue(string_.Equals(signatureAlgorithm, tea.String("ACS3-HMAC-SHA256"))) {
-		signature = signatureutil.HmacSHA256Sign(stringToSign, secret)
-	} else if tea.BoolValue(string_.Equals(signatureAlgorithm, tea.String("ACS3-HMAC-SM3"))) {
-		signature = signatureutil.HmacSM3Sign(stringToSign, secret)
-	} else if tea.BoolValue(string_.Equals(signatureAlgorithm, tea.String("ACS3-RSA-SHA256"))) {
-		signature = signatureutil.SHA256withRSASign(stringToSign, secret)
+	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+		signature = signatureutil.HmacSHA256SignByBytes(stringToSign, signingkey)
+	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+		signature = signatureutil.HmacSM3SignByBytes(stringToSign, signingkey)
 	}
 
 	_body := encodeutil.HexEncode(signature)
 	_result = _body
 	return _result, _err
+}
+
+func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte, _err error) {
+	sc1 := tea.String("aliyun_v4" + tea.StringValue(secret))
+	sc2 := util.ToBytes(tea.String(""))
+	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+		sc2 = signatureutil.HmacSHA256Sign(date, sc1)
+	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+		sc2 = signatureutil.HmacSM3Sign(date, sc1)
+	}
+
+	sc3 := util.ToBytes(tea.String(""))
+	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+		sc3 = signatureutil.HmacSHA256SignByBytes(region, sc2)
+	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+		sc3 = signatureutil.HmacSM3SignByBytes(region, sc2)
+	}
+
+	sc4 := util.ToBytes(tea.String(""))
+	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+		sc4 = signatureutil.HmacSHA256SignByBytes(product, sc3)
+	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+		sc4 = signatureutil.HmacSM3SignByBytes(product, sc3)
+	}
+
+	hmac := util.ToBytes(tea.String(""))
+	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+		hmac = signatureutil.HmacSHA256SignByBytes(tea.String("aliyun_v4_request"), sc4)
+	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+		hmac = signatureutil.HmacSM3SignByBytes(tea.String("aliyun_v4_request"), sc4)
+	}
+
+	_result = hmac
+	return _result, _err
+}
+
+func (client *Client) GetRegion(product *string, endpoint *string) (_result *string) {
+	if tea.BoolValue(util.Empty(product)) || tea.BoolValue(util.Empty(endpoint)) {
+		_result = tea.String("center")
+		return _result
+	}
+
+	popcode := string_.ToLower(product)
+	region := string_.Replace(endpoint, popcode, tea.String(""), nil)
+	region = string_.Replace(region, tea.String("aliyuncs.com"), tea.String(""), nil)
+	region = string_.Replace(region, tea.String("."), tea.String(""), nil)
+	if !tea.BoolValue(util.Empty(region)) {
+		_result = region
+		return _result
+	}
+
+	_result = endpoint
+	return _result
 }
 
 func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_result *string, _err error) {

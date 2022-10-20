@@ -13,9 +13,13 @@ import * as $tea from '@alicloud/tea-typescript';
 
 
 export default class Client extends SPI {
+  _sha256: string;
+  _sm3: string;
 
   constructor() {
     super();
+    this._sha256 = "ACS4-HMAC-SHA256";
+    this._sm3 = "ACS4-HMAC-SM3";
   }
 
 
@@ -28,21 +32,18 @@ export default class Client extends SPI {
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
+    let date = OpenApiUtil.getTimestamp();
     request.headers = {
       host: config.endpoint,
       'x-acs-version': request.version,
       'x-acs-action': request.action,
       'user-agent': request.userAgent,
-      'x-acs-date': OpenApiUtil.getTimestamp(),
+      'x-acs-date': date,
       'x-acs-signature-nonce': Util.getNonce(),
       accept: "application/json",
       ...request.headers,
     };
-    let signatureAlgorithm : string = "ACS3-HMAC-SHA256";
-    if (!Util.isUnset(request.signatureAlgorithm)) {
-      signatureAlgorithm = request.signatureAlgorithm;
-    }
-
+    let signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, this._sha256);
     let hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(""), signatureAlgorithm));
     if (!Util.isUnset(request.stream)) {
       let tmp = await Util.readAsBytes(request.stream);
@@ -68,7 +69,12 @@ export default class Client extends SPI {
 
     }
 
-    request.headers["x-acs-content-sha256"] = hashedRequestPayload;
+    if (Util.equalString(signatureAlgorithm, this._sm3)) {
+      request.headers["x-acs-content-sm3"] = hashedRequestPayload;
+    } else {
+      request.headers["x-acs-content-sha256"] = hashedRequestPayload;
+    }
+
     if (!Util.equalString(request.authType, "Anonymous")) {
       let credential : Credential = request.credential;
       let accessKeyId = await credential.getAccessKeyId();
@@ -79,7 +85,11 @@ export default class Client extends SPI {
         request.headers["x-acs-security-token"] = securityToken;
       }
 
-      request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, accessKeySecret);
+      let dateNew = String.subString(date, 0, 10);
+      dateNew = String.replace(dateNew, "-", "", null);
+      let region = this.getRegion(request.productId, config.endpoint);
+      let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
+      request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
     }
 
   }
@@ -91,6 +101,10 @@ export default class Client extends SPI {
       let _res = await Util.readAsJSON(response.body);
       let err = Util.assertAsMap(_res);
       let requestId = this.defaultAny(err["RequestId"], err["requestId"]);
+      if (!Util.isUnset(response.headers["x-acs-request-id"])) {
+        requestId = response.headers["x-acs-request-id"];
+      }
+
       err["statusCode"] = response.statusCode;
       throw $tea.newError({
         code: `${this.defaultAny(err["Code"], err["code"])}`,
@@ -99,7 +113,9 @@ export default class Client extends SPI {
       });
     }
 
-    if (Util.equalString(request.bodyType, "binary")) {
+    if (Util.equalNumber(response.statusCode, 204)) {
+      await Util.readAsString(response.body);
+    } else if (Util.equalString(request.bodyType, "binary")) {
       response.deserializedBody = response.body;
     } else if (Util.equalString(request.bodyType, "byte")) {
       let byt = await Util.readAsBytes(response.body);
@@ -140,14 +156,14 @@ export default class Client extends SPI {
     return inputValue;
   }
 
-  async getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, secret: string): Promise<string> {
-    let signature = await this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, secret);
+  async getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, signingkey: Buffer, product: string, region: string, date: string): Promise<string> {
+    let signature = await this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
     let signedHeaders = await this.getSignedHeaders(headers);
     let signedHeadersStr = Array.join(signedHeaders, ";");
-    return `${signatureAlgorithm} Credential=${ak},SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+    return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/aliyun_v4_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
-  async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, secret: string): Promise<string> {
+  async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer): Promise<string> {
     let canonicalURI : string = "/";
     if (!Util.empty(pathname)) {
       canonicalURI = pathname;
@@ -162,15 +178,62 @@ export default class Client extends SPI {
     let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
     let signature = Util.toBytes("");
-    if (String.equals(signatureAlgorithm, "ACS3-HMAC-SHA256")) {
-      signature = SignatureUtil.HmacSHA256Sign(stringToSign, secret);
-    } else if (String.equals(signatureAlgorithm, "ACS3-HMAC-SM3")) {
-      signature = SignatureUtil.HmacSM3Sign(stringToSign, secret);
-    } else if (String.equals(signatureAlgorithm, "ACS3-RSA-SHA256")) {
-      signature = SignatureUtil.SHA256withRSASign(stringToSign, secret);
+    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+      signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+      signature = SignatureUtil.HmacSM3SignByBytes(stringToSign, signingkey);
     }
 
     return EncodeUtil.hexEncode(signature);
+  }
+
+  async getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Promise<Buffer> {
+    let sc1 = `aliyun_v4${secret}`;
+    let sc2 = Util.toBytes("");
+    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+      sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
+    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+      sc2 = SignatureUtil.HmacSM3Sign(date, sc1);
+    }
+
+    let sc3 = Util.toBytes("");
+    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+      sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
+    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+      sc3 = SignatureUtil.HmacSM3SignByBytes(region, sc2);
+    }
+
+    let sc4 = Util.toBytes("");
+    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+      sc4 = SignatureUtil.HmacSHA256SignByBytes(product, sc3);
+    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+      sc4 = SignatureUtil.HmacSM3SignByBytes(product, sc3);
+    }
+
+    let hmac = Util.toBytes("");
+    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+      hmac = SignatureUtil.HmacSHA256SignByBytes("aliyun_v4_request", sc4);
+    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+      hmac = SignatureUtil.HmacSM3SignByBytes("aliyun_v4_request", sc4);
+    }
+
+    return hmac;
+  }
+
+  getRegion(product: string, endpoint: string): string {
+    if (Util.empty(product) || Util.empty(endpoint)) {
+      return "center";
+    }
+
+    let popcode = String.toLower(product);
+    let region : string = String.replace(endpoint, popcode, "", null);
+    region = String.replace(region, "aliyuncs.com", "", null);
+    region = String.replace(region, ".", "", null);
+    if (!Util.empty(region)) {
+      return region;
+    }
+
+    return endpoint;
   }
 
   async buildCanonicalizedResource(query: {[key: string ]: string}): Promise<string> {
