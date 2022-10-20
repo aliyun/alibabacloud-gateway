@@ -10,15 +10,20 @@ from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_gateway_spi import models as spi_models
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_tea_util.client import Client as UtilClient
+from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_endpoint_util.client import Client as EndpointUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
-from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_darabonba_map.client import Client as MapClient
 
 
 class Client(SPIClient):
+    _sha_256: str = None
+    _sm_3: str = None
+
     def __init__(self):
         super().__init__()
+        undefined._sha_256 = 'ACS4-HMAC-SHA256'
+        undefined._sm_3 = 'ACS4-HMAC-SM3'
 
     def modify_configuration(
         self,
@@ -45,18 +50,17 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
+        date = OpenApiUtilClient.get_timestamp()
         request.headers = TeaCore.merge({
             'host': config.endpoint,
             'x-acs-version': request.version,
             'x-acs-action': request.action,
             'user-agent': request.user_agent,
-            'x-acs-date': OpenApiUtilClient.get_timestamp(),
+            'x-acs-date': date,
             'x-acs-signature-nonce': UtilClient.get_nonce(),
             'accept': 'application/json'
         }, request.headers)
-        signature_algorithm = 'ACS3-HMAC-SHA256'
-        if not UtilClient.is_unset(request.signature_algorithm):
-            signature_algorithm = request.signature_algorithm
+        signature_algorithm = UtilClient.default_string(request.signature_algorithm, self._sha_256)
         hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(''), signature_algorithm))
         if not UtilClient.is_unset(request.stream):
             tmp = UtilClient.read_as_bytes(request.stream)
@@ -76,7 +80,10 @@ class Client(SPIClient):
                     hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
-        request.headers['x-acs-content-sha256'] = hashed_request_payload
+        if UtilClient.equal_string(signature_algorithm, self._sm_3):
+            request.headers['x-acs-content-sm3'] = hashed_request_payload
+        else:
+            request.headers['x-acs-content-sha256'] = hashed_request_payload
         if not UtilClient.equal_string(request.auth_type, 'Anonymous'):
             credential = request.credential
             access_key_id = credential.get_access_key_id()
@@ -85,7 +92,11 @@ class Client(SPIClient):
             if not UtilClient.empty(security_token):
                 request.headers['x-acs-accesskey-id'] = access_key_id
                 request.headers['x-acs-security-token'] = security_token
-            request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, access_key_secret)
+            date_new = StringClient.sub_string(date, 0, 10)
+            date_new = StringClient.replace(date_new, '-', '', None)
+            region = self.get_region(request.product_id, config.endpoint)
+            signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
+            request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
     async def modify_request_async(
         self,
@@ -94,18 +105,17 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
+        date = OpenApiUtilClient.get_timestamp()
         request.headers = TeaCore.merge({
             'host': config.endpoint,
             'x-acs-version': request.version,
             'x-acs-action': request.action,
             'user-agent': request.user_agent,
-            'x-acs-date': OpenApiUtilClient.get_timestamp(),
+            'x-acs-date': date,
             'x-acs-signature-nonce': UtilClient.get_nonce(),
             'accept': 'application/json'
         }, request.headers)
-        signature_algorithm = 'ACS3-HMAC-SHA256'
-        if not UtilClient.is_unset(request.signature_algorithm):
-            signature_algorithm = request.signature_algorithm
+        signature_algorithm = UtilClient.default_string(request.signature_algorithm, self._sha_256)
         hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(''), signature_algorithm))
         if not UtilClient.is_unset(request.stream):
             tmp = await UtilClient.read_as_bytes_async(request.stream)
@@ -125,7 +135,10 @@ class Client(SPIClient):
                     hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
-        request.headers['x-acs-content-sha256'] = hashed_request_payload
+        if UtilClient.equal_string(signature_algorithm, self._sm_3):
+            request.headers['x-acs-content-sm3'] = hashed_request_payload
+        else:
+            request.headers['x-acs-content-sha256'] = hashed_request_payload
         if not UtilClient.equal_string(request.auth_type, 'Anonymous'):
             credential = request.credential
             access_key_id = await credential.get_access_key_id_async()
@@ -134,7 +147,11 @@ class Client(SPIClient):
             if not UtilClient.empty(security_token):
                 request.headers['x-acs-accesskey-id'] = access_key_id
                 request.headers['x-acs-security-token'] = security_token
-            request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, access_key_secret)
+            date_new = StringClient.sub_string(date, 0, 10)
+            date_new = StringClient.replace(date_new, '-', '', None)
+            region = self.get_region(request.product_id, config.endpoint)
+            signingkey = await self.get_signingkey_async(signature_algorithm, access_key_secret, request.product_id, region, date_new)
+            request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
     def modify_response(
         self,
@@ -147,13 +164,17 @@ class Client(SPIClient):
             _res = UtilClient.read_as_json(response.body)
             err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
+            if not UtilClient.is_unset(response.headers.get('x-acs-request-id')):
+                request_id = response.headers.get('x-acs-request-id')
             err['statusCode'] = response.status_code
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
                 'data': err
             })
-        if UtilClient.equal_string(request.body_type, 'binary'):
+        if UtilClient.equal_number(response.status_code, 204):
+            UtilClient.read_as_string(response.body)
+        elif UtilClient.equal_string(request.body_type, 'binary'):
             response.deserialized_body = response.body
         elif UtilClient.equal_string(request.body_type, 'byte'):
             byt = UtilClient.read_as_bytes(response.body)
@@ -182,13 +203,17 @@ class Client(SPIClient):
             _res = await UtilClient.read_as_json_async(response.body)
             err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
+            if not UtilClient.is_unset(response.headers.get('x-acs-request-id')):
+                request_id = response.headers.get('x-acs-request-id')
             err['statusCode'] = response.status_code
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
                 'data': err
             })
-        if UtilClient.equal_string(request.body_type, 'binary'):
+        if UtilClient.equal_number(response.status_code, 204):
+            await UtilClient.read_as_string_async(response.body)
+        elif UtilClient.equal_string(request.body_type, 'binary'):
             response.deserialized_body = response.body
         elif UtilClient.equal_string(request.body_type, 'byte'):
             byt = await UtilClient.read_as_bytes_async(response.body)
@@ -240,12 +265,15 @@ class Client(SPIClient):
         signature_algorithm: str,
         payload: str,
         ak: str,
-        secret: str,
+        signingkey: bytes,
+        product: str,
+        region: str,
+        date: str,
     ) -> str:
-        signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, secret)
+        signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, signingkey)
         signed_headers = self.get_signed_headers(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm} Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/aliyun_v4_request,SignedHeaders={signed_headers_str},Signature={signature}'
 
     async def get_authorization_async(
         self,
@@ -256,12 +284,15 @@ class Client(SPIClient):
         signature_algorithm: str,
         payload: str,
         ak: str,
-        secret: str,
+        signingkey: bytes,
+        product: str,
+        region: str,
+        date: str,
     ) -> str:
-        signature = await self.get_signature_async(pathname, method, query, headers, signature_algorithm, payload, secret)
+        signature = await self.get_signature_async(pathname, method, query, headers, signature_algorithm, payload, signingkey)
         signed_headers = await self.get_signed_headers_async(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm} Credential={ak},SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/aliyun_v4_request,SignedHeaders={signed_headers_str},Signature={signature}'
 
     def get_signature(
         self,
@@ -271,7 +302,7 @@ class Client(SPIClient):
         headers: Dict[str, str],
         signature_algorithm: str,
         payload: str,
-        secret: str,
+        signingkey: bytes,
     ) -> str:
         canonical_uri = '/'
         if not UtilClient.empty(pathname):
@@ -285,12 +316,10 @@ class Client(SPIClient):
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = UtilClient.to_bytes('')
-        if StringClient.equals(signature_algorithm, 'ACS3-HMAC-SHA256'):
-            signature = Signer.hmac_sha256sign(string_to_sign, secret)
-        elif StringClient.equals(signature_algorithm, 'ACS3-HMAC-SM3'):
-            signature = Signer.hmac_sm3sign(string_to_sign, secret)
-        elif StringClient.equals(signature_algorithm, 'ACS3-RSA-SHA256'):
-            signature = Signer.sha256with_rsasign(string_to_sign, secret)
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            signature = Signer.hmac_sm3sign_by_bytes(string_to_sign, signingkey)
         return Encoder.hex_encode(signature)
 
     async def get_signature_async(
@@ -301,7 +330,7 @@ class Client(SPIClient):
         headers: Dict[str, str],
         signature_algorithm: str,
         payload: str,
-        secret: str,
+        signingkey: bytes,
     ) -> str:
         canonical_uri = '/'
         if not UtilClient.empty(pathname):
@@ -315,13 +344,88 @@ class Client(SPIClient):
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = UtilClient.to_bytes('')
-        if StringClient.equals(signature_algorithm, 'ACS3-HMAC-SHA256'):
-            signature = Signer.hmac_sha256sign(string_to_sign, secret)
-        elif StringClient.equals(signature_algorithm, 'ACS3-HMAC-SM3'):
-            signature = Signer.hmac_sm3sign(string_to_sign, secret)
-        elif StringClient.equals(signature_algorithm, 'ACS3-RSA-SHA256'):
-            signature = Signer.sha256with_rsasign(string_to_sign, secret)
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            signature = Signer.hmac_sm3sign_by_bytes(string_to_sign, signingkey)
         return Encoder.hex_encode(signature)
+
+    def get_signingkey(
+        self,
+        signature_algorithm: str,
+        secret: str,
+        product: str,
+        region: str,
+        date: str,
+    ) -> bytes:
+        sc_1 = f'aliyun_v4{secret}'
+        sc_2 = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            sc_2 = Signer.hmac_sha256sign(date, sc_1)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            sc_2 = Signer.hmac_sm3sign(date, sc_1)
+        sc_3 = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            sc_3 = Signer.hmac_sha256sign_by_bytes(region, sc_2)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            sc_3 = Signer.hmac_sm3sign_by_bytes(region, sc_2)
+        sc_4 = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            sc_4 = Signer.hmac_sha256sign_by_bytes(product, sc_3)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            sc_4 = Signer.hmac_sm3sign_by_bytes(product, sc_3)
+        hmac = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            hmac = Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            hmac = Signer.hmac_sm3sign_by_bytes('aliyun_v4_request', sc_4)
+        return hmac
+
+    async def get_signingkey_async(
+        self,
+        signature_algorithm: str,
+        secret: str,
+        product: str,
+        region: str,
+        date: str,
+    ) -> bytes:
+        sc_1 = f'aliyun_v4{secret}'
+        sc_2 = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            sc_2 = Signer.hmac_sha256sign(date, sc_1)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            sc_2 = Signer.hmac_sm3sign(date, sc_1)
+        sc_3 = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            sc_3 = Signer.hmac_sha256sign_by_bytes(region, sc_2)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            sc_3 = Signer.hmac_sm3sign_by_bytes(region, sc_2)
+        sc_4 = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            sc_4 = Signer.hmac_sha256sign_by_bytes(product, sc_3)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            sc_4 = Signer.hmac_sm3sign_by_bytes(product, sc_3)
+        hmac = UtilClient.to_bytes('')
+        if UtilClient.equal_string(signature_algorithm, self._sha_256):
+            hmac = Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
+            hmac = Signer.hmac_sm3sign_by_bytes('aliyun_v4_request', sc_4)
+        return hmac
+
+    def get_region(
+        self,
+        product: str,
+        endpoint: str,
+    ) -> str:
+        if UtilClient.empty(product) or UtilClient.empty(endpoint):
+            return ''
+        popcode = StringClient.to_lower(product)
+        region = StringClient.replace(endpoint, popcode, '', None)
+        region = StringClient.replace(region, 'aliyuncs.com', '', None)
+        region = StringClient.replace(region, '.', '', None)
+        if not UtilClient.empty(region):
+            return region
+        return endpoint
 
     def build_canonicalized_resource(
         self,
