@@ -327,9 +327,9 @@ class Client(SPIClient):
             paths = StringClient.split(pathname, f'?', 2)
             canonicalized_resource = paths[0]
             if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                params = StringClient.split(paths[1], '&', 0)
+                params = StringClient.split(paths[1], '&', None)
                 for sub in params:
-                    item = StringClient.split(sub, '=', 0)
+                    item = StringClient.split(sub, '=', None)
                     key = item[0]
                     value = None
                     if UtilClient.equal_number(ArrayClient.size(item), 2):
@@ -358,9 +358,9 @@ class Client(SPIClient):
             paths = StringClient.split(pathname, f'?', 2)
             canonicalized_resource = paths[0]
             if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                params = StringClient.split(paths[1], '&', 0)
+                params = StringClient.split(paths[1], '&', None)
                 for sub in params:
-                    item = StringClient.split(sub, '=', 0)
+                    item = StringClient.split(sub, '=', None)
                     key = item[0]
                     value = None
                     if UtilClient.equal_number(ArrayClient.size(item), 2):

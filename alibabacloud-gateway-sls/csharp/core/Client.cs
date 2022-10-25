@@ -395,10 +395,10 @@ namespace AlibabaCloud.GatewaySls
                 canonicalizedResource = paths[0];
                 if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
                 {
-                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
 
                     foreach (var sub in params_) {
-                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", 0);
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
                         string key = item[0];
                         string value = null;
                         if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
@@ -441,10 +441,10 @@ namespace AlibabaCloud.GatewaySls
                 canonicalizedResource = paths[0];
                 if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
                 {
-                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
 
                     foreach (var sub in params_) {
-                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", 0);
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
                         string key = item[0];
                         string value = null;
                         if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
