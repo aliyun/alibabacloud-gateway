@@ -8,7 +8,7 @@ import (
 	map_ "github.com/alibabacloud-go/darabonba-map/client"
 	signatureutil "github.com/alibabacloud-go/darabonba-signature-util/client"
 	string_ "github.com/alibabacloud-go/darabonba-string/client"
-	util "github.com/alibabacloud-go/tea-utils/service"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
 )
 
@@ -122,7 +122,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
-		resMap := util.AssertAsMap(error)
+		resMap, _err := util.AssertAsMap(error)
+		if _err != nil {
+			return _err
+		}
+
 		_err = tea.NewSDKError(map[string]interface{}{
 			"code":    resMap["errorCode"],
 			"message": resMap["errorMessage"],
@@ -260,9 +264,9 @@ func (client *Client) BuildCanonicalizedResource(pathname *string, query map[str
 		paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
 		canonicalizedResource = paths[0]
 		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-			params := string_.Split(paths[1], tea.String("&"), tea.Int(0))
+			params := string_.Split(paths[1], tea.String("&"), nil)
 			for _, sub := range params {
-				item := string_.Split(sub, tea.String("="), tea.Int(0))
+				item := string_.Split(sub, tea.String("="), nil)
 				key := item[0]
 				var value *string
 				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {

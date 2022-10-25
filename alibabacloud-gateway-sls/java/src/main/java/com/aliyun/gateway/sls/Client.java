@@ -169,9 +169,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
             java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
             canonicalizedResource = paths.get(0);
             if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-                java.util.List<String> params = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
+                java.util.List<String> params = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
                 for (String sub : params) {
-                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", 0);
+                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
                     String key = item.get(0);
                     String value = null;
                     if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
