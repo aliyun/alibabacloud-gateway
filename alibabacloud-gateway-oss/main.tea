@@ -246,7 +246,7 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
     var paths : [string] = String.split(pathname, `?`, 2);
     canonicalizedResource = paths[0];
     if (Util.equalNumber(Array.size(paths), 2)) {
-      var subResources : [string] = String.split(paths[1], '&', 0);
+      var subResources : [string] = String.split(paths[1], '&', null);
       for (var sub : subResources) {
         var hasExcepts : boolean = false;
         for (var excepts : @except_signed_params) {
@@ -255,7 +255,7 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
           }
         }
         if (!hasExcepts) {
-          var item : [string] = String.split(sub, '=', 0);
+          var item : [string] = String.split(sub, '=', null);
           var key : string = item[0];
           var value : string = null;
           if (Util.equalNumber(Array.size(item), 2)) {

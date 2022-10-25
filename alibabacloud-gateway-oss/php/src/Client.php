@@ -355,7 +355,7 @@ class Client extends DarabonbaGatewaySpiClient {
             $paths = StringUtil::split($pathname, "?", 2);
             $canonicalizedResource = @$paths[0];
             if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
-                $subResources = StringUtil::split(@$paths[1], "&", 0);
+                $subResources = StringUtil::split(@$paths[1], "&", null);
                 foreach($subResources as $sub){
                     $hasExcepts = false;
                     foreach($this->_except_signed_params as $excepts){
@@ -364,7 +364,7 @@ class Client extends DarabonbaGatewaySpiClient {
                         }
                     }
                     if (!$hasExcepts) {
-                        $item = StringUtil::split($sub, "=", 0);
+                        $item = StringUtil::split($sub, "=", null);
                         $key = @$item[0];
                         $value = null;
                         if (Utils::equalNumber(ArrayUtil::size($item), 2)) {

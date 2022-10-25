@@ -652,7 +652,7 @@ namespace AlibabaCloud.GatewayOss
                 canonicalizedResource = paths[0];
                 if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
                 {
-                    List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                    List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
 
                     foreach (var sub in subResources) {
                         bool hasExcepts = false;
@@ -665,7 +665,7 @@ namespace AlibabaCloud.GatewayOss
                         }
                         if (!hasExcepts)
                         {
-                            List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", 0);
+                            List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
                             string key = item[0];
                             string value = null;
                             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
@@ -723,7 +723,7 @@ namespace AlibabaCloud.GatewayOss
                 canonicalizedResource = paths[0];
                 if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
                 {
-                    List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                    List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
 
                     foreach (var sub in subResources) {
                         bool hasExcepts = false;
@@ -736,7 +736,7 @@ namespace AlibabaCloud.GatewayOss
                         }
                         if (!hasExcepts)
                         {
-                            List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", 0);
+                            List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
                             string key = item[0];
                             string value = null;
                             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))

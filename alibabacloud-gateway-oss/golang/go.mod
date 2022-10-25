@@ -12,7 +12,7 @@ require (
 	github.com/alibabacloud-go/openapi-util v0.0.11
 	github.com/alibabacloud-go/tea v1.1.17
 	github.com/alibabacloud-go/tea-oss-utils v1.1.0
-	github.com/alibabacloud-go/tea-utils v1.4.5
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.0
 	github.com/alibabacloud-go/tea-xml v1.1.2
 	github.com/aliyun/credentials-go v1.1.2
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect

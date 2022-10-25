@@ -298,7 +298,7 @@ export default class Client extends SPI {
       let paths : string[] = String.split(pathname, `?`, 2);
       canonicalizedResource = paths[0];
       if (Util.equalNumber(Array.size(paths), 2)) {
-        let subResources : string[] = String.split(paths[1], "&", 0);
+        let subResources : string[] = String.split(paths[1], "&", null);
 
         for (let sub of subResources) {
           let hasExcepts : boolean = false;
@@ -310,7 +310,7 @@ export default class Client extends SPI {
 
           }
           if (!hasExcepts) {
-            let item : string[] = String.split(sub, "=", 0);
+            let item : string[] = String.split(sub, "=", null);
             let key : string = item[0];
             let value : string = null;
             if (Util.equalNumber(Array.size(item), 2)) {

@@ -2,18 +2,6 @@
 package com.aliyun.gateway.oss;
 
 import com.aliyun.tea.*;
-import com.aliyun.gateway.spi.*;
-import com.aliyun.gateway.spi.models.*;
-import com.aliyun.credentials.*;
-import com.aliyun.teautil.*;
-import com.aliyun.ossutil.*;
-import com.aliyun.openapiutil.*;
-import com.aliyun.teaxml.*;
-import com.aliyun.darabonbastring.*;
-import com.aliyun.darabonba.map.*;
-import com.aliyun.darabonba.array.*;
-import com.aliyun.darabonba.encode.*;
-import com.aliyun.darabonba.signature.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
@@ -70,13 +58,13 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
 
-    public void modifyConfiguration(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         config.endpoint = this.getEndpoint(config.regionId, config.network, config.endpoint);
     }
 
-    public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
+    public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         java.util.Map<String, String> hostMap = new java.util.HashMap<>();
         if (!com.aliyun.teautil.Common.isUnset(request.hostMap)) {
             hostMap = request.hostMap;
@@ -87,7 +75,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             bucketName = "";
         }
 
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         com.aliyun.credentials.Client credential = request.credential;
         String accessKeyId = credential.getAccessKeyId();
         String accessKeySecret = credential.getAccessKeySecret();
@@ -132,9 +120,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         request.headers.put("authorization", this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
     }
 
-    public void modifyResponse(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextResponse response = context.response;
+    public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
         String bodyStr = null;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
@@ -305,7 +293,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
             canonicalizedResource = paths.get(0);
             if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-                java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
+                java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
                 for (String sub : subResources) {
                     Boolean hasExcepts = false;
                     for (String excepts : _except_signed_params) {
@@ -315,7 +303,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
                     }
                     if (!hasExcepts) {
-                        java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", 0);
+                        java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
                         String key = item.get(0);
                         String value = null;
                         if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {

@@ -10,15 +10,13 @@ import (
 	string_ "github.com/alibabacloud-go/darabonba-string/client"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
 	ossutil "github.com/alibabacloud-go/tea-oss-utils/service"
-	util "github.com/alibabacloud-go/tea-utils/service"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	xml "github.com/alibabacloud-go/tea-xml/service"
 	"github.com/alibabacloud-go/tea/tea"
 )
 
 type Client struct {
 	spi.Client
-	Default_signed_params []*string
-	Except_signed_params  []*string
 }
 
 func NewClient() (*Client, error) {
@@ -82,7 +80,11 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	if !tea.BoolValue(util.IsUnset(request.Body)) {
 		if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("xml"))) {
-			reqBodyMap := util.AssertAsMap(request.Body)
+			reqBodyMap, _err := util.AssertAsMap(request.Body)
+			if _err != nil {
+				return _err
+			}
+
 			request.Stream = tea.ToReader(xml.ToXML(reqBodyMap))
 			request.Headers["content-type"] = tea.String("application/xml")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) {
@@ -90,7 +92,11 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			request.Stream = tea.ToReader(reqBodyStr)
 			request.Headers["content-type"] = tea.String("application/json; charset=utf-8")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
-			reqBodyForm := util.AssertAsMap(request.Body)
+			reqBodyForm, _err := util.AssertAsMap(request.Body)
+			if _err != nil {
+				return _err
+			}
+
 			request.Stream = tea.ToReader(openapiutil.ToForm(reqBodyForm))
 			request.Headers["content-type"] = tea.String("application/x-www-form-urlencoded")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("binary"))) {
@@ -134,7 +140,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 		if !tea.BoolValue(util.Empty(bodyStr)) {
 			respMap := xml.ParseXml(bodyStr, nil)
-			err := util.AssertAsMap(respMap["Error"])
+			err, _err := util.AssertAsMap(respMap["Error"])
+			if _err != nil {
+				return _err
+			}
+
 			_err = tea.NewSDKError(map[string]interface{}{
 				"code":    err["Code"],
 				"message": err["Message"],
@@ -209,7 +219,10 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 							_e = r
 						}
 					}()
-					response.DeserializedBody = util.AssertAsMap(result[tea.StringValue(tmp)])
+					response.DeserializedBody, _err = util.AssertAsMap(result[tea.StringValue(tmp)])
+					if _err != nil {
+						return _err
+					}
 
 					return nil
 				}()
@@ -248,7 +261,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return _err
 			}
 
-			res := util.AssertAsMap(obj)
+			res, _err := util.AssertAsMap(obj)
+			if _err != nil {
+				return _err
+			}
+
 			response.DeserializedBody = res
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
 			response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
@@ -370,7 +387,7 @@ func (client *Client) BuildCanonicalizedResource(pathname *string, query map[str
 		paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
 		canonicalizedResource = paths[0]
 		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-			subResources := string_.Split(paths[1], tea.String("&"), tea.Int(0))
+			subResources := string_.Split(paths[1], tea.String("&"), nil)
 			for _, sub := range subResources {
 				hasExcepts := tea.Bool(false)
 				for _, excepts := range client.Except_signed_params {
@@ -380,7 +397,7 @@ func (client *Client) BuildCanonicalizedResource(pathname *string, query map[str
 
 				}
 				if !tea.BoolValue(hasExcepts) {
-					item := string_.Split(sub, tea.String("="), tea.Int(0))
+					item := string_.Split(sub, tea.String("="), nil)
 					key := item[0]
 					var value *string
 					if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
