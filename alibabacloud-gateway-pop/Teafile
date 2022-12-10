@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayPOP",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -22,9 +22,13 @@
     "Array": "darabonba:Array:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-pop:^0.0.1",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pop/client:v0.0.1",
-    "java": "com.aliyun:alibabacloud-gateway-pop:0.0.1"
+    "ts": "@alicloud/gateway-pop:^0.0.2",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pop/client:v0.0.2",
+    "java": "com.aliyun:alibabacloud-gateway-pop:0.0.2",
+    "python": "alibabacloud_gateway_pop:0.0.1",
+    "python2": "alibabacloud_gateway_pop_py2:0.0.1",
+    "csharp": "AlibabaCloud.GatewayPop:0.0.1",
+    "php": "alibabacloud/gateway-pop:^0.0.1"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayPop",
