@@ -89,5 +89,11 @@
         "project": "gateway-pop"
       }
     }
+  },
+  "releaselog": {
+    "changelog": [
+      "feat: support aliyun signature v4"
+    ],
+    "compatible": true
   }
 }
