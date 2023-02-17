@@ -83,6 +83,7 @@ class Client extends DarabonbaGatewaySpiClient {
             "x-log-bodyrawsize" => "0"
         ], $request->headers);
         $request->headers["authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $accessKeyId, $accessKeySecret);
+        $this->buildRequest($context);
     }
 
     /**
@@ -272,5 +273,31 @@ class Client extends DarabonbaGatewaySpiClient {
             }
         }
         return $canonicalizedHeaders;
+    }
+
+    /**
+     * @param InterceptorContext $context
+     * @return void
+     */
+    public function buildRequest($context){
+        $request = $context->request;
+        $resource = $request->pathname;
+        if (!Utils::empty_($resource)) {
+            $paths = StringUtil::split($resource, "?", 2);
+            $resource = @$paths[0];
+            if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
+                $params = StringUtil::split(@$paths[1], "&", null);
+                foreach($params as $sub){
+                    $item = StringUtil::split($sub, "=", null);
+                    $key = @$item[0];
+                    $value = null;
+                    if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
+                        $value = @$item[1];
+                    }
+                    $request->query[$key] = $value;
+                }
+            }
+        }
+        $request->pathname = $resource;
     }
 }

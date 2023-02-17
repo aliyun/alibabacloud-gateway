@@ -65,6 +65,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     ...request.headers
   };
   request.headers['authorization'] = getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+  buildRequest(context);
 }
 
 async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
@@ -202,4 +203,26 @@ async function buildCanonicalizedHeaders(headers: map[string]string): string {
     }
   }
   return canonicalizedHeaders;
+}
+
+async function buildRequest(context: SPI.InterceptorContext): void {
+  var request = context.request;
+  var resource : string = request.pathname;
+  if (!Util.empty(resource)) {
+    var paths : [string] = String.split(resource, `?`, 2);
+    resource = paths[0];
+    if (Util.equalNumber(Array.size(paths), 2)) {
+      var params : [string] = String.split(paths[1], '&', null);
+      for (var sub : params) {
+        var item : [string] = String.split(sub, '=', null);
+        var key : string = item[0];
+        var value : string = null;
+        if (Util.equalNumber(Array.size(item), 2)) {
+          value = item[1];
+        }
+        request.query[key] = value;
+      }
+    }
+  }
+  request.pathname = resource;
 }
