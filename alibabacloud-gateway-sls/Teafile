@@ -88,5 +88,11 @@
         "project": "gateway-sls"
       }
     }
+  },
+  "releaselog": {
+    "changelog": [
+      "[php]fix pathname with '?'"
+    ],
+    "compatible": true
   }
 }
