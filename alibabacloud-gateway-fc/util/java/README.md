@@ -9,7 +9,7 @@
 <dependency>
   <groupId>com.aliyun</groupId>
   <artifactId>fc_open20210406</artifactId>
-  <version>1.1.6</version>
+  <version>2.0.4</version>
 </dependency>
 ```
 
