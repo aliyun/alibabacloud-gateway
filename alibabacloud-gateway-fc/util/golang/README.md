@@ -22,7 +22,7 @@ import (
 	"net/http/httputil"
 	"os"
 
-	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
+	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	client "github.com/alibabacloud-go/fc-open-20210406/client"
 
 )
