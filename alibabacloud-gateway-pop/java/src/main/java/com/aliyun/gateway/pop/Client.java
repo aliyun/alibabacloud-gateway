@@ -226,7 +226,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             return region;
         }
 
-        return endpoint;
+        return "center";
     }
 
     public String buildCanonicalizedResource(java.util.Map<String, String> query) throws Exception {

@@ -349,7 +349,7 @@ func (client *Client) GetRegion(product *string, endpoint *string) (_result *str
 		return _result
 	}
 
-	_result = endpoint
+	_result = tea.String("center")
 	return _result
 }
 

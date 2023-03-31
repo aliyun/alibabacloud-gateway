@@ -217,7 +217,7 @@ function getRegion(product: string, endpoint: string): string {
   if (!Util.empty(region)) {
     return region;
   }
-  return endpoint;
+  return 'center';
 }
 
 async function buildCanonicalizedResource(query: map[string]string): string {

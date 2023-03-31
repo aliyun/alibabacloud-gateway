@@ -233,7 +233,7 @@ export default class Client extends SPI {
       return region;
     }
 
-    return endpoint;
+    return "center";
   }
 
   async buildCanonicalizedResource(query: {[key: string ]: string}): Promise<string> {

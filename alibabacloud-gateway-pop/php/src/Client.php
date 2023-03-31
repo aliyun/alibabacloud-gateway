@@ -291,7 +291,7 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function getRegion($product, $endpoint){
         if (Utils::empty_($product) || Utils::empty_($endpoint)) {
-            return '';
+            return 'center';
         }
         $popcode = StringUtil::toLower($product);
         $region = StringUtil::replace($endpoint, $popcode, "", null);
@@ -300,7 +300,7 @@ class Client extends DarabonbaGatewaySpiClient {
         if (!Utils::empty_($region)) {
             return $region;
         }
-        return $endpoint;
+        return 'center';
     }
 
     /**

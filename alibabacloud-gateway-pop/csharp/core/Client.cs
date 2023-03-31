@@ -492,7 +492,7 @@ namespace AlibabaCloud.GatewayPop
             {
                 return region;
             }
-            return endpoint;
+            return "center";
         }
 
         public string BuildCanonicalizedResource(Dictionary<string, string> query)
