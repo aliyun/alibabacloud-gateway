@@ -20,6 +20,7 @@ public class ClientTest {
     private String ak;
     private String sk;
     private String url;
+    private String token;
     private String host;
 
     Client client;
@@ -28,11 +29,16 @@ public class ClientTest {
     public void init() throws Exception {
         ak = System.getenv("ak");
         sk = System.getenv("sk");
+        token = System.getenv("token");
         url = System.getenv("url");
         Config config = new Config();
         config.type = "access_key";
+        if (token != null && token.length() != 0) {
+            config.type = "sts";
+        }
         config.accessKeyId = ak;
         config.accessKeySecret = sk;
+        config.securityToken = token;
         client = new Client(new com.aliyun.credentials.Client(config));
     }
 

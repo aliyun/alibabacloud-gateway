@@ -14,9 +14,18 @@ import (
 func initClient() (*Client, error) {
 	ak := os.Getenv("ak")
 	sk := os.Getenv("sk")
-	cred := &credential.AccessKeyCredential{
+	token := os.Getenv("token")
+	var cred credential.Credential
+	cred = &credential.AccessKeyCredential{
 		AccessKeyId:     ak,
 		AccessKeySecret: sk,
+	}
+	if len(token) != 0 {
+		cred = &credential.StsTokenCredential{
+			AccessKeyId:     ak,
+			AccessKeySecret: sk,
+			SecurityToken:   token,
+		}
 	}
 	return NewClient(cred)
 }

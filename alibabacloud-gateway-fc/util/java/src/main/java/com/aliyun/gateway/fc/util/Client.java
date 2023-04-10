@@ -101,6 +101,7 @@ public class Client {
         String securityToken = _credential.getSecurityToken();
         if (securityToken != null && securityToken.length() != 0) {
             reqBuilder.addHeader(HTTPHeaderSecurityToken, securityToken);
+            headerParams.put(HTTPHeaderSecurityToken, securityToken);
         }
         String authStr = getAuthString(accessKeyId, accessKeySecret, req.method(), headerParams, path, params);
         reqBuilder.addHeader(HTTPHeaderAuthorization, authStr);
