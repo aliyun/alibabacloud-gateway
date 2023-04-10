@@ -13,6 +13,7 @@ class TestClient(unittest.TestCase):
     def test_invoke_httptrigger(self):
         ak = os.getenv('ak')
         sk = os.getenv('sk')
+        token = os.getenv('token')
         url = os.getenv('url')
         d = {
             'type': 'access_key',
@@ -20,6 +21,8 @@ class TestClient(unittest.TestCase):
             'access_key_secret': sk,
         }
         cred = credentials.AccessKeyCredential(access_key_id=ak, access_key_secret=sk)
+        if token != "":
+            cred = credentials.StsCredential(access_key_id=ak, access_key_secret=sk, security_token=token)
         client = Client(cred=cred)
         resp = client.invoke_httptrigger(url=url,
                                          method="GET", body="anything".encode(encoding='utf-8'),
