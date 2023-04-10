@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayFC_Util",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -14,9 +14,9 @@
   },
   "releases": {
     "ts": "@alicloud/gateway-fc-util:^0.0.1",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-fc-util/client:v0.0.6",
-    "java": "com.aliyun:alibabacloud-gateway-fc-util:0.0.1",
-    "python": "alibabacloud_gateway_fc_util:0.0.3",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-fc-util/client:v0.0.7",
+    "java": "com.aliyun:alibabacloud-gateway-fc-util:0.0.2",
+    "python": "alibabacloud_gateway_fc_util:0.0.4",
     "python2": "alibabacloud_gateway_fc_util_py2:0.0.1",
     "csharp": "AlibabaCloud.GatewayFc_Util:0.0.1",
     "php": "alibabacloud/gateway-fc-util:^0.0.1"
@@ -164,19 +164,25 @@
     "typedef": {
       "HttpRequest": {
         "import": "http",
-        "type": "http.ClientRequest",
+        "type": "ClientRequest",
         "package": "@types/node:^14"
       },
       "HttpResponse": {
         "import": "http",
-        "type": "http.IncomingMessage",
+        "type": "IncomingMessage",
         "package": "@types/node:^14"
       },
       "HttpHeader": {
         "import": "http",
-        "type": "http.OutgoingHttpHeaders",
+        "type": "OutgoingHttpHeaders",
         "package": "@types/node:^14"
       }
     }
+  },
+  "releaselog": {
+    "changelog": [
+      "[go/java/python]fix http invocation with sts credentials."
+    ],
+    "compatible": true
   }
 }
