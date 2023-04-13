@@ -1,0 +1,110 @@
+import Url;
+import Util;
+import OpenApiUtil;
+import Credential;
+import Number;
+import Map;
+import Array;
+import EncodeUtil;
+import SignatureUtil;
+
+model Config {
+  appKey: string,
+  appSecret: string,
+  endpoint: string,
+}
+
+model OpenApiRequest {
+  headers?: map[string]string,
+  query?: map[string]string,
+  body?: any,
+  pathname?: string,
+  method?: string,
+}
+
+type @appKey = string;
+type @appSecret = string;
+type @endpoint = string;
+
+init(config: Config) {
+  @appKey = config.appKey;
+  @appSecret = config.appSecret;
+  @endpoint = config.endpoint;
+}
+
+static function sign(method: string, appSecret: string, params: map[string]string): string {
+  var keys : [string] = Map.keySet(params);
+  var sortedKeys = Array.ascSort(keys);
+  var canonicalizedResource : string = '';
+  var separator : string = '';
+  for(var key : sortedKeys) {
+    canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
+    if (!Util.empty(params[key])) {
+      canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(params[key])}`;
+    }
+    separator = '&';
+  }
+
+  var signToString = `${method}&${EncodeUtil.percentEncode('/')}&${EncodeUtil.percentEncode(canonicalizedResource)}`;
+  var signData = SignatureUtil.HmacSHA1Sign(signToString, `${appSecret}&`);
+  return EncodeUtil.base64EncodeToString(signData);
+}
+
+api execute(request: OpenApiRequest, runtime: Util.RuntimeOptions): string {
+  var method : string = Util.defaultString(request.method, 'POST');
+  __request.method = method;
+
+  var url = Url.parseUrl(@endpoint);
+  __request.protocol = url.scheme;
+  __request.pathname = Util.defaultString(request.pathname, url.path.pathname);
+  __request.port = Number.parseInt(url.host.port);
+  __request.headers = {
+    host = url.host.hostname,
+    ...request.headers
+  };
+
+  var params : map[string]string = {};
+  if (!Util.isUnset(request.body)) {
+    var tmp = Util.assertAsMap(request.body);
+    params = OpenApiUtil.query(tmp);
+  }
+
+  params = {
+    AppKey = @appKey,
+    ...request.query,
+    ...params
+  };
+
+  params.Signature = sign(method, @appSecret, params);
+  
+  if (Util.equalString(method, 'GET')) {
+    __request.query = params;
+  } else {
+    var formObj = Util.toFormString(params);
+    __request.body = formObj;
+    __request.headers.content-type = 'application/x-www-form-urlencoded';
+  }
+  
+} returns {
+  if (Util.is4xx(__response.statusCode) || Util.is5xx(__response.statusCode)) {
+    var res = Util.readAsJSON(__response.body);
+    var err = Util.assertAsMap(res);
+    err.statusCode = __response.statusCode;
+    throw {
+      code = `${err.Code}`,
+      message = `statusCode: ${err.statusCode}, errorMessage: ${err.ErrorMessage}, requestId: ${err.RequestId}`,
+      data = err,
+    };
+  }
+  return Util.readAsString(__response.body);
+} runtime {
+  timeouted = 'retry',
+  readTimeout = runtime.readTimeout,
+  connectTimeout = runtime.connectTimeout,
+  maxIdleConns = runtime.maxIdleConns,
+  retry = {
+    retryable = runtime.autoretry,
+    maxAttempts = runtime.maxAttempts
+  },
+  ignoreSSL = runtime.ignoreSSL
+}

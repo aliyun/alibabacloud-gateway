@@ -1,0 +1,95 @@
+{
+  "scope": "alibabacloud",
+  "name": "GatewayIOT",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "Url": "darabonba:Url:*",
+    "Util": "darabonba:Util:*",
+    "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
+    "Credential": "alibabacloud:Credential:*",
+    "Number": "darabonba:Number:*",
+    "Map": "darabonba:Map:*",
+    "Array": "darabonba:Array:*",
+    "EncodeUtil": "darabonba:EncodeUtil:*",
+    "SignatureUtil": "darabonba:SignatureUtil:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-iot:^1.0.0",
+    "java": "com.aliyun:gateway-iot-stack:1.0.0",
+    "python": "alicloud-gateway-iot:1.0.0",
+    "python2": "alicloud-gateway-iot-py2:1.0.0"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayIot",
+    "packageInfo": {
+      "description": "Alibaba Cloud IOT SDK Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun IOT SDK",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
+      }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.iot",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewayIot",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-iot",
+      "desc": "Alibaba Cloud IOT Client",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alicloud_gateway_iot",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alicloud-gateway-iot",
+      "desc": "Alibaba Cloud IOT SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alicloud_gateway_iot",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alicloud-gateway-iot-py2",
+      "desc": "Alibaba Cloud IOT SDK Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alicloud-sdk-cpp",
+        "project": "gateway-iot"
+      }
+    }
+  },
+  "releaselog": {
+    "changelog": [
+      "Init"
+    ],
+    "compatible": true
+  }
+}
