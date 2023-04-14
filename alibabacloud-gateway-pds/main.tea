@@ -56,18 +56,19 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 
   if (!Util.equalString(request.authType, 'Anonymous')) {
     var credential : Credential = request.credential;
-    var accessKeyId = credential.getAccessKeyId();
-    var accessKeySecret = credential.getAccessKeySecret();
-    var securityToken = credential.getSecurityToken();
-    var bearerToken = credential.getBearerToken();
-    if (!Util.empty(bearerToken)) {
-        request.headers.x-acs-bearer-token = bearerToken;
-        request.headers.Authorization = `Bearer ${bearerToken}`;
+    var authType = credential.getType();
+    if (Util.equalString(authType, 'bearer')) {
+      var bearerToken = credential.getBearerToken();
+      request.headers.x-acs-bearer-token = bearerToken;
+      request.headers.Authorization = `Bearer ${bearerToken}`;
     } else {
-        if (!Util.empty(securityToken)) {
-          request.headers.x-acs-security-token = securityToken;
-        }
-        request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+      var accessKeyId = credential.getAccessKeyId();
+      var accessKeySecret = credential.getAccessKeySecret();
+      var securityToken = credential.getSecurityToken();
+      if (!Util.empty(securityToken)) {
+        request.headers.x-acs-security-token = securityToken;
+      }
+      request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
     }
   }
 }

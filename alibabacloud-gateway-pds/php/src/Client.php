@@ -73,15 +73,16 @@ class Client extends DarabonbaGatewaySpiClient {
         }
         if (!Utils::equalString($request->authType, "Anonymous")) {
             $credential = $request->credential;
-            $accessKeyId = $credential->getAccessKeyId();
-            $accessKeySecret = $credential->getAccessKeySecret();
-            $securityToken = $credential->getSecurityToken();
-            $bearerToken = $credential->getBearerToken();
-            if (!Utils::empty_($bearerToken)) {
+            $authType = $credential->getType();
+            if (Utils::equalString($authType, "bearer")) {
+                $bearerToken = $credential->getBearerToken();
                 $request->headers["x-acs-bearer-token"] = $bearerToken;
                 $request->headers["Authorization"] = "Bearer " . $bearerToken . "";
             }
             else {
+                $accessKeyId = $credential->getAccessKeyId();
+                $accessKeySecret = $credential->getAccessKeySecret();
+                $securityToken = $credential->getSecurityToken();
                 if (!Utils::empty_($securityToken)) {
                     $request->headers["x-acs-security-token"] = $securityToken;
                 }

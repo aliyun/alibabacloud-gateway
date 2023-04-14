@@ -61,14 +61,15 @@ export default class Client extends SPI {
 
     if (!Util.equalString(request.authType, "Anonymous")) {
       let credential : Credential = request.credential;
-      let accessKeyId = await credential.getAccessKeyId();
-      let accessKeySecret = await credential.getAccessKeySecret();
-      let securityToken = await credential.getSecurityToken();
-      let bearerToken = credential.getBearerToken();
-      if (!Util.empty(bearerToken)) {
+      let authType = credential.getType();
+      if (Util.equalString(authType, "bearer")) {
+        let bearerToken = credential.getBearerToken();
         request.headers["x-acs-bearer-token"] = bearerToken;
         request.headers["Authorization"] = `Bearer ${bearerToken}`;
       } else {
+        let accessKeyId = await credential.getAccessKeyId();
+        let accessKeySecret = await credential.getAccessKeySecret();
+        let securityToken = await credential.getSecurityToken();
         if (!Util.empty(securityToken)) {
           request.headers["x-acs-security-token"] = securityToken;
         }

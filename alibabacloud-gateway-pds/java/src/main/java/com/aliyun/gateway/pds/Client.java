@@ -2,16 +2,6 @@
 package com.aliyun.gateway.pds;
 
 import com.aliyun.tea.*;
-import com.aliyun.gateway.spi.*;
-import com.aliyun.gateway.spi.models.*;
-import com.aliyun.credentials.*;
-import com.aliyun.teautil.*;
-import com.aliyun.openapiutil.*;
-import com.aliyun.darabonba.encode.*;
-import com.aliyun.darabonba.signature.*;
-import com.aliyun.darabonbastring.*;
-import com.aliyun.darabonba.map.*;
-import com.aliyun.darabonba.array.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
@@ -20,14 +10,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
 
-    public void modifyConfiguration(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         config.endpoint = this.getEndpoint(config.network, config.endpoint);
     }
 
-    public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("date", com.aliyun.teautil.Common.getDateUTCString()),
@@ -65,14 +55,15 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         if (!com.aliyun.teautil.Common.equalString(request.authType, "Anonymous")) {
             com.aliyun.credentials.Client credential = request.credential;
-            String accessKeyId = credential.getAccessKeyId();
-            String accessKeySecret = credential.getAccessKeySecret();
-            String securityToken = credential.getSecurityToken();
-            String bearerToken = credential.getBearerToken();
-            if (!com.aliyun.teautil.Common.empty(bearerToken)) {
+            String authType = credential.getType();
+            if (com.aliyun.teautil.Common.equalString(authType, "bearer")) {
+                String bearerToken = credential.getBearerToken();
                 request.headers.put("x-acs-bearer-token", bearerToken);
                 request.headers.put("Authorization", "Bearer " + bearerToken + "");
             } else {
+                String accessKeyId = credential.getAccessKeyId();
+                String accessKeySecret = credential.getAccessKeySecret();
+                String securityToken = credential.getSecurityToken();
                 if (!com.aliyun.teautil.Common.empty(securityToken)) {
                     request.headers.put("x-acs-security-token", securityToken);
                 }
@@ -84,9 +75,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     }
 
-    public void modifyResponse(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextResponse response = context.response;
+    public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             Object _res = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(_res);

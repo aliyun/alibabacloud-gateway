@@ -80,17 +80,18 @@ namespace AlibabaCloud.GatewayPds
             if (!AlibabaCloud.TeaUtil.Common.EqualString(request.AuthType, "Anonymous"))
             {
                 Aliyun.Credentials.Client credential = request.Credential;
-                string accessKeyId = credential.GetAccessKeyId();
-                string accessKeySecret = credential.GetAccessKeySecret();
-                string securityToken = credential.GetSecurityToken();
-                string bearerToken = credential.GetBearerToken();
-                if (!AlibabaCloud.TeaUtil.Common.Empty(bearerToken))
+                string authType = credential.GetType();
+                if (AlibabaCloud.TeaUtil.Common.EqualString(authType, "bearer"))
                 {
+                    string bearerToken = credential.GetBearerToken();
                     request.Headers["x-acs-bearer-token"] = bearerToken;
                     request.Headers["Authorization"] = "Bearer " + bearerToken;
                 }
                 else
                 {
+                    string accessKeyId = credential.GetAccessKeyId();
+                    string accessKeySecret = credential.GetAccessKeySecret();
+                    string securityToken = credential.GetSecurityToken();
                     if (!AlibabaCloud.TeaUtil.Common.Empty(securityToken))
                     {
                         request.Headers["x-acs-security-token"] = securityToken;
@@ -148,17 +149,18 @@ namespace AlibabaCloud.GatewayPds
             if (!AlibabaCloud.TeaUtil.Common.EqualString(request.AuthType, "Anonymous"))
             {
                 Aliyun.Credentials.Client credential = request.Credential;
-                string accessKeyId = await credential.GetAccessKeyIdAsync();
-                string accessKeySecret = await credential.GetAccessKeySecretAsync();
-                string securityToken = await credential.GetSecurityTokenAsync();
-                string bearerToken = credential.GetBearerToken();
-                if (!AlibabaCloud.TeaUtil.Common.Empty(bearerToken))
+                string authType = credential.GetType();
+                if (AlibabaCloud.TeaUtil.Common.EqualString(authType, "bearer"))
                 {
+                    string bearerToken = credential.GetBearerToken();
                     request.Headers["x-acs-bearer-token"] = bearerToken;
                     request.Headers["Authorization"] = "Bearer " + bearerToken;
                 }
                 else
                 {
+                    string accessKeyId = await credential.GetAccessKeyIdAsync();
+                    string accessKeySecret = await credential.GetAccessKeySecretAsync();
+                    string securityToken = await credential.GetSecurityTokenAsync();
                     if (!AlibabaCloud.TeaUtil.Common.Empty(securityToken))
                     {
                         request.Headers["x-acs-security-token"] = securityToken;

@@ -55,14 +55,15 @@ class Client(SPIClient):
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
         if not UtilClient.equal_string(request.auth_type, 'Anonymous'):
             credential = request.credential
-            access_key_id = credential.get_access_key_id()
-            access_key_secret = credential.get_access_key_secret()
-            security_token = credential.get_security_token()
-            bearer_token = credential.get_bearer_token()
-            if not UtilClient.empty(bearer_token):
+            auth_type = credential.get_type()
+            if UtilClient.equal_string(auth_type, 'bearer'):
+                bearer_token = credential.get_bearer_token()
                 request.headers['x-acs-bearer-token'] = bearer_token
                 request.headers['Authorization'] = 'Bearer %s' % TeaConverter.to_unicode(bearer_token)
             else:
+                access_key_id = credential.get_access_key_id()
+                access_key_secret = credential.get_access_key_secret()
+                security_token = credential.get_security_token()
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-security-token'] = security_token
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
