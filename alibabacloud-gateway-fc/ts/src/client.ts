@@ -267,7 +267,7 @@ export default class Client extends SPI {
     let canonicalizedResource : string = paths[0];
     let resources : string[] = [ ];
     if (Util.equalNumber(Array.size(paths), 2)) {
-      resources = String.split(paths[1], "&", 0);
+      resources = String.split(paths[1], "&", null);
     }
 
     let subResources : string[] = [ ];
@@ -284,7 +284,7 @@ export default class Client extends SPI {
 
         separator = ";";
       }
-      subResources = String.split(tmp, ";", 0);
+      subResources = String.split(tmp, ";", null);
     }
 
     let result : string[] = Array.concat(subResources, resources);
@@ -389,7 +389,7 @@ export default class Client extends SPI {
       }
 
     }
-    return String.split(tmp, ";", 0);
+    return String.split(tmp, ";", null);
   }
 
   async signRequest(request: HttpRequest, credential: Credential): Promise<{[key: string ]: any}> {
@@ -446,7 +446,7 @@ export default class Client extends SPI {
     let canonicalizedResource : string = paths[0];
     let resources : string[] = [ ];
     if (Util.equalNumber(Array.size(paths), 2)) {
-      resources = String.split(paths[1], "&", 0);
+      resources = String.split(paths[1], "&", null);
     }
 
     let sortedParams = Array.ascSort(resources);

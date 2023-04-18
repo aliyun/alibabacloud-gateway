@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_pop.
 
-Created on 31/03/2023
+Created on 18/04/2023
 
 @author: Alibaba Cloud SDK
 """

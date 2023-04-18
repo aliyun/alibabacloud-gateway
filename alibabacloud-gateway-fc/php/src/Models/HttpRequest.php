@@ -1,7 +1,6 @@
 <?php
 
 // This file is auto-generated, don't edit it. Thanks.
-
 namespace Darabonba\GatewayFc\Models;
 
 use AlibabaCloud\Tea\Model;
@@ -13,7 +12,6 @@ class HttpRequest extends Model
         Model::validateRequired('method', $this->method, true);
         Model::validateRequired('path', $this->path, true);
     }
-
     public function toMap()
     {
         $res = [];
@@ -32,13 +30,10 @@ class HttpRequest extends Model
         if (null !== $this->reqBodyType) {
             $res['reqBodyType'] = $this->reqBodyType;
         }
-
         return $res;
     }
-
     /**
      * @param array $map
-     *
      * @return HttpRequest
      */
     public static function fromMap($map = [])
@@ -59,10 +54,8 @@ class HttpRequest extends Model
         if (isset($map['reqBodyType'])) {
             $model->reqBodyType = $map['reqBodyType'];
         }
-
         return $model;
     }
-
     /**
      * @var string
      */

@@ -171,4 +171,4 @@ class Client(SPIClient):
                 if not StringClient.contains(tmp, lower_key):
                     tmp = '%s%s%s' % (TeaConverter.to_unicode(tmp), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(lower_key))
                     separator = ';'
-        return StringClient.split(tmp, ';', 0)
+        return StringClient.split(tmp, ';', None)

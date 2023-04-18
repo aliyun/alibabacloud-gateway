@@ -222,7 +222,7 @@ async function buildCanonicalizedResourceForFc(pathname: string, query: map[stri
   var canonicalizedResource : string = paths[0];
   var resources : [string] = [];
   if (Util.equalNumber(Array.size(paths), 2)) {
-    resources = String.split(paths[1], '&', 0);
+    resources = String.split(paths[1], '&', null);
   }
   var subResources : [string] = [];
   var tmp : string = '';
@@ -236,7 +236,7 @@ async function buildCanonicalizedResourceForFc(pathname: string, query: map[stri
       }
       separator = ';';
     }
-    subResources = String.split(tmp, ';', 0);
+    subResources = String.split(tmp, ';', null);
   }
   var result : [string] = Array.concat(subResources, resources);
   var sortedParams = Array.ascSort(result);
@@ -329,7 +329,7 @@ async function getSignedHeaders(headers: map[string]string): [string] {
       }
     }
   }
-  return String.split(tmp, ';', 0);
+  return String.split(tmp, ';', null);
 }
 
 model HttpRequest = {
@@ -391,7 +391,7 @@ async function buildCanonicalizedResource(pathname: string): string {
   var canonicalizedResource : string = paths[0];
   var resources : [string] = [];
   if (Util.equalNumber(Array.size(paths), 2)) {
-    resources = String.split(paths[1], '&', 0);
+    resources = String.split(paths[1], '&', null);
   }
   var sortedParams = Array.ascSort(resources);
   if (Util.equalNumber(Array.size(sortedParams), 0)) {

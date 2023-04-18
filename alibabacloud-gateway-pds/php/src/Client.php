@@ -270,6 +270,6 @@ class Client extends DarabonbaGatewaySpiClient {
                 }
             }
         }
-        return StringUtil::split($tmp, ";", 0);
+        return StringUtil::split($tmp, ";", null);
     }
 }

@@ -10,7 +10,7 @@ import (
 	string_ "github.com/alibabacloud-go/darabonba-string/client"
 	endpointutil "github.com/alibabacloud-go/endpoint-util/service"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
-	util "github.com/alibabacloud-go/tea-utils/service"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
 )
@@ -113,7 +113,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return _err
 			}
 
-			popErr := util.AssertAsMap(popRes)
+			popErr, _err := util.AssertAsMap(popRes)
+			if _err != nil {
+				return _err
+			}
+
 			_err = tea.NewSDKError(map[string]interface{}{
 				"code":    tea.ToString(client.DefaultAny(popErr["Code"], popErr["code"])),
 				"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(popErr["Message"], popErr["message"])) + " request id: " + tea.ToString(client.DefaultAny(popErr["RequestID"], popErr["RequestId"])),
@@ -121,13 +125,21 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			})
 			return _err
 		} else {
-			_headers := util.AssertAsMap(response.Headers)
+			_headers, _err := util.AssertAsMap(response.Headers)
+			if _err != nil {
+				return _err
+			}
+
 			fcRes, _err := util.ReadAsJSON(response.Body)
 			if _err != nil {
 				return _err
 			}
 
-			fcErr := util.AssertAsMap(fcRes)
+			fcErr, _err := util.AssertAsMap(fcRes)
+			if _err != nil {
+				return _err
+			}
+
 			_err = tea.NewSDKError(map[string]interface{}{
 				"code":    fcErr["ErrorCode"],
 				"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(fcErr["ErrorMessage"]) + " request id: " + tea.ToString(_headers["x-fc-request-id"]),
@@ -160,7 +172,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
-		res := util.AssertAsMap(obj)
+		res, _err := util.AssertAsMap(obj)
+		if _err != nil {
+			return _err
+		}
+
 		response.DeserializedBody = res
 	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
 		arr, _err := util.ReadAsJSON(response.Body)
@@ -236,7 +252,11 @@ func (client *Client) SignRequestForFc(context *spi.InterceptorContext) (_err er
 				request.Headers["content-type"] = tea.String("application/json")
 				request.Headers["content-md5"] = encodeutil.Base64EncodeToString(signatureutil.MD5Sign(jsonObj))
 			} else {
-				m := util.AssertAsMap(request.Body)
+				m, _err := util.AssertAsMap(request.Body)
+				if _err != nil {
+					return _err
+				}
+
 				formObj := openapiutil.ToForm(m)
 				request.Stream = tea.ToReader(formObj)
 				request.Headers["content-type"] = tea.String("application/x-www-form-urlencoded")
@@ -310,7 +330,11 @@ func (client *Client) SignRequestForPop(context *spi.InterceptorContext) (_err e
 				request.Stream = tea.ToReader(jsonObj)
 				request.Headers["content-type"] = tea.String("application/json; charset=utf-8")
 			} else {
-				m := util.AssertAsMap(request.Body)
+				m, _err := util.AssertAsMap(request.Body)
+				if _err != nil {
+					return _err
+				}
+
 				formObj := openapiutil.ToForm(m)
 				hashedRequestPayload = encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(formObj), signatureAlgorithm))
 				request.Stream = tea.ToReader(formObj)
@@ -398,7 +422,7 @@ func (client *Client) BuildCanonicalizedResourceForFc(pathname *string, query ma
 	canonicalizedResource := paths[0]
 	resources := []*string{}
 	if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-		resources = string_.Split(paths[1], tea.String("&"), tea.Int(0))
+		resources = string_.Split(paths[1], tea.String("&"), nil)
 	}
 
 	subResources := []*string{}
@@ -414,7 +438,7 @@ func (client *Client) BuildCanonicalizedResourceForFc(pathname *string, query ma
 
 			separator = tea.String(";")
 		}
-		subResources = string_.Split(tmp, tea.String(";"), tea.Int(0))
+		subResources = string_.Split(tmp, tea.String(";"), nil)
 	}
 
 	result := array.Concat(subResources, resources)
@@ -548,7 +572,7 @@ func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*s
 
 	}
 	_result = make([]*string, 0)
-	_body := string_.Split(tmp, tea.String(";"), tea.Int(0))
+	_body := string_.Split(tmp, tea.String(";"), nil)
 	_result = _body
 	return _result, _err
 }
@@ -628,7 +652,7 @@ func (client *Client) BuildCanonicalizedResource(pathname *string) (_result *str
 	canonicalizedResource := paths[0]
 	resources := []*string{}
 	if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-		resources = string_.Split(paths[1], tea.String("&"), tea.Int(0))
+		resources = string_.Split(paths[1], tea.String("&"), nil)
 	}
 
 	sortedParams := array.AscSort(resources)

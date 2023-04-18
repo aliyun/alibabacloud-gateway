@@ -15,7 +15,9 @@ import (
 )
 
 type Client struct {
-	spi.Client
+	Client spi.Client
+	Sha256 *string
+	Sm3    *string
 }
 
 func NewClient() (*Client, error) {
@@ -404,7 +406,7 @@ func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*s
 
 	}
 	_result = make([]*string, 0)
-	_body := string_.Split(tmp, tea.String(";"), tea.Int(0))
+	_body := string_.Split(tmp, tea.String(";"), nil)
 	_result = _body
 	return _result, _err
 }

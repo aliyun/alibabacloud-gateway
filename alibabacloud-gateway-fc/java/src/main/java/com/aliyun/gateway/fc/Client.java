@@ -3,17 +3,6 @@ package com.aliyun.gateway.fc;
 
 import com.aliyun.tea.*;
 import com.aliyun.gateway.fc.models.*;
-import com.aliyun.gateway.spi.*;
-import com.aliyun.gateway.spi.models.*;
-import com.aliyun.credentials.*;
-import com.aliyun.teautil.*;
-import com.aliyun.openapiutil.*;
-import com.aliyun.endpointutil.*;
-import com.aliyun.darabonba.encode.*;
-import com.aliyun.darabonba.signature.*;
-import com.aliyun.darabonbastring.*;
-import com.aliyun.darabonba.map.*;
-import com.aliyun.darabonba.array.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
@@ -22,14 +11,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
 
-    public void modifyConfiguration(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
     }
 
-    public void modifyRequest(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         if (!com.aliyun.darabonbastring.Client.hasSuffix(config.endpoint, "aliyuncs.com")) {
             this.signRequestForFc(context);
         } else {
@@ -38,10 +27,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     }
 
-    public void modifyResponse(InterceptorContext context, AttributeMap attributeMap) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
-        InterceptorContext.InterceptorContextResponse response = context.response;
+    public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             if (com.aliyun.darabonbastring.Client.hasPrefix(config.endpoint, "fc.") && com.aliyun.darabonbastring.Client.hasSuffix(config.endpoint, ".aliyuncs.com")) {
                 Object popRes = com.aliyun.teautil.Common.readAsJSON(response.body);
@@ -105,9 +94,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return inputValue;
     }
 
-    public void signRequestForFc(InterceptorContext context) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void signRequestForFc(com.aliyun.gateway.spi.models.InterceptorContext context) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("host", config.endpoint),
@@ -153,9 +142,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         request.headers.put("Authorization", this.getAuthorizationForFc(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
     }
 
-    public void signRequestForPop(InterceptorContext context) throws Exception {
-        InterceptorContext.InterceptorContextRequest request = context.request;
-        InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+    public void signRequestForPop(com.aliyun.gateway.spi.models.InterceptorContext context) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("host", config.endpoint),
@@ -243,7 +232,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String canonicalizedResource = paths.get(0);
         java.util.List<String> resources = new java.util.ArrayList<>();
         if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-            resources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
+            resources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
         }
 
         java.util.List<String> subResources = new java.util.ArrayList<>();
@@ -259,7 +248,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
                 separator = ";";
             }
-            subResources = com.aliyun.darabonbastring.Client.split(tmp, ";", 0);
+            subResources = com.aliyun.darabonbastring.Client.split(tmp, ";", null);
         }
 
         java.util.List<String> result = com.aliyun.darabonba.array.Client.concat(subResources, resources);
@@ -360,7 +349,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             }
 
         }
-        return com.aliyun.darabonbastring.Client.split(tmp, ";", 0);
+        return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
     }
 
     public java.util.Map<String, ?> signRequest(HttpRequest request, com.aliyun.credentials.Client credential) throws Exception {
@@ -417,7 +406,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String canonicalizedResource = paths.get(0);
         java.util.List<String> resources = new java.util.ArrayList<>();
         if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-            resources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", 0);
+            resources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
         }
 
         java.util.List<String> sortedParams = com.aliyun.darabonba.array.Client.ascSort(resources);
