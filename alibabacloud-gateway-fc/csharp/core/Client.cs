@@ -514,7 +514,7 @@ namespace AlibabaCloud.GatewayFc
             };
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
             {
-                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
             }
             List<string> subResources = new List<string>
             {
@@ -533,7 +533,7 @@ namespace AlibabaCloud.GatewayFc
                     }
                     separator = ";";
                 }
-                subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", 0);
+                subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
             }
             List<string> result = AlibabaCloud.DarabonbaArray.ArrayUtil.Concat(subResources, resources);
             List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(result);
@@ -554,7 +554,7 @@ namespace AlibabaCloud.GatewayFc
             };
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
             {
-                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
             }
             List<string> subResources = new List<string>
             {
@@ -573,7 +573,7 @@ namespace AlibabaCloud.GatewayFc
                     }
                     separator = ";";
                 }
-                subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", 0);
+                subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
             }
             List<string> result = AlibabaCloud.DarabonbaArray.ArrayUtil.Concat(subResources, resources);
             List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(result);
@@ -771,7 +771,7 @@ namespace AlibabaCloud.GatewayFc
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", 0);
+            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
         }
 
         public async Task<List<string>> GetSignedHeadersAsync(Dictionary<string, string> headers)
@@ -792,7 +792,7 @@ namespace AlibabaCloud.GatewayFc
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", 0);
+            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
         }
 
         public Dictionary<string, object> SignRequest(HttpRequest request, Aliyun.Credentials.Client credential)
@@ -914,7 +914,7 @@ namespace AlibabaCloud.GatewayFc
             };
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
             {
-                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
             }
             List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(resources);
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(sortedParams), 0))
@@ -934,7 +934,7 @@ namespace AlibabaCloud.GatewayFc
             };
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
             {
-                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", 0);
+                resources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
             }
             List<string> sortedParams = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(resources);
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(sortedParams), 0))

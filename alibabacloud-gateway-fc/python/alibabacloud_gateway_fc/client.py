@@ -424,7 +424,7 @@ class Client(SPIClient):
         canonicalized_resource = paths[0]
         resources = {}
         if UtilClient.equal_number(ArrayClient.size(paths), 2):
-            resources = StringClient.split(paths[1], '&', 0)
+            resources = StringClient.split(paths[1], '&', None)
         sub_resources = {}
         tmp = ''
         separator = ''
@@ -435,7 +435,7 @@ class Client(SPIClient):
                 if not UtilClient.is_unset(query.get(param_name)):
                     tmp = f'{tmp}={query.get(param_name)}'
                 separator = ';'
-            sub_resources = StringClient.split(tmp, ';', 0)
+            sub_resources = StringClient.split(tmp, ';', None)
         result = ArrayClient.concat(sub_resources, resources)
         sorted_params = ArrayClient.asc_sort(result)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
@@ -452,7 +452,7 @@ class Client(SPIClient):
         canonicalized_resource = paths[0]
         resources = {}
         if UtilClient.equal_number(ArrayClient.size(paths), 2):
-            resources = StringClient.split(paths[1], '&', 0)
+            resources = StringClient.split(paths[1], '&', None)
         sub_resources = {}
         tmp = ''
         separator = ''
@@ -463,7 +463,7 @@ class Client(SPIClient):
                 if not UtilClient.is_unset(query.get(param_name)):
                     tmp = f'{tmp}={query.get(param_name)}'
                 separator = ';'
-            sub_resources = StringClient.split(tmp, ';', 0)
+            sub_resources = StringClient.split(tmp, ';', None)
         result = ArrayClient.concat(sub_resources, resources)
         sorted_params = ArrayClient.asc_sort(result)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
@@ -649,7 +649,7 @@ class Client(SPIClient):
                 if not StringClient.contains(tmp, lower_key):
                     tmp = f'{tmp}{separator}{lower_key}'
                     separator = ';'
-        return StringClient.split(tmp, ';', 0)
+        return StringClient.split(tmp, ';', None)
 
     async def get_signed_headers_async(
         self,
@@ -665,7 +665,7 @@ class Client(SPIClient):
                 if not StringClient.contains(tmp, lower_key):
                     tmp = f'{tmp}{separator}{lower_key}'
                     separator = ';'
-        return StringClient.split(tmp, ';', 0)
+        return StringClient.split(tmp, ';', None)
 
     def sign_request(
         self,
@@ -759,7 +759,7 @@ class Client(SPIClient):
         canonicalized_resource = paths[0]
         resources = {}
         if UtilClient.equal_number(ArrayClient.size(paths), 2):
-            resources = StringClient.split(paths[1], '&', 0)
+            resources = StringClient.split(paths[1], '&', None)
         sorted_params = ArrayClient.asc_sort(resources)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return f'{canonicalized_resource}\n'
@@ -774,7 +774,7 @@ class Client(SPIClient):
         canonicalized_resource = paths[0]
         resources = {}
         if UtilClient.equal_number(ArrayClient.size(paths), 2):
-            resources = StringClient.split(paths[1], '&', 0)
+            resources = StringClient.split(paths[1], '&', None)
         sorted_params = ArrayClient.asc_sort(resources)
         if UtilClient.equal_number(ArrayClient.size(sorted_params), 0):
             return f'{canonicalized_resource}\n'

@@ -473,7 +473,7 @@ namespace AlibabaCloud.GatewayPds
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", 0);
+            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
         }
 
         public async Task<List<string>> GetSignedHeadersAsync(Dictionary<string, string> headers)
@@ -494,7 +494,7 @@ namespace AlibabaCloud.GatewayPds
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", 0);
+            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
         }
 
     }

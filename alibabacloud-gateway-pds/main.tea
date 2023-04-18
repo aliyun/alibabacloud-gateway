@@ -201,5 +201,5 @@ async function getSignedHeaders(headers: map[string]string): [string] {
       }
     }
   }
-  return String.split(tmp, ';', 0);
+  return String.split(tmp, ';', null);
 }

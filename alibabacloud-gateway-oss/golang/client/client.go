@@ -16,7 +16,9 @@ import (
 )
 
 type Client struct {
-	spi.Client
+	Client                spi.Client
+	Default_signed_params []*string
+	Except_signed_params  []*string
 }
 
 func NewClient() (*Client, error) {

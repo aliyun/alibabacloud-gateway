@@ -388,7 +388,7 @@ class Client(SPIClient):
                 if not StringClient.contains(tmp, lower_key):
                     tmp = f'{tmp}{separator}{lower_key}'
                     separator = ';'
-        return StringClient.split(tmp, ';', 0)
+        return StringClient.split(tmp, ';', None)
 
     async def get_signed_headers_async(
         self,
@@ -404,4 +404,4 @@ class Client(SPIClient):
                 if not StringClient.contains(tmp, lower_key):
                     tmp = f'{tmp}{separator}{lower_key}'
                     separator = ';'
-        return StringClient.split(tmp, ';', 0)
+        return StringClient.split(tmp, ';', None)

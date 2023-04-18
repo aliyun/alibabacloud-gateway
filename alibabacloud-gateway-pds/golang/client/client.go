@@ -9,7 +9,7 @@ import (
 	signatureutil "github.com/alibabacloud-go/darabonba-signature-util/client"
 	string_ "github.com/alibabacloud-go/darabonba-string/client"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
-	util "github.com/alibabacloud-go/tea-utils/service"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
 )
 
@@ -70,7 +70,11 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 				request.Stream = tea.ToReader(jsonObj)
 				request.Headers["content-type"] = tea.String("application/json; charset=utf-8")
 			} else {
-				m := util.AssertAsMap(request.Body)
+				m, _err := util.AssertAsMap(request.Body)
+				if _err != nil {
+					return _err
+				}
+
 				formObj := openapiutil.ToForm(m)
 				request.Stream = tea.ToReader(formObj)
 				request.Headers["content-type"] = tea.String("application/x-www-form-urlencoded")
@@ -128,7 +132,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
-		err := util.AssertAsMap(_res)
+		err, _err := util.AssertAsMap(_res)
+		if _err != nil {
+			return _err
+		}
+
 		headers := response.Headers
 		requestId := headers["x-ca-request-id"]
 		err["statusCode"] = response.StatusCode
@@ -314,7 +322,7 @@ func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*s
 
 	}
 	_result = make([]*string, 0)
-	_body := string_.Split(tmp, tea.String(";"), tea.Int(0))
+	_body := string_.Split(tmp, tea.String(";"), nil)
 	_result = _body
 	return _result, _err
 }

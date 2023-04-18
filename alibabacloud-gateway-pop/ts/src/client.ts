@@ -283,7 +283,7 @@ export default class Client extends SPI {
       }
 
     }
-    return String.split(tmp, ";", 0);
+    return String.split(tmp, ";", null);
   }
 
 }

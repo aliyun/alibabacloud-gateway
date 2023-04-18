@@ -216,6 +216,6 @@ public class Client extends com.aliyun.gateway.spi.Client {
             }
 
         }
-        return com.aliyun.darabonbastring.Client.split(tmp, ";", 0);
+        return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
     }
 }
