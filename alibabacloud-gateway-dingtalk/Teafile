@@ -1,0 +1,111 @@
+{
+  "scope": "alibabacloud",
+  "name": "GatewayDingTalk",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "SPI": "alibabacloud:GatewaySPI:*",
+    "Util": "darabonba:Util:*",
+    "Credential": "alibabacloud:Credential:*",
+    "EncodeUtil": "darabonba:EncodeUtil:*",
+    "SignatureUtil": "darabonba:SignatureUtil:*",
+    "String": "darabonba:String:*",
+    "Map": "darabonba:Map:*",
+    "Array": "darabonba:Array:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-dingtalk:^1.0.0",
+    "go": "github.com/alibabacloud-go/gateway-dingtalk/client:v1.0.0",
+    "java": "com.aliyun:gateway-dingtalk:1.0.0",
+    "python": "alibabacloud_gateway_dingtalk:1.0.0",
+    "python2": "alibabacloud_gateway_dingtalk_py2:1.0.0",
+    "csharp": "AlibabaCloud.GatewayDingTalk:1.0.0",
+    "php": "alibabacloud/gateway-dingtalk:^1.0.0"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayDingTalk",
+    "packageInfo": {
+      "description": "Alibaba Cloud DingTalk SDK Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun DingTalk SDK",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
+      }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.dingtalk",
+    "className": "Client",
+    "packageInfo": {
+      "groupId": "com.aliyun",
+      "artifactId": "gateway-dingtalk",
+      "description": "Alibaba Cloud DingTalk SDK Library for Java",
+      "url": "https://github.com/aliyun/alibabacloud-gateway",
+      "licenseName": "The Apache License, Version 2.0",
+      "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+      "developerId": "aliyunproducts",
+      "developerName": "Aliyun SDK",
+      "developerEmail": "aliyunsdk@aliyun.com",
+      "scmConnection": "scm:git:git://github.com/aliyun/alibabacloud-gateway.git",
+      "scmDeveloperConnection": "scm:git:git@github.com:aliyun/alibabacloud-gateway.git",
+      "scmUrl": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewayDingTalk",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-dingtalk",
+      "desc": "Alibaba Cloud DingTalk Client",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_dingtalk",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_dingtalk",
+      "desc": "Alibaba Cloud DingTalk SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_dingtalk",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_dingtalk_py2",
+      "desc": "Alibaba Cloud DingTalk SDK Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-dingtalk"
+      }
+    }
+  },
+  "releaselog": {
+    "changelog": [
+      "Init dingtalk gateway library."
+    ],
+    "compatible": true
+  }
+}
