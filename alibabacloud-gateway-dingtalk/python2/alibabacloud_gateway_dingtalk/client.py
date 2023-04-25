@@ -22,7 +22,8 @@ class Client(SPIClient):
         config = context.configuration
         request.headers = TeaCore.merge({
             'host': config.endpoint,
-            'user-agent': request.user_agent
+            'user-agent': request.user_agent,
+            'accept': 'application/json'
         }, request.headers)
         if not UtilClient.is_unset(request.body):
             json_obj = UtilClient.to_jsonstring(request.body)
@@ -38,10 +39,10 @@ class Client(SPIClient):
             err['statusCode'] = response.status_code
             raise TeaException({
                 'code': '%s' % TeaConverter.to_unicode(self.default_any(err.get('Code'), err.get('code'))),
-                'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(err.get('Message'), err.get('message'))), TeaConverter.to_unicode(self.default_any(err.get('requestId'), err.get('requestid')))),
+                'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(err.get('Message'), err.get('message'))), TeaConverter.to_unicode(self.default_any(err.get('RequestId'), err.get('requestid')))),
                 'data': err,
                 'description': '%s' % TeaConverter.to_unicode(self.default_any(err.get('Description'), err.get('description'))),
-                'accessDeniedDetail': self.default_any(err.get('accessDeniedDetail'), err.get('accessdenieddetail'))
+                'accessDeniedDetail': self.default_any(err.get('AccessDeniedDetail'), err.get('accessdenieddetail'))
             })
         if UtilClient.equal_number(response.status_code, 204):
             UtilClient.read_as_string(response.body)

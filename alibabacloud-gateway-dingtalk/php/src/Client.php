@@ -34,7 +34,8 @@ class Client extends DarabonbaGatewaySpiClient {
         $config = $context->configuration;
         $request->headers = Tea::merge([
             "host" => $config->endpoint,
-            "user-agent" => $request->userAgent
+            "user-agent" => $request->userAgent,
+            "accept" => "application/json"
         ], $request->headers);
         if (!Utils::isUnset($request->body)) {
             $jsonObj = Utils::toJSONString($request->body);
@@ -58,10 +59,10 @@ class Client extends DarabonbaGatewaySpiClient {
             @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",
-                "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . (string) ($this->defaultAny(@$err["requestId"], @$err["requestid"])) . "",
+                "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . (string) ($this->defaultAny(@$err["RequestId"], @$err["requestid"])) . "",
                 "data" => $err,
                 "description" => "" . (string) ($this->defaultAny(@$err["Description"], @$err["description"])) . "",
-                "accessDeniedDetail" => $this->defaultAny(@$err["accessDeniedDetail"], @$err["accessdenieddetail"])
+                "accessDeniedDetail" => $this->defaultAny(@$err["AccessDeniedDetail"], @$err["accessdenieddetail"])
             ]);
         }
         if (Utils::equalNumber($response->statusCode, 204)) {

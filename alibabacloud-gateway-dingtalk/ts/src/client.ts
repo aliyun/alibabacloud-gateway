@@ -20,6 +20,7 @@ export default class Client extends SPI {
     request.headers = {
       host: config.endpoint,
       'user-agent': request.userAgent,
+      accept: "application/json",
       ...request.headers,
     };
     if (!Util.isUnset(request.body)) {
@@ -39,10 +40,10 @@ export default class Client extends SPI {
       err["statusCode"] = response.statusCode;
       throw $tea.newError({
         code: `${this.defaultAny(err["Code"], err["code"])}`,
-        message: `code: ${response.statusCode}, ${this.defaultAny(err["Message"], err["message"])} request id: ${this.defaultAny(err["requestId"], err["requestid"])}`,
+        message: `code: ${response.statusCode}, ${this.defaultAny(err["Message"], err["message"])} request id: ${this.defaultAny(err["RequestId"], err["requestid"])}`,
         data: err,
         description: `${this.defaultAny(err["Description"], err["description"])}`,
-        accessDeniedDetail: this.defaultAny(err["accessDeniedDetail"], err["accessdenieddetail"]),
+        accessDeniedDetail: this.defaultAny(err["AccessDeniedDetail"], err["accessdenieddetail"]),
       });
     }
 

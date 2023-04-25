@@ -38,6 +38,7 @@ namespace AlibabaCloud.GatewayDingTalk
                 {
                     {"host", config.Endpoint},
                     {"user-agent", request.UserAgent},
+                    {"accept", "application/json"},
                 },
                 request.Headers
             );
@@ -59,6 +60,7 @@ namespace AlibabaCloud.GatewayDingTalk
                 {
                     {"host", config.Endpoint},
                     {"user-agent", request.UserAgent},
+                    {"accept", "application/json"},
                 },
                 request.Headers
             );
@@ -82,10 +84,10 @@ namespace AlibabaCloud.GatewayDingTalk
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
-                    {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + DefaultAny(err.Get("requestId"), err.Get("requestid"))},
+                    {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + DefaultAny(err.Get("RequestId"), err.Get("requestid"))},
                     {"data", err},
                     {"description", "" + DefaultAny(err.Get("Description"), err.Get("description"))},
-                    {"accessDeniedDetail", DefaultAny(err.Get("accessDeniedDetail"), err.Get("accessdenieddetail"))},
+                    {"accessDeniedDetail", DefaultAny(err.Get("AccessDeniedDetail"), err.Get("accessdenieddetail"))},
                 });
             }
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
@@ -135,10 +137,10 @@ namespace AlibabaCloud.GatewayDingTalk
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
-                    {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + DefaultAny(err.Get("requestId"), err.Get("requestid"))},
+                    {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + DefaultAny(err.Get("RequestId"), err.Get("requestid"))},
                     {"data", err},
                     {"description", "" + DefaultAny(err.Get("Description"), err.Get("description"))},
-                    {"accessDeniedDetail", DefaultAny(err.Get("accessDeniedDetail"), err.Get("accessdenieddetail"))},
+                    {"accessDeniedDetail", DefaultAny(err.Get("AccessDeniedDetail"), err.Get("accessdenieddetail"))},
                 });
             }
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))

@@ -19,7 +19,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("host", config.endpoint),
-                new TeaPair("user-agent", request.userAgent)
+                new TeaPair("user-agent", request.userAgent),
+                new TeaPair("accept", "application/json")
             ),
             request.headers
         );
@@ -40,10 +41,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
             err.put("statusCode", response.statusCode);
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", "" + this.defaultAny(err.get("Code"), err.get("code")) + ""),
-                new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(err.get("Message"), err.get("message")) + " request id: " + this.defaultAny(err.get("requestId"), err.get("requestid")) + ""),
+                new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(err.get("Message"), err.get("message")) + " request id: " + this.defaultAny(err.get("RequestId"), err.get("requestid")) + ""),
                 new TeaPair("data", err),
                 new TeaPair("description", "" + this.defaultAny(err.get("Description"), err.get("description")) + ""),
-                new TeaPair("accessDeniedDetail", this.defaultAny(err.get("accessDeniedDetail"), err.get("accessdenieddetail")))
+                new TeaPair("accessDeniedDetail", this.defaultAny(err.get("AccessDeniedDetail"), err.get("accessdenieddetail")))
             ));
         }
 

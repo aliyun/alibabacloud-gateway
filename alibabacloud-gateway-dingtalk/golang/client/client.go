@@ -35,6 +35,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	request.Headers = tea.Merge(map[string]*string{
 		"host":       config.Endpoint,
 		"user-agent": request.UserAgent,
+		"accept":     tea.String("application/json"),
 	}, request.Headers)
 	if !tea.BoolValue(util.IsUnset(request.Body)) {
 		jsonObj := util.ToJSONString(request.Body)
@@ -62,10 +63,10 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		err["statusCode"] = response.StatusCode
 		_err = tea.NewSDKError(map[string]interface{}{
 			"code":               tea.ToString(client.DefaultAny(err["Code"], err["code"])),
-			"message":            "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(client.DefaultAny(err["requestId"], err["requestid"])),
+			"message":            "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(client.DefaultAny(err["RequestId"], err["requestid"])),
 			"data":               err,
 			"description":        tea.ToString(client.DefaultAny(err["Description"], err["description"])),
-			"accessDeniedDetail": client.DefaultAny(err["accessDeniedDetail"], err["accessdenieddetail"]),
+			"accessDeniedDetail": client.DefaultAny(err["AccessDeniedDetail"], err["accessdenieddetail"]),
 		})
 		return _err
 	}
