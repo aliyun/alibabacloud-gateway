@@ -21,14 +21,7 @@
   "dependencies": {
     "@alicloud/tea-typescript": "^1.7.1",
     "@alicloud/gateway-spi": "^0.0.8",
-    "@alicloud/credentials": "^2",
-    "@alicloud/tea-util": "^1.4.5",
-    "@alicloud/endpoint-util": "^0.0.1",
-    "@alicloud/darabonba-encode-util": "^0.0.2",
-    "@alicloud/darabonba-signature-util": "^0.0.4",
-    "@alicloud/darabonba-string": "^1.0.2",
-    "@alicloud/darabonba-map": "^0.0.1",
-    "@alicloud/darabonba-array": "^0.1.0"
+    "@alicloud/tea-util": "^1.4.5"
   },
   "files": [
     "dist",
