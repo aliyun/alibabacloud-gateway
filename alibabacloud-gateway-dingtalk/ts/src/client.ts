@@ -1,12 +1,6 @@
 // This file is auto-generated, don't edit it
 import SPI, * as $SPI from '@alicloud/gateway-spi';
-import Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
-import EncodeUtil from '@alicloud/darabonba-encode-util';
-import SignatureUtil from '@alicloud/darabonba-signature-util';
-import String from '@alicloud/darabonba-string';
-import Map from '@alicloud/darabonba-map';
-import Array from '@alicloud/darabonba-array';
 import * as $tea from '@alicloud/tea-typescript';
 
 
@@ -24,34 +18,14 @@ export default class Client extends SPI {
     let request = context.request;
     let config = context.configuration;
     request.headers = {
-      date: Util.getDateUTCString(),
       host: config.endpoint,
-      'x-acs-version': request.version,
-      'x-acs-action': request.action,
       'user-agent': request.userAgent,
-      'x-acs-signature-nonce': Util.getNonce(),
-      'x-acs-signature-method': "HMAC-SHA1",
-      'x-acs-signature-version': "1.0",
-      accept: "application/json",
       ...request.headers,
     };
     if (!Util.isUnset(request.body)) {
       let jsonObj = Util.toJSONString(request.body);
       request.stream = new $tea.BytesReadable(jsonObj);
       request.headers["content-type"] = "application/json; charset=utf-8";
-    }
-
-    if (!Util.equalString(request.authType, "Anonymous")) {
-      let credential : Credential = request.credential;
-      let accessKeyId = await credential.getAccessKeyId();
-      let accessKeySecret = await credential.getAccessKeySecret();
-      let securityToken = await credential.getSecurityToken();
-      if (!Util.empty(securityToken)) {
-        request.headers["x-acs-accesskey-id"] = accessKeyId;
-        request.headers["x-acs-security-token"] = securityToken;
-      }
-
-      request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
     }
 
   }
@@ -101,92 +75,6 @@ export default class Client extends SPI {
     }
 
     return inputValue;
-  }
-
-  async getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, ak: string, secret: string): Promise<string> {
-    let signature = await this.getSignature(pathname, method, query, headers, secret);
-    return `acs ${ak}:${signature}`;
-  }
-
-  async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, secret: string): Promise<string> {
-    let stringToSign : string = "";
-    let canonicalizedResource = await this.buildCanonicalizedResource(pathname, query);
-    let canonicalizedHeaders = await this.buildCanonicalizedHeaders(headers);
-    stringToSign = `${method}\n${canonicalizedHeaders}${canonicalizedResource}`;
-    let signature = SignatureUtil.HmacSHA1Sign(stringToSign, secret);
-    return EncodeUtil.base64EncodeToString(signature);
-  }
-
-  async buildCanonicalizedResource(pathname: string, query: {[key: string ]: string}): Promise<string> {
-    let canonicalizedResource : string = pathname;
-    if (!Util.isUnset(query)) {
-      let queryArray : string[] = Map.keySet(query);
-      let sortedQueryArray = Array.ascSort(queryArray);
-      let separator : string = "?";
-
-      for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}${separator}${key}`;
-        if (!Util.empty(query[key])) {
-          canonicalizedResource = `${canonicalizedResource}=${query[key]}`;
-        }
-
-        separator = "&";
-      }
-    }
-
-    return canonicalizedResource;
-  }
-
-  async buildCanonicalizedHeaders(headers: {[key: string ]: string}): Promise<string> {
-    let accept = headers["accept"];
-    if (Util.isUnset(accept)) {
-      accept = "";
-    }
-
-    let contentMd5 = headers["content-md5"];
-    if (Util.isUnset(contentMd5)) {
-      contentMd5 = "";
-    }
-
-    let contentType = headers["content-type"];
-    if (Util.isUnset(contentType)) {
-      contentType = "";
-    }
-
-    let date = headers["date"];
-    if (Util.isUnset(date)) {
-      date = "";
-    }
-
-    let canonicalizedHeaders : string = `${accept}\n${contentMd5}\n${contentType}\n${date}\n`;
-    let sortedHeaders : string[] = await this.getSignedHeaders(headers);
-
-    for (let header of sortedHeaders) {
-      let value = headers[header];
-      let valueTrim = String.trim(value);
-      canonicalizedHeaders = `${canonicalizedHeaders}${header}:${valueTrim}\n`;
-    }
-    return canonicalizedHeaders;
-  }
-
-  async getSignedHeaders(headers: {[key: string ]: string}): Promise<string[]> {
-    let headersArray : string[] = Map.keySet(headers);
-    let sortedHeadersArray = Array.ascSort(headersArray);
-    let tmp : string = "";
-    let separator : string = "";
-
-    for (let key of sortedHeadersArray) {
-      let lowerKey = String.toLower(key);
-      if (String.hasPrefix(lowerKey, "x-acs-")) {
-        if (!String.contains(tmp, lowerKey)) {
-          tmp = `${tmp}${separator}${lowerKey}`;
-          separator = ";";
-        }
-
-      }
-
-    }
-    return String.split(tmp, ";", 0);
   }
 
 }

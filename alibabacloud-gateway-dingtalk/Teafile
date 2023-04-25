@@ -11,13 +11,7 @@
   ],
   "libraries": {
     "SPI": "alibabacloud:GatewaySPI:*",
-    "Util": "darabonba:Util:*",
-    "Credential": "alibabacloud:Credential:*",
-    "EncodeUtil": "darabonba:EncodeUtil:*",
-    "SignatureUtil": "darabonba:SignatureUtil:*",
-    "String": "darabonba:String:*",
-    "Map": "darabonba:Map:*",
-    "Array": "darabonba:Array:*"
+    "Util": "darabonba:Util:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-dingtalk:^1.0.0",
