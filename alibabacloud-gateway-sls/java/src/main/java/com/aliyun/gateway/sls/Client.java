@@ -2,6 +2,7 @@
 package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
+import static com.aliyun.gateway.sls.util.Client.readAndUncompressBlock;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
@@ -73,6 +74,13 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
+
+        String bodyrawSize = response.headers.get("x-log-bodyrawsize");
+        String compressType = response.headers.get("x-log-compresstype");
+        if (bodyrawSize != null && compressType != null) {
+            System.out.println(compressType + "   " + bodyrawSize);
+            response.body = (InputStream) readAndUncompressBlock(response.body, compressType, bodyrawSize);
+        }
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             Object error = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> resMap = com.aliyun.teautil.Common.assertAsMap(error);
