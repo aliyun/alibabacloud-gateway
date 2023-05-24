@@ -2,6 +2,7 @@
 package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
+import java.io.InputStream;
 import static com.aliyun.gateway.sls.util.Client.readAndUncompressBlock;
 
 public class Client extends com.aliyun.gateway.spi.Client {
