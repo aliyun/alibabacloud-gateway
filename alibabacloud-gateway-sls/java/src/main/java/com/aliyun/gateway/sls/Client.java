@@ -73,7 +73,6 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
-
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
             Object error = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> resMap = com.aliyun.teautil.Common.assertAsMap(error);
