@@ -2,8 +2,6 @@
 package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
-import java.io.InputStream;
-import static com.aliyun.gateway.sls.util.Client.readAndUncompressBlock;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
@@ -101,9 +99,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
                 String bodyrawSize = response.headers.get("x-log-bodyrawsize");
                 String compressType = response.headers.get("x-log-compresstype");
-                response.deserializedBody = readAndUncompressBlock(response.body, compressType, bodyrawSize);
-                // var res = Util.assertAsMap(obj);
-                response.deserializedBody = com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body);
+                response.deserializedBody = com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body, compressType, bodyrawSize);
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
             } else {
