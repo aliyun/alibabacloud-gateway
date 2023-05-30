@@ -144,8 +144,10 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 	if !tea.BoolValue(util.IsUnset(response.Body)) {
 		uncompressedData := response.Body
-		if _, ok := response.Headers["x-log-bodyrawsize"]; ok {
-			result, err := uncompressutil.ReadAndUncompressBlock(response.Body, response.Headers["x-log-compresstype"], response.Headers["x-log-bodyrawsize"])
+		compressType, ok1 := response.Headers["x-log-compresstype"]
+		bodyRawSize, ok2 := response.Headers["x-log-bodyrawsize"]
+		if ok1 && ok2 {
+			result, err := uncompressutil.ReadAndUncompressBlock(response.Body, compressType, bodyRawSize)
 			if err != nil {
 				return err
 			}
