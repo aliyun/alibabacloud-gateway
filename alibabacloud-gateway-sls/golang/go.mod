@@ -14,5 +14,4 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.0
 	github.com/aliyun/credentials-go v1.1.2
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/alibabacloud-go/alibabacloud-gateway-sls-util
 )

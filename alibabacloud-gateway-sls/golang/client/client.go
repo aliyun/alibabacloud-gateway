@@ -155,24 +155,23 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return fmt.Errorf("unexpected error happened while uncompress body")
 			}
 		}
-
 		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
-			response.DeserializedBody = response.Body
+			response.DeserializedBody = uncompressedData
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
-			byt, _err := util.ReadAsBytes(response.Body)
+			byt, _err := util.ReadAsBytes(uncompressedData)
 			if _err != nil {
 				return _err
 			}
 
 			response.DeserializedBody = byt
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("string"))) {
-			response.DeserializedBody, _err = util.ReadAsString(response.Body)
+			response.DeserializedBody, _err = util.ReadAsString(uncompressedData)
 			if _err != nil {
 				return _err
 			}
 
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("json"))) {
-			obj, _err := util.ReadAsJSON(response.Body)
+			obj, _err := util.ReadAsJSON(uncompressedData)
 			if _err != nil {
 				return _err
 			}
@@ -180,13 +179,13 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			// var res = Util.assertAsMap(obj);
 			response.DeserializedBody = obj
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
-			response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
+			response.DeserializedBody, _err = util.ReadAsJSON(uncompressedData)
 			if _err != nil {
 				return _err
 			}
 
 		} else {
-			response.DeserializedBody, _err = util.ReadAsString(response.Body)
+			response.DeserializedBody, _err = util.ReadAsString(uncompressedData)
 			if _err != nil {
 				return _err
 			}
