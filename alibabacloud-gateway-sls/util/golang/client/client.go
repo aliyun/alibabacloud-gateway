@@ -7,9 +7,28 @@
 package client
 
 import (
+	"fmt"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
+	"github.com/pierrec/lz4"
 	"io"
+	"strconv"
 )
 
-func ReadAndUncompressBlock(stream io.Reader, bodyRawSize *string) (_result interface{}, _err error) {
-	panic("No Support!")
+func ReadAndUncompressBlock(stream io.Reader, compressType *string, bodyRawSize *string) (_result interface{}, _err error) {
+	if *compressType != "lz4" {
+		return nil, fmt.Errorf("unsupported compress type %s", *compressType)
+	}
+	rawSize, err := strconv.ParseInt(*bodyRawSize, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]byte, rawSize)
+	if rawSize != 0 {
+		body, _ := util.ReadAsBytes(stream)
+		len, err := lz4.UncompressBlock(body, out)
+		if err != nil || int64(len) != rawSize {
+			return nil, err
+		}
+	}
+	return out, nil
 }
