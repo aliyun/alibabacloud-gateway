@@ -102,7 +102,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 byte[] byt = com.aliyun.teautil.Common.readAsBytes(uncompressedData);
                 response.deserializedBody = byt;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "string")) {
-                response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
+                Object obj = com.aliyun.teautil.Common.readAsString(uncompressedData);
+                // var res = Util.assertAsMap(obj);
+                response.deserializedBody = obj;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(uncompressedData);
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
@@ -110,6 +112,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             } else {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
             }
+
 
         }
 
