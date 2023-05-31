@@ -3,7 +3,6 @@ package client
 
 import (
 	"bytes"
-	"fmt"
 	uncompressutil "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client"
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
@@ -151,11 +150,7 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			if err != nil {
 				return err
 			}
-			if data, ok := result.([]byte); ok {
-				uncompressedData = bytes.NewReader(data)
-			} else {
-				return fmt.Errorf("unexpected error happened while uncompress body")
-			}
+			uncompressedData = bytes.NewReader(result)
 		}
 		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
 			response.DeserializedBody = uncompressedData

@@ -14,7 +14,7 @@ import (
 	"strconv"
 )
 
-func ReadAndUncompressBlock(stream io.Reader, compressType *string, bodyRawSize *string) (_result interface{}, _err error) {
+func ReadAndUncompressBlock(stream io.Reader, compressType *string, bodyRawSize *string) (_result []byte, _err error) {
 	if *compressType != "lz4" {
 		return nil, fmt.Errorf("unsupported compress type %s", *compressType)
 	}
