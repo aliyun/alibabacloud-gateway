@@ -4,7 +4,7 @@ package client
 import (
 	"bytes"
 	"fmt"
-	uncompressutil "github.com/alibabacloud-go/alibabacloud-gateway-sls-util"
+	uncompressutil "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client"
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
 	encodeutil "github.com/alibabacloud-go/darabonba-encode-util/client"
