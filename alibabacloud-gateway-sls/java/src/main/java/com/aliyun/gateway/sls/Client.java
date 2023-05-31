@@ -3,6 +3,8 @@ package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
 
+import java.io.InputStream;
+
 public class Client extends com.aliyun.gateway.spi.Client {
 
     public Client() throws Exception {
@@ -88,21 +90,25 @@ public class Client extends com.aliyun.gateway.spi.Client {
         }
 
         if (!com.aliyun.teautil.Common.isUnset(response.body)) {
+            String bodyrawSize = response.headers.get("x-log-bodyrawsize");
+            String compressType = response.headers.get("x-log-compresstype");
+            InputStream uncompressedData = response.body;
+            if (bodyrawSize != null && compressType != null) {
+                uncompressedData = (InputStream)com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body, compressType, bodyrawSize);
+            }
             if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
-                response.deserializedBody = response.body;
+                response.deserializedBody = uncompressedData;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "byte")) {
-                byte[] byt = com.aliyun.teautil.Common.readAsBytes(response.body);
+                byte[] byt = com.aliyun.teautil.Common.readAsBytes(uncompressedData);
                 response.deserializedBody = byt;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "string")) {
-                response.deserializedBody = com.aliyun.teautil.Common.readAsString(response.body);
+                response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "json")) {
-                String bodyrawSize = response.headers.get("x-log-bodyrawsize");
-                String compressType = response.headers.get("x-log-compresstype");
-                response.deserializedBody = com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body, compressType, bodyrawSize);
+                response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(uncompressedData);
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
-                response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(response.body);
+                response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(uncompressedData);
             } else {
-                response.deserializedBody = com.aliyun.teautil.Common.readAsString(response.body);
+                response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
             }
 
         }
