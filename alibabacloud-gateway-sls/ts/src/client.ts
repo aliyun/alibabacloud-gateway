@@ -1,4 +1,5 @@
 // This file is auto-generated, don't edit it
+import { Readable } from 'stream';
 import SPI, * as $SPI from '@alicloud/gateway-spi';
 import Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
@@ -8,6 +9,7 @@ import Map from '@alicloud/darabonba-map';
 import Array from '@alicloud/darabonba-array';
 import EncodeUtil from '@alicloud/darabonba-encode-util';
 import SignatureUtil from '@alicloud/darabonba-signature-util';
+import SLS_Util from '@alicloud/gateway-sls-util';
 import * as $tea from '@alicloud/tea-typescript';
 
 
@@ -74,6 +76,7 @@ export default class Client extends SPI {
       ...request.headers,
     };
     request.headers["authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+    await this.buildRequest(context);
   }
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -94,21 +97,28 @@ export default class Client extends SPI {
     }
 
     if (!Util.isUnset(response.body)) {
+      let bodyrawSize = response.headers["x-log-bodyrawsize"];
+      let compressType = response.headers["x-log-compresstype"];
+      let uncompressedData : Readable = response.body;
+      if (!Util.isUnset(bodyrawSize) && !Util.isUnset(compressType)) {
+        uncompressedData = await SLS_Util.readAndUncompressBlock(response.body, compressType, bodyrawSize);
+      }
+
       if (Util.equalString(request.bodyType, "binary")) {
-        response.deserializedBody = response.body;
+        response.deserializedBody = uncompressedData;
       } else if (Util.equalString(request.bodyType, "byte")) {
-        let byt = await Util.readAsBytes(response.body);
+        let byt = await Util.readAsBytes(uncompressedData);
         response.deserializedBody = byt;
       } else if (Util.equalString(request.bodyType, "string")) {
-        response.deserializedBody = await Util.readAsString(response.body);
+        response.deserializedBody = await Util.readAsString(uncompressedData);
       } else if (Util.equalString(request.bodyType, "json")) {
-        let obj = await Util.readAsJSON(response.body);
+        let obj = await Util.readAsJSON(uncompressedData);
         // var res = Util.assertAsMap(obj);
         response.deserializedBody = obj;
       } else if (Util.equalString(request.bodyType, "array")) {
-        response.deserializedBody = await Util.readAsJSON(response.body);
+        response.deserializedBody = await Util.readAsJSON(uncompressedData);
       } else {
-        response.deserializedBody = await Util.readAsString(response.body);
+        response.deserializedBody = await Util.readAsString(uncompressedData);
       }
 
     }
@@ -233,6 +243,32 @@ export default class Client extends SPI {
 
     }
     return canonicalizedHeaders;
+  }
+
+  async buildRequest(context: $SPI.InterceptorContext): Promise<void> {
+    let request = context.request;
+    let resource : string = request.pathname;
+    if (!Util.empty(resource)) {
+      let paths : string[] = String.split(resource, `?`, 2);
+      resource = paths[0];
+      if (Util.equalNumber(Array.size(paths), 2)) {
+        let params : string[] = String.split(paths[1], "&", null);
+
+        for (let sub of params) {
+          let item : string[] = String.split(sub, "=", null);
+          let key : string = item[0];
+          let value : string = null;
+          if (Util.equalNumber(Array.size(item), 2)) {
+            value = item[1];
+          }
+
+          request.query[key] = value;
+        }
+      }
+
+    }
+
+    request.pathname = resource;
   }
 
 }

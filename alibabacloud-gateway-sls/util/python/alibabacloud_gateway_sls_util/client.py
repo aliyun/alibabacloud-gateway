@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from typing import Any, BinaryIO
+from typing import BinaryIO
 
 
 class Client:
@@ -15,13 +15,15 @@ class Client:
     @staticmethod
     def read_and_uncompress_block(
         stream: BinaryIO,
+        compress_type: str,
         body_raw_size: str,
-    ) -> Any:
+    ) -> BinaryIO:
         raise Exception('Un-implemented')
 
     @staticmethod
     async def read_and_uncompress_block_async(
         stream: BinaryIO,
+        compress_type: str,
         body_raw_size: str,
-    ) -> Any:
+    ) -> BinaryIO:
         raise Exception('Un-implemented')

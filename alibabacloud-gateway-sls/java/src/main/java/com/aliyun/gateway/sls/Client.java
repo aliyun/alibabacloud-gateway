@@ -3,8 +3,6 @@ package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
 
-import java.io.InputStream;
-
 public class Client extends com.aliyun.gateway.spi.Client {
 
     public Client() throws Exception {
@@ -70,6 +68,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             request.headers
         );
         request.headers.put("authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
+        this.buildRequest(context);
     }
 
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
@@ -92,10 +91,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (!com.aliyun.teautil.Common.isUnset(response.body)) {
             String bodyrawSize = response.headers.get("x-log-bodyrawsize");
             String compressType = response.headers.get("x-log-compresstype");
-            InputStream uncompressedData = response.body;
-            if (bodyrawSize != null && compressType != null) {
-                uncompressedData = (InputStream)com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body, compressType, bodyrawSize);
+            java.io.InputStream uncompressedData = response.body;
+            if (!com.aliyun.teautil.Common.isUnset(bodyrawSize) && !com.aliyun.teautil.Common.isUnset(compressType)) {
+                uncompressedData = com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body, compressType, bodyrawSize);
             }
+
             if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
                 response.deserializedBody = uncompressedData;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "byte")) {
@@ -112,7 +112,6 @@ public class Client extends com.aliyun.gateway.spi.Client {
             } else {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
             }
-
 
         }
 
@@ -233,5 +232,30 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
         return canonicalizedHeaders;
+    }
+
+    public void buildRequest(com.aliyun.gateway.spi.models.InterceptorContext context) throws Exception {
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
+        String resource = request.pathname;
+        if (!com.aliyun.teautil.Common.empty(resource)) {
+            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(resource, "?", 2);
+            resource = paths.get(0);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
+                java.util.List<String> params = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
+                for (String sub : params) {
+                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
+                    String key = item.get(0);
+                    String value = null;
+                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
+                        value = item.get(1);
+                    }
+
+                    request.query.put(key, value);
+                }
+            }
+
+        }
+
+        request.pathname = resource;
     }
 }

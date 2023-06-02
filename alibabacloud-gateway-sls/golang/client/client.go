@@ -2,6 +2,7 @@
 package client
 
 import (
+	sls_util "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client"
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
 	encodeutil "github.com/alibabacloud-go/darabonba-encode-util/client"
@@ -110,6 +111,10 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		return _err
 	}
 
+	_err = client.BuildRequest(context)
+	if _err != nil {
+		return _err
+	}
 	return _err
 }
 
@@ -140,23 +145,34 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 	}
 
 	if !tea.BoolValue(util.IsUnset(response.Body)) {
+		bodyrawSize := response.Headers["x-log-bodyrawsize"]
+		compressType := response.Headers["x-log-compresstype"]
+		uncompressedData := response.Body
+		if !tea.BoolValue(util.IsUnset(bodyrawSize)) && !tea.BoolValue(util.IsUnset(compressType)) {
+			uncompressedData, _err = sls_util.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize)
+			if _err != nil {
+				return _err
+			}
+
+		}
+
 		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
-			response.DeserializedBody = response.Body
+			response.DeserializedBody = uncompressedData
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
-			byt, _err := util.ReadAsBytes(response.Body)
+			byt, _err := util.ReadAsBytes(uncompressedData)
 			if _err != nil {
 				return _err
 			}
 
 			response.DeserializedBody = byt
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("string"))) {
-			response.DeserializedBody, _err = util.ReadAsString(response.Body)
+			response.DeserializedBody, _err = util.ReadAsString(uncompressedData)
 			if _err != nil {
 				return _err
 			}
 
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("json"))) {
-			obj, _err := util.ReadAsJSON(response.Body)
+			obj, _err := util.ReadAsJSON(uncompressedData)
 			if _err != nil {
 				return _err
 			}
@@ -164,13 +180,13 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			// var res = Util.assertAsMap(obj);
 			response.DeserializedBody = obj
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
-			response.DeserializedBody, _err = util.ReadAsJSON(response.Body)
+			response.DeserializedBody, _err = util.ReadAsJSON(uncompressedData)
 			if _err != nil {
 				return _err
 			}
 
 		} else {
-			response.DeserializedBody, _err = util.ReadAsString(response.Body)
+			response.DeserializedBody, _err = util.ReadAsString(uncompressedData)
 			if _err != nil {
 				return _err
 			}
@@ -321,4 +337,30 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 	}
 	_result = canonicalizedHeaders
 	return _result, _err
+}
+
+func (client *Client) BuildRequest(context *spi.InterceptorContext) (_err error) {
+	request := context.Request
+	resource := request.Pathname
+	if !tea.BoolValue(util.Empty(resource)) {
+		paths := string_.Split(resource, tea.String("?"), tea.Int(2))
+		resource = paths[0]
+		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
+			params := string_.Split(paths[1], tea.String("&"), nil)
+			for _, sub := range params {
+				item := string_.Split(sub, tea.String("="), nil)
+				key := item[0]
+				var value *string
+				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
+					value = item[1]
+				}
+
+				request.Query[tea.StringValue(key)] = value
+			}
+		}
+
+	}
+
+	request.Pathname = resource
+	return _err
 }

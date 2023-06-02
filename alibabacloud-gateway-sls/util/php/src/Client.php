@@ -15,10 +15,11 @@ class Client {
 
     /**
      * @param Stream $stream
+     * @param string $compressType
      * @param string $bodyRawSize
-     * @return any
+     * @return Stream
      */
-    public static function readAndUncompressBlock($stream, $bodyRawSize){
+    public static function readAndUncompressBlock($stream, $compressType, $bodyRawSize){
         throw new Exception('Un-implemented');
     }
 }

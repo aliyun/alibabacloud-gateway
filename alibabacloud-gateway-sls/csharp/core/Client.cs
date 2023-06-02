@@ -92,6 +92,7 @@ namespace AlibabaCloud.GatewaySls
                 request.Headers
             );
             request.Headers["authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
+            BuildRequest(context);
         }
 
         public async Task ModifyRequestAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -154,6 +155,7 @@ namespace AlibabaCloud.GatewaySls
                 request.Headers
             );
             request.Headers["authorization"] = await GetAuthorizationAsync(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
+            await BuildRequestAsync(context);
         }
 
         public void ModifyResponse(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -178,32 +180,39 @@ namespace AlibabaCloud.GatewaySls
             }
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body))
             {
+                string bodyrawSize = response.Headers.Get("x-log-bodyrawsize");
+                string compressType = response.Headers.Get("x-log-compresstype");
+                Stream uncompressedData = response.Body;
+                if (!AlibabaCloud.TeaUtil.Common.IsUnset(bodyrawSize) && !AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
+                {
+                    uncompressedData = AlibabaCloud.GatewaySls_Util.Common.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
+                }
                 if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
-                    response.DeserializedBody = response.Body;
+                    response.DeserializedBody = uncompressedData;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "byte"))
                 {
-                    byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(response.Body);
+                    byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(uncompressedData);
                     response.DeserializedBody = byt;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "string"))
                 {
-                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(uncompressedData);
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
                 {
-                    object obj = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    object obj = AlibabaCloud.TeaUtil.Common.ReadAsJSON(uncompressedData);
                     // var res = Util.assertAsMap(obj);
                     response.DeserializedBody = obj;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "array"))
                 {
-                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(uncompressedData);
                 }
                 else
                 {
-                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(uncompressedData);
                 }
             }
         }
@@ -230,32 +239,39 @@ namespace AlibabaCloud.GatewaySls
             }
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Body))
             {
+                string bodyrawSize = response.Headers.Get("x-log-bodyrawsize");
+                string compressType = response.Headers.Get("x-log-compresstype");
+                Stream uncompressedData = response.Body;
+                if (!AlibabaCloud.TeaUtil.Common.IsUnset(bodyrawSize) && !AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
+                {
+                    uncompressedData = AlibabaCloud.GatewaySls_Util.Common.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
+                }
                 if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
-                    response.DeserializedBody = response.Body;
+                    response.DeserializedBody = uncompressedData;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "byte"))
                 {
-                    byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(response.Body);
+                    byte[] byt = AlibabaCloud.TeaUtil.Common.ReadAsBytes(uncompressedData);
                     response.DeserializedBody = byt;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "string"))
                 {
-                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(uncompressedData);
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "json"))
                 {
-                    object obj = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    object obj = AlibabaCloud.TeaUtil.Common.ReadAsJSON(uncompressedData);
                     // var res = Util.assertAsMap(obj);
                     response.DeserializedBody = obj;
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "array"))
                 {
-                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsJSON(uncompressedData);
                 }
                 else
                 {
-                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    response.DeserializedBody = AlibabaCloud.TeaUtil.Common.ReadAsString(uncompressedData);
                 }
             }
         }
@@ -524,6 +540,60 @@ namespace AlibabaCloud.GatewaySls
                 }
             }
             return canonicalizedHeaders;
+        }
+
+        public void BuildRequest(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
+        {
+            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
+            string resource = request.Pathname;
+            if (!AlibabaCloud.TeaUtil.Common.Empty(resource))
+            {
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(resource, "?", 2);
+                resource = paths[0];
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
+                {
+                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
+
+                    foreach (var sub in params_) {
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
+                        string key = item[0];
+                        string value = null;
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
+                        {
+                            value = item[1];
+                        }
+                        request.Query[key] = value;
+                    }
+                }
+            }
+            request.Pathname = resource;
+        }
+
+        public async Task BuildRequestAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
+        {
+            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
+            string resource = request.Pathname;
+            if (!AlibabaCloud.TeaUtil.Common.Empty(resource))
+            {
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(resource, "?", 2);
+                resource = paths[0];
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
+                {
+                    List<string> params_ = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
+
+                    foreach (var sub in params_) {
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
+                        string key = item[0];
+                        string value = null;
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
+                        {
+                            value = item[1];
+                        }
+                        request.Query[key] = value;
+                    }
+                }
+            }
+            request.Pathname = resource;
         }
 
     }

@@ -2,10 +2,11 @@
 package com.aliyun.gateway.sls.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class Client {
 
-    public static Object readAndUncompressBlock(java.io.InputStream stream, String compressType, String bodyRawSize) throws Exception {
+    public static InputStream readAndUncompressBlock(InputStream stream, String compressType, String bodyRawSize) throws Exception {
         byte[] rawData = com.aliyun.teautil.Common.readAsBytes(stream);
         int rawSize = Integer.parseInt(bodyRawSize);
         rawData = DecompressorFactory.getDecompressor(compressType).decompress(rawData, rawSize);

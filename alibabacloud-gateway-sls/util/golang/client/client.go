@@ -10,6 +10,6 @@ import (
 	"io"
 )
 
-func ReadAndUncompressBlock(stream io.Reader, bodyRawSize *string) (_result interface{}, _err error) {
+func ReadAndUncompressBlock(stream io.Reader, compressType *string, bodyRawSize *string) (_result io.Reader, _err error) {
 	panic("No Support!")
 }
