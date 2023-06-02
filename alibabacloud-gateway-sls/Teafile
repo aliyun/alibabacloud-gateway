@@ -18,7 +18,8 @@
     "Map": "darabonba:Map:*",
     "Array": "darabonba:Array:*",
     "EncodeUtil": "darabonba:EncodeUtil:*",
-    "SignatureUtil": "darabonba:SignatureUtil:*"
+    "SignatureUtil": "darabonba:SignatureUtil:*",
+    "SLS_Util": "alibabacloud:GatewaySLS_Util:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-sls:^0.0.5",

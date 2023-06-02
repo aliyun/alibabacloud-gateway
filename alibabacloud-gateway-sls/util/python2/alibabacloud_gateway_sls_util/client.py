@@ -10,5 +10,5 @@ class Client(object):
         pass
 
     @staticmethod
-    def read_and_uncompress_block(stream, body_raw_size):
+    def read_and_uncompress_block(stream, compress_type, body_raw_size):
         raise Exception('Un-implemented')

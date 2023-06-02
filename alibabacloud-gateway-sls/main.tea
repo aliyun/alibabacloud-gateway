@@ -7,6 +7,7 @@ import Map;
 import Array;
 import EncodeUtil;
 import SignatureUtil;
+import SLS_Util;
 
 extends SPI;
 
@@ -85,21 +86,27 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     };
   }
   if (!Util.isUnset(response.body)) {
+    var bodyrawSize = response.headers['x-log-bodyrawsize'];
+    var compressType = response.headers['x-log-compresstype'];
+    var uncompressedData : readable = response.body;
+    if (!Util.isUnset(bodyrawSize) && !Util.isUnset(compressType)) {
+      uncompressedData = SLS_Util.readAndUncompressBlock(response.body, compressType, bodyrawSize);
+    }
     if (Util.equalString(request.bodyType, 'binary')) {
-      response.deserializedBody = response.body;
+      response.deserializedBody = uncompressedData;
     } else if (Util.equalString(request.bodyType, 'byte')) {
-      var byt = Util.readAsBytes(response.body);
+      var byt = Util.readAsBytes(uncompressedData);
       response.deserializedBody = byt;
     } else if (Util.equalString(request.bodyType, 'string')) {
-      response.deserializedBody = Util.readAsString(response.body);
+      response.deserializedBody = Util.readAsString(uncompressedData);
     } else if (Util.equalString(request.bodyType, 'json')) {
-      var obj = Util.readAsJSON(response.body);
+      var obj = Util.readAsJSON(uncompressedData);
       // var res = Util.assertAsMap(obj);
       response.deserializedBody = obj;
     } else if (Util.equalString(request.bodyType, 'array')) {
-      response.deserializedBody = Util.readAsJSON(response.body);
+      response.deserializedBody = Util.readAsJSON(uncompressedData);
     } else {
-      response.deserializedBody = Util.readAsString(response.body);
+      response.deserializedBody = Util.readAsString(uncompressedData);
     }
   }
 }

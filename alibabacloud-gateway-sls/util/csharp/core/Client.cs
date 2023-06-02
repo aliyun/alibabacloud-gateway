@@ -17,12 +17,12 @@ namespace AlibabaCloud.GatewaySls_Util
     public class Client 
     {
 
-        public static object ReadAndUncompressBlock(Stream stream, string bodyRawSize)
+        public static Stream ReadAndUncompressBlock(Stream stream, string compressType, string bodyRawSize)
         {
             throw new NotImplementedException();
         }
 
-        public static async Task<object> ReadAndUncompressBlockAsync(Stream stream, string bodyRawSize)
+        public static async Task<Stream> ReadAndUncompressBlockAsync(Stream stream, string compressType, string bodyRawSize)
         {
             throw new NotImplementedException();
         }

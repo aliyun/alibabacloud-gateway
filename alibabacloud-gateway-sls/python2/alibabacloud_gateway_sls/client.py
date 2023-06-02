@@ -11,6 +11,7 @@ from Tea.converter import TeaConverter
 from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_tea_util.client import Client as UtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
+from alibabacloud_gateway_sls_util.client import Client as SLS_UtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_darabonba_map.client import Client as MapClient
 
@@ -63,6 +64,7 @@ class Client(SPIClient):
             'x-log-bodyrawsize': '0'
         }, request.headers)
         request.headers['authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
+        self.build_request(context)
 
     def modify_response(self, context, attribute_map):
         request = context.request
@@ -80,21 +82,26 @@ class Client(SPIClient):
                 }
             })
         if not UtilClient.is_unset(response.body):
+            bodyraw_size = response.headers.get('x-log-bodyrawsize')
+            compress_type = response.headers.get('x-log-compresstype')
+            uncompressed_data = response.body
+            if not UtilClient.is_unset(bodyraw_size) and not UtilClient.is_unset(compress_type):
+                uncompressed_data = SLS_UtilClient.read_and_uncompress_block(response.body, compress_type, bodyraw_size)
             if UtilClient.equal_string(request.body_type, 'binary'):
-                response.deserialized_body = response.body
+                response.deserialized_body = uncompressed_data
             elif UtilClient.equal_string(request.body_type, 'byte'):
-                byt = UtilClient.read_as_bytes(response.body)
+                byt = UtilClient.read_as_bytes(uncompressed_data)
                 response.deserialized_body = byt
             elif UtilClient.equal_string(request.body_type, 'string'):
-                response.deserialized_body = UtilClient.read_as_string(response.body)
+                response.deserialized_body = UtilClient.read_as_string(uncompressed_data)
             elif UtilClient.equal_string(request.body_type, 'json'):
-                obj = UtilClient.read_as_json(response.body)
+                obj = UtilClient.read_as_json(uncompressed_data)
                 # var res = Util.assertAsMap(obj);
                 response.deserialized_body = obj
             elif UtilClient.equal_string(request.body_type, 'array'):
-                response.deserialized_body = UtilClient.read_as_json(response.body)
+                response.deserialized_body = UtilClient.read_as_json(uncompressed_data)
             else:
-                response.deserialized_body = UtilClient.read_as_string(response.body)
+                response.deserialized_body = UtilClient.read_as_string(uncompressed_data)
 
     def get_endpoint(self, region_id, network, endpoint):
         if not UtilClient.empty(endpoint):
@@ -173,3 +180,20 @@ class Client(SPIClient):
             if StringClient.contains(StringClient.to_lower(header), 'x-log-') or StringClient.contains(StringClient.to_lower(header), 'x-acs-'):
                 canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(header), TeaConverter.to_unicode(headers.get(header)))
         return canonicalized_headers
+
+    def build_request(self, context):
+        request = context.request
+        resource = request.pathname
+        if not UtilClient.empty(resource):
+            paths = StringClient.split(resource, '?', 2)
+            resource = paths[0]
+            if UtilClient.equal_number(ArrayClient.size(paths), 2):
+                params = StringClient.split(paths[1], '&', None)
+                for sub in params:
+                    item = StringClient.split(sub, '=', None)
+                    key = item[0]
+                    value = None
+                    if UtilClient.equal_number(ArrayClient.size(item), 2):
+                        value = item[1]
+                    request.query[key] = value
+        request.pathname = resource

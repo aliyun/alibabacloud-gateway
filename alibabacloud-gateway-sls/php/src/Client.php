@@ -10,6 +10,7 @@ use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
 use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
+use Darabonba\GatewaySls\Util\Client as DarabonbaGatewaySlsUtilClient;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 
@@ -109,26 +110,32 @@ class Client extends DarabonbaGatewaySpiClient {
             ]);
         }
         if (!Utils::isUnset($response->body)) {
+            $bodyrawSize = @$response->headers["x-log-bodyrawsize"];
+            $compressType = @$response->headers["x-log-compresstype"];
+            $uncompressedData = $response->body;
+            if (!Utils::isUnset($bodyrawSize) && !Utils::isUnset($compressType)) {
+                $uncompressedData = DarabonbaGatewaySlsUtilClient::readAndUncompressBlock($response->body, $compressType, $bodyrawSize);
+            }
             if (Utils::equalString($request->bodyType, "binary")) {
-                $response->deserializedBody = $response->body;
+                $response->deserializedBody = $uncompressedData;
             }
             else if (Utils::equalString($request->bodyType, "byte")) {
-                $byt = Utils::readAsBytes($response->body);
+                $byt = Utils::readAsBytes($uncompressedData);
                 $response->deserializedBody = $byt;
             }
             else if (Utils::equalString($request->bodyType, "string")) {
-                $response->deserializedBody = Utils::readAsString($response->body);
+                $response->deserializedBody = Utils::readAsString($uncompressedData);
             }
             else if (Utils::equalString($request->bodyType, "json")) {
-                $obj = Utils::readAsJSON($response->body);
+                $obj = Utils::readAsJSON($uncompressedData);
                 // var res = Util.assertAsMap(obj);
                 $response->deserializedBody = $obj;
             }
             else if (Utils::equalString($request->bodyType, "array")) {
-                $response->deserializedBody = Utils::readAsJSON($response->body);
+                $response->deserializedBody = Utils::readAsJSON($uncompressedData);
             }
             else {
-                $response->deserializedBody = Utils::readAsString($response->body);
+                $response->deserializedBody = Utils::readAsString($uncompressedData);
             }
         }
     }

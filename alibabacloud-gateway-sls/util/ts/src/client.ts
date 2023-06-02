@@ -5,11 +5,12 @@
  * @return the parsed result
  */
 import { Readable } from 'stream';
+import * as $tea from '@alicloud/tea-typescript';
 
 
 export default class Client {
 
-  static async readAndUncompressBlock(stream: Readable, bodyRawSize: string): Promise<any> {
+  static async readAndUncompressBlock(stream: Readable, compressType: string, bodyRawSize: string): Promise<Readable> {
     throw new Error('Un-implemented!');
   }
 

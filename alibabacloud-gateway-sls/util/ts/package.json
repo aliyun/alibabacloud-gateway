@@ -18,8 +18,7 @@
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "files": [
     "dist",
     "src"
