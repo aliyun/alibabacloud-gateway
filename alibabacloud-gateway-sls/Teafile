@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -23,8 +23,8 @@
   },
   "releases": {
     "ts": "@alicloud/gateway-sls:^0.0.5",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.5",
-    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.5",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.6",
+    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.6",
     "python": "alibabacloud_gateway_sls:0.0.5",
     "python2": "alibabacloud_gateway_sls_py2:0.0.5",
     "csharp": "AlibabaCloud.GatewaySls:0.0.6",
@@ -92,7 +92,7 @@
   },
   "releaselog": {
     "changelog": [
-      "[php]fix pathname with '?'"
+      "[go/java]feat: support parsing compressed data."
     ],
     "compatible": true
   }
