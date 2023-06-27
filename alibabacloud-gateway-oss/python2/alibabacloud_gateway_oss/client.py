@@ -5,16 +5,16 @@ from __future__ import unicode_literals
 from Tea.exceptions import TeaException
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from alibabacloud_darabonba_signature_util.signer import Signer
-from Tea.core import TeaCore
 from Tea.converter import TeaConverter
+from Tea.core import TeaCore
 
 from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_tea_util.client import Client as UtilClient
+from alibabacloud_darabonba_map.client import Client as MapClient
 from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_tea_xml.client import Client as XMLClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_oss_util.client import Client as OSSUtilClient
-from alibabacloud_darabonba_map.client import Client as MapClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
 
 
@@ -64,7 +64,8 @@ class Client(SPIClient):
             'encryption',
             'versions',
             'versioning',
-            'versionId'
+            'versionId',
+            'wormId'
         ]
         self._except_signed_params = [
             'list-type',
@@ -83,6 +84,15 @@ class Client(SPIClient):
         bucket_name = host_map.get('bucket')
         if UtilClient.is_unset(bucket_name):
             bucket_name = ''
+        if not UtilClient.is_unset(request.headers.get('x-oss-meta-*')):
+            tmp = UtilClient.parse_json(request.headers.get('x-oss-meta-*'))
+            map_data = UtilClient.assert_as_map(tmp)
+            meta_data = UtilClient.stringify_map_value(map_data)
+            meta_key_set = MapClient.key_set(meta_data)
+            request.headers['x-oss-meta-*'] = None
+            for key in meta_key_set:
+                new_key = 'x-oss-meta-%s' % TeaConverter.to_unicode(key)
+                request.headers[new_key] = meta_data.get(key)
         config = context.configuration
         credential = request.credential
         access_key_id = credential.get_access_key_id()
@@ -294,7 +304,7 @@ class Client(SPIClient):
         keys = MapClient.key_set(headers)
         sorted_headers = ArrayClient.asc_sort(keys)
         for header in sorted_headers:
-            if StringClient.contains(StringClient.to_lower(header), 'x-oss-'):
+            if StringClient.contains(StringClient.to_lower(header), 'x-oss-') and not UtilClient.is_unset(headers.get(header)):
                 canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(header), TeaConverter.to_unicode(headers.get(header)))
         return canonicalized_headers
 

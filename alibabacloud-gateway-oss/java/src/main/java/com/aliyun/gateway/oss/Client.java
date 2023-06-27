@@ -49,7 +49,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
             "encryption",
             "versions",
             "versioning",
-            "versionId"
+            "versionId",
+            "wormId"
         );
         this._except_signed_params = java.util.Arrays.asList(
             "list-type",
@@ -73,6 +74,18 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String bucketName = hostMap.get("bucket");
         if (com.aliyun.teautil.Common.isUnset(bucketName)) {
             bucketName = "";
+        }
+
+        if (!com.aliyun.teautil.Common.isUnset(request.headers.get("x-oss-meta-*"))) {
+            Object tmp = com.aliyun.teautil.Common.parseJSON(request.headers.get("x-oss-meta-*"));
+            java.util.Map<String, Object> mapData = com.aliyun.teautil.Common.assertAsMap(tmp);
+            java.util.Map<String, String> metaData = com.aliyun.teautil.Common.stringifyMapValue(mapData);
+            java.util.List<String> metaKeySet = com.aliyun.darabonba.map.Client.keySet(metaData);
+            request.headers.put("x-oss-meta-*", null);
+            for (String key : metaKeySet) {
+                String newKey = "x-oss-meta-" + key + "";
+                request.headers.put(newKey, metaData.get(key));
+            }
         }
 
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
@@ -365,7 +378,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.List<String> keys = com.aliyun.darabonba.map.Client.keySet(headers);
         java.util.List<String> sortedHeaders = com.aliyun.darabonba.array.Client.ascSort(keys);
         for (String header : sortedHeaders) {
-            if (com.aliyun.darabonbastring.Client.contains(com.aliyun.darabonbastring.Client.toLower(header), "x-oss-")) {
+            if (com.aliyun.darabonbastring.Client.contains(com.aliyun.darabonbastring.Client.toLower(header), "x-oss-") && !com.aliyun.teautil.Common.isUnset(headers.get(header))) {
                 canonicalizedHeaders = "" + canonicalizedHeaders + "" + header + ":" + headers.get(header) + "\n";
             }
 

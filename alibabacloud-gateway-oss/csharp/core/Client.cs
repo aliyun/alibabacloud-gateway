@@ -60,7 +60,8 @@ namespace AlibabaCloud.GatewayOss
                 "encryption",
                 "versions",
                 "versioning",
-                "versionId"
+                "versionId",
+                "wormId"
             };
             this._except_signed_params = new List<string>
             {
@@ -94,6 +95,19 @@ namespace AlibabaCloud.GatewayOss
             if (AlibabaCloud.TeaUtil.Common.IsUnset(bucketName))
             {
                 bucketName = "";
+            }
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Headers.Get("x-oss-meta-*")))
+            {
+                object tmp = AlibabaCloud.TeaUtil.Common.ParseJSON(request.Headers.Get("x-oss-meta-*"));
+                Dictionary<string, object> mapData = AlibabaCloud.TeaUtil.Common.AssertAsMap(tmp);
+                Dictionary<string, string> metaData = AlibabaCloud.TeaUtil.Common.StringifyMapValue(mapData);
+                List<string> metaKeySet = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(metaData);
+                request.Headers["x-oss-meta-*"] = null;
+
+                foreach (var key in metaKeySet) {
+                    string newKey = "x-oss-meta-" + key;
+                    request.Headers[newKey] = metaData.Get(key);
+                }
             }
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             Aliyun.Credentials.Client credential = request.Credential;
@@ -161,6 +175,19 @@ namespace AlibabaCloud.GatewayOss
             if (AlibabaCloud.TeaUtil.Common.IsUnset(bucketName))
             {
                 bucketName = "";
+            }
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Headers.Get("x-oss-meta-*")))
+            {
+                object tmp = AlibabaCloud.TeaUtil.Common.ParseJSON(request.Headers.Get("x-oss-meta-*"));
+                Dictionary<string, object> mapData = AlibabaCloud.TeaUtil.Common.AssertAsMap(tmp);
+                Dictionary<string, string> metaData = AlibabaCloud.TeaUtil.Common.StringifyMapValue(mapData);
+                List<string> metaKeySet = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(metaData);
+                request.Headers["x-oss-meta-*"] = null;
+
+                foreach (var key in metaKeySet) {
+                    string newKey = "x-oss-meta-" + key;
+                    request.Headers[newKey] = metaData.Get(key);
+                }
             }
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             Aliyun.Credentials.Client credential = request.Credential;
@@ -802,7 +829,7 @@ namespace AlibabaCloud.GatewayOss
             List<string> sortedHeaders = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(keys);
 
             foreach (var header in sortedHeaders) {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Contains(AlibabaCloud.DarabonbaString.StringUtil.ToLower(header), "x-oss-"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.Contains(AlibabaCloud.DarabonbaString.StringUtil.ToLower(header), "x-oss-") && !AlibabaCloud.TeaUtil.Common.IsUnset(headers.Get(header)))
                 {
                     canonicalizedHeaders = "" + canonicalizedHeaders + header + ":" + headers.Get(header) + "\n";
                 }
@@ -828,7 +855,7 @@ namespace AlibabaCloud.GatewayOss
             List<string> sortedHeaders = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(keys);
 
             foreach (var header in sortedHeaders) {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Contains(AlibabaCloud.DarabonbaString.StringUtil.ToLower(header), "x-oss-"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.Contains(AlibabaCloud.DarabonbaString.StringUtil.ToLower(header), "x-oss-") && !AlibabaCloud.TeaUtil.Common.IsUnset(headers.Get(header)))
                 {
                     canonicalizedHeaders = "" + canonicalizedHeaders + header + ":" + headers.Get(header) + "\n";
                 }

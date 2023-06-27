@@ -59,7 +59,8 @@ export default class Client extends SPI {
       "encryption",
       "versions",
       "versioning",
-      "versionId"
+      "versionId",
+      "wormId"
     ];
     this._except_signed_params = [
       "list-type",
@@ -83,6 +84,19 @@ export default class Client extends SPI {
     let bucketName = hostMap["bucket"];
     if (Util.isUnset(bucketName)) {
       bucketName = "";
+    }
+
+    if (!Util.isUnset(request.headers["x-oss-meta-*"])) {
+      let tmp : any = Util.parseJSON(request.headers["x-oss-meta-*"]);
+      let mapData : {[key: string ]: any} = Util.assertAsMap(tmp);
+      let metaData : {[key: string ]: string} = Util.stringifyMapValue(mapData);
+      let metaKeySet : string[] = Map.keySet(metaData);
+      request.headers["x-oss-meta-*"] = null;
+
+      for (let key of metaKeySet) {
+        let newKey = `x-oss-meta-${key}`;
+        request.headers[newKey] = metaData[key];
+      }
     }
 
     let config = context.configuration;
@@ -374,7 +388,7 @@ export default class Client extends SPI {
     let sortedHeaders = Array.ascSort(keys);
 
     for (let header of sortedHeaders) {
-      if (String.contains(String.toLower(header), "x-oss-")) {
+      if (String.contains(String.toLower(header), "x-oss-") && !Util.isUnset(headers[header])) {
         canonicalizedHeaders = `${canonicalizedHeaders}${header}:${headers[header]}\n`;
       }
 

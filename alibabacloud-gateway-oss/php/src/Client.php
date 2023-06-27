@@ -5,13 +5,13 @@ namespace Darabonba\GatewayOss;
 
 use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
 use AlibabaCloud\Tea\Utils\Utils;
+use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Darabonba\String\StringUtil;
 use AlibabaCloud\Tea\XML\XML;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\OSSUtils\OSSUtils;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
-use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use \Exception;
 use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
@@ -67,7 +67,8 @@ class Client extends DarabonbaGatewaySpiClient {
             "encryption",
             "versions",
             "versioning",
-            "versionId"
+            "versionId",
+            "wormId"
         ];
         $this->_except_signed_params = [
             "list-type",
@@ -99,6 +100,17 @@ class Client extends DarabonbaGatewaySpiClient {
         $bucketName = @$hostMap["bucket"];
         if (Utils::isUnset($bucketName)) {
             $bucketName = "";
+        }
+        if (!Utils::isUnset(@$request->headers["x-oss-meta-*"])) {
+            $tmp = Utils::parseJSON(@$request->headers["x-oss-meta-*"]);
+            $mapData = Utils::assertAsMap($tmp);
+            $metaData = Utils::stringifyMapValue($mapData);
+            $metaKeySet = MapUtil::keySet($metaData);
+            $request->headers["x-oss-meta-*"] = null;
+            foreach($metaKeySet as $key){
+                $newKey = "x-oss-meta-" . $key . "";
+                $request->headers[$newKey] = @$metaData[$key];
+            }
         }
         $config = $context->configuration;
         $credential = $request->credential;
@@ -422,7 +434,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $keys = MapUtil::keySet($headers);
         $sortedHeaders = ArrayUtil::ascSort($keys);
         foreach($sortedHeaders as $header){
-            if (StringUtil::contains(StringUtil::toLower($header), "x-oss-")) {
+            if (StringUtil::contains(StringUtil::toLower($header), "x-oss-") && !Utils::isUnset(@$headers[$header])) {
                 $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $header . ":" . @$headers[$header] . "\n";
             }
         }

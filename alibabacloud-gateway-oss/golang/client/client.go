@@ -32,7 +32,7 @@ func (client *Client) Init() (_err error) {
 	if _err != nil {
 		return _err
 	}
-	client.Default_signed_params = []*string{tea.String("location"), tea.String("cors"), tea.String("objectMeta"), tea.String("uploadId"), tea.String("partNumber"), tea.String("security-token"), tea.String("position"), tea.String("img"), tea.String("style"), tea.String("styleName"), tea.String("replication"), tea.String("replicationProgress"), tea.String("replicationLocation"), tea.String("cname"), tea.String("qos"), tea.String("startTime"), tea.String("endTime"), tea.String("symlink"), tea.String("x-oss-process"), tea.String("response-content-type"), tea.String("response-content-language"), tea.String("response-expires"), tea.String("response-cache-control"), tea.String("response-content-disposition"), tea.String("response-content-encoding"), tea.String("udf"), tea.String("udfName"), tea.String("udfImage"), tea.String("udfId"), tea.String("udfImageDesc"), tea.String("udfApplication"), tea.String("udfApplicationLog"), tea.String("restore"), tea.String("callback"), tea.String("callback-var"), tea.String("policy"), tea.String("encryption"), tea.String("versions"), tea.String("versioning"), tea.String("versionId")}
+	client.Default_signed_params = []*string{tea.String("location"), tea.String("cors"), tea.String("objectMeta"), tea.String("uploadId"), tea.String("partNumber"), tea.String("security-token"), tea.String("position"), tea.String("img"), tea.String("style"), tea.String("styleName"), tea.String("replication"), tea.String("replicationProgress"), tea.String("replicationLocation"), tea.String("cname"), tea.String("qos"), tea.String("startTime"), tea.String("endTime"), tea.String("symlink"), tea.String("x-oss-process"), tea.String("response-content-type"), tea.String("response-content-language"), tea.String("response-expires"), tea.String("response-cache-control"), tea.String("response-content-disposition"), tea.String("response-content-encoding"), tea.String("udf"), tea.String("udfName"), tea.String("udfImage"), tea.String("udfId"), tea.String("udfImageDesc"), tea.String("udfApplication"), tea.String("udfApplicationLog"), tea.String("restore"), tea.String("callback"), tea.String("callback-var"), tea.String("policy"), tea.String("encryption"), tea.String("versions"), tea.String("versioning"), tea.String("versionId"), tea.String("wormId")}
 	client.Except_signed_params = []*string{tea.String("list-type"), tea.String("regions")}
 	return nil
 }
@@ -57,6 +57,22 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	bucketName := hostMap["bucket"]
 	if tea.BoolValue(util.IsUnset(bucketName)) {
 		bucketName = tea.String("")
+	}
+
+	if !tea.BoolValue(util.IsUnset(request.Headers["x-oss-meta-*"])) {
+		tmp := util.ParseJSON(request.Headers["x-oss-meta-*"])
+		mapData, _err := util.AssertAsMap(tmp)
+		if _err != nil {
+			return _err
+		}
+
+		metaData := util.StringifyMapValue(mapData)
+		metaKeySet := map_.KeySet(metaData)
+		request.Headers["x-oss-meta-*"] = nil
+		for _, key := range metaKeySet {
+			newKey := tea.String("x-oss-meta-" + tea.StringValue(key))
+			request.Headers[tea.StringValue(newKey)] = metaData[tea.StringValue(key)]
+		}
 	}
 
 	config := context.Configuration
@@ -462,7 +478,7 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 	keys := map_.KeySet(headers)
 	sortedHeaders := array.AscSort(keys)
 	for _, header := range sortedHeaders {
-		if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-oss-"))) {
+		if tea.BoolValue(string_.Contains(string_.ToLower(header), tea.String("x-oss-"))) && !tea.BoolValue(util.IsUnset(headers[tea.StringValue(header)])) {
 			canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(header) + ":" + tea.StringValue(headers[tea.StringValue(header)]) + "\n")
 		}
 

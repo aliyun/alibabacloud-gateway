@@ -29,7 +29,7 @@ init(){
   'response-content-encoding', 'udf', 'udfName', 'udfImage',
   'udfId', 'udfImageDesc', 'udfApplication',
   'udfApplicationLog', 'restore', 'callback', 'callback-var',
-  'policy', 'encryption', 'versions', 'versioning', 'versionId'];
+  'policy', 'encryption', 'versions', 'versioning', 'versionId', 'wormId'];
   @except_signed_params = ['list-type', 'regions'];
 }
 
@@ -47,6 +47,17 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   var bucketName = hostMap.bucket;
   if (Util.isUnset(bucketName)) {
     bucketName = '';
+  }
+  if (!Util.isUnset(request.headers['x-oss-meta-*'])) {
+    var tmp : any = Util.parseJSON(request.headers['x-oss-meta-*']);
+    var mapData : map[string]any = Util.assertAsMap(tmp);
+    var metaData : map[string]string = Util.stringifyMapValue(mapData);
+    var metaKeySet : [string] = Map.keySet(metaData);
+    request.headers['x-oss-meta-*'] = null;
+    for(var key : metaKeySet) {
+      var newKey = `x-oss-meta-${key}`;
+      request.headers[newKey] = metaData[key];
+    }
   }
   var config = context.configuration;
   var credential : Credential = request.credential;
@@ -307,7 +318,7 @@ async function buildCanonicalizedHeaders(headers: map[string]string): string {
   var keys = Map.keySet(headers);
   var sortedHeaders = Array.ascSort(keys);
   for(var header : sortedHeaders) {
-    if (String.contains(String.toLower(header), 'x-oss-')) {
+    if (String.contains(String.toLower(header), 'x-oss-') && !Util.isUnset(headers[header])) {
       canonicalizedHeaders = `${canonicalizedHeaders}${header}:${headers[header]}\n`;
     }
   }
