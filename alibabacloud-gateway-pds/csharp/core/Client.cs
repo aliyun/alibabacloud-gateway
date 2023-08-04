@@ -77,7 +77,7 @@ namespace AlibabaCloud.GatewayPds
                     }
                 }
             }
-            if (!AlibabaCloud.TeaUtil.Common.EqualString(request.AuthType, "Anonymous"))
+            if (!AlibabaCloud.TeaUtil.Common.EqualString(request.AuthType, "Anonymous") && !AlibabaCloud.TeaUtil.Common.IsUnset(request.Credential))
             {
                 Aliyun.Credentials.Client credential = request.Credential;
                 string authType = credential.GetType();
@@ -146,7 +146,7 @@ namespace AlibabaCloud.GatewayPds
                     }
                 }
             }
-            if (!AlibabaCloud.TeaUtil.Common.EqualString(request.AuthType, "Anonymous"))
+            if (!AlibabaCloud.TeaUtil.Common.EqualString(request.AuthType, "Anonymous") && !AlibabaCloud.TeaUtil.Common.IsUnset(request.Credential))
             {
                 Aliyun.Credentials.Client credential = request.Credential;
                 string authType = credential.GetType();

@@ -71,7 +71,7 @@ class Client extends DarabonbaGatewaySpiClient {
                 }
             }
         }
-        if (!Utils::equalString($request->authType, "Anonymous")) {
+        if (!Utils::equalString($request->authType, "Anonymous") && !Utils::isUnset($request->credential)) {
             $credential = $request->credential;
             $authType = $credential->getType();
             if (Utils::equalString($authType, "bearer")) {

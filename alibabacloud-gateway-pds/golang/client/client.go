@@ -84,7 +84,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	}
 
-	if !tea.BoolValue(util.EqualString(request.AuthType, tea.String("Anonymous"))) {
+	if !tea.BoolValue(util.EqualString(request.AuthType, tea.String("Anonymous"))) && !tea.BoolValue(util.IsUnset(request.Credential)) {
 		credential := request.Credential
 		authType := credential.GetType()
 		if tea.BoolValue(util.EqualString(authType, tea.String("bearer"))) {

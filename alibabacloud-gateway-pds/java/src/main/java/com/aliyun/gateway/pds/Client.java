@@ -53,7 +53,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
-        if (!com.aliyun.teautil.Common.equalString(request.authType, "Anonymous")) {
+        if (!com.aliyun.teautil.Common.equalString(request.authType, "Anonymous") && !com.aliyun.teautil.Common.isUnset(request.credential)) {
             com.aliyun.credentials.Client credential = request.credential;
             String authType = credential.getType();
             if (com.aliyun.teautil.Common.equalString(authType, "bearer")) {

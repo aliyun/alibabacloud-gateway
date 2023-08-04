@@ -59,7 +59,7 @@ export default class Client extends SPI {
 
     }
 
-    if (!Util.equalString(request.authType, "Anonymous")) {
+    if (!Util.equalString(request.authType, "Anonymous") && !Util.isUnset(request.credential)) {
       let credential : Credential = request.credential;
       let authType = credential.getType();
       if (Util.equalString(authType, "bearer")) {

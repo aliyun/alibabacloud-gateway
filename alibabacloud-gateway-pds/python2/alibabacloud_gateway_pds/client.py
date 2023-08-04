@@ -53,7 +53,7 @@ class Client(SPIClient):
                     form_obj = OpenApiUtilClient.to_form(m)
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
-        if not UtilClient.equal_string(request.auth_type, 'Anonymous'):
+        if not UtilClient.equal_string(request.auth_type, 'Anonymous') and not UtilClient.is_unset(request.credential):
             credential = request.credential
             auth_type = credential.get_type()
             if UtilClient.equal_string(auth_type, 'bearer'):

@@ -54,7 +54,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     }
   }
 
-  if (!Util.equalString(request.authType, 'Anonymous')) {
+  if (!Util.equalString(request.authType, 'Anonymous') && !Util.isUnset(request.credential)) {
     var credential : Credential = request.credential;
     var authType = credential.getType();
     if (Util.equalString(authType, 'bearer')) {
