@@ -67,7 +67,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	}
 
 	if !tea.BoolValue(util.Empty(accessKeyId)) {
-		request.Headers["x-log-signaturemethod"] = tea.String("hmac-sha1")
+		request.Headers["x-log-signaturemethod"] = tea.String("hmac-sha256")
 	}
 
 	if !tea.BoolValue(util.Empty(securityToken)) {
@@ -268,7 +268,7 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 	}
 
 	stringToSign = tea.String(tea.StringValue(method) + "\n" + tea.StringValue(canonicalizedHeaders) + tea.StringValue(canonicalizedResource))
-	_body := encodeutil.Base64EncodeToString(signatureutil.HmacSHA1Sign(stringToSign, secret))
+	_body := encodeutil.Base64EncodeToString(signatureutil.HmacSHA256Sign(stringToSign, secret))
 	_result = _body
 	return _result, _err
 }

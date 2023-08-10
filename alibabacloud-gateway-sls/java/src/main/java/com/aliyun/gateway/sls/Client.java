@@ -29,7 +29,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String accessKeySecret = credential.getAccessKeySecret();
         String securityToken = credential.getSecurityToken();
         if (!com.aliyun.teautil.Common.empty(accessKeyId)) {
-            request.headers.put("x-log-signaturemethod", "hmac-sha1");
+            request.headers.put("x-log-signaturemethod", "hmac-sha256");
         }
 
         if (!com.aliyun.teautil.Common.empty(securityToken)) {
@@ -165,7 +165,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String canonicalizedResource = this.buildCanonicalizedResource(resource, query);
         String canonicalizedHeaders = this.buildCanonicalizedHeaders(headers);
         stringToSign = "" + method + "\n" + canonicalizedHeaders + "" + canonicalizedResource + "";
-        return com.aliyun.darabonba.encode.Encoder.base64EncodeToString(com.aliyun.darabonba.signature.Signer.HmacSHA1Sign(stringToSign, secret));
+        return com.aliyun.darabonba.encode.Encoder.base64EncodeToString(com.aliyun.darabonba.signature.Signer.HmacSHA256Sign(stringToSign, secret));
     }
 
     public String buildCanonicalizedResource(String pathname, java.util.Map<String, String> query) throws Exception {

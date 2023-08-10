@@ -50,7 +50,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $accessKeySecret = $credential->getAccessKeySecret();
         $securityToken = $credential->getSecurityToken();
         if (!Utils::empty_($accessKeyId)) {
-            $request->headers["x-log-signaturemethod"] = "hmac-sha1";
+            $request->headers["x-log-signaturemethod"] = "hmac-sha256";
         }
         if (!Utils::empty_($securityToken)) {
             $request->headers["x-acs-security-token"] = $securityToken;
@@ -214,7 +214,7 @@ class Client extends DarabonbaGatewaySpiClient {
         $canonicalizedResource = $this->buildCanonicalizedResource($resource, $query);
         $canonicalizedHeaders = $this->buildCanonicalizedHeaders($headers);
         $stringToSign = "" . $method . "\n" . $canonicalizedHeaders . "" . $canonicalizedResource . "";
-        return EncodeUtil::base64EncodeToString(SignatureUtil::HmacSHA1Sign($stringToSign, $secret));
+        return EncodeUtil::base64EncodeToString(SignatureUtil::HmacSHA256Sign($stringToSign, $secret));
     }
 
     /**
