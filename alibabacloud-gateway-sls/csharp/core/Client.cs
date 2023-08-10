@@ -48,7 +48,7 @@ namespace AlibabaCloud.GatewaySls
             string securityToken = credential.GetSecurityToken();
             if (!AlibabaCloud.TeaUtil.Common.Empty(accessKeyId))
             {
-                request.Headers["x-log-signaturemethod"] = "hmac-sha1";
+                request.Headers["x-log-signaturemethod"] = "hmac-sha256";
             }
             if (!AlibabaCloud.TeaUtil.Common.Empty(securityToken))
             {
@@ -111,7 +111,7 @@ namespace AlibabaCloud.GatewaySls
             string securityToken = await credential.GetSecurityTokenAsync();
             if (!AlibabaCloud.TeaUtil.Common.Empty(accessKeyId))
             {
-                request.Headers["x-log-signaturemethod"] = "hmac-sha1";
+                request.Headers["x-log-signaturemethod"] = "hmac-sha256";
             }
             if (!AlibabaCloud.TeaUtil.Common.Empty(securityToken))
             {
@@ -385,7 +385,7 @@ namespace AlibabaCloud.GatewaySls
             string canonicalizedResource = BuildCanonicalizedResource(resource, query);
             string canonicalizedHeaders = BuildCanonicalizedHeaders(headers);
             stringToSign = "" + method + "\n" + canonicalizedHeaders + canonicalizedResource;
-            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA1Sign(stringToSign, secret));
+            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256Sign(stringToSign, secret));
         }
 
         public async Task<string> GetSignatureAsync(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string secret)
@@ -395,7 +395,7 @@ namespace AlibabaCloud.GatewaySls
             string canonicalizedResource = await BuildCanonicalizedResourceAsync(resource, query);
             string canonicalizedHeaders = await BuildCanonicalizedHeadersAsync(headers);
             stringToSign = "" + method + "\n" + canonicalizedHeaders + canonicalizedResource;
-            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA1Sign(stringToSign, secret));
+            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256Sign(stringToSign, secret));
         }
 
         public string BuildCanonicalizedResource(string pathname, Dictionary<string, string> query)

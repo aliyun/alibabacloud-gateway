@@ -33,7 +33,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   var accessKeySecret = credential.getAccessKeySecret();
   var securityToken = credential.getSecurityToken();
   if (!Util.empty(accessKeyId)) {
-      request.headers['x-log-signaturemethod'] = 'hmac-sha1';
+      request.headers['x-log-signaturemethod'] = 'hmac-sha256';
   }
   if (!Util.empty(securityToken)) {
       request.headers['x-acs-security-token'] = securityToken;
@@ -153,7 +153,7 @@ async function getSignature(pathname: string, method: string, query: map[string]
   var canonicalizedResource = buildCanonicalizedResource(resource, query);
   var canonicalizedHeaders = buildCanonicalizedHeaders(headers);
   stringToSign = `${method}\n${canonicalizedHeaders}${canonicalizedResource}`;
-  return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA1Sign(stringToSign, secret));
+  return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, secret));
 }
 
 async function buildCanonicalizedResource(pathname: string, query: map[string]string): string {

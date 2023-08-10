@@ -1,5 +1,4 @@
 // This file is auto-generated, don't edit it
-import { Readable } from 'stream';
 import SPI, * as $SPI from '@alicloud/gateway-spi';
 import Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
@@ -39,7 +38,7 @@ export default class Client extends SPI {
     let accessKeySecret = await credential.getAccessKeySecret();
     let securityToken = await credential.getSecurityToken();
     if (!Util.empty(accessKeyId)) {
-      request.headers["x-log-signaturemethod"] = "hmac-sha1";
+      request.headers["x-log-signaturemethod"] = "hmac-sha256";
     }
 
     if (!Util.empty(securityToken)) {
@@ -173,7 +172,7 @@ export default class Client extends SPI {
     let canonicalizedResource = await this.buildCanonicalizedResource(resource, query);
     let canonicalizedHeaders = await this.buildCanonicalizedHeaders(headers);
     stringToSign = `${method}\n${canonicalizedHeaders}${canonicalizedResource}`;
-    return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA1Sign(stringToSign, secret));
+    return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, secret));
   }
 
   async buildCanonicalizedResource(pathname: string, query: {[key: string ]: string}): Promise<string> {

@@ -51,7 +51,7 @@ class Client(SPIClient):
         access_key_secret = credential.get_access_key_secret()
         security_token = credential.get_security_token()
         if not UtilClient.empty(access_key_id):
-            request.headers['x-log-signaturemethod'] = 'hmac-sha1'
+            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
         if not UtilClient.is_unset(request.body):
@@ -97,7 +97,7 @@ class Client(SPIClient):
         access_key_secret = await credential.get_access_key_secret_async()
         security_token = await credential.get_security_token_async()
         if not UtilClient.empty(access_key_id):
-            request.headers['x-log-signaturemethod'] = 'hmac-sha1'
+            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
         if not UtilClient.is_unset(request.body):
@@ -312,7 +312,7 @@ class Client(SPIClient):
         canonicalized_resource = self.build_canonicalized_resource(resource, query)
         canonicalized_headers = self.build_canonicalized_headers(headers)
         string_to_sign = f'{method}\n{canonicalized_headers}{canonicalized_resource}'
-        return Encoder.base_64encode_to_string(Signer.hmac_sha1sign(string_to_sign, secret))
+        return Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, secret))
 
     async def get_signature_async(
         self,
@@ -327,7 +327,7 @@ class Client(SPIClient):
         canonicalized_resource = await self.build_canonicalized_resource_async(resource, query)
         canonicalized_headers = await self.build_canonicalized_headers_async(headers)
         string_to_sign = f'{method}\n{canonicalized_headers}{canonicalized_resource}'
-        return Encoder.base_64encode_to_string(Signer.hmac_sha1sign(string_to_sign, secret))
+        return Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, secret))
 
     def build_canonicalized_resource(
         self,

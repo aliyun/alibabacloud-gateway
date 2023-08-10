@@ -92,7 +92,8 @@
   },
   "releaselog": {
     "changelog": [
-      "[go/java]feat: support parsing compressed data."
+      "[go/java]feat: support parsing compressed data.",
+      "[csharp/go/java/php/python/python2/ts]feat: default support sha256."
     ],
     "compatible": true
   }
