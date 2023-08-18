@@ -1,0 +1,68 @@
+import Url;
+import Util;
+import Number;
+
+model Config {
+  appKey: string,
+  appSecret: string,
+  endpoint: string,
+}
+
+model ApiRequest {
+  headers?: map[string]string,
+  pathname?: string,
+  body?: map[string]any,
+  action?: string,
+}
+
+type @appKey = string;
+type @appSecret = string;
+type @endpoint = string;
+
+init(config: Config) {
+  @appKey = config.appKey;
+  @appSecret = config.appSecret;
+  @endpoint = config.endpoint;
+}
+
+api execute(request: ApiRequest, runtime: Util.RuntimeOptions): string {
+  __request.method = 'POST';
+  var url = Url.parseUrl(@endpoint);
+  __request.protocol = url.scheme;
+  __request.port = Number.parseInt(url.host.port);
+  __request.pathname = `${Util.defaultString(request.pathname, url.path.pathname)}/${request.action}`;
+  __request.headers = {
+    host = url.host.hostname,
+    accept = 'application/json',
+    content-type = 'application/json; charset=utf-8',
+    ...request.headers
+  };
+  var params = {
+    AppKey = @appKey,
+    Action = request.action,
+    ...request.body
+  };
+  __request.body = Util.toJSONString(params);
+} returns {
+  if (Util.is4xx(__response.statusCode) || Util.is5xx(__response.statusCode)) {
+    var res = Util.readAsJSON(__response.body);
+    var err = Util.assertAsMap(res);
+    err.statusCode = __response.statusCode;
+    throw {
+      code = `${err.Code}`,
+      message = `statusCode: ${err.statusCode}, errorMessage: ${err.ErrorMessage}, requestId: ${err.RequestId}`,
+      data = err,
+    };
+  }
+  return Util.readAsString(__response.body);
+} runtime {
+   timeouted = 'retry',
+   readTimeout = runtime.readTimeout,
+   connectTimeout = runtime.connectTimeout,
+   maxIdleConns = runtime.maxIdleConns,
+   retry = {
+     retryable = runtime.autoretry,
+     maxAttempts = runtime.maxAttempts
+   },
+   ignoreSSL = runtime.ignoreSSL
+ }

@@ -1,0 +1,89 @@
+{
+  "scope": "alibabacloud",
+  "name": "GatewayIoTEdge",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "Url": "darabonba:Url:*",
+    "Util": "darabonba:Util:*",
+    "Number": "darabonba:Number:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-iot-edge:^1.0.0",
+    "java": "com.aliyun:gateway-iot-edge:1.0.0",
+    "python": "alicloud-gateway-iot-edge:1.0.0",
+    "python2": "alicloud-gateway-iot-edge-py2:1.0.0"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayIoTEdge",
+    "packageInfo": {
+      "description": "Alibaba Cloud IoTEdge SDK Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun IoTEdge SDK",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
+      }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.iot.edge",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewayIoTEdge",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-iot-edge",
+      "desc": "Alibaba Cloud IoTEdge Client",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alicloud_gateway_iot_edge",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alicloud-gateway-iot-edge",
+      "desc": "Alibaba Cloud IoTEdge SDK Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alicloud_gateway_iot_edge",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alicloud-gateway-iot-edge-py2",
+      "desc": "Alibaba Cloud IoTEdge SDK Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alicloud-sdk-cpp",
+        "project": "gateway-iot-edge"
+      }
+    }
+  },
+  "releaselog": {
+    "changelog": [
+      "Init"
+    ],
+    "compatible": true
+  }
+}
