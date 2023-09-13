@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -92,7 +92,8 @@
   },
   "releaselog": {
     "changelog": [
-      "[go/java]feat: support parsing compressed data."
+      "[go/java]feat: support parsing compressed data.",
+      "[java]feat: support pb serialization."
     ],
     "compatible": true
   }

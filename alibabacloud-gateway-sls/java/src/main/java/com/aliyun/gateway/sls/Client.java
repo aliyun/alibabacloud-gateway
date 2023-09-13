@@ -38,8 +38,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
             if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "protobuf")) {
-                // var bodyMap = Util.assertAsMap(request.body);
-                // 缺少body的Content-MD5计算，以及protobuf处理
+                byte[] serializedBody = com.aliyun.gateway.sls.util.Client.serializeLogGroupToPB(request.body);
+                request.headers.put("content-md5", com.aliyun.darabonbastring.Client.toUpper(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.signature.Signer.MD5SignForBytes(serializedBody))));
+                request.stream = Tea.toReadable(serializedBody);
                 request.headers.put("content-type", "application/x-protobuf");
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
                 String bodyStr = com.aliyun.teautil.Common.toJSONString(request.body);
