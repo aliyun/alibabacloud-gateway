@@ -40,8 +40,9 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   }
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'protobuf')) {
-      // var bodyMap = Util.assertAsMap(request.body);
-      // 缺少body的Content-MD5计算，以及protobuf处理
+      var serializedBody = SLS_Util.serializeLogGroupToPB(request.body);
+      request.headers['content-md5'] = String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5SignForBytes(serializedBody)));
+      request.stream = serializedBody;
       request.headers['content-type'] = 'application/x-protobuf';
     } else if (String.equals(request.reqBodyType, 'json')) {
       var bodyStr = Util.toJSONString(request.body);
