@@ -4,7 +4,6 @@ package com.aliyun.gateway.sls.util;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,6 +15,11 @@ public class Client {
         rawData = DecompressorFactory.getDecompressor(compressType).decompress(rawData, rawSize);
         String data = new String(rawData, "UTF-8");
         return new ByteArrayInputStream(data.getBytes());
+    }
+
+    public static byte[] readAndCompressBlock(byte[] stream, String compressType) throws Exception {
+        byte[] compressedData = CompressorFactory.getCompressor(compressType).compress(stream);
+        return compressedData;
     }
 
     public static byte[] serializeLogGroupToPB(Object logGroup) throws Exception {
@@ -65,5 +69,9 @@ public class Client {
         }
         logBytes = logs.build().toByteArray();
         return logBytes;
+    }
+
+    public static String getBytesLength(byte[] stream) throws Exception {
+        return String.valueOf(stream.length);
     }
 }

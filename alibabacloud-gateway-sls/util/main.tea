@@ -6,4 +6,8 @@
  */
 static async function readAndUncompressBlock(stream: readable, compressType: string, bodyRawSize: string): readable
 
+static async function readAndCompressBlock(stream: bytes, compressType: string): bytes
+
 static async function serializeLogGroupToPB(logGroup: any): bytes
+
+static async function getBytesLength(stream: bytes): string

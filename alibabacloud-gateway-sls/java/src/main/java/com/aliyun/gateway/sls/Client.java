@@ -28,6 +28,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String accessKeyId = credential.getAccessKeyId();
         String accessKeySecret = credential.getAccessKeySecret();
         String securityToken = credential.getSecurityToken();
+        String bodyRawSize = "0";
         if (!com.aliyun.teautil.Common.empty(accessKeyId)) {
             request.headers.put("x-log-signaturemethod", "hmac-sha1");
         }
@@ -39,8 +40,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
             if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "protobuf")) {
                 byte[] serializedBody = com.aliyun.gateway.sls.util.Client.serializeLogGroupToPB(request.body);
-                request.headers.put("content-md5", com.aliyun.darabonbastring.Client.toUpper(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.signature.Signer.MD5SignForBytes(serializedBody))));
-                request.stream = Tea.toReadable(serializedBody);
+                bodyRawSize = com.aliyun.gateway.sls.util.Client.getBytesLength(serializedBody);
+                String compressType = request.headers.get("x-log-compresstype");
+                byte[] compressedData = com.aliyun.gateway.sls.util.Client.readAndCompressBlock(serializedBody, compressType);
+                request.headers.put("content-md5", com.aliyun.darabonbastring.Client.toUpper(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.signature.Signer.MD5SignForBytes(compressedData))));
+                request.stream = Tea.toReadable(compressedData);
                 request.headers.put("content-type", "application/x-protobuf");
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
                 String bodyStr = com.aliyun.teautil.Common.toJSONString(request.body);
@@ -64,7 +68,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 new TeaPair("date", com.aliyun.teautil.Common.getDateUTCString()),
                 new TeaPair("user-agent", request.userAgent),
                 new TeaPair("x-log-apiversion", "0.6.0"),
-                new TeaPair("x-log-bodyrawsize", "0")
+                new TeaPair("x-log-bodyrawsize", bodyRawSize)
             ),
             request.headers
         );
