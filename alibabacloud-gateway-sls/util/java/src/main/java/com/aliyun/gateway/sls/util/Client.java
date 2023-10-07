@@ -1,6 +1,10 @@
 // This file is auto-generated, don't edit it. Thanks.
 package com.aliyun.gateway.sls.util;
 
+import com.aliyun.tea.TeaConverter;
+import com.aliyun.tea.TeaException;
+import com.aliyun.tea.TeaPair;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -48,26 +52,40 @@ public class Client {
         }
 
         ArrayList<Object> logTags = (ArrayList<Object>) body.get("LogTags");
-        for (Object obj : logTags) {
-            HashMap<String, String> tag = (HashMap<String, String>) obj;
-            Logs.LogTag.Builder tagBuilder = logs.addLogTagsBuilder();
-            tagBuilder.setKey(tag.get("Key"));
-            tagBuilder.setValue(tag.get("Value"));
+        if (logTags != null && logTags.size() > 0) {
+            for (Object obj : logTags) {
+                HashMap<String, String> tag = (HashMap<String, String>) obj;
+                Logs.LogTag.Builder tagBuilder = logs.addLogTagsBuilder();
+                tagBuilder.setKey(tag.get("Key"));
+                tagBuilder.setValue(tag.get("Value"));
+            }
         }
         ArrayList<Object> logItems = (ArrayList<Object>) body.get("Logs");
         for (Object obj : logItems) {
-            Logs.Log.Builder log = logs.addLogsBuilder();
+            Logs.Log.Builder logsBuilder = logs.addLogsBuilder();
             HashMap<String, Object> logItem = (HashMap<String, Object>) obj;
-            log.setTime((Integer) logItem.get("Time"));
+            logsBuilder.setTime((Integer) logItem.get("Time"));
             ArrayList<Object> contents = (ArrayList<Object>) logItem.get("Contents");
             for (Object content : contents) {
                 HashMap<String, String> realContent = (HashMap<String, String>) content;
-                Logs.Log.Content.Builder contentBuilder = log.addContentsBuilder();
+                Logs.Log.Content.Builder contentBuilder = logsBuilder.addContentsBuilder();
                 contentBuilder.setKey(realContent.get("Key"));
                 contentBuilder.setValue(realContent.get("Value"));
             }
         }
         logBytes = logs.build().toByteArray();
+
+        int bodySize = logBytes.length;
+        if (bodySize > 50 * 1024 * 1024) {
+            throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", "InvalidLogSize"),
+                    new TeaPair("message", "logItems' size exceeds maximum limitation : " + 50 * 1024 * 1024 + " bytes")));
+        } else if (bodySize > 10 * 1024 * 1024) {
+            throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", "PostBodyTooLarge"),
+                    new TeaPair("message", "body size " + bodySize + " must little than " + 10 * 1024 * 1024)));
+        }
+
         return logBytes;
     }
 
