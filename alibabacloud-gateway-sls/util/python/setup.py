@@ -36,7 +36,9 @@ AUTHOR = "Alibaba Cloud SDK"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
-REQUIRES = []
+REQUIRES = [
+    "lz4>=4.3.2"
+]
 
 LONG_DESCRIPTION = ''
 if os.path.exists('./README.md'):
