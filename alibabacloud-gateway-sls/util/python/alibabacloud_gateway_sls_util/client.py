@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from typing import BinaryIO
-
+import lz4.block
 
 class Client:
     """
@@ -18,7 +18,18 @@ class Client:
         compress_type: str,
         body_raw_size: str,
     ) -> BinaryIO:
-        raise Exception('Un-implemented')
+        if compress_type != "lz4":
+            raise Exception(f"Unsupported compress type: {compress_type}")
+
+        body_size = int(body_raw_size)
+        compressed_data = stream[:body_size]
+
+        try:
+            decompressed_data = lz4.block.decompress(compressed_data, uncompressed_size=body_size)
+        except RuntimeError as e:
+            raise RuntimeError(f"Failed to decompress LZ4 block: {e}")
+
+        return decompressed_data
 
     @staticmethod
     async def read_and_uncompress_block_async(
