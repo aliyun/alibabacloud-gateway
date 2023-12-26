@@ -10,7 +10,7 @@ import EncodeUtil from '@alicloud/darabonba-encode-util';
 import SignatureUtil from '@alicloud/darabonba-signature-util';
 import SLS_Util from '@alicloud/gateway-sls-util';
 import * as $tea from '@alicloud/tea-typescript';
-
+import { Readable } from 'stream';
 
 export default class Client extends SPI {
 
