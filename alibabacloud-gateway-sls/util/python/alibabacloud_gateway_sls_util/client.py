@@ -20,12 +20,9 @@ class Client:
     ) -> BinaryIO:
         if compress_type != "lz4":
             raise Exception(f"Unsupported compress type: {compress_type}")
-
-        body_size = int(body_raw_size)
-        compressed_data = stream[:body_size]
-
+        compressed_data = stream[:]
         try:
-            decompressed_data = lz4.block.decompress(compressed_data, uncompressed_size=body_size)
+            decompressed_data = lz4.block.decompress(compressed_data, uncompressed_size=int(body_raw_size))
         except RuntimeError as e:
             raise RuntimeError(f"Failed to decompress LZ4 block: {e}")
 
