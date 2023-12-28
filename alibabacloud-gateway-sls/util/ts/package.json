@@ -19,7 +19,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "lz4": "0.6.5"
+    "lz4": "^0.6.5"
   },
   "files": [
     "dist",
