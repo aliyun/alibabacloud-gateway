@@ -16,8 +16,7 @@
     "nyc": "^15.0.0",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.5",
-    "lz4": "0.6.5"
+    "typescript": "^3.7.5"
   },
   "dependencies": {
     "lz4": "0.6.5"
