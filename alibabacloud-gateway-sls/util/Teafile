@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS_Util",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -16,7 +16,7 @@
     "ts": "@alicloud/gateway-sls-util:^0.0.1",
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client:v0.0.1",
     "java": "com.aliyun:alibabacloud-gateway-sls-util:0.0.1",
-    "python": "alibabacloud_gateway_sls_util:0.0.1",
+    "python": "alibabacloud_gateway_sls_util:0.0.2",
     "python2": "alibabacloud_gateway_sls_util_py2:0.0.1",
     "csharp": "AlibabaCloud.GatewaySls_Util:0.0.1",
     "php": "alibabacloud/gateway-sls-util:^0.0.1"

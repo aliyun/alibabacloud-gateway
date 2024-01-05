@@ -5,7 +5,6 @@
  * @return the parsed result
  */
 import { Readable } from 'stream';
-import * as $tea from '@alicloud/tea-typescript';
 import * as lz4 from 'lz4';
 
 
