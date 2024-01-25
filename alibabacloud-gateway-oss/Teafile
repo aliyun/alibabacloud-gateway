@@ -20,7 +20,8 @@
     "Map": "darabonba:Map:*",
     "Array": "darabonba:Array:*",
     "EncodeUtil": "darabonba:EncodeUtil:*",
-    "SignatureUtil": "darabonba:SignatureUtil:*"
+    "SignatureUtil": "darabonba:SignatureUtil:*",
+    "Time": "darabonba:Time:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-oss:^0.0.8",

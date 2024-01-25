@@ -10,6 +10,7 @@ import Map from '@alicloud/darabonba-map';
 import Array from '@alicloud/darabonba-array';
 import EncodeUtil from '@alicloud/darabonba-encode-util';
 import SignatureUtil from '@alicloud/darabonba-signature-util';
+import Time from '@darabonba/time';
 import * as $tea from '@alicloud/tea-typescript';
 
 
@@ -100,6 +101,7 @@ export default class Client extends SPI {
     }
 
     let config = context.configuration;
+    let regionId = config.regionId;
     let credential : Credential = request.credential;
     let accessKeyId = await credential.getAccessKeyId();
     let accessKeySecret = await credential.getAccessKeySecret();
@@ -111,8 +113,10 @@ export default class Client extends SPI {
     if (!Util.isUnset(request.body)) {
       if (String.equals(request.reqBodyType, "xml")) {
         let reqBodyMap = Util.assertAsMap(request.body);
-        request.stream = new $tea.BytesReadable(XML.toXML(reqBodyMap));
+        let xmlStr = XML.toXML(reqBodyMap);
+        request.stream = new $tea.BytesReadable(xmlStr);
         request.headers["content-type"] = "application/xml";
+        request.headers["content-md5"] = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(xmlStr));
       } else if (String.equals(request.reqBodyType, "json")) {
         let reqBodyStr = Util.toJSONString(request.body);
         request.stream = new $tea.BytesReadable(reqBodyStr);
@@ -139,7 +143,7 @@ export default class Client extends SPI {
       'user-agent': request.userAgent,
       ...request.headers,
     };
-    request.headers["authorization"] = await this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+    request.headers["authorization"] = await this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
   }
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -157,18 +161,22 @@ export default class Client extends SPI {
           data: {
             statusCode: response.statusCode,
             requestId: err["RequestId"],
+            ecCode: err["EC"],
+            Recommend: err["RecommendDoc"],
             hostId: err["HostId"],
           },
         });
       } else {
         let headers : {[key: string ]: string} = response.headers;
         let requestId = headers["x-oss-request-id"];
+        let ecCode = headers["x-oss-ec-code"];
         throw $tea.newError({
           code: response.statusCode,
           message: null,
           data: {
             statusCode: response.statusCode,
             requestId: `${requestId}`,
+            ecCode: ecCode,
           },
         });
       }
@@ -279,16 +287,130 @@ export default class Client extends SPI {
     return host;
   }
 
-  async getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, ak: string, secret: string): Promise<string> {
+  async getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, ak: string, secret: string, regionId: string): Promise<string> {
     let sign : string = "";
-    if (Util.isUnset(signatureVersion) || String.equals(signatureVersion, "v1")) {
-      sign = await this.getSignatureV1(bucketName, pathname, method, query, headers, secret);
-      return `OSS ${ak}:${sign}`;
-    } else {
-      sign = await this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
-      return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
+    if (!Util.isUnset(signatureVersion)) {
+      if (String.equals(signatureVersion, "v1")) {
+        sign = await this.getSignatureV1(bucketName, pathname, method, query, headers, secret);
+        return `OSS ${ak}:${sign}`;
+      }
+
+      if (String.equals(signatureVersion, "v2")) {
+        sign = await this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
+        return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
+      }
+
     }
 
+    // For java: yyyyMMdd'T'HHmmss'Z'
+    let dateTime = Time.format("yyyyMMddThhmmssZ");
+    headers["x-oss-date"] = dateTime;
+    headers["x-oss-content-sha256"] = "UNSIGNED-PAYLOAD";
+    let onlyDate : string = String.subString(dateTime, 0, 8);
+    onlyDate = String.replace(onlyDate, "-", "", null);
+    let cred : string = `${ak}/${onlyDate}/${regionId}/oss/aliyun_v4_request`;
+    sign = await this.getSignatureV4(bucketName, pathname, method, query, headers, onlyDate, regionId, secret);
+    return `OSS4-HMAC-SHA256 Credential=${cred}, Signature=${sign}`;
+  }
+
+  async getSignKey(secret: string, onlyDate: string, regionId: string): Promise<Buffer> {
+    let temp = `aliyun_v4${secret}`;
+    let res = SignatureUtil.HmacSHA256Sign(onlyDate, temp);
+    res = SignatureUtil.HmacSHA256SignByBytes(regionId, res);
+    res = SignatureUtil.HmacSHA256SignByBytes("oss", res);
+    res = SignatureUtil.HmacSHA256SignByBytes("aliyun_v4_request", res);
+    return res;
+  }
+
+  async getSignatureV4(bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, onlyDate: string, regionId: string, secret: string): Promise<string> {
+    let signingkey : Buffer = await this.getSignKey(secret, onlyDate, regionId);
+    let objectName : string = "/";
+    let queryMap : {[key: string ]: string} = { };
+    if (!Util.empty(pathname)) {
+      let paths : string[] = String.split(pathname, `?`, 2);
+      objectName = paths[0];
+      if (Util.equalNumber(Array.size(paths), 2)) {
+        let subResources : string[] = String.split(paths[1], "&", null);
+
+        for (let sub of subResources) {
+          let item : string[] = String.split(sub, "=", null);
+          let key : string = item[0];
+          key = EncodeUtil.percentEncode(key);
+          key = String.replace(key, "+", "%20", null);
+          let value : string = null;
+          if (Util.equalNumber(Array.size(item), 2)) {
+            value = EncodeUtil.percentEncode(item[1]);
+            value = String.replace(value, "+", "%20", null);
+          }
+
+          queryMap[key] = value;
+        }
+      }
+
+    }
+
+    let canonicalizedUri : string = "/";
+    if (!Util.empty(bucketName)) {
+      canonicalizedUri = `/${bucketName}${objectName}`;
+    }
+
+    canonicalizedUri = OpenApiUtil.getEncodePath(canonicalizedUri);
+
+    for (let queryKey of Map.keySet(query)) {
+      let queryValue : string = null;
+      if (!Util.empty(query[queryKey])) {
+        queryValue = EncodeUtil.percentEncode(query[queryKey]);
+        queryValue = String.replace(queryValue, "+", "%20", null);
+      }
+
+      queryKey = EncodeUtil.percentEncode(queryKey);
+      queryKey = String.replace(queryKey, "+", "%20", null);
+      queryMap[queryKey] = queryValue;
+    }
+    let canonicalizedQueryString = await this.buildCanonicalizedQueryStringV4(queryMap);
+    let canonicalizedHeaders = await this.buildCanonicalizedHeadersV4(headers);
+    let payload = "UNSIGNED-PAYLOAD";
+    let canonicalRequest = `${method}\n${canonicalizedUri}\n${canonicalizedQueryString}\n${canonicalizedHeaders}\n\n${payload}`;
+    let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(canonicalRequest), "ACS4-HMAC-SHA256"));
+    let scope : string = `${onlyDate}/${regionId}/oss/aliyun_v4_request`;
+    let stringToSign = `OSS4-HMAC-SHA256\n${headers["x-oss-date"]}\n${scope}\n${hex}`;
+    let signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+    return EncodeUtil.hexEncode(signature);
+  }
+
+  async buildCanonicalizedQueryStringV4(queryMap: {[key: string ]: string}): Promise<string> {
+    let canonicalizedQueryString : string = "";
+    if (!Util.isUnset(queryMap)) {
+      let queryArray : string[] = Map.keySet(queryMap);
+      let sortedQueryArray = Array.ascSort(queryArray);
+      let separator : string = "";
+
+      for (let key of sortedQueryArray) {
+        canonicalizedQueryString = `${canonicalizedQueryString}${separator}${key}`;
+        if (!Util.empty(queryMap[key])) {
+          canonicalizedQueryString = `${canonicalizedQueryString}=${queryMap[key]}`;
+        }
+
+        separator = "&";
+      }
+    }
+
+    return canonicalizedQueryString;
+  }
+
+  async buildCanonicalizedHeadersV4(headers: {[key: string ]: string}): Promise<string> {
+    let canonicalizedHeaders : string = "";
+    let headersArray : string[] = Map.keySet(headers);
+    let sortedHeadersArray = Array.ascSort(headersArray);
+
+    for (let key of sortedHeadersArray) {
+      let lowerKey = String.toLower(key);
+      if (String.hasPrefix(lowerKey, "x-oss-") || String.equals(lowerKey, "content-type") || String.equals(lowerKey, "content-md5")) {
+        canonicalizedHeaders = `${canonicalizedHeaders}${key}:${String.trim(headers[key])}\n`;
+      }
+
+    }
+    return canonicalizedHeaders;
   }
 
   async getSignatureV1(bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, secret: string): Promise<string> {

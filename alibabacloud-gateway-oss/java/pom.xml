@@ -54,12 +54,12 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>credentials-java</artifactId>
-      <version>0.2.10</version>
+      <version>0.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>tea-util</artifactId>
-      <version>0.2.18</version>
+      <version>0.2.21</version>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
@@ -105,6 +105,16 @@
       <groupId>com.aliyun</groupId>
       <artifactId>darabonba-signature-util</artifactId>
       <version>0.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.aliyun</groupId>
+      <artifactId>darabonba-time</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.aliyun</groupId>
+      <artifactId>tea-openapi</artifactId>
+      <version>0.3.2</version>
     </dependency>
   </dependencies>
   <build>

@@ -2,9 +2,9 @@
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import unicode_literals
 
-from Tea.exceptions import TeaException
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from alibabacloud_darabonba_signature_util.signer import Signer
+from Tea.exceptions import TeaException
 from Tea.converter import TeaConverter
 from Tea.core import TeaCore
 
@@ -16,6 +16,7 @@ from alibabacloud_tea_xml.client import Client as XMLClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_oss_util.client import Client as OSSUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
+from Time.client import Client as TimeClient
 
 
 class Client(SPIClient):
@@ -94,6 +95,7 @@ class Client(SPIClient):
                 new_key = 'x-oss-meta-%s' % TeaConverter.to_unicode(key)
                 request.headers[new_key] = meta_data.get(key)
         config = context.configuration
+        region_id = config.region_id
         credential = request.credential
         access_key_id = credential.get_access_key_id()
         access_key_secret = credential.get_access_key_secret()
@@ -103,8 +105,10 @@ class Client(SPIClient):
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
-                request.stream = XMLClient.to_xml(req_body_map)
+                xml_str = XMLClient.to_xml(req_body_map)
+                request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
+                request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
             elif StringClient.equals(request.req_body_type, 'json'):
                 req_body_str = UtilClient.to_jsonstring(request.body)
                 request.stream = req_body_str
@@ -126,7 +130,7 @@ class Client(SPIClient):
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
-        request.headers['authorization'] = self.get_authorization(request.signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
+        request.headers['authorization'] = self.get_authorization(request.signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
 
     def modify_response(self, context, attribute_map):
         request = context.request
@@ -143,18 +147,22 @@ class Client(SPIClient):
                     'data': {
                         'statusCode': response.status_code,
                         'requestId': err.get('RequestId'),
+                        'ecCode': err.get('EC'),
+                        'Recommend': err.get('RecommendDoc'),
                         'hostId': err.get('HostId')
                     }
                 })
             else:
                 headers = response.headers
                 request_id = headers.get('x-oss-request-id')
+                ec_code = headers.get('x-oss-ec-code')
                 raise TeaException({
                     'code': response.status_code,
                     'message': None,
                     'data': {
                         'statusCode': response.status_code,
-                        'requestId': '%s' % TeaConverter.to_unicode(request_id)
+                        'requestId': '%s' % TeaConverter.to_unicode(request_id),
+                        'ecCode': ec_code
                     }
                 })
         ctx = attribute_map.key
@@ -231,14 +239,96 @@ class Client(SPIClient):
                 host = endpoint
         return host
 
-    def get_authorization(self, signature_version, bucket_name, pathname, method, query, headers, ak, secret):
+    def get_authorization(self, signature_version, bucket_name, pathname, method, query, headers, ak, secret, region_id):
         sign = ''
-        if UtilClient.is_unset(signature_version) or StringClient.equals(signature_version, 'v1'):
-            sign = self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)
-            return 'OSS %s:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
-        else:
-            sign = self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)
-            return 'OSS2 AccessKeyId:%s,Signature:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
+        if not UtilClient.is_unset(signature_version):
+            if StringClient.equals(signature_version, 'v1'):
+                sign = self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)
+                return 'OSS %s:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
+            if StringClient.equals(signature_version, 'v2'):
+                sign = self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)
+                return 'OSS2 AccessKeyId:%s,Signature:%s' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(sign))
+        # For java: yyyyMMdd'T'HHmmss'Z'
+        date_time = TimeClient.format('yyyyMMddThhmmssZ')
+        headers['x-oss-date'] = date_time
+        headers['x-oss-content-sha256'] = 'UNSIGNED-PAYLOAD'
+        only_date = StringClient.sub_string(date_time, 0, 8)
+        only_date = StringClient.replace(only_date, '-', '', None)
+        cred = '%s/%s/%s/oss/aliyun_v4_request' % (TeaConverter.to_unicode(ak), TeaConverter.to_unicode(only_date), TeaConverter.to_unicode(region_id))
+        sign = self.get_signature_v4(bucket_name, pathname, method, query, headers, only_date, region_id, secret)
+        return 'OSS4-HMAC-SHA256 Credential=%s, Signature=%s' % (TeaConverter.to_unicode(cred), TeaConverter.to_unicode(sign))
+
+    def get_sign_key(self, secret, only_date, region_id):
+        temp = 'aliyun_v4%s' % TeaConverter.to_unicode(secret)
+        res = Signer.hmac_sha256sign(only_date, temp)
+        res = Signer.hmac_sha256sign_by_bytes(region_id, res)
+        res = Signer.hmac_sha256sign_by_bytes('oss', res)
+        res = Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', res)
+        return res
+
+    def get_signature_v4(self, bucket_name, pathname, method, query, headers, only_date, region_id, secret):
+        signingkey = self.get_sign_key(secret, only_date, region_id)
+        object_name = '/'
+        query_map = {}
+        if not UtilClient.empty(pathname):
+            paths = StringClient.split(pathname, '?', 2)
+            object_name = paths[0]
+            if UtilClient.equal_number(ArrayClient.size(paths), 2):
+                sub_resources = StringClient.split(paths[1], '&', None)
+                for sub in sub_resources:
+                    item = StringClient.split(sub, '=', None)
+                    key = item[0]
+                    key = Encoder.percent_encode(key)
+                    key = StringClient.replace(key, '+', '%20', None)
+                    value = None
+                    if UtilClient.equal_number(ArrayClient.size(item), 2):
+                        value = Encoder.percent_encode(item[1])
+                        value = StringClient.replace(value, '+', '%20', None)
+                    query_map[key] = value
+        canonicalized_uri = '/'
+        if not UtilClient.empty(bucket_name):
+            canonicalized_uri = '/%s%s' % (TeaConverter.to_unicode(bucket_name), TeaConverter.to_unicode(object_name))
+        canonicalized_uri = OpenApiUtilClient.get_encode_path(canonicalized_uri)
+        for query_key in MapClient.key_set(query):
+            query_value = None
+            if not UtilClient.empty(query.get(query_key)):
+                query_value = Encoder.percent_encode(query.get(query_key))
+                query_value = StringClient.replace(query_value, '+', '%20', None)
+            query_key = Encoder.percent_encode(query_key)
+            query_key = StringClient.replace(query_key, '+', '%20', None)
+            query_map[query_key] = query_value
+        canonicalized_query_string = self.build_canonicalized_query_string_v4(query_map)
+        canonicalized_headers = self.build_canonicalized_headers_v4(headers)
+        payload = 'UNSIGNED-PAYLOAD'
+        canonical_request = '%s\n%s\n%s\n%s\n\n%s' % (TeaConverter.to_unicode(method), TeaConverter.to_unicode(canonicalized_uri), TeaConverter.to_unicode(canonicalized_query_string), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(payload))
+        hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(canonical_request), 'ACS4-HMAC-SHA256'))
+        scope = '%s/%s/oss/aliyun_v4_request' % (TeaConverter.to_unicode(only_date), TeaConverter.to_unicode(region_id))
+        string_to_sign = 'OSS4-HMAC-SHA256\n%s\n%s\n%s' % (TeaConverter.to_unicode(headers.get('x-oss-date')), TeaConverter.to_unicode(scope), TeaConverter.to_unicode(hex))
+        signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
+        return Encoder.hex_encode(signature)
+
+    def build_canonicalized_query_string_v4(self, query_map):
+        canonicalized_query_string = ''
+        if not UtilClient.is_unset(query_map):
+            query_array = MapClient.key_set(query_map)
+            sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
+            for key in sorted_query_array:
+                canonicalized_query_string = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_query_string), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(key))
+                if not UtilClient.empty(query_map.get(key)):
+                    canonicalized_query_string = '%s=%s' % (TeaConverter.to_unicode(canonicalized_query_string), TeaConverter.to_unicode(query_map.get(key)))
+                separator = '&'
+        return canonicalized_query_string
+
+    def build_canonicalized_headers_v4(self, headers):
+        canonicalized_headers = ''
+        headers_array = MapClient.key_set(headers)
+        sorted_headers_array = ArrayClient.asc_sort(headers_array)
+        for key in sorted_headers_array:
+            lower_key = StringClient.to_lower(key)
+            if StringClient.has_prefix(lower_key, 'x-oss-') or StringClient.equals(lower_key, 'content-type') or StringClient.equals(lower_key, 'content-md5'):
+                canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(key), TeaConverter.to_unicode(StringClient.trim(headers.get(key))))
+        return canonicalized_headers
 
     def get_signature_v1(self, bucket_name, pathname, method, query, headers, secret):
         resource = ''

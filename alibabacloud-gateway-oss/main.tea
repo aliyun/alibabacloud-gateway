@@ -9,6 +9,7 @@ import Map;
 import Array;
 import EncodeUtil;
 import SignatureUtil;
+import Time;
 
 extends SPI;
 
@@ -60,6 +61,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     }
   }
   var config = context.configuration;
+  var regionId = config.regionId;
   var credential : Credential = request.credential;
   var accessKeyId = credential.getAccessKeyId();
   var accessKeySecret = credential.getAccessKeySecret();
@@ -70,8 +72,10 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'xml')) {
       var reqBodyMap = Util.assertAsMap(request.body);
-      request.stream = XML.toXML(reqBodyMap);
+      var xmlStr = XML.toXML(reqBodyMap);
+      request.stream = xmlStr;
       request.headers.content-type = 'application/xml';
+      request.headers.content-md5 = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(xmlStr));
     } else if (String.equals(request.reqBodyType, 'json')) {
       var reqBodyStr = Util.toJSONString(request.body);
       request.stream = reqBodyStr;
@@ -96,7 +100,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     user-agent = request.userAgent,
     ...request.headers
   };
-  request.headers.authorization = getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+  request.headers.authorization = getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
 }
 
 async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
@@ -114,18 +118,22 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
         data = {
           statusCode = response.statusCode,
           requestId = err.RequestId,
+          ecCode = err.EC,
+          Recommend = err.RecommendDoc,
           hostId = err.HostId,
         }
       };
     } else {
       var headers : map[string]string = response.headers;
       var requestId = headers.x-oss-request-id;
+      var ecCode = headers.x-oss-ec-code;
       throw {
         code = response.statusCode,
         message = null,
         data = {
           statusCode = response.statusCode,
           requestId = `${requestId}`,
+          ecCode = ecCode,
         }
       };
     }
@@ -226,15 +234,123 @@ async function getHost(endpointType: string, bucketName: string, endpoint: strin
   return host;
 }
 
-async function getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string): string {
+async function getAuthorization(signatureVersion: string, bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, ak: string, secret: string, regionId: string): string {
   var sign : string = '';
-  if (Util.isUnset(signatureVersion) || String.equals(signatureVersion, 'v1')) {
-    sign = getSignatureV1(bucketName, pathname, method, query, headers, secret);
-    return `OSS ${ak}:${sign}`;
-  } else {
-    sign = getSignatureV2(bucketName, pathname, method, query, headers, secret);
-    return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
+  if (!Util.isUnset(signatureVersion)) {
+    if (String.equals(signatureVersion, 'v1')) {
+      sign = getSignatureV1(bucketName, pathname, method, query, headers, secret);
+      return `OSS ${ak}:${sign}`;
+    }
+    if (String.equals(signatureVersion, 'v2')) {
+      sign = getSignatureV2(bucketName, pathname, method, query, headers, secret);
+      return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
+    }
   }
+
+  // For java: yyyyMMdd'T'HHmmss'Z'
+  var dateTime = Time.format('yyyyMMddThhmmssZ');
+  headers.x-oss-date = dateTime;
+  headers.x-oss-content-sha256 = 'UNSIGNED-PAYLOAD';
+  var onlyDate : string = String.subString(dateTime, 0, 8);
+  onlyDate = String.replace(onlyDate, '-', '', null);
+
+  var cred : string = `${ak}/${onlyDate}/${regionId}/oss/aliyun_v4_request`;
+  sign = getSignatureV4(bucketName, pathname, method, query, headers, onlyDate, regionId, secret);
+
+  return `OSS4-HMAC-SHA256 Credential=${cred}, Signature=${sign}`;
+}
+
+async function getSignKey(secret: string, onlyDate: string, regionId: string): bytes {
+  var temp = `aliyun_v4${secret}`;
+  var res = SignatureUtil.HmacSHA256Sign(onlyDate, temp);
+  res = SignatureUtil.HmacSHA256SignByBytes(regionId, res);
+  res = SignatureUtil.HmacSHA256SignByBytes('oss', res);
+  res = SignatureUtil.HmacSHA256SignByBytes('aliyun_v4_request', res);
+  return res;
+}
+
+async function getSignatureV4(bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, onlyDate: string, regionId: string, secret: string): string {
+  var signingkey : bytes = getSignKey(secret, onlyDate, regionId);
+
+  var objectName : string = '/';
+  var queryMap : map[string]string = {};
+  if (!Util.empty(pathname)) {
+    var paths : [string] = String.split(pathname, `?`, 2);
+    objectName = paths[0];
+    if (Util.equalNumber(Array.size(paths), 2)) {
+      var subResources : [string] = String.split(paths[1], '&', null);
+      for (var sub : subResources) {
+        var item : [string] = String.split(sub, '=', null);
+        var key : string = item[0];
+        key = EncodeUtil.percentEncode(key);
+        key = String.replace(key, '+', '%20', null);
+        var value : string = null;
+        if (Util.equalNumber(Array.size(item), 2)) {
+          value = EncodeUtil.percentEncode(item[1]);
+          value = String.replace(value, '+', '%20', null);
+        }
+        queryMap[key] = value;
+      }
+    }
+  }
+
+  var canonicalizedUri : string = '/';
+  if (!Util.empty(bucketName)) {
+    canonicalizedUri = `/${bucketName}${objectName}`;
+  }
+
+  canonicalizedUri = OpenApiUtil.getEncodePath(canonicalizedUri);
+
+  for (var queryKey : Map.keySet(query)) {
+    var queryValue : string = null;
+    if (!Util.empty(query[queryKey])) {
+      queryValue = EncodeUtil.percentEncode(query[queryKey]);
+      queryValue = String.replace(queryValue, '+', '%20', null);
+    }
+    queryKey = EncodeUtil.percentEncode(queryKey);
+    queryKey = String.replace(queryKey, '+', '%20', null);
+    queryMap[queryKey] = queryValue;
+  }
+  var canonicalizedQueryString = buildCanonicalizedQueryStringV4(queryMap);
+  var canonicalizedHeaders = buildCanonicalizedHeadersV4(headers);
+  var payload = 'UNSIGNED-PAYLOAD';
+  var canonicalRequest = `${method}\n${canonicalizedUri}\n${canonicalizedQueryString}\n${canonicalizedHeaders}\n\n${payload}`;
+  var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(canonicalRequest), 'ACS4-HMAC-SHA256'));
+  var scope :string = `${onlyDate}/${regionId}/oss/aliyun_v4_request`;
+  var stringToSign = `OSS4-HMAC-SHA256\n${headers.x-oss-date}\n${scope}\n${hex}`;
+  var signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+  return EncodeUtil.hexEncode(signature);
+}
+
+async function buildCanonicalizedQueryStringV4(queryMap: map[string]string): string {
+  var canonicalizedQueryString : string = '';
+  if (!Util.isUnset(queryMap)) {
+    var queryArray : [string] = Map.keySet(queryMap);
+    var sortedQueryArray = Array.ascSort(queryArray);
+    var separator : string = '';
+    for(var key : sortedQueryArray) {
+      canonicalizedQueryString = `${canonicalizedQueryString}${separator}${key}`;
+      if (!Util.empty(queryMap[key])) {
+        canonicalizedQueryString = `${canonicalizedQueryString}=${queryMap[key]}`;
+      }
+      separator = '&';
+    }
+  }
+  return canonicalizedQueryString;
+}
+
+async function buildCanonicalizedHeadersV4(headers: map[string]string): string {
+  var canonicalizedHeaders : string = '';
+  var headersArray : [string] = Map.keySet(headers);
+  var sortedHeadersArray = Array.ascSort(headersArray);
+  for(var key : sortedHeadersArray) {
+    var lowerKey = String.toLower(key);
+    if (String.hasPrefix(lowerKey, 'x-oss-')
+            || String.equals(lowerKey, 'content-type') || String.equals(lowerKey, 'content-md5')) {
+      canonicalizedHeaders = `${canonicalizedHeaders}${key}:${String.trim(headers[key])}\n`;
+    }
+  }
+  return canonicalizedHeaders;
 }
 
 async function getSignatureV1(bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {
