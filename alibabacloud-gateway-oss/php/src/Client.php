@@ -8,14 +8,14 @@ use AlibabaCloud\Tea\Utils\Utils;
 use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Darabonba\String\StringUtil;
 use AlibabaCloud\Tea\XML\XML;
+use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
+use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\OSSUtils\OSSUtils;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use \Exception;
-use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
-use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
@@ -113,6 +113,7 @@ class Client extends DarabonbaGatewaySpiClient {
             }
         }
         $config = $context->configuration;
+        $regionId = $config->regionId;
         $credential = $request->credential;
         $accessKeyId = $credential->getAccessKeyId();
         $accessKeySecret = $credential->getAccessKeySecret();
@@ -123,8 +124,10 @@ class Client extends DarabonbaGatewaySpiClient {
         if (!Utils::isUnset($request->body)) {
             if (StringUtil::equals($request->reqBodyType, "xml")) {
                 $reqBodyMap = Utils::assertAsMap($request->body);
-                $request->stream = XML::toXML($reqBodyMap);
+                $xmlStr = XML::toXML($reqBodyMap);
+                $request->stream = $xmlStr;
                 $request->headers["content-type"] = "application/xml";
+                $request->headers["content-md5"] = EncodeUtil::base64EncodeToString(SignatureUtil::MD5Sign($xmlStr));
             }
             else if (StringUtil::equals($request->reqBodyType, "json")) {
                 $reqBodyStr = Utils::toJSONString($request->body);
@@ -151,7 +154,7 @@ class Client extends DarabonbaGatewaySpiClient {
             "date" => Utils::getDateUTCString(),
             "user-agent" => $request->userAgent
         ], $request->headers);
-        $request->headers["authorization"] = $this->getAuthorization($request->signatureVersion, $bucketName, $request->pathname, $request->method, $request->query, $request->headers, $accessKeyId, $accessKeySecret);
+        $request->headers["authorization"] = $this->getAuthorization($request->signatureVersion, $bucketName, $request->pathname, $request->method, $request->query, $request->headers, $accessKeyId, $accessKeySecret, $regionId);
     }
 
     /**
@@ -175,6 +178,8 @@ class Client extends DarabonbaGatewaySpiClient {
                     "data" => [
                         "statusCode" => $response->statusCode,
                         "requestId" => @$err["RequestId"],
+                        "ecCode" => @$err["EC"],
+                        "Recommend" => @$err["RecommendDoc"],
                         "hostId" => @$err["HostId"]
                     ]
                 ]);
@@ -182,12 +187,14 @@ class Client extends DarabonbaGatewaySpiClient {
             else {
                 $headers = $response->headers;
                 $requestId = @$headers["x-oss-request-id"];
+                $ecCode = @$headers["x-oss-ec-code"];
                 throw new TeaError([
                     "code" => $response->statusCode,
                     "message" => null,
                     "data" => [
                         "statusCode" => $response->statusCode,
-                        "requestId" => "" . $requestId . ""
+                        "requestId" => "" . $requestId . "",
+                        "ecCode" => $ecCode
                     ]
                 ]);
             }
@@ -219,22 +226,22 @@ class Client extends DarabonbaGatewaySpiClient {
             }
             else if (StringUtil::equals($request->bodyType, "xml")) {
                 $bodyStr = Utils::readAsString($response->body);
-                $result = XML::parseXml($bodyStr, null);
-                $list = MapUtil::keySet($result);
-                if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
-                    $tmp = @$list_[0];
-                    try {
-                        $response->deserializedBody = Utils::assertAsMap(@$result[$tmp]);
-                    }
-                    catch (Exception $error) {
-                        if (!($error instanceof TeaError)) {
-                            $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+                $response->deserializedBody = $bodyStr;
+                if (!Utils::empty_($bodyStr)) {
+                    $result = XML::parseXml($bodyStr, null);
+                    $list = MapUtil::keySet($result);
+                    if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
+                        $tmp = @$list_[0];
+                        try {
+                            $response->deserializedBody = Utils::assertAsMap(@$result[$tmp]);
                         }
-                        $response->deserializedBody = $result;
+                        catch (Exception $error) {
+                            if (!($error instanceof TeaError)) {
+                                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+                            }
+                            $response->deserializedBody = $result;
+                        }
                     }
-                }
-                else {
-                    $response->deserializedBody = $result;
                 }
             }
             else if (Utils::equalString($request->bodyType, "binary")) {
@@ -319,18 +326,148 @@ class Client extends DarabonbaGatewaySpiClient {
      * @param string[] $headers
      * @param string $ak
      * @param string $secret
+     * @param string $regionId
      * @return string
      */
-    public function getAuthorization($signatureVersion, $bucketName, $pathname, $method, $query, $headers, $ak, $secret){
+    public function getAuthorization($signatureVersion, $bucketName, $pathname, $method, $query, $headers, $ak, $secret, $regionId){
         $sign = "";
-        if (Utils::isUnset($signatureVersion) || StringUtil::equals($signatureVersion, "v1")) {
-            $sign = $this->getSignatureV1($bucketName, $pathname, $method, $query, $headers, $secret);
-            return "OSS " . $ak . ":" . $sign . "";
+        if (!Utils::isUnset($signatureVersion)) {
+            if (StringUtil::equals($signatureVersion, "v1")) {
+                $sign = $this->getSignatureV1($bucketName, $pathname, $method, $query, $headers, $secret);
+                return "OSS " . $ak . ":" . $sign . "";
+            }
+            if (StringUtil::equals($signatureVersion, "v2")) {
+                $sign = $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret);
+                return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $sign . "";
+            }
         }
-        else {
-            $sign = $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret);
-            return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $sign . "";
+        $dateTime = OpenApiUtilClient::getTimestamp();
+        $dateTime = StringUtil::replace($dateTime, "-", "", null);
+        $dateTime = StringUtil::replace($dateTime, ":", "", null);
+        @$headers["x-oss-date"] = $dateTime;
+        @$headers["x-oss-content-sha256"] = "UNSIGNED-PAYLOAD";
+        $onlyDate = StringUtil::subString($dateTime, 0, 8);
+        $cred = "" . $ak . "/" . $onlyDate . "/" . $regionId . "/oss/aliyun_v4_request";
+        $sign = $this->getSignatureV4($bucketName, $pathname, $method, $query, $headers, $onlyDate, $regionId, $secret);
+        return "OSS4-HMAC-SHA256 Credential=" . $cred . ", Signature=" . $sign . "";
+    }
+
+    /**
+     * @param string $secret
+     * @param string $onlyDate
+     * @param string $regionId
+     * @return array
+     */
+    public function getSignKey($secret, $onlyDate, $regionId){
+        $temp = "aliyun_v4" . $secret . "";
+        $res = SignatureUtil::HmacSHA256Sign($onlyDate, $temp);
+        $res = SignatureUtil::HmacSHA256SignByBytes($regionId, $res);
+        $res = SignatureUtil::HmacSHA256SignByBytes("oss", $res);
+        $res = SignatureUtil::HmacSHA256SignByBytes("aliyun_v4_request", $res);
+        return $res;
+    }
+
+    /**
+     * @param string $bucketName
+     * @param string $pathname
+     * @param string $method
+     * @param string[] $query
+     * @param string[] $headers
+     * @param string $onlyDate
+     * @param string $regionId
+     * @param string $secret
+     * @return string
+     */
+    public function getSignatureV4($bucketName, $pathname, $method, $query, $headers, $onlyDate, $regionId, $secret){
+        $signingkey = $this->getSignKey($secret, $onlyDate, $regionId);
+        $objectName = "/";
+        $queryMap = [];
+        if (!Utils::empty_($pathname)) {
+            $paths = StringUtil::split($pathname, "?", 2);
+            $objectName = @$paths[0];
+            if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
+                $subResources = StringUtil::split(@$paths[1], "&", null);
+                foreach($subResources as $sub){
+                    $item = StringUtil::split($sub, "=", null);
+                    $key = @$item[0];
+                    $key = EncodeUtil::percentEncode($key);
+                    $key = StringUtil::replace($key, "+", "%20", null);
+                    $value = null;
+                    if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
+                        $value = EncodeUtil::percentEncode(@$item[1]);
+                        $value = StringUtil::replace($value, "+", "%20", null);
+                    }
+                    // for go : queryMap[tea.StringValue(key)] = value
+                    $queryMap[$key] = $value;
+                }
+            }
         }
+        $canonicalizedUri = "/";
+        if (!Utils::empty_($bucketName)) {
+            $canonicalizedUri = "/" . $bucketName . "" . $objectName . "";
+        }
+        // for java:
+        // String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
+        // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+        $canonicalizedUri = OpenApiUtilClient::getEncodePath($canonicalizedUri);
+        foreach(MapUtil::keySet($query) as $queryKey){
+            $queryValue = null;
+            if (!Utils::empty_(@$query[$queryKey])) {
+                $queryValue = EncodeUtil::percentEncode(@$query[$queryKey]);
+                $queryValue = StringUtil::replace($queryValue, "+", "%20", null);
+            }
+            $queryKey = EncodeUtil::percentEncode($queryKey);
+            $queryKey = StringUtil::replace($queryKey, "+", "%20", null);
+            // for go : queryMap[tea.StringValue(queryKey)] = queryValue
+            $queryMap[$queryKey] = $queryValue;
+        }
+        $canonicalizedQueryString = $this->buildCanonicalizedQueryStringV4($queryMap);
+        $canonicalizedHeaders = $this->buildCanonicalizedHeadersV4($headers);
+        $payload = "UNSIGNED-PAYLOAD";
+        $canonicalRequest = "" . $method . "\n" . $canonicalizedUri . "\n" . $canonicalizedQueryString . "\n" . $canonicalizedHeaders . "\n\n" . $payload . "";
+        $hex = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($canonicalRequest), "ACS4-HMAC-SHA256"));
+        $scope = "" . $onlyDate . "/" . $regionId . "/oss/aliyun_v4_request";
+        $stringToSign = "OSS4-HMAC-SHA256\n" . @$headers["x-oss-date"] . "\n" . $scope . "\n" . $hex . "";
+        $signature = SignatureUtil::HmacSHA256SignByBytes($stringToSign, $signingkey);
+        return EncodeUtil::hexEncode($signature);
+    }
+
+    /**
+     * @param string[] $queryMap
+     * @return string
+     */
+    public function buildCanonicalizedQueryStringV4($queryMap){
+        $canonicalizedQueryString = "";
+        if (!Utils::isUnset($queryMap)) {
+            $queryArray = MapUtil::keySet($queryMap);
+            $sortedQueryArray = ArrayUtil::ascSort($queryArray);
+            $separator = "";
+            foreach($sortedQueryArray as $key){
+                $canonicalizedQueryString = "" . $canonicalizedQueryString . "" . $separator . "" . $key . "";
+                if (!Utils::empty_(@$queryMap[$key])) {
+                    $canonicalizedQueryString = "" . $canonicalizedQueryString . "=" . @$queryMap[$key] . "";
+                }
+                $separator = "&";
+            }
+        }
+        return $canonicalizedQueryString;
+    }
+
+    /**
+     * @param string[] $headers
+     * @return string
+     */
+    public function buildCanonicalizedHeadersV4($headers){
+        $canonicalizedHeaders = "";
+        $headersArray = MapUtil::keySet($headers);
+        $sortedHeadersArray = ArrayUtil::ascSort($headersArray);
+        foreach($sortedHeadersArray as $key){
+            $lowerKey = StringUtil::toLower($key);
+            if (StringUtil::hasPrefix($lowerKey, "x-oss-") || StringUtil::equals($lowerKey, "content-type") || StringUtil::equals($lowerKey, "content-md5")) {
+                $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $key . ":" . StringUtil::trim(@$headers[$key]) . "\n";
+            }
+        }
+        return $canonicalizedHeaders;
     }
 
     /**
@@ -382,6 +519,7 @@ class Client extends DarabonbaGatewaySpiClient {
                         if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
                             $value = @$item[1];
                         }
+                        // for go : subResourcesMap[tea.StringValue(key)] = value
                         $subResourcesMap[$key] = $value;
                     }
                 }

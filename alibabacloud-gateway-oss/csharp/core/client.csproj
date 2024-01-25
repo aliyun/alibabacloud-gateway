@@ -52,5 +52,6 @@
     <PackageReference Include="AlibabaCloud.DarabonbaEncodeUtil" Version="0.0.2"/>
     <PackageReference Include="AlibabaCloud.DarabonbaSignatureUtil" Version="0.0.4"/>
     <PackageReference Include="Tea" Version="1.0.11"/>
+    <PackageReference Include="AlibabaCloud.DarabonbaTime" Version="1.0.0"/>
   </ItemGroup>
 </Project>
