@@ -89,6 +89,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         }
 
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        String regionId = config.regionId;
         com.aliyun.credentials.Client credential = request.credential;
         String accessKeyId = credential.getAccessKeyId();
         String accessKeySecret = credential.getAccessKeySecret();
@@ -100,8 +101,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
             if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "xml")) {
                 java.util.Map<String, Object> reqBodyMap = com.aliyun.teautil.Common.assertAsMap(request.body);
-                request.stream = Tea.toReadable(com.aliyun.teaxml.Client.toXML(reqBodyMap));
+                String xmlStr = com.aliyun.teaxml.Client.toXML(reqBodyMap);
+                request.stream = Tea.toReadable(xmlStr);
                 request.headers.put("content-type", "application/xml");
+                request.headers.put("content-md5", com.aliyun.darabonba.encode.Encoder.base64EncodeToString(com.aliyun.darabonba.signature.Signer.MD5Sign(xmlStr)));
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
                 String reqBodyStr = com.aliyun.teautil.Common.toJSONString(request.body);
                 request.stream = Tea.toReadable(reqBodyStr);
@@ -130,7 +133,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ),
             request.headers
         );
-        request.headers.put("authorization", this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
+        request.headers.put("authorization", this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId));
     }
 
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
@@ -148,18 +151,22 @@ public class Client extends com.aliyun.gateway.spi.Client {
                     new TeaPair("data", TeaConverter.buildMap(
                         new TeaPair("statusCode", response.statusCode),
                         new TeaPair("requestId", err.get("RequestId")),
+                        new TeaPair("ecCode", err.get("EC")),
+                        new TeaPair("Recommend", err.get("RecommendDoc")),
                         new TeaPair("hostId", err.get("HostId"))
                     ))
                 ));
             } else {
                 java.util.Map<String, String> headers = response.headers;
                 String requestId = headers.get("x-oss-request-id");
+                String ecCode = headers.get("x-oss-ec-code");
                 throw new TeaException(TeaConverter.buildMap(
                     new TeaPair("code", response.statusCode),
                     new TeaPair("message", null),
                     new TeaPair("data", TeaConverter.buildMap(
                         new TeaPair("statusCode", response.statusCode),
-                        new TeaPair("requestId", "" + requestId + "")
+                        new TeaPair("requestId", "" + requestId + ""),
+                        new TeaPair("ecCode", ecCode)
                     ))
                 ));
             }
@@ -195,20 +202,22 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 com.aliyun.teautil.Common.readAsString(response.body);
             } else if (com.aliyun.darabonbastring.Client.equals(request.bodyType, "xml")) {
                 bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
-                java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
-                java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
-                if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(list), 1)) {
-                    String tmp = list.get(0);
-                    try {
-                        response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result.get(tmp));
-                    } catch (TeaException error) {
-                        response.deserializedBody = result;
-                    } catch (Exception _error) {
-                        TeaException error = new TeaException(_error.getMessage(), _error);
-                        response.deserializedBody = result;
-                    }                    
-                } else {
-                    response.deserializedBody = result;
+                response.deserializedBody = bodyStr;
+                if (!com.aliyun.teautil.Common.empty(bodyStr)) {
+                    java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
+                    java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
+                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(list), 1)) {
+                        String tmp = list.get(0);
+                        try {
+                            response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result.get(tmp));
+                        } catch (TeaException error) {
+                            response.deserializedBody = result;
+                        } catch (Exception _error) {
+                            TeaException error = new TeaException(_error.getMessage(), _error);
+                            response.deserializedBody = result;
+                        }
+                    }
+
                 }
 
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
@@ -273,16 +282,132 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return host;
     }
 
-    public String getAuthorization(String signatureVersion, String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String ak, String secret) throws Exception {
+    public String getAuthorization(String signatureVersion, String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String ak, String secret, String regionId) throws Exception {
         String sign = "";
-        if (com.aliyun.teautil.Common.isUnset(signatureVersion) || com.aliyun.darabonbastring.Client.equals(signatureVersion, "v1")) {
-            sign = this.getSignatureV1(bucketName, pathname, method, query, headers, secret);
-            return "OSS " + ak + ":" + sign + "";
-        } else {
-            sign = this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
-            return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign + "";
+        if (!com.aliyun.teautil.Common.isUnset(signatureVersion)) {
+            if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v1")) {
+                sign = this.getSignatureV1(bucketName, pathname, method, query, headers, secret);
+                return "OSS " + ak + ":" + sign + "";
+            }
+
+            if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v2")) {
+                sign = this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
+                return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign + "";
+            }
+
         }
 
+        String dateTime = com.aliyun.openapiutil.Client.getTimestamp();
+        dateTime = com.aliyun.darabonbastring.Client.replace(dateTime, "-", "", null);
+        dateTime = com.aliyun.darabonbastring.Client.replace(dateTime, ":", "", null);
+        headers.put("x-oss-date", dateTime);
+        headers.put("x-oss-content-sha256", "UNSIGNED-PAYLOAD");
+        String onlyDate = com.aliyun.darabonbastring.Client.subString(dateTime, 0, 8);
+        String cred = "" + ak + "/" + onlyDate + "/" + regionId + "/oss/aliyun_v4_request";
+        sign = this.getSignatureV4(bucketName, pathname, method, query, headers, onlyDate, regionId, secret);
+        return "OSS4-HMAC-SHA256 Credential=" + cred + ", Signature=" + sign + "";
+    }
+
+    public byte[] getSignKey(String secret, String onlyDate, String regionId) throws Exception {
+        String temp = "aliyun_v4" + secret + "";
+        byte[] res = com.aliyun.darabonba.signature.Signer.HmacSHA256Sign(onlyDate, temp);
+        res = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes(regionId, res);
+        res = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes("oss", res);
+        res = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes("aliyun_v4_request", res);
+        return res;
+    }
+
+    public String getSignatureV4(String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String onlyDate, String regionId, String secret) throws Exception {
+        byte[] signingkey = this.getSignKey(secret, onlyDate, regionId);
+        String objectName = "/";
+        java.util.Map<String, String> queryMap = new java.util.HashMap<>();
+        if (!com.aliyun.teautil.Common.empty(pathname)) {
+            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
+            objectName = paths.get(0);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
+                java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
+                for (String sub : subResources) {
+                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
+                    String key = item.get(0);
+                    key = com.aliyun.darabonba.encode.Encoder.percentEncode(key);
+                    key = com.aliyun.darabonbastring.Client.replace(key, "+", "%20", null);
+                    String value = null;
+                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
+                        value = com.aliyun.darabonba.encode.Encoder.percentEncode(item.get(1));
+                        value = com.aliyun.darabonbastring.Client.replace(value, "+", "%20", null);
+                    }
+
+                    // for go : queryMap[tea.StringValue(key)] = value;
+                    queryMap.put(key, value);
+                }
+            }
+
+        }
+
+        String canonicalizedUri = "/";
+        if (!com.aliyun.teautil.Common.empty(bucketName)) {
+            canonicalizedUri = "/" + bucketName + "" + objectName + "";
+        }
+
+        // for java:
+        // String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
+        // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+        String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
+        canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+        for (String queryKey : com.aliyun.darabonba.map.Client.keySet(query)) {
+            String queryValue = null;
+            if (!com.aliyun.teautil.Common.empty(query.get(queryKey))) {
+                queryValue = com.aliyun.darabonba.encode.Encoder.percentEncode(query.get(queryKey));
+                queryValue = com.aliyun.darabonbastring.Client.replace(queryValue, "+", "%20", null);
+            }
+
+            queryKey = com.aliyun.darabonba.encode.Encoder.percentEncode(queryKey);
+            queryKey = com.aliyun.darabonbastring.Client.replace(queryKey, "+", "%20", null);
+            // for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+            queryMap.put(queryKey, queryValue);
+        }
+        String canonicalizedQueryString = this.buildCanonicalizedQueryStringV4(queryMap);
+        String canonicalizedHeaders = this.buildCanonicalizedHeadersV4(headers);
+        String payload = "UNSIGNED-PAYLOAD";
+        String canonicalRequest = "" + method + "\n" + canonicalizedUri + "\n" + canonicalizedQueryString + "\n" + canonicalizedHeaders + "\n\n" + payload + "";
+        String hex = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(canonicalRequest), "ACS4-HMAC-SHA256"));
+        String scope = "" + onlyDate + "/" + regionId + "/oss/aliyun_v4_request";
+        String stringToSign = "OSS4-HMAC-SHA256\n" + headers.get("x-oss-date") + "\n" + scope + "\n" + hex + "";
+        byte[] signature = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes(stringToSign, signingkey);
+        return com.aliyun.darabonba.encode.Encoder.hexEncode(signature);
+    }
+
+    public String buildCanonicalizedQueryStringV4(java.util.Map<String, String> queryMap) throws Exception {
+        String canonicalizedQueryString = "";
+        if (!com.aliyun.teautil.Common.isUnset(queryMap)) {
+            java.util.List<String> queryArray = com.aliyun.darabonba.map.Client.keySet(queryMap);
+            java.util.List<String> sortedQueryArray = com.aliyun.darabonba.array.Client.ascSort(queryArray);
+            String separator = "";
+            for (String key : sortedQueryArray) {
+                canonicalizedQueryString = "" + canonicalizedQueryString + "" + separator + "" + key + "";
+                if (!com.aliyun.teautil.Common.empty(queryMap.get(key))) {
+                    canonicalizedQueryString = "" + canonicalizedQueryString + "=" + queryMap.get(key) + "";
+                }
+
+                separator = "&";
+            }
+        }
+
+        return canonicalizedQueryString;
+    }
+
+    public String buildCanonicalizedHeadersV4(java.util.Map<String, String> headers) throws Exception {
+        String canonicalizedHeaders = "";
+        java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(headers);
+        java.util.List<String> sortedHeadersArray = com.aliyun.darabonba.array.Client.ascSort(headersArray);
+        for (String key : sortedHeadersArray) {
+            String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
+            if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-oss-") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-type") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-md5")) {
+                canonicalizedHeaders = "" + canonicalizedHeaders + "" + key + ":" + com.aliyun.darabonbastring.Client.trim(headers.get(key)) + "\n";
+            }
+
+        }
+        return canonicalizedHeaders;
     }
 
     public String getSignatureV1(String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String secret) throws Exception {
@@ -323,6 +448,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                             value = item.get(1);
                         }
 
+                        // for go : subResourcesMap[tea.StringValue(key)] = value;
                         subResourcesMap.put(key, value);
                     }
 

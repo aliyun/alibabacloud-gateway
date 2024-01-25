@@ -110,6 +110,7 @@ namespace AlibabaCloud.GatewayOss
                 }
             }
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
+            string regionId = config.RegionId;
             Aliyun.Credentials.Client credential = request.Credential;
             string accessKeyId = credential.GetAccessKeyId();
             string accessKeySecret = credential.GetAccessKeySecret();
@@ -123,8 +124,10 @@ namespace AlibabaCloud.GatewayOss
                 if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "xml"))
                 {
                     Dictionary<string, object> reqBodyMap = AlibabaCloud.TeaUtil.Common.AssertAsMap(request.Body);
-                    request.Stream = TeaCore.BytesReadable(AlibabaCloud.TeaXML.Client.ToXML(reqBodyMap));
+                    string xmlStr = AlibabaCloud.TeaXML.Client.ToXML(reqBodyMap);
+                    request.Stream = TeaCore.BytesReadable(xmlStr);
                     request.Headers["content-type"] = "application/xml";
+                    request.Headers["content-md5"] = AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.MD5Sign(xmlStr));
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
                 {
@@ -160,7 +163,7 @@ namespace AlibabaCloud.GatewayOss
                 },
                 request.Headers
             );
-            request.Headers["authorization"] = GetAuthorization(request.SignatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
+            request.Headers["authorization"] = GetAuthorization(request.SignatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret, regionId);
         }
 
         public async Task ModifyRequestAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -190,6 +193,7 @@ namespace AlibabaCloud.GatewayOss
                 }
             }
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
+            string regionId = config.RegionId;
             Aliyun.Credentials.Client credential = request.Credential;
             string accessKeyId = await credential.GetAccessKeyIdAsync();
             string accessKeySecret = await credential.GetAccessKeySecretAsync();
@@ -203,8 +207,10 @@ namespace AlibabaCloud.GatewayOss
                 if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "xml"))
                 {
                     Dictionary<string, object> reqBodyMap = AlibabaCloud.TeaUtil.Common.AssertAsMap(request.Body);
-                    request.Stream = TeaCore.BytesReadable(AlibabaCloud.TeaXML.Client.ToXML(reqBodyMap));
+                    string xmlStr = AlibabaCloud.TeaXML.Client.ToXML(reqBodyMap);
+                    request.Stream = TeaCore.BytesReadable(xmlStr);
                     request.Headers["content-type"] = "application/xml";
+                    request.Headers["content-md5"] = AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.DarabonbaSignatureUtil.Signer.MD5Sign(xmlStr));
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
                 {
@@ -240,7 +246,7 @@ namespace AlibabaCloud.GatewayOss
                 },
                 request.Headers
             );
-            request.Headers["authorization"] = await GetAuthorizationAsync(request.SignatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
+            request.Headers["authorization"] = await GetAuthorizationAsync(request.SignatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret, regionId);
         }
 
         public void ModifyResponse(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -263,6 +269,8 @@ namespace AlibabaCloud.GatewayOss
                         {
                             {"statusCode", response.StatusCode},
                             {"requestId", err.Get("RequestId")},
+                            {"ecCode", err.Get("EC")},
+                            {"Recommend", err.Get("RecommendDoc")},
                             {"hostId", err.Get("HostId")},
                         }},
                     });
@@ -271,6 +279,7 @@ namespace AlibabaCloud.GatewayOss
                 {
                     Dictionary<string, string> headers = response.Headers;
                     string requestId = headers.Get("x-oss-request-id");
+                    string ecCode = headers.Get("x-oss-ec-code");
                     throw new TeaException(new Dictionary<string, object>
                     {
                         {"code", response.StatusCode},
@@ -279,6 +288,7 @@ namespace AlibabaCloud.GatewayOss
                         {
                             {"statusCode", response.StatusCode},
                             {"requestId", "" + requestId},
+                            {"ecCode", ecCode},
                         }},
                     });
                 }
@@ -320,31 +330,31 @@ namespace AlibabaCloud.GatewayOss
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.BodyType, "xml"))
                 {
                     bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                    Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                    List<string> list = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(result);
-                    if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(list), 1))
+                    response.DeserializedBody = bodyStr;
+                    if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                     {
-                        string tmp = list[0];
-                        try
+                        Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
+                        List<string> list = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(result);
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(list), 1))
                         {
-                            response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result.Get(tmp));
-                        }
-                        catch (TeaException error)
-                        {
-                            response.DeserializedBody = result;
-                        }
-                        catch (Exception _error)
-                        {
-                            TeaException error = new TeaException(new Dictionary<string, object>
+                            string tmp = list[0];
+                            try
                             {
-                                { "message", _error.Message }
-                            });
-                            response.DeserializedBody = result;
+                                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result.Get(tmp));
+                            }
+                            catch (TeaException error)
+                            {
+                                response.DeserializedBody = result;
+                            }
+                            catch (Exception _error)
+                            {
+                                TeaException error = new TeaException(new Dictionary<string, object>
+                                {
+                                    { "message", _error.Message }
+                                });
+                                response.DeserializedBody = result;
+                            }
                         }
-                    }
-                    else
-                    {
-                        response.DeserializedBody = result;
                     }
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
@@ -397,6 +407,8 @@ namespace AlibabaCloud.GatewayOss
                         {
                             {"statusCode", response.StatusCode},
                             {"requestId", err.Get("RequestId")},
+                            {"ecCode", err.Get("EC")},
+                            {"Recommend", err.Get("RecommendDoc")},
                             {"hostId", err.Get("HostId")},
                         }},
                     });
@@ -405,6 +417,7 @@ namespace AlibabaCloud.GatewayOss
                 {
                     Dictionary<string, string> headers = response.Headers;
                     string requestId = headers.Get("x-oss-request-id");
+                    string ecCode = headers.Get("x-oss-ec-code");
                     throw new TeaException(new Dictionary<string, object>
                     {
                         {"code", response.StatusCode},
@@ -413,6 +426,7 @@ namespace AlibabaCloud.GatewayOss
                         {
                             {"statusCode", response.StatusCode},
                             {"requestId", "" + requestId},
+                            {"ecCode", ecCode},
                         }},
                     });
                 }
@@ -454,31 +468,31 @@ namespace AlibabaCloud.GatewayOss
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.BodyType, "xml"))
                 {
                     bodyStr = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
-                    Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                    List<string> list = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(result);
-                    if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(list), 1))
+                    response.DeserializedBody = bodyStr;
+                    if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                     {
-                        string tmp = list[0];
-                        try
+                        Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
+                        List<string> list = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(result);
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(list), 1))
                         {
-                            response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result.Get(tmp));
-                        }
-                        catch (TeaException error)
-                        {
-                            response.DeserializedBody = result;
-                        }
-                        catch (Exception _error)
-                        {
-                            TeaException error = new TeaException(new Dictionary<string, object>
+                            string tmp = list[0];
+                            try
                             {
-                                { "message", _error.Message }
-                            });
-                            response.DeserializedBody = result;
+                                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result.Get(tmp));
+                            }
+                            catch (TeaException error)
+                            {
+                                response.DeserializedBody = result;
+                            }
+                            catch (Exception _error)
+                            {
+                                TeaException error = new TeaException(new Dictionary<string, object>
+                                {
+                                    { "message", _error.Message }
+                                });
+                                response.DeserializedBody = result;
+                            }
                         }
-                    }
-                    else
-                    {
-                        response.DeserializedBody = result;
                     }
                 }
                 else if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
@@ -609,34 +623,276 @@ namespace AlibabaCloud.GatewayOss
             return host;
         }
 
-        public string GetAuthorization(string signatureVersion, string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret)
+        public string GetAuthorization(string signatureVersion, string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret, string regionId)
         {
             string sign = "";
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion) || AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v1"))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion))
             {
-                sign = GetSignatureV1(bucketName, pathname, method, query, headers, secret);
-                return "OSS " + ak + ":" + sign;
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v1"))
+                {
+                    sign = GetSignatureV1(bucketName, pathname, method, query, headers, secret);
+                    return "OSS " + ak + ":" + sign;
+                }
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v2"))
+                {
+                    sign = GetSignatureV2(bucketName, pathname, method, query, headers, secret);
+                    return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign;
+                }
             }
-            else
-            {
-                sign = GetSignatureV2(bucketName, pathname, method, query, headers, secret);
-                return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign;
-            }
+            string dateTime = AlibabaCloud.OpenApiUtil.Client.GetTimestamp();
+            dateTime = AlibabaCloud.DarabonbaString.StringUtil.Replace(dateTime, "-", "", null);
+            dateTime = AlibabaCloud.DarabonbaString.StringUtil.Replace(dateTime, ":", "", null);
+            headers["x-oss-date"] = dateTime;
+            headers["x-oss-content-sha256"] = "UNSIGNED-PAYLOAD";
+            string onlyDate = AlibabaCloud.DarabonbaString.StringUtil.SubString(dateTime, 0, 8);
+            string cred = "" + ak + "/" + onlyDate + "/" + regionId + "/oss/aliyun_v4_request";
+            sign = GetSignatureV4(bucketName, pathname, method, query, headers, onlyDate, regionId, secret);
+            return "OSS4-HMAC-SHA256 Credential=" + cred + ", Signature=" + sign;
         }
 
-        public async Task<string> GetAuthorizationAsync(string signatureVersion, string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret)
+        public async Task<string> GetAuthorizationAsync(string signatureVersion, string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string ak, string secret, string regionId)
         {
             string sign = "";
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion) || AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v1"))
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion))
             {
-                sign = await GetSignatureV1Async(bucketName, pathname, method, query, headers, secret);
-                return "OSS " + ak + ":" + sign;
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v1"))
+                {
+                    sign = await GetSignatureV1Async(bucketName, pathname, method, query, headers, secret);
+                    return "OSS " + ak + ":" + sign;
+                }
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v2"))
+                {
+                    sign = await GetSignatureV2Async(bucketName, pathname, method, query, headers, secret);
+                    return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign;
+                }
             }
-            else
+            string dateTime = AlibabaCloud.OpenApiUtil.Client.GetTimestamp();
+            dateTime = AlibabaCloud.DarabonbaString.StringUtil.Replace(dateTime, "-", "", null);
+            dateTime = AlibabaCloud.DarabonbaString.StringUtil.Replace(dateTime, ":", "", null);
+            headers["x-oss-date"] = dateTime;
+            headers["x-oss-content-sha256"] = "UNSIGNED-PAYLOAD";
+            string onlyDate = AlibabaCloud.DarabonbaString.StringUtil.SubString(dateTime, 0, 8);
+            string cred = "" + ak + "/" + onlyDate + "/" + regionId + "/oss/aliyun_v4_request";
+            sign = await GetSignatureV4Async(bucketName, pathname, method, query, headers, onlyDate, regionId, secret);
+            return "OSS4-HMAC-SHA256 Credential=" + cred + ", Signature=" + sign;
+        }
+
+        public byte[] GetSignKey(string secret, string onlyDate, string regionId)
+        {
+            string temp = "aliyun_v4" + secret;
+            byte[] res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256Sign(onlyDate, temp);
+            res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes(regionId, res);
+            res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes("oss", res);
+            res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes("aliyun_v4_request", res);
+            return res;
+        }
+
+        public async Task<byte[]> GetSignKeyAsync(string secret, string onlyDate, string regionId)
+        {
+            string temp = "aliyun_v4" + secret;
+            byte[] res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256Sign(onlyDate, temp);
+            res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes(regionId, res);
+            res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes("oss", res);
+            res = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes("aliyun_v4_request", res);
+            return res;
+        }
+
+        public string GetSignatureV4(string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string onlyDate, string regionId, string secret)
+        {
+            byte[] signingkey = GetSignKey(secret, onlyDate, regionId);
+            string objectName = "/";
+            Dictionary<string, string> queryMap = new Dictionary<string, string>(){};
+            if (!AlibabaCloud.TeaUtil.Common.Empty(pathname))
             {
-                sign = await GetSignatureV2Async(bucketName, pathname, method, query, headers, secret);
-                return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign;
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "?", 2);
+                objectName = paths[0];
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
+                {
+                    List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
+
+                    foreach (var sub in subResources) {
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
+                        string key = item[0];
+                        key = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                        key = AlibabaCloud.DarabonbaString.StringUtil.Replace(key, "+", "%20", null);
+                        string value = null;
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
+                        {
+                            value = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(item[1]);
+                            value = AlibabaCloud.DarabonbaString.StringUtil.Replace(value, "+", "%20", null);
+                        }
+                        // for go : queryMap[tea.StringValue(key)] = value
+                        queryMap[key] = value;
+                    }
+                }
             }
+            string canonicalizedUri = "/";
+            if (!AlibabaCloud.TeaUtil.Common.Empty(bucketName))
+            {
+                canonicalizedUri = "/" + bucketName + objectName;
+            }
+            // for java:
+            // String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
+            // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+            canonicalizedUri = AlibabaCloud.OpenApiUtil.Client.GetEncodePath(canonicalizedUri);
+
+            foreach (var queryKey in AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query)) {
+                string queryValue = null;
+                if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(queryKey)))
+                {
+                    queryValue = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(queryKey));
+                    queryValue = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryValue, "+", "%20", null);
+                }
+                queryKey = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(queryKey);
+                queryKey = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryKey, "+", "%20", null);
+                // for go : queryMap[tea.StringValue(queryKey)] = queryValue
+                queryMap[queryKey] = queryValue;
+            }
+            string canonicalizedQueryString = BuildCanonicalizedQueryStringV4(queryMap);
+            string canonicalizedHeaders = BuildCanonicalizedHeadersV4(headers);
+            string payload = "UNSIGNED-PAYLOAD";
+            string canonicalRequest = "" + method + "\n" + canonicalizedUri + "\n" + canonicalizedQueryString + "\n" + canonicalizedHeaders + "\n\n" + payload;
+            string hex = AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(canonicalRequest), "ACS4-HMAC-SHA256"));
+            string scope = "" + onlyDate + "/" + regionId + "/oss/aliyun_v4_request";
+            string stringToSign = "OSS4-HMAC-SHA256\n" + headers.Get("x-oss-date") + "\n" + scope + "\n" + hex;
+            byte[] signature = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes(stringToSign, signingkey);
+            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(signature);
+        }
+
+        public async Task<string> GetSignatureV4Async(string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string onlyDate, string regionId, string secret)
+        {
+            byte[] signingkey = await GetSignKeyAsync(secret, onlyDate, regionId);
+            string objectName = "/";
+            Dictionary<string, string> queryMap = new Dictionary<string, string>(){};
+            if (!AlibabaCloud.TeaUtil.Common.Empty(pathname))
+            {
+                List<string> paths = AlibabaCloud.DarabonbaString.StringUtil.Split(pathname, "?", 2);
+                objectName = paths[0];
+                if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(paths), 2))
+                {
+                    List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
+
+                    foreach (var sub in subResources) {
+                        List<string> item = AlibabaCloud.DarabonbaString.StringUtil.Split(sub, "=", null);
+                        string key = item[0];
+                        key = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(key);
+                        key = AlibabaCloud.DarabonbaString.StringUtil.Replace(key, "+", "%20", null);
+                        string value = null;
+                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(item), 2))
+                        {
+                            value = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(item[1]);
+                            value = AlibabaCloud.DarabonbaString.StringUtil.Replace(value, "+", "%20", null);
+                        }
+                        // for go : queryMap[tea.StringValue(key)] = value
+                        queryMap[key] = value;
+                    }
+                }
+            }
+            string canonicalizedUri = "/";
+            if (!AlibabaCloud.TeaUtil.Common.Empty(bucketName))
+            {
+                canonicalizedUri = "/" + bucketName + objectName;
+            }
+            // for java:
+            // String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
+            // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+            canonicalizedUri = AlibabaCloud.OpenApiUtil.Client.GetEncodePath(canonicalizedUri);
+
+            foreach (var queryKey in AlibabaCloud.DarabonbaMap.MapUtil.KeySet(query)) {
+                string queryValue = null;
+                if (!AlibabaCloud.TeaUtil.Common.Empty(query.Get(queryKey)))
+                {
+                    queryValue = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(queryKey));
+                    queryValue = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryValue, "+", "%20", null);
+                }
+                queryKey = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(queryKey);
+                queryKey = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryKey, "+", "%20", null);
+                // for go : queryMap[tea.StringValue(queryKey)] = queryValue
+                queryMap[queryKey] = queryValue;
+            }
+            string canonicalizedQueryString = await BuildCanonicalizedQueryStringV4Async(queryMap);
+            string canonicalizedHeaders = await BuildCanonicalizedHeadersV4Async(headers);
+            string payload = "UNSIGNED-PAYLOAD";
+            string canonicalRequest = "" + method + "\n" + canonicalizedUri + "\n" + canonicalizedQueryString + "\n" + canonicalizedHeaders + "\n\n" + payload;
+            string hex = AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(canonicalRequest), "ACS4-HMAC-SHA256"));
+            string scope = "" + onlyDate + "/" + regionId + "/oss/aliyun_v4_request";
+            string stringToSign = "OSS4-HMAC-SHA256\n" + headers.Get("x-oss-date") + "\n" + scope + "\n" + hex;
+            byte[] signature = AlibabaCloud.DarabonbaSignatureUtil.Signer.HmacSHA256SignByBytes(stringToSign, signingkey);
+            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(signature);
+        }
+
+        public string BuildCanonicalizedQueryStringV4(Dictionary<string, string> queryMap)
+        {
+            string canonicalizedQueryString = "";
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(queryMap))
+            {
+                List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(queryMap);
+                List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
+                string separator = "";
+
+                foreach (var key in sortedQueryArray) {
+                    canonicalizedQueryString = "" + canonicalizedQueryString + separator + key;
+                    if (!AlibabaCloud.TeaUtil.Common.Empty(queryMap.Get(key)))
+                    {
+                        canonicalizedQueryString = "" + canonicalizedQueryString + "=" + queryMap.Get(key);
+                    }
+                    separator = "&";
+                }
+            }
+            return canonicalizedQueryString;
+        }
+
+        public async Task<string> BuildCanonicalizedQueryStringV4Async(Dictionary<string, string> queryMap)
+        {
+            string canonicalizedQueryString = "";
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(queryMap))
+            {
+                List<string> queryArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(queryMap);
+                List<string> sortedQueryArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(queryArray);
+                string separator = "";
+
+                foreach (var key in sortedQueryArray) {
+                    canonicalizedQueryString = "" + canonicalizedQueryString + separator + key;
+                    if (!AlibabaCloud.TeaUtil.Common.Empty(queryMap.Get(key)))
+                    {
+                        canonicalizedQueryString = "" + canonicalizedQueryString + "=" + queryMap.Get(key);
+                    }
+                    separator = "&";
+                }
+            }
+            return canonicalizedQueryString;
+        }
+
+        public string BuildCanonicalizedHeadersV4(Dictionary<string, string> headers)
+        {
+            string canonicalizedHeaders = "";
+            List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
+            List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
+
+            foreach (var key in sortedHeadersArray) {
+                string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-oss-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-md5"))
+                {
+                    canonicalizedHeaders = "" + canonicalizedHeaders + key + ":" + AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(key)) + "\n";
+                }
+            }
+            return canonicalizedHeaders;
+        }
+
+        public async Task<string> BuildCanonicalizedHeadersV4Async(Dictionary<string, string> headers)
+        {
+            string canonicalizedHeaders = "";
+            List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
+            List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
+
+            foreach (var key in sortedHeadersArray) {
+                string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-oss-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-md5"))
+                {
+                    canonicalizedHeaders = "" + canonicalizedHeaders + key + ":" + AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(key)) + "\n";
+                }
+            }
+            return canonicalizedHeaders;
         }
 
         public string GetSignatureV1(string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string secret)
@@ -682,7 +938,7 @@ namespace AlibabaCloud.GatewayOss
                     List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
 
                     foreach (var sub in subResources) {
-                        bool hasExcepts = false;
+                        bool? hasExcepts = false;
 
                         foreach (var excepts in _except_signed_params) {
                             if (AlibabaCloud.DarabonbaString.StringUtil.Contains(sub, excepts))
@@ -699,6 +955,7 @@ namespace AlibabaCloud.GatewayOss
                             {
                                 value = item[1];
                             }
+                            // for go : subResourcesMap[tea.StringValue(key)] = value
                             subResourcesMap[key] = value;
                         }
                     }
@@ -753,7 +1010,7 @@ namespace AlibabaCloud.GatewayOss
                     List<string> subResources = AlibabaCloud.DarabonbaString.StringUtil.Split(paths[1], "&", null);
 
                     foreach (var sub in subResources) {
-                        bool hasExcepts = false;
+                        bool? hasExcepts = false;
 
                         foreach (var excepts in _except_signed_params) {
                             if (AlibabaCloud.DarabonbaString.StringUtil.Contains(sub, excepts))
@@ -770,6 +1027,7 @@ namespace AlibabaCloud.GatewayOss
                             {
                                 value = item[1];
                             }
+                            // for go : subResourcesMap[tea.StringValue(key)] = value
                             subResourcesMap[key] = value;
                         }
                     }
