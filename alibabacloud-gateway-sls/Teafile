@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -28,7 +28,7 @@
     "python": "alibabacloud_gateway_sls:0.0.6",
     "python2": "alibabacloud_gateway_sls_py2:0.0.5",
     "csharp": "AlibabaCloud.GatewaySls:0.0.6",
-    "php": "alibabacloud/gateway-sls:^0.0.8"
+    "php": "alibabacloud/gateway-sls:^0.0.9"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewaySls",
