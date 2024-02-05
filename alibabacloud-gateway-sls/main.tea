@@ -8,27 +8,11 @@ import Array;
 import EncodeUtil;
 import SignatureUtil;
 import SLS_Util;
-import Console;
 
 extends SPI;
 
-type @sha256 = string
-type @salt_terminator = string
-type @product_id = string
-type @default_signature_version = string
-type @signature_v1 = string
-type @signature_v4 = string
-type @empty_sha256_hash = string
-
 init(){
   super();
-  @sha256 = 'SLS4-HMAC-SHA256';
-  @salt_terminator = 'aliyun_v4_request';
-  @product_id = 'sls';
-  @signature_v1 = "v1";
-  @signature_v4 = "v4";
-  @default_signature_version = @signature_v1;
-  @empty_sha256_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 }
 
 async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
@@ -51,11 +35,11 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   if (!Util.empty(securityToken)) {
       request.headers['x-acs-security-token'] = securityToken;
   }
-  var signatureVersion = Util.defaultString(request.signatureVersion, @default_signature_version);
+  var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
   var contentHash = '';
-  var isSignV4 = String.equals(signatureVersion, @signature_v4);
+  var isSignV4 = String.equals(signatureVersion, 'v4');
   if (isSignV4) {
-    contentHash = @empty_sha256_hash;
+    contentHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
   }
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'protobuf')) {
@@ -103,11 +87,11 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 }
 
 async function MakeContentHash(content: string, signatureVersion: string) : string {
-  if (String.equals(signatureVersion, @signature_v4)) {
+  if (String.equals(signatureVersion, 'v4')) {
     if (Util.empty(content)) {
-      return @empty_sha256_hash;
+      return 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
     }
-    return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(content), @sha256)));
+    return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(content), 'SLS4-HMAC-SHA256')));
   }
   return String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5Sign(content)));
 }
@@ -281,32 +265,20 @@ async function getAuthorizationV4(context: SPI.InterceptorContext, date: string,
   var region = getRegion(context);
   var headerStr = getSignedHeaderStrV4(context.request.headers);
 
-  var scope = `${String.subString(date, 0, 8)}/${region}/${@product_id}/${@salt_terminator}`;
-  var signingkey = getSigningkeyV4(@sha256, accessKeySecret, region, String.subString(date, 0, 8));
-  var signature = getSignatureV4(context, @sha256, headerStr, date, scope, contentHash, signingkey);
-  Console.log(`date: ${date}`);
-  Console.log(`contentHash: ${contentHash}`);
-  Console.log(`region: ${region}`);
-  Console.log(`headerStr: ${headerStr}`);
-  Console.log(`scope: ${scope}`);
-  Console.log(`signingkey: ${signingkey}`);
-  Console.log(`signingkeyHex: ${EncodeUtil.hexEncode(signingkey)}`);
-  Console.log(`signature: ${signature}`);
-  return `${@sha256} Credential=${accessKeyId}/${scope},Signature=${signature}`;
+  var dateShort = String.subString(date, 0, 8);
+  dateShort = String.replace(dateShort, 'T', '', null); // for fix php sdk bug
+  var scope = `${dateShort}/${region}/sls/aliyun_v4_request`;
+  var signingkey = getSigningkeyV4('SLS4-HMAC-SHA256', accessKeySecret, region, dateShort);
+  var signature = getSignatureV4(context, 'SLS4-HMAC-SHA256', headerStr, date, scope, contentHash, signingkey);
+  return `${'SLS4-HMAC-SHA256'} Credential=${accessKeyId}/${scope},Signature=${signature}`;
 }
 
 async function getSigningkeyV4(signatureAlgorithm: string, secret: string, region: string, date: string): bytes {
   var sc1 = `aliyun_v4${secret}`;
-  Console.log(`sc1: ${EncodeUtil.hexEncode(Util.toBytes(sc1))}`);
   var sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
-  Console.log(`sc2: ${date} ${sc1} ${EncodeUtil.hexEncode(sc2)}`);
   var sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
-  Console.log(`sc3: ${EncodeUtil.hexEncode(sc3)}`);
-  var sc4 = SignatureUtil.HmacSHA256SignByBytes(@product_id, sc3);
-  Console.log(`sc4: ${EncodeUtil.hexEncode(sc4)}`);
-  var result = SignatureUtil.HmacSHA256SignByBytes(@salt_terminator, sc4);
-  Console.log(`result: ${EncodeUtil.hexEncode(result)}`);
-  return result;
+  var sc4 = SignatureUtil.HmacSHA256SignByBytes('sls', sc3);
+  return SignatureUtil.HmacSHA256SignByBytes('aliyun_v4_request', sc4);
 }
 
 async function getSignatureV4(context: SPI.InterceptorContext, signatureAlgorithm: string, signedHeaderStr: string, date: string, scope: string, contentSha256: string, signingkey: bytes): string {
@@ -323,8 +295,6 @@ async function getSignatureV4(context: SPI.InterceptorContext, signatureAlgorith
 
   var stringToSign = `${signatureAlgorithm}\n${date}\n${scope}\n${hex}`;
   var signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
-  Console.log(`stringToHash: ${stringToHash}`);
-  Console.log(`stringToSign: ${stringToSign}`);
   return EncodeUtil.hexEncode(signature);
 }
 
