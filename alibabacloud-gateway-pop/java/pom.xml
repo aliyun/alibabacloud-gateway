@@ -59,7 +59,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>tea-util</artifactId>
-      <version>0.2.16</version>
+      <version>0.2.21</version>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>credentials-java</artifactId>
-      <version>0.2.10</version>
+      <version>0.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>

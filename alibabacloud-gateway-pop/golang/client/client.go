@@ -161,9 +161,11 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 		err["statusCode"] = response.StatusCode
 		_err = tea.NewSDKError(map[string]interface{}{
-			"code":    tea.ToString(client.DefaultAny(err["Code"], err["code"])),
-			"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(requestId),
-			"data":    err,
+			"code":               tea.ToString(client.DefaultAny(err["Code"], err["code"])),
+			"message":            "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(requestId),
+			"data":               err,
+			"description":        tea.ToString(client.DefaultAny(err["Description"], err["description"])),
+			"accessDeniedDetail": client.DefaultAny(err["AccessDeniedDetail"], err["accessDeniedDetail"]),
 		})
 		return _err
 	}

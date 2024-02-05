@@ -102,7 +102,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", "" + this.defaultAny(err.get("Code"), err.get("code")) + ""),
                 new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(err.get("Message"), err.get("message")) + " request id: " + requestId + ""),
-                new TeaPair("data", err)
+                new TeaPair("data", err),
+                new TeaPair("description", "" + this.defaultAny(err.get("Description"), err.get("description")) + ""),
+                new TeaPair("accessDeniedDetail", this.defaultAny(err.get("AccessDeniedDetail"), err.get("accessDeniedDetail")))
             ));
         }
 
@@ -273,6 +275,6 @@ public class Client extends com.aliyun.gateway.spi.Client {
             }
 
         }
-        return com.aliyun.darabonbastring.Client.split(tmp, ";", 0);
+        return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
     }
 }

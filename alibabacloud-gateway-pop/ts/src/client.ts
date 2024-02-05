@@ -110,6 +110,8 @@ export default class Client extends SPI {
         code: `${this.defaultAny(err["Code"], err["code"])}`,
         message: `code: ${response.statusCode}, ${this.defaultAny(err["Message"], err["message"])} request id: ${requestId}`,
         data: err,
+        description: `${this.defaultAny(err["Description"], err["description"])}`,
+        accessDeniedDetail: this.defaultAny(err["AccessDeniedDetail"], err["accessDeniedDetail"]),
       });
     }
 

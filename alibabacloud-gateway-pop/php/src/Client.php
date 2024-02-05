@@ -126,7 +126,9 @@ class Client extends DarabonbaGatewaySpiClient {
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",
                 "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . (string) ($requestId) . "",
-                "data" => $err
+                "data" => $err,
+                "description" => "" . (string) ($this->defaultAny(@$err["Description"], @$err["description"])) . "",
+                "accessDeniedDetail" => $this->defaultAny(@$err["AccessDeniedDetail"], @$err["accessDeniedDetail"])
             ]);
         }
         if (Utils::equalNumber($response->statusCode, 204)) {

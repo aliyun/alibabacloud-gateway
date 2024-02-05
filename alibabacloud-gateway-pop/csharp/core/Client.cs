@@ -209,6 +209,8 @@ namespace AlibabaCloud.GatewayPop
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
                     {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + requestId},
                     {"data", err},
+                    {"description", "" + DefaultAny(err.Get("Description"), err.Get("description"))},
+                    {"accessDeniedDetail", DefaultAny(err.Get("AccessDeniedDetail"), err.Get("accessDeniedDetail"))},
                 });
             }
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))
@@ -265,6 +267,8 @@ namespace AlibabaCloud.GatewayPop
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
                     {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + requestId},
                     {"data", err},
+                    {"description", "" + DefaultAny(err.Get("Description"), err.Get("description"))},
+                    {"accessDeniedDetail", DefaultAny(err.Get("AccessDeniedDetail"), err.Get("accessDeniedDetail"))},
                 });
             }
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(response.StatusCode, 204))

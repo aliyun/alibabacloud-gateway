@@ -12,8 +12,8 @@ require (
 	github.com/alibabacloud-go/endpoint-util v1.1.0
 	github.com/alibabacloud-go/openapi-util v0.1.0
 	github.com/alibabacloud-go/tea v1.1.20
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.1
-	github.com/aliyun/credentials-go v1.2.6 // indirect
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.4
+	github.com/aliyun/credentials-go v1.3.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	golang.org/x/net v0.17.0 // indirect

@@ -170,7 +170,9 @@ class Client(SPIClient):
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
-                'data': err
+                'data': err,
+                'description': f"{self.default_any(err.get('Description'), err.get('description'))}",
+                'accessDeniedDetail': self.default_any(err.get('AccessDeniedDetail'), err.get('accessDeniedDetail'))
             })
         if UtilClient.equal_number(response.status_code, 204):
             UtilClient.read_as_string(response.body)
@@ -209,7 +211,9 @@ class Client(SPIClient):
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
                 'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
-                'data': err
+                'data': err,
+                'description': f"{self.default_any(err.get('Description'), err.get('description'))}",
+                'accessDeniedDetail': self.default_any(err.get('AccessDeniedDetail'), err.get('accessDeniedDetail'))
             })
         if UtilClient.equal_number(response.status_code, 204):
             await UtilClient.read_as_string_async(response.body)

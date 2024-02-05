@@ -95,7 +95,9 @@ class Client(SPIClient):
             raise TeaException({
                 'code': '%s' % TeaConverter.to_unicode(self.default_any(err.get('Code'), err.get('code'))),
                 'message': 'code: %s, %s request id: %s' % (TeaConverter.to_unicode(response.status_code), TeaConverter.to_unicode(self.default_any(err.get('Message'), err.get('message'))), TeaConverter.to_unicode(request_id)),
-                'data': err
+                'data': err,
+                'description': '%s' % TeaConverter.to_unicode(self.default_any(err.get('Description'), err.get('description'))),
+                'accessDeniedDetail': self.default_any(err.get('AccessDeniedDetail'), err.get('accessDeniedDetail'))
             })
         if UtilClient.equal_number(response.status_code, 204):
             UtilClient.read_as_string(response.body)
