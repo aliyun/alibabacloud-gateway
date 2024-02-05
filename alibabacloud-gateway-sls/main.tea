@@ -37,10 +37,6 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   }
   var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
   var contentHash = '';
-  var isSignV4 = String.equals(signatureVersion, 'v4');
-  if (isSignV4) {
-    contentHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
-  }
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'protobuf')) {
       // var bodyMap = Util.assertAsMap(request.body);
@@ -68,8 +64,10 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     ...request.headers
   };
 
-  // v4 sigature
-  if (isSignV4) {
+  if (String.equals(signatureVersion, 'v4')) {
+    if (Util.empty(contentHash)) {
+      contentHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+    }
     var date = getDateISO8601();
     request.headers['x-log-date'] = date;
     request.headers['x-log-content-sha256'] = contentHash;
@@ -287,10 +285,10 @@ async function getSignatureV4(context: SPI.InterceptorContext, signatureAlgorith
   if (!Util.empty(request.pathname)) {
     canonicalURI = request.pathname;
   }
-  var canonicalizedResource = buildCanonicalizedResourceV4(request.query);
-  var canonicalizedHeaders = buildCanonicalizedHeadersV4(request.headers, signedHeaderStr);
+  var resources = buildCanonicalizedResourceV4(request.query);
+  var headers = buildCanonicalizedHeadersV4(request.headers, signedHeaderStr);
 
-  var stringToHash = `${request.method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeaderStr}\n${contentSha256}`;
+  var stringToHash = `${request.method}\n${canonicalURI}\n${resources}\n${headers}\n${signedHeaderStr}\n${contentSha256}`;
   var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToHash), signatureAlgorithm));
 
   var stringToSign = `${signatureAlgorithm}\n${date}\n${scope}\n${hex}`;
