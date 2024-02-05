@@ -19,8 +19,7 @@
     "Array": "darabonba:Array:*",
     "EncodeUtil": "darabonba:EncodeUtil:*",
     "SignatureUtil": "darabonba:SignatureUtil:*",
-    "SLS_Util": "alibabacloud:GatewaySLS_Util:*",
-    "Console": "darabonba:Console:*"
+    "SLS_Util": "alibabacloud:GatewaySLS_Util:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-sls:^0.0.6",
