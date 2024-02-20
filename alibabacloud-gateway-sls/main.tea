@@ -64,6 +64,8 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     ...request.headers
   };
 
+  buildRequest(context); // move param in path to query
+
   if (String.equals(signatureVersion, 'v4')) {
     if (Util.empty(contentHash)) {
       contentHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
@@ -71,7 +73,6 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     var date = getDateISO8601();
     request.headers['x-log-date'] = date;
     request.headers['x-log-content-sha256'] = contentHash;
-    buildRequest(context);
     request.headers['authorization'] = getAuthorizationV4(context, date, contentHash, accessKeyId, accessKeySecret);
     return;
   }
@@ -81,7 +82,6 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   request.headers['date'] = Util.getDateUTCString();
   request.headers['content-md5'] = contentHash;
   request.headers['authorization'] = getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
-  buildRequest(context);
 }
 
 async function MakeContentHash(content: string, signatureVersion: string) : string {
@@ -183,30 +183,13 @@ async function getSignature(pathname: string, method: string, query: map[string]
 
 async function buildCanonicalizedResource(pathname: string, query: map[string]string): string {
   var canonicalizedResource : string = pathname;
-  var paramsMap : map[string]string = {...query};
-  if (!Util.empty(pathname)) {
-    var paths : [string] = String.split(pathname, `?`, 2);
-    canonicalizedResource = paths[0];
-    if (Util.equalNumber(Array.size(paths), 2)) {
-      var params : [string] = String.split(paths[1], '&', null);
-      for (var sub : params) {
-        var item : [string] = String.split(sub, '=', null);
-        var key : string = item[0];
-        var value : string = null;
-        if (Util.equalNumber(Array.size(item), 2)) {
-          value = item[1];
-        }
-        paramsMap[key] = value;
-      }
-    }
-  }
-  if (!Util.isUnset(paramsMap)) {
-    var queryList : [string] = Map.keySet(paramsMap);
+  if (!Util.isUnset(query)) {
+    var queryList : [string] = Map.keySet(query);
     var sortedParams = Array.ascSort(queryList);
     var separator : string = '?';
     for(var paramName : sortedParams) {
       canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-      var paramValue = paramsMap[paramName];
+      var paramValue = query[paramName];
       if (!Util.isUnset(paramValue)) {
         canonicalizedResource = `${canonicalizedResource}=${paramValue}`;
       }
