@@ -328,9 +328,15 @@ async function getRegion(context: SPI.InterceptorContext): string {
   if (!Util.isUnset(config.regionId) && !Util.empty(config.regionId)) {
     return config.regionId;
   }
-
+  // try parse region from endpoint
   var region: string = String.replace(config.endpoint, '.log.aliyuncs.com', '', null);
   region = String.replace(region, '.sls.aliyuncs.com', '', null);
+  if (String.equals(region, config.endpoint)) {
+      throw {
+        code = 'ClientConfigError',
+        message = 'The regionId configuration of sls client is missing.'
+      };
+  }
   region = String.replace(region, '-share', '', null);
   region = String.replace(region, '-intranet', '', null);
   return region;
