@@ -228,19 +228,16 @@ class Client extends DarabonbaGatewaySpiClient {
                 $bodyStr = Utils::readAsString($response->body);
                 $response->deserializedBody = $bodyStr;
                 if (!Utils::empty_($bodyStr)) {
-                    $result = XML::parseXml($bodyStr, null);
-                    $list = MapUtil::keySet($result);
-                    if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
-                        $tmp = @$list_[0];
-                        try {
-                            $response->deserializedBody = Utils::assertAsMap(@$result[$tmp]);
+                    $respStruct = self::getResponseBodySchema($request->action);
+                    $result = XML::parseXml($bodyStr, $respStruct);
+                    try {
+                        $response->deserializedBody = Utils::assertAsMap($result);
+                    }
+                    catch (Exception $error) {
+                        if (!($error instanceof TeaError)) {
+                            $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
                         }
-                        catch (Exception $error) {
-                            if (!($error instanceof TeaError)) {
-                                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
-                            }
-                            $response->deserializedBody = $result;
-                        }
+                        $response->deserializedBody = $result;
                     }
                 }
             }
@@ -590,5 +587,13 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret){
         return '';
+    }
+
+    /**
+     * @param string $apiName
+     * @return null
+     */
+    public static function getResponseBodySchema($apiName){
+        return null;
     }
 }

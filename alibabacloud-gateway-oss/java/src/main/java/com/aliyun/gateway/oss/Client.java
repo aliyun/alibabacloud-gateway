@@ -133,6 +133,30 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ),
             request.headers
         );
+        String originPath = request.pathname;
+        java.util.Map<String, String> originQuery = request.query;
+        if (!com.aliyun.teautil.Common.empty(originPath)) {
+            java.util.List<String> pathAndQueries = com.aliyun.darabonbastring.Client.split(originPath, "?", 2);
+            request.pathname = pathAndQueries.get(0);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(pathAndQueries), 2)) {
+                java.util.List<String> pathQueries = com.aliyun.darabonbastring.Client.split(pathAndQueries.get(1), "&", null);
+                for (String sub : pathQueries) {
+                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
+                    String queryKey = item.get(0);
+                    String queryValue = "";
+                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
+                        queryValue = item.get(1);
+                    }
+
+                    if (com.aliyun.teautil.Common.empty(originQuery.get(queryKey))) {
+                        request.query.put(queryKey, queryValue);
+                    }
+
+                }
+            }
+
+        }
+
         request.headers.put("authorization", this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId));
     }
 
@@ -204,20 +228,16 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
                 response.deserializedBody = bodyStr;
                 if (!com.aliyun.teautil.Common.empty(bodyStr)) {
-                    java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
-                    java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
-                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(list), 1)) {
-                        String tmp = list.get(0);
-                        try {
-                            response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result.get(tmp));
-                        } catch (TeaException error) {
-                            response.deserializedBody = result;
-                        } catch (Exception _error) {
-                            TeaException error = new TeaException(_error.getMessage(), _error);
-                            response.deserializedBody = result;
-                        }
-                    }
-
+                    Class respStruct = Client.getResponseBodySchema(request.action);
+                    java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, respStruct);
+                    try {
+                        response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result);
+                    } catch (TeaException error) {
+                        response.deserializedBody = result;
+                    } catch (Exception _error) {
+                        TeaException error = new TeaException(_error.getMessage(), _error);
+                        response.deserializedBody = result;
+                    }                    
                 }
 
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
@@ -322,26 +342,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String objectName = "/";
         java.util.Map<String, String> queryMap = new java.util.HashMap<>();
         if (!com.aliyun.teautil.Common.empty(pathname)) {
-            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
-            objectName = paths.get(0);
-            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-                java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
-                for (String sub : subResources) {
-                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
-                    String key = item.get(0);
-                    key = com.aliyun.darabonba.encode.Encoder.percentEncode(key);
-                    key = com.aliyun.darabonbastring.Client.replace(key, "+", "%20", null);
-                    String value = null;
-                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
-                        value = com.aliyun.darabonba.encode.Encoder.percentEncode(item.get(1));
-                        value = com.aliyun.darabonbastring.Client.replace(value, "+", "%20", null);
-                    }
-
-                    // for go : queryMap[tea.StringValue(key)] = value;
-                    queryMap.put(key, value);
-                }
-            }
-
+            objectName = pathname;
         }
 
         String canonicalizedUri = "/";
@@ -363,7 +364,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
             queryKey = com.aliyun.darabonba.encode.Encoder.percentEncode(queryKey);
             queryKey = com.aliyun.darabonbastring.Client.replace(queryKey, "+", "%20", null);
-            // for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+            // for go : queryMap[tea.StringValue(queryKey)] = queryValue
             queryMap.put(queryKey, queryValue);
         }
         String canonicalizedQueryString = this.buildCanonicalizedQueryStringV4(queryMap);
@@ -448,7 +449,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                             value = item.get(1);
                         }
 
-                        // for go : subResourcesMap[tea.StringValue(key)] = value;
+                        // for go : subResourcesMap[tea.StringValue(key)] = value
                         subResourcesMap.put(key, value);
                     }
 
@@ -514,5 +515,13 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public String getSignatureV2(String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String secret) throws Exception {
         return "";
+    }
+
+    public static Class getResponseBodySchema(String apiName) throws Exception {
+        try {
+            return Class.forName("com.aliyun.gateway.oss.models." + apiName + "ResponseBody");
+        } catch (Exception e) {
+        }
+        return null;
     }
 }

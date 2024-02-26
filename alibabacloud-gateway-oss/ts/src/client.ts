@@ -214,17 +214,13 @@ export default class Client extends SPI {
         bodyStr = await Util.readAsString(response.body);
         response.deserializedBody = bodyStr;
         if (!Util.empty(bodyStr)) {
-          let result : {[key: string ]: any} = XML.parseXml(bodyStr, null);
-          let list : string[] = Map.keySet(result);
-          if (Util.equalNumber(Array.size(list), 1)) {
-            let tmp = list[0];
-            try {
-              response.deserializedBody = Util.assertAsMap(result[tmp]);
-            } catch (error) {
-              response.deserializedBody = result;
-            }
-          }
-
+          let respStruct = await Client.getResponseBodySchema(request.action);
+          let result : {[key: string ]: any} = XML.parseXml(bodyStr, respStruct);
+          try {
+            response.deserializedBody = Util.assertAsMap(result);
+          } catch (error) {
+            response.deserializedBody = result;
+          }          
         }
 
       } else if (Util.equalString(request.bodyType, "binary")) {
@@ -345,7 +341,7 @@ export default class Client extends SPI {
             value = String.replace(value, "+", "%20", null);
           }
 
-          // for go : queryMap[tea.StringValue(key)] = value;
+          // for go : queryMap[tea.StringValue(key)] = value
           queryMap[key] = value;
         }
       }
@@ -371,7 +367,7 @@ export default class Client extends SPI {
 
       queryKey = EncodeUtil.percentEncode(queryKey);
       queryKey = String.replace(queryKey, "+", "%20", null);
-      // for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+      // for go : queryMap[tea.StringValue(queryKey)] = queryValue
       queryMap[queryKey] = queryValue;
     }
     let canonicalizedQueryString = await this.buildCanonicalizedQueryStringV4(queryMap);
@@ -460,7 +456,7 @@ export default class Client extends SPI {
               value = item[1];
             }
 
-            // for go : subResourcesMap[tea.StringValue(key)] = value;
+            // for go : subResourcesMap[tea.StringValue(key)] = value
             subResourcesMap[key] = value;
           }
 
@@ -528,6 +524,10 @@ export default class Client extends SPI {
 
   async getSignatureV2(bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, secret: string): Promise<string> {
     return "";
+  }
+
+  static async getResponseBodySchema(apiName: string): Promise<Object> {
+    return null;
   }
 
 }
