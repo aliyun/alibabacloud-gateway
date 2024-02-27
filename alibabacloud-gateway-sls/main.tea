@@ -329,6 +329,7 @@ async function getRegion(context: SPI.InterceptorContext): string {
     return config.regionId;
   }
   // try parse region from endpoint
+  // do not use String.subString, subString has bug in php implementation
   var region: string = String.replace(config.endpoint, '.log.aliyuncs.com', '', null);
   region = String.replace(region, '.sls.aliyuncs.com', '', null);
   if (String.equals(region, config.endpoint)) {
