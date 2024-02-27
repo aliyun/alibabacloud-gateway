@@ -339,6 +339,7 @@ async function getRegion(context: SPI.InterceptorContext): string {
   }
   region = String.replace(region, '-share', '', null);
   region = String.replace(region, '-intranet', '', null);
+  region = String.replace(region, '-vpc', '', null);
   return region;
 }
 
