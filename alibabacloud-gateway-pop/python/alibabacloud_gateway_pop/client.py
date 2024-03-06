@@ -22,8 +22,8 @@ class Client(SPIClient):
 
     def __init__(self):
         super().__init__()
-        undefined._sha_256 = 'ACS4-HMAC-SHA256'
-        undefined._sm_3 = 'ACS4-HMAC-SM3'
+        self._sha_256 = 'ACS4-HMAC-SHA256'
+        self._sm_3 = 'ACS4-HMAC-SM3'
 
     def modify_configuration(
         self,
