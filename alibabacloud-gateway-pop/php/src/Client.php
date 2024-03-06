@@ -119,9 +119,6 @@ class Client extends DarabonbaGatewaySpiClient {
             $_res = Utils::readAsJSON($response->body);
             $err = Utils::assertAsMap($_res);
             $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
-            if (!Utils::isUnset(@$response->headers["x-acs-request-id"])) {
-                $requestId = @$response->headers["x-acs-request-id"];
-            }
             @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",
