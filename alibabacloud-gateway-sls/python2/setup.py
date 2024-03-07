@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_sls_py2.
 
-Created on 10/08/2023
+Created on 07/03/2024
 
 @author: Alibaba Cloud SDK
 """

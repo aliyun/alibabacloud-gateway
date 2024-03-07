@@ -11,8 +11,9 @@ from alibabacloud_gateway_spi import models as spi_models
 from alibabacloud_tea_util.client import Client as UtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_gateway_sls_util.client import Client as SLS_UtilClient
-from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_darabonba_map.client import Client as MapClient
+from alibabacloud_darabonba_array.client import Client as ArrayClient
+from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 
 
 class Client(SPIClient):
@@ -50,10 +51,10 @@ class Client(SPIClient):
         access_key_id = credential.get_access_key_id()
         access_key_secret = credential.get_access_key_secret()
         security_token = credential.get_security_token()
-        if not UtilClient.empty(access_key_id):
-            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        content_hash = ''
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'protobuf'):
                 # var bodyMap = Util.assertAsMap(request.body);
@@ -61,25 +62,37 @@ class Client(SPIClient):
                 request.headers['content-type'] = 'application/x-protobuf'
             elif StringClient.equals(request.req_body_type, 'json'):
                 body_str = UtilClient.to_jsonstring(request.body)
-                request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(body_str)))
+                content_hash = self.make_content_hash(body_str, signature_version)
                 request.stream = body_str
                 request.headers['content-type'] = 'application/json'
             elif StringClient.equals(request.req_body_type, 'formData'):
                 str = UtilClient.to_jsonstring(request.body)
-                request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(str)))
+                content_hash = self.make_content_hash(str, signature_version)
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
         host = self.get_host(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
             'host': host,
-            'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent,
             'x-log-apiversion': '0.6.0',
             'x-log-bodyrawsize': '0'
         }, request.headers)
-        request.headers['authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
         self.build_request(context)
+        # move param in path to query
+        if StringClient.equals(signature_version, 'v4'):
+            if UtilClient.empty(content_hash):
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+            date = self.get_date_iso8601()
+            request.headers['x-log-date'] = date
+            request.headers['x-log-content-sha256'] = content_hash
+            request.headers['authorization'] = self.get_authorization_v4(context, date, content_hash, access_key_id, access_key_secret)
+            return
+        if not UtilClient.empty(access_key_id):
+            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
+        request.headers['date'] = UtilClient.get_date_utcstring()
+        request.headers['content-md5'] = content_hash
+        request.headers['authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
 
     async def modify_request_async(
         self,
@@ -96,10 +109,10 @@ class Client(SPIClient):
         access_key_id = await credential.get_access_key_id_async()
         access_key_secret = await credential.get_access_key_secret_async()
         security_token = await credential.get_security_token_async()
-        if not UtilClient.empty(access_key_id):
-            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        content_hash = ''
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'protobuf'):
                 # var bodyMap = Util.assertAsMap(request.body);
@@ -107,25 +120,59 @@ class Client(SPIClient):
                 request.headers['content-type'] = 'application/x-protobuf'
             elif StringClient.equals(request.req_body_type, 'json'):
                 body_str = UtilClient.to_jsonstring(request.body)
-                request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(body_str)))
+                content_hash = await self.make_content_hash_async(body_str, signature_version)
                 request.stream = body_str
                 request.headers['content-type'] = 'application/json'
             elif StringClient.equals(request.req_body_type, 'formData'):
                 str = UtilClient.to_jsonstring(request.body)
-                request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(str)))
+                content_hash = await self.make_content_hash_async(str, signature_version)
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
         host = await self.get_host_async(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
             'host': host,
-            'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent,
             'x-log-apiversion': '0.6.0',
             'x-log-bodyrawsize': '0'
         }, request.headers)
-        request.headers['authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
         await self.build_request_async(context)
+        # move param in path to query
+        if StringClient.equals(signature_version, 'v4'):
+            if UtilClient.empty(content_hash):
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+            date = await self.get_date_iso8601_async()
+            request.headers['x-log-date'] = date
+            request.headers['x-log-content-sha256'] = content_hash
+            request.headers['authorization'] = await self.get_authorization_v4_async(context, date, content_hash, access_key_id, access_key_secret)
+            return
+        if not UtilClient.empty(access_key_id):
+            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
+        request.headers['date'] = UtilClient.get_date_utcstring()
+        request.headers['content-md5'] = content_hash
+        request.headers['authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
+
+    def make_content_hash(
+        self,
+        content: str,
+        signature_version: str,
+    ) -> str:
+        if StringClient.equals(signature_version, 'v4'):
+            if UtilClient.empty(content):
+                return ''
+            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(content), 'SLS4-HMAC-SHA256')))
+        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(content)))
+
+    async def make_content_hash_async(
+        self,
+        content: str,
+        signature_version: str,
+    ) -> str:
+        if StringClient.equals(signature_version, 'v4'):
+            if UtilClient.empty(content):
+                return ''
+            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(content), 'SLS4-HMAC-SHA256')))
+        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(content)))
 
     def modify_response(
         self,
@@ -335,26 +382,13 @@ class Client(SPIClient):
         query: Dict[str, str],
     ) -> str:
         canonicalized_resource = pathname
-        params_map = TeaCore.merge(query)
-        if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'?', 2)
-            canonicalized_resource = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                params = StringClient.split(paths[1], '&', None)
-                for sub in params:
-                    item = StringClient.split(sub, '=', None)
-                    key = item[0]
-                    value = None
-                    if UtilClient.equal_number(ArrayClient.size(item), 2):
-                        value = item[1]
-                    params_map[key] = value
-        if not UtilClient.is_unset(params_map):
-            query_list = MapClient.key_set(params_map)
+        if not UtilClient.is_unset(query):
+            query_list = MapClient.key_set(query)
             sorted_params = ArrayClient.asc_sort(query_list)
             separator = '?'
             for param_name in sorted_params:
                 canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                param_value = params_map.get(param_name)
+                param_value = query.get(param_name)
                 if not UtilClient.is_unset(param_value):
                     canonicalized_resource = f'{canonicalized_resource}={param_value}'
                 separator = '&'
@@ -366,26 +400,13 @@ class Client(SPIClient):
         query: Dict[str, str],
     ) -> str:
         canonicalized_resource = pathname
-        params_map = TeaCore.merge(query)
-        if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'?', 2)
-            canonicalized_resource = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                params = StringClient.split(paths[1], '&', None)
-                for sub in params:
-                    item = StringClient.split(sub, '=', None)
-                    key = item[0]
-                    value = None
-                    if UtilClient.equal_number(ArrayClient.size(item), 2):
-                        value = item[1]
-                    params_map[key] = value
-        if not UtilClient.is_unset(params_map):
-            query_list = MapClient.key_set(params_map)
+        if not UtilClient.is_unset(query):
+            query_list = MapClient.key_set(query)
             sorted_params = ArrayClient.asc_sort(query_list)
             separator = '?'
             for param_name in sorted_params:
                 canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                param_value = params_map.get(param_name)
+                param_value = query.get(param_name)
                 if not UtilClient.is_unset(param_value):
                     canonicalized_resource = f'{canonicalized_resource}={param_value}'
                 separator = '&'
@@ -468,3 +489,255 @@ class Client(SPIClient):
                         value = item[1]
                     request.query[key] = value
         request.pathname = resource
+
+    def get_authorization_v4(
+        self,
+        context: spi_models.InterceptorContext,
+        date: str,
+        content_hash: str,
+        access_key_id: str,
+        access_key_secret: str,
+    ) -> str:
+        region = self.get_region(context)
+        header_str = self.get_signed_header_str_v4(context.request.headers)
+        date_short = StringClient.sub_string(date, 0, 8)
+        date_short = StringClient.replace(date_short, 'T', '', None)
+        # for fix php sdk bug
+        scope = f'{date_short}/{region}/sls/aliyun_v4_request'
+        signingkey = self.get_signingkey_v4('SLS4-HMAC-SHA256', access_key_secret, region, date_short)
+        signature = self.get_signature_v4(context, 'SLS4-HMAC-SHA256', header_str, date, scope, content_hash, signingkey)
+        return f"{'SLS4-HMAC-SHA256'} Credential={access_key_id}/{scope},Signature={signature}"
+
+    async def get_authorization_v4_async(
+        self,
+        context: spi_models.InterceptorContext,
+        date: str,
+        content_hash: str,
+        access_key_id: str,
+        access_key_secret: str,
+    ) -> str:
+        region = await self.get_region_async(context)
+        header_str = await self.get_signed_header_str_v4_async(context.request.headers)
+        date_short = StringClient.sub_string(date, 0, 8)
+        date_short = StringClient.replace(date_short, 'T', '', None)
+        # for fix php sdk bug
+        scope = f'{date_short}/{region}/sls/aliyun_v4_request'
+        signingkey = await self.get_signingkey_v4_async('SLS4-HMAC-SHA256', access_key_secret, region, date_short)
+        signature = await self.get_signature_v4_async(context, 'SLS4-HMAC-SHA256', header_str, date, scope, content_hash, signingkey)
+        return f"{'SLS4-HMAC-SHA256'} Credential={access_key_id}/{scope},Signature={signature}"
+
+    def get_signingkey_v4(
+        self,
+        signature_algorithm: str,
+        secret: str,
+        region: str,
+        date: str,
+    ) -> bytes:
+        sc_1 = f'aliyun_v4{secret}'
+        sc_2 = Signer.hmac_sha256sign(date, sc_1)
+        sc_3 = Signer.hmac_sha256sign_by_bytes(region, sc_2)
+        sc_4 = Signer.hmac_sha256sign_by_bytes('sls', sc_3)
+        return Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+
+    async def get_signingkey_v4_async(
+        self,
+        signature_algorithm: str,
+        secret: str,
+        region: str,
+        date: str,
+    ) -> bytes:
+        sc_1 = f'aliyun_v4{secret}'
+        sc_2 = Signer.hmac_sha256sign(date, sc_1)
+        sc_3 = Signer.hmac_sha256sign_by_bytes(region, sc_2)
+        sc_4 = Signer.hmac_sha256sign_by_bytes('sls', sc_3)
+        return Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+
+    def get_signature_v4(
+        self,
+        context: spi_models.InterceptorContext,
+        signature_algorithm: str,
+        signed_header_str: str,
+        date: str,
+        scope: str,
+        content_sha_256: str,
+        signingkey: bytes,
+    ) -> str:
+        request = context.request
+        canonical_uri = '/'
+        if not UtilClient.empty(request.pathname):
+            canonical_uri = request.pathname
+        resources = self.build_canonicalized_resource_v4(request.query)
+        headers = self.build_canonicalized_headers_v4(request.headers, signed_header_str)
+        string_to_hash = f'{request.method}\n{canonical_uri}\n{resources}\n{headers}\n{signed_header_str}\n{content_sha_256}'
+        hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_hash), signature_algorithm))
+        string_to_sign = f'{signature_algorithm}\n{date}\n{scope}\n{hex}'
+        signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
+        return Encoder.hex_encode(signature)
+
+    async def get_signature_v4_async(
+        self,
+        context: spi_models.InterceptorContext,
+        signature_algorithm: str,
+        signed_header_str: str,
+        date: str,
+        scope: str,
+        content_sha_256: str,
+        signingkey: bytes,
+    ) -> str:
+        request = context.request
+        canonical_uri = '/'
+        if not UtilClient.empty(request.pathname):
+            canonical_uri = request.pathname
+        resources = await self.build_canonicalized_resource_v4_async(request.query)
+        headers = await self.build_canonicalized_headers_v4_async(request.headers, signed_header_str)
+        string_to_hash = f'{request.method}\n{canonical_uri}\n{resources}\n{headers}\n{signed_header_str}\n{content_sha_256}'
+        hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_hash), signature_algorithm))
+        string_to_sign = f'{signature_algorithm}\n{date}\n{scope}\n{hex}'
+        signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
+        return Encoder.hex_encode(signature)
+
+    def build_canonicalized_resource_v4(
+        self,
+        query: Dict[str, str],
+    ) -> str:
+        canonicalized_resource = ''
+        if not UtilClient.is_unset(query):
+            query_array = MapClient.key_set(query)
+            sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
+            for key in sorted_query_array:
+                canonicalized_resource = f'{canonicalized_resource}{separator}{key}'
+                if not UtilClient.empty(query.get(key)):
+                    canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                separator = '&'
+        return canonicalized_resource
+
+    async def build_canonicalized_resource_v4_async(
+        self,
+        query: Dict[str, str],
+    ) -> str:
+        canonicalized_resource = ''
+        if not UtilClient.is_unset(query):
+            query_array = MapClient.key_set(query)
+            sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
+            for key in sorted_query_array:
+                canonicalized_resource = f'{canonicalized_resource}{separator}{key}'
+                if not UtilClient.empty(query.get(key)):
+                    canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                separator = '&'
+        return canonicalized_resource
+
+    def build_canonicalized_headers_v4(
+        self,
+        headers: Dict[str, str],
+        signed_header_str: str,
+    ) -> str:
+        canonicalized_headers = ''
+        signed_headers = StringClient.split(signed_header_str, ';', None)
+        for header in signed_headers:
+            canonicalized_headers = f'{canonicalized_headers}{header}:{StringClient.trim(headers.get(header))}\n'
+        return canonicalized_headers
+
+    async def build_canonicalized_headers_v4_async(
+        self,
+        headers: Dict[str, str],
+        signed_header_str: str,
+    ) -> str:
+        canonicalized_headers = ''
+        signed_headers = StringClient.split(signed_header_str, ';', None)
+        for header in signed_headers:
+            canonicalized_headers = f'{canonicalized_headers}{header}:{StringClient.trim(headers.get(header))}\n'
+        return canonicalized_headers
+
+    def get_signed_header_str_v4(
+        self,
+        headers: Dict[str, str],
+    ) -> str:
+        headers_array = MapClient.key_set(headers)
+        sorted_headers_array = ArrayClient.asc_sort(headers_array)
+        tmp = ''
+        separator = ''
+        for key in sorted_headers_array:
+            lower_key = StringClient.to_lower(key)
+            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
+                if not StringClient.contains(tmp, lower_key):
+                    tmp = f'{tmp}{separator}{lower_key}'
+                    separator = ';'
+        return tmp
+
+    async def get_signed_header_str_v4_async(
+        self,
+        headers: Dict[str, str],
+    ) -> str:
+        headers_array = MapClient.key_set(headers)
+        sorted_headers_array = ArrayClient.asc_sort(headers_array)
+        tmp = ''
+        separator = ''
+        for key in sorted_headers_array:
+            lower_key = StringClient.to_lower(key)
+            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
+                if not StringClient.contains(tmp, lower_key):
+                    tmp = f'{tmp}{separator}{lower_key}'
+                    separator = ';'
+        return tmp
+
+    def get_region(
+        self,
+        context: spi_models.InterceptorContext,
+    ) -> str:
+        config = context.configuration
+        if not UtilClient.is_unset(config.region_id) and not UtilClient.empty(config.region_id):
+            return config.region_id
+        # try parse region from endpoint
+        # do not use String.subString, subString has bug in php implementation
+        region = StringClient.replace(config.endpoint, '.log.aliyuncs.com', '', None)
+        region = StringClient.replace(region, '.sls.aliyuncs.com', '', None)
+        if StringClient.equals(region, config.endpoint):
+            raise TeaException({
+                'code': 'ClientConfigError',
+                'message': 'The regionId configuration of sls client is missing.'
+            })
+        region = StringClient.replace(region, '-share', '', None)
+        region = StringClient.replace(region, '-intranet', '', None)
+        region = StringClient.replace(region, '-vpc', '', None)
+        return region
+
+    async def get_region_async(
+        self,
+        context: spi_models.InterceptorContext,
+    ) -> str:
+        config = context.configuration
+        if not UtilClient.is_unset(config.region_id) and not UtilClient.empty(config.region_id):
+            return config.region_id
+        # try parse region from endpoint
+        # do not use String.subString, subString has bug in php implementation
+        region = StringClient.replace(config.endpoint, '.log.aliyuncs.com', '', None)
+        region = StringClient.replace(region, '.sls.aliyuncs.com', '', None)
+        if StringClient.equals(region, config.endpoint):
+            raise TeaException({
+                'code': 'ClientConfigError',
+                'message': 'The regionId configuration of sls client is missing.'
+            })
+        region = StringClient.replace(region, '-share', '', None)
+        region = StringClient.replace(region, '-intranet', '', None)
+        region = StringClient.replace(region, '-vpc', '', None)
+        return region
+
+    def get_date_iso8601(self) -> str:
+        """
+        format: YYYYMMDDTHHMMSSZ
+        """
+        date = OpenApiUtilClient.get_timestamp()
+        # 2024-02-04T11:31:58Z
+        date = StringClient.replace(date, '-', '', None)
+        return StringClient.replace(date, ':', '', None)
+
+    async def get_date_iso8601_async(self) -> str:
+        """
+        format: YYYYMMDDTHHMMSSZ
+        """
+        date = OpenApiUtilClient.get_timestamp()
+        # 2024-02-04T11:31:58Z
+        date = StringClient.replace(date, '-', '', None)
+        return StringClient.replace(date, ':', '', None)

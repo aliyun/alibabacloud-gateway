@@ -9,8 +9,9 @@ import Array from '@alicloud/darabonba-array';
 import EncodeUtil from '@alicloud/darabonba-encode-util';
 import SignatureUtil from '@alicloud/darabonba-signature-util';
 import SLS_Util from '@alicloud/gateway-sls-util';
-import * as $tea from '@alicloud/tea-typescript';
 import { Readable } from 'stream';
+import * as $tea from '@alicloud/tea-typescript';
+
 
 export default class Client extends SPI {
 
@@ -37,14 +38,12 @@ export default class Client extends SPI {
     let accessKeyId = await credential.getAccessKeyId();
     let accessKeySecret = await credential.getAccessKeySecret();
     let securityToken = await credential.getSecurityToken();
-    if (!Util.empty(accessKeyId)) {
-      request.headers["x-log-signaturemethod"] = "hmac-sha256";
-    }
-
     if (!Util.empty(securityToken)) {
       request.headers["x-acs-security-token"] = securityToken;
     }
 
+    let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
+    let contentHash = "";
     if (!Util.isUnset(request.body)) {
       if (String.equals(request.reqBodyType, "protobuf")) {
         // var bodyMap = Util.assertAsMap(request.body);
@@ -52,12 +51,12 @@ export default class Client extends SPI {
         request.headers["content-type"] = "application/x-protobuf";
       } else if (String.equals(request.reqBodyType, "json")) {
         let bodyStr = Util.toJSONString(request.body);
-        request.headers["content-md5"] = String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5Sign(bodyStr)));
+        contentHash = await this.MakeContentHash(bodyStr, signatureVersion);
         request.stream = new $tea.BytesReadable(bodyStr);
         request.headers["content-type"] = "application/json";
       } else if (String.equals(request.reqBodyType, "formData")) {
         let str = Util.toJSONString(request.body);
-        request.headers["content-md5"] = String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5Sign(str)));
+        contentHash = await this.MakeContentHash(str, signatureVersion);
         request.stream = new $tea.BytesReadable(str);
         request.headers["content-type"] = "application/json";
       }
@@ -68,14 +67,44 @@ export default class Client extends SPI {
     request.headers = {
       accept: "application/json",
       host: host,
-      date: Util.getDateUTCString(),
       'user-agent': request.userAgent,
       'x-log-apiversion': "0.6.0",
       'x-log-bodyrawsize': "0",
       ...request.headers,
     };
-    request.headers["authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
     await this.buildRequest(context);
+    // move param in path to query
+    if (String.equals(signatureVersion, "v4")) {
+      if (Util.empty(contentHash)) {
+        contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+      }
+
+      let date = await this.getDateISO8601();
+      request.headers["x-log-date"] = date;
+      request.headers["x-log-content-sha256"] = contentHash;
+      request.headers["authorization"] = await this.getAuthorizationV4(context, date, contentHash, accessKeyId, accessKeySecret);
+      return ;
+    }
+
+    if (!Util.empty(accessKeyId)) {
+      request.headers["x-log-signaturemethod"] = "hmac-sha256";
+    }
+
+    request.headers["date"] = Util.getDateUTCString();
+    request.headers["content-md5"] = contentHash;
+    request.headers["authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+  }
+
+  async MakeContentHash(content: string, signatureVersion: string): Promise<string> {
+    if (String.equals(signatureVersion, "v4")) {
+      if (Util.empty(content)) {
+        return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+      }
+
+      return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(content), "SLS4-HMAC-SHA256")));
+    }
+
+    return String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5Sign(content)));
   }
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -177,37 +206,14 @@ export default class Client extends SPI {
 
   async buildCanonicalizedResource(pathname: string, query: {[key: string ]: string}): Promise<string> {
     let canonicalizedResource : string = pathname;
-    let paramsMap : {[key: string ]: string} = {
-      ...query,
-    };
-    if (!Util.empty(pathname)) {
-      let paths : string[] = String.split(pathname, `?`, 2);
-      canonicalizedResource = paths[0];
-      if (Util.equalNumber(Array.size(paths), 2)) {
-        let params : string[] = String.split(paths[1], "&", null);
-
-        for (let sub of params) {
-          let item : string[] = String.split(sub, "=", null);
-          let key : string = item[0];
-          let value : string = null;
-          if (Util.equalNumber(Array.size(item), 2)) {
-            value = item[1];
-          }
-
-          paramsMap[key] = value;
-        }
-      }
-
-    }
-
-    if (!Util.isUnset(paramsMap)) {
-      let queryList : string[] = Map.keySet(paramsMap);
+    if (!Util.isUnset(query)) {
+      let queryList : string[] = Map.keySet(query);
       let sortedParams = Array.ascSort(queryList);
       let separator : string = "?";
 
       for (let paramName of sortedParams) {
         canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-        let paramValue = paramsMap[paramName];
+        let paramValue = query[paramName];
         if (!Util.isUnset(paramValue)) {
           canonicalizedResource = `${canonicalizedResource}=${paramValue}`;
         }
@@ -268,6 +274,123 @@ export default class Client extends SPI {
     }
 
     request.pathname = resource;
+  }
+
+  async getAuthorizationV4(context: $SPI.InterceptorContext, date: string, contentHash: string, accessKeyId: string, accessKeySecret: string): Promise<string> {
+    let region = await this.getRegion(context);
+    let headerStr = await this.getSignedHeaderStrV4(context.request.headers);
+    let dateShort = String.subString(date, 0, 8);
+    dateShort = String.replace(dateShort, "T", "", null);
+    // for fix php sdk bug
+    let scope = `${dateShort}/${region}/sls/aliyun_v4_request`;
+    let signingkey = await this.getSigningkeyV4("SLS4-HMAC-SHA256", accessKeySecret, region, dateShort);
+    let signature = await this.getSignatureV4(context, "SLS4-HMAC-SHA256", headerStr, date, scope, contentHash, signingkey);
+    return `${"SLS4-HMAC-SHA256"} Credential=${accessKeyId}/${scope},Signature=${signature}`;
+  }
+
+  async getSigningkeyV4(signatureAlgorithm: string, secret: string, region: string, date: string): Promise<Buffer> {
+    let sc1 = `aliyun_v4${secret}`;
+    let sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
+    let sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
+    let sc4 = SignatureUtil.HmacSHA256SignByBytes("sls", sc3);
+    return SignatureUtil.HmacSHA256SignByBytes("aliyun_v4_request", sc4);
+  }
+
+  async getSignatureV4(context: $SPI.InterceptorContext, signatureAlgorithm: string, signedHeaderStr: string, date: string, scope: string, contentSha256: string, signingkey: Buffer): Promise<string> {
+    let request = context.request;
+    let canonicalURI = "/";
+    if (!Util.empty(request.pathname)) {
+      canonicalURI = request.pathname;
+    }
+
+    let resources = await this.buildCanonicalizedResourceV4(request.query);
+    let headers = await this.buildCanonicalizedHeadersV4(request.headers, signedHeaderStr);
+    let stringToHash = `${request.method}\n${canonicalURI}\n${resources}\n${headers}\n${signedHeaderStr}\n${contentSha256}`;
+    let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToHash), signatureAlgorithm));
+    let stringToSign = `${signatureAlgorithm}\n${date}\n${scope}\n${hex}`;
+    let signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+    return EncodeUtil.hexEncode(signature);
+  }
+
+  async buildCanonicalizedResourceV4(query: {[key: string ]: string}): Promise<string> {
+    let canonicalizedResource : string = "";
+    if (!Util.isUnset(query)) {
+      let queryArray : string[] = Map.keySet(query);
+      let sortedQueryArray = Array.ascSort(queryArray);
+      let separator : string = "";
+
+      for (let key of sortedQueryArray) {
+        canonicalizedResource = `${canonicalizedResource}${separator}${key}`;
+        if (!Util.empty(query[key])) {
+          canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+        }
+
+        separator = "&";
+      }
+    }
+
+    return canonicalizedResource;
+  }
+
+  async buildCanonicalizedHeadersV4(headers: {[key: string ]: string}, signedHeaderStr: string): Promise<string> {
+    let canonicalizedHeaders : string = "";
+    let signedHeaders : string[] = String.split(signedHeaderStr, ";", null);
+
+    for (let header of signedHeaders) {
+      canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
+    }
+    return canonicalizedHeaders;
+  }
+
+  async getSignedHeaderStrV4(headers: {[key: string ]: string}): Promise<string> {
+    let headersArray : string[] = Map.keySet(headers);
+    let sortedHeadersArray = Array.ascSort(headersArray);
+    let tmp : string = "";
+    let separator : string = "";
+
+    for (let key of sortedHeadersArray) {
+      let lowerKey = String.toLower(key);
+      if (String.hasPrefix(lowerKey, "x-log-") || String.equals(lowerKey, "host") || String.equals(lowerKey, "content-type")) {
+        if (!String.contains(tmp, lowerKey)) {
+          tmp = `${tmp}${separator}${lowerKey}`;
+          separator = ";";
+        }
+
+      }
+
+    }
+    return tmp;
+  }
+
+  async getRegion(context: $SPI.InterceptorContext): Promise<string> {
+    let config = context.configuration;
+    if (!Util.isUnset(config.regionId) && !Util.empty(config.regionId)) {
+      return config.regionId;
+    }
+
+    // try parse region from endpoint
+    // do not use String.subString, subString has bug in php implementation
+    let region : string = String.replace(config.endpoint, ".log.aliyuncs.com", "", null);
+    region = String.replace(region, ".sls.aliyuncs.com", "", null);
+    if (String.equals(region, config.endpoint)) {
+      throw $tea.newError({
+        code: "ClientConfigError",
+        message: "The regionId configuration of sls client is missing.",
+      });
+    }
+
+    region = String.replace(region, "-share", "", null);
+    region = String.replace(region, "-intranet", "", null);
+    region = String.replace(region, "-vpc", "", null);
+    return region;
+  }
+
+  // format: YYYYMMDDTHHMMSSZ
+  async getDateISO8601(): Promise<string> {
+    let date = OpenApiUtil.getTimestamp();
+    // 2024-02-04T11:31:58Z
+    date = String.replace(date, "-", "", null);
+    return String.replace(date, ":", "", null);
   }
 
 }

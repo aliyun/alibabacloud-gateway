@@ -12,8 +12,9 @@ from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_tea_util.client import Client as UtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_gateway_sls_util.client import Client as SLS_UtilClient
-from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_darabonba_map.client import Client as MapClient
+from alibabacloud_darabonba_array.client import Client as ArrayClient
+from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 
 
 class Client(SPIClient):
@@ -35,10 +36,10 @@ class Client(SPIClient):
         access_key_id = credential.get_access_key_id()
         access_key_secret = credential.get_access_key_secret()
         security_token = credential.get_security_token()
-        if not UtilClient.empty(access_key_id):
-            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        content_hash = ''
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'protobuf'):
                 # var bodyMap = Util.assertAsMap(request.body);
@@ -46,25 +47,44 @@ class Client(SPIClient):
                 request.headers['content-type'] = 'application/x-protobuf'
             elif StringClient.equals(request.req_body_type, 'json'):
                 body_str = UtilClient.to_jsonstring(request.body)
-                request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(body_str)))
+                content_hash = self.make_content_hash(body_str, signature_version)
                 request.stream = body_str
                 request.headers['content-type'] = 'application/json'
             elif StringClient.equals(request.req_body_type, 'formData'):
                 str = UtilClient.to_jsonstring(request.body)
-                request.headers['content-md5'] = StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(str)))
+                content_hash = self.make_content_hash(str, signature_version)
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
         host = self.get_host(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
             'host': host,
-            'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent,
             'x-log-apiversion': '0.6.0',
             'x-log-bodyrawsize': '0'
         }, request.headers)
-        request.headers['authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
         self.build_request(context)
+        # move param in path to query
+        if StringClient.equals(signature_version, 'v4'):
+            if UtilClient.empty(content_hash):
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+            date = self.get_date_iso8601()
+            request.headers['x-log-date'] = date
+            request.headers['x-log-content-sha256'] = content_hash
+            request.headers['authorization'] = self.get_authorization_v4(context, date, content_hash, access_key_id, access_key_secret)
+            return
+        if not UtilClient.empty(access_key_id):
+            request.headers['x-log-signaturemethod'] = 'hmac-sha256'
+        request.headers['date'] = UtilClient.get_date_utcstring()
+        request.headers['content-md5'] = content_hash
+        request.headers['authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
+
+    def make_content_hash(self, content, signature_version):
+        if StringClient.equals(signature_version, 'v4'):
+            if UtilClient.empty(content):
+                return ''
+            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(content), 'SLS4-HMAC-SHA256')))
+        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(content)))
 
     def modify_response(self, context, attribute_map):
         request = context.request
@@ -140,26 +160,13 @@ class Client(SPIClient):
 
     def build_canonicalized_resource(self, pathname, query):
         canonicalized_resource = pathname
-        params_map = TeaCore.merge(query)
-        if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, '?', 2)
-            canonicalized_resource = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                params = StringClient.split(paths[1], '&', None)
-                for sub in params:
-                    item = StringClient.split(sub, '=', None)
-                    key = item[0]
-                    value = None
-                    if UtilClient.equal_number(ArrayClient.size(item), 2):
-                        value = item[1]
-                    params_map[key] = value
-        if not UtilClient.is_unset(params_map):
-            query_list = MapClient.key_set(params_map)
+        if not UtilClient.is_unset(query):
+            query_list = MapClient.key_set(query)
             sorted_params = ArrayClient.asc_sort(query_list)
             separator = '?'
             for param_name in sorted_params:
                 canonicalized_resource = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(param_name))
-                param_value = params_map.get(param_name)
+                param_value = query.get(param_name)
                 if not UtilClient.is_unset(param_value):
                     canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(param_value))
                 separator = '&'
@@ -197,3 +204,94 @@ class Client(SPIClient):
                         value = item[1]
                     request.query[key] = value
         request.pathname = resource
+
+    def get_authorization_v4(self, context, date, content_hash, access_key_id, access_key_secret):
+        region = self.get_region(context)
+        header_str = self.get_signed_header_str_v4(context.request.headers)
+        date_short = StringClient.sub_string(date, 0, 8)
+        date_short = StringClient.replace(date_short, 'T', '', None)
+        # for fix php sdk bug
+        scope = '%s/%s/sls/aliyun_v4_request' % (TeaConverter.to_unicode(date_short), TeaConverter.to_unicode(region))
+        signingkey = self.get_signingkey_v4('SLS4-HMAC-SHA256', access_key_secret, region, date_short)
+        signature = self.get_signature_v4(context, 'SLS4-HMAC-SHA256', header_str, date, scope, content_hash, signingkey)
+        return '%s Credential=%s/%s,Signature=%s' % (TeaConverter.to_unicode('SLS4-HMAC-SHA256'), TeaConverter.to_unicode(access_key_id), TeaConverter.to_unicode(scope), TeaConverter.to_unicode(signature))
+
+    def get_signingkey_v4(self, signature_algorithm, secret, region, date):
+        sc_1 = 'aliyun_v4%s' % TeaConverter.to_unicode(secret)
+        sc_2 = Signer.hmac_sha256sign(date, sc_1)
+        sc_3 = Signer.hmac_sha256sign_by_bytes(region, sc_2)
+        sc_4 = Signer.hmac_sha256sign_by_bytes('sls', sc_3)
+        return Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+
+    def get_signature_v4(self, context, signature_algorithm, signed_header_str, date, scope, content_sha_256, signingkey):
+        request = context.request
+        canonical_uri = '/'
+        if not UtilClient.empty(request.pathname):
+            canonical_uri = request.pathname
+        resources = self.build_canonicalized_resource_v4(request.query)
+        headers = self.build_canonicalized_headers_v4(request.headers, signed_header_str)
+        string_to_hash = '%s\n%s\n%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(request.method), TeaConverter.to_unicode(canonical_uri), TeaConverter.to_unicode(resources), TeaConverter.to_unicode(headers), TeaConverter.to_unicode(signed_header_str), TeaConverter.to_unicode(content_sha_256))
+        hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_hash), signature_algorithm))
+        string_to_sign = '%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(date), TeaConverter.to_unicode(scope), TeaConverter.to_unicode(hex))
+        signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
+        return Encoder.hex_encode(signature)
+
+    def build_canonicalized_resource_v4(self, query):
+        canonicalized_resource = ''
+        if not UtilClient.is_unset(query):
+            query_array = MapClient.key_set(query)
+            sorted_query_array = ArrayClient.asc_sort(query_array)
+            separator = ''
+            for key in sorted_query_array:
+                canonicalized_resource = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(key))
+                if not UtilClient.empty(query.get(key)):
+                    canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(query.get(key))))
+                separator = '&'
+        return canonicalized_resource
+
+    def build_canonicalized_headers_v4(self, headers, signed_header_str):
+        canonicalized_headers = ''
+        signed_headers = StringClient.split(signed_header_str, ';', None)
+        for header in signed_headers:
+            canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(header), TeaConverter.to_unicode(StringClient.trim(headers.get(header))))
+        return canonicalized_headers
+
+    def get_signed_header_str_v4(self, headers):
+        headers_array = MapClient.key_set(headers)
+        sorted_headers_array = ArrayClient.asc_sort(headers_array)
+        tmp = ''
+        separator = ''
+        for key in sorted_headers_array:
+            lower_key = StringClient.to_lower(key)
+            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
+                if not StringClient.contains(tmp, lower_key):
+                    tmp = '%s%s%s' % (TeaConverter.to_unicode(tmp), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(lower_key))
+                    separator = ';'
+        return tmp
+
+    def get_region(self, context):
+        config = context.configuration
+        if not UtilClient.is_unset(config.region_id) and not UtilClient.empty(config.region_id):
+            return config.region_id
+        # try parse region from endpoint
+        # do not use String.subString, subString has bug in php implementation
+        region = StringClient.replace(config.endpoint, '.log.aliyuncs.com', '', None)
+        region = StringClient.replace(region, '.sls.aliyuncs.com', '', None)
+        if StringClient.equals(region, config.endpoint):
+            raise TeaException({
+                'code': 'ClientConfigError',
+                'message': 'The regionId configuration of sls client is missing.'
+            })
+        region = StringClient.replace(region, '-share', '', None)
+        region = StringClient.replace(region, '-intranet', '', None)
+        region = StringClient.replace(region, '-vpc', '', None)
+        return region
+
+    def get_date_iso8601(self):
+        """
+        format: YYYYMMDDTHHMMSSZ
+        """
+        date = OpenApiUtilClient.get_timestamp()
+        # 2024-02-04T11:31:58Z
+        date = StringClient.replace(date, '-', '', None)
+        return StringClient.replace(date, ':', '', None)
