@@ -1,0 +1,79 @@
+{
+  "scope": "alibabacloud",
+  "name": "GatewayOSS_Util",
+  "version": "0.0.1",
+  "main": "./main.tea",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "Credential": "alibabacloud:Credential:*"
+  },
+  "releases": {
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client:v0.0.1",
+    "java": "com.aliyun:alibabacloud-gateway-oss-util:0.0.1"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.GatewayOss_Util",
+    "packageInfo": {
+      "description": "Alibaba Cloud OSS Util Library for .NET",
+      "company": "Alibaba Cloud",
+      "property": {
+        "PackageTags": "Alibaba Aliyun OSS Util",
+        "Copyright": "©2009-present Alibaba Cloud",
+        "PackageProjectUrl": "https://github.com/aliyun/alibabacloud-gateway",
+        "PackageIconUrl": "https://www.alibabacloud.com/favicon.ico"
+      }
+    }
+  },
+  "java": {
+    "package": "com.aliyun.gateway.oss.util",
+    "className": "Client"
+  },
+  "go": {
+    "package": [
+      "io"
+    ]
+  },
+  "php": {
+    "package": "Darabonba.GatewayOss.Util",
+    "packageInfo": {
+      "name": "alibabacloud/gateway-oss-util",
+      "desc": "Alibaba Cloud OSS Util",
+      "github": "https://github.com/aliyun/alibabacloud-gateway"
+    }
+  },
+  "python": {
+    "package": "alibabacloud_gateway_oss_util",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_oss_util",
+      "desc": "Alibaba Cloud OSS Util Library for Python",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "python2": {
+    "package": "alibabacloud_gateway_oss_util",
+    "clientName": "client",
+    "packageInfo": {
+      "name": "alibabacloud_gateway_oss_util_py2",
+      "desc": "Alibaba Cloud OSS Util Library for Python2",
+      "github": "https://github.com/aliyun/alibabacloud-gateway",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  },
+  "cpp": {
+    "packageInfo": {
+      "git": {
+        "scope": "alibabacloud-sdk-cpp",
+        "project": "gateway-oss-util"
+      }
+    }
+  }
+}
