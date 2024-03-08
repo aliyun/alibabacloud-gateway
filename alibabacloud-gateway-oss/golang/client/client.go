@@ -2,6 +2,8 @@
 package client
 
 import (
+	"reflect"
+
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
 	encodeutil "github.com/alibabacloud-go/darabonba-encode-util/client"
@@ -141,6 +143,30 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		"date":       util.GetDateUTCString(),
 		"user-agent": request.UserAgent,
 	}, request.Headers)
+	originPath := request.Pathname
+	originQuery := request.Query
+	if !tea.BoolValue(util.Empty(originPath)) {
+		pathAndQueries := string_.Split(originPath, tea.String("?"), tea.Int(2))
+		request.Pathname = pathAndQueries[0]
+		if tea.BoolValue(util.EqualNumber(array.Size(pathAndQueries), tea.Int(2))) {
+			pathQueries := string_.Split(pathAndQueries[1], tea.String("&"), nil)
+			for _, sub := range pathQueries {
+				item := string_.Split(sub, tea.String("="), nil)
+				queryKey := item[0]
+				queryValue := tea.String("")
+				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
+					queryValue = item[1]
+				}
+
+				if tea.BoolValue(util.Empty(originQuery[tea.StringValue(queryKey)])) {
+					request.Query[tea.StringValue(queryKey)] = queryValue
+				}
+
+			}
+		}
+
+	}
+
 	request.Headers["authorization"], _err = client.GetAuthorization(request.SignatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret, regionId)
 	if _err != nil {
 		return _err
@@ -236,35 +262,31 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 			response.DeserializedBody = bodyStr
 			if !tea.BoolValue(util.Empty(bodyStr)) {
-				result := xml.ParseXml(bodyStr, nil)
-				list := map_.KeySet(result)
-				if tea.BoolValue(util.EqualNumber(array.Size(list), tea.Int(1))) {
-					tmp := list[0]
-					tryErr := func() (_e error) {
-						defer func() {
-							if r := tea.Recover(recover()); r != nil {
-								_e = r
-							}
-						}()
-						response.DeserializedBody, _err = util.AssertAsMap(result[tea.StringValue(tmp)])
-						if _err != nil {
-							return _err
+				respStruct := GetResponseBodySchema(request.Action)
+				result := xml.ParseXml(bodyStr, respStruct)
+				tryErr := func() (_e error) {
+					defer func() {
+						if r := tea.Recover(recover()); r != nil {
+							_e = r
 						}
-
-						return nil
 					}()
-
-					if tryErr != nil {
-						var error = &tea.SDKError{}
-						if _t, ok := tryErr.(*tea.SDKError); ok {
-							error = _t
-						} else {
-							error.Message = tea.String(tryErr.Error())
-						}
-						response.DeserializedBody = result
+					response.DeserializedBody, _err = util.AssertAsMap(result)
+					if _err != nil {
+						return _err
 					}
-				}
 
+					return nil
+				}()
+
+				if tryErr != nil {
+					var error = &tea.SDKError{}
+					if _t, ok := tryErr.(*tea.SDKError); ok {
+						error = _t
+					} else {
+						error.Message = tea.String(tryErr.Error())
+					}
+					response.DeserializedBody = result
+				}
 			}
 
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
@@ -421,26 +443,7 @@ func (client *Client) GetSignatureV4(bucketName *string, pathname *string, metho
 	objectName := tea.String("/")
 	queryMap := make(map[string]*string)
 	if !tea.BoolValue(util.Empty(pathname)) {
-		paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
-		objectName = paths[0]
-		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-			subResources := string_.Split(paths[1], tea.String("&"), nil)
-			for _, sub := range subResources {
-				item := string_.Split(sub, tea.String("="), nil)
-				key := item[0]
-				key = encodeutil.PercentEncode(key)
-				key = string_.Replace(key, tea.String("+"), tea.String("%20"), nil)
-				var value *string
-				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
-					value = encodeutil.PercentEncode(item[1])
-					value = string_.Replace(value, tea.String("+"), tea.String("%20"), nil)
-				}
-
-				// for go : queryMap[tea.StringValue(key)] = value
-				queryMap[tea.StringValue(key)] = value
-			}
-		}
-
+		objectName = pathname
 	}
 
 	canonicalizedUri := tea.String("/")
@@ -637,4 +640,11 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 func (client *Client) GetSignatureV2(bucketName *string, pathname *string, method *string, query map[string]*string, headers map[string]*string, secret *string) (_result *string, _err error) {
 	_result = tea.String("")
 	return _result, _err
+}
+
+func GetResponseBodySchema(apiName *string) interface{} {
+	if typ, ok := typeRegistry[*apiName]; ok {
+		return reflect.New(typ).Interface()
+	}
+	return nil
 }

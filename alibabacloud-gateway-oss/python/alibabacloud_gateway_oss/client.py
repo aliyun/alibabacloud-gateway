@@ -267,14 +267,12 @@ class Client(SPIClient):
                 body_str = UtilClient.read_as_string(response.body)
                 response.deserialized_body = body_str
                 if not UtilClient.empty(body_str):
-                    result = XMLClient.parse_xml(body_str, None)
-                    list = MapClient.key_set(result)
-                    if UtilClient.equal_number(ArrayClient.size(list), 1):
-                        tmp = list[0]
-                        try:
-                            response.deserialized_body = UtilClient.assert_as_map(result.get(tmp))
-                        except Exception as error:
-                            response.deserialized_body = result
+                    resp_struct = self.get_response_body_schema(request.action)
+                    result = XMLClient.parse_xml(body_str, resp_struct)
+                    try:
+                        response.deserialized_body = UtilClient.assert_as_map(result)
+                    except Exception as error:
+                        response.deserialized_body = result
             elif UtilClient.equal_string(request.body_type, 'binary'):
                 response.deserialized_body = response.body
             elif UtilClient.equal_string(request.body_type, 'byte'):
@@ -353,14 +351,12 @@ class Client(SPIClient):
                 body_str = await UtilClient.read_as_string_async(response.body)
                 response.deserialized_body = body_str
                 if not UtilClient.empty(body_str):
-                    result = XMLClient.parse_xml(body_str, None)
-                    list = MapClient.key_set(result)
-                    if UtilClient.equal_number(ArrayClient.size(list), 1):
-                        tmp = list[0]
-                        try:
-                            response.deserialized_body = UtilClient.assert_as_map(result.get(tmp))
-                        except Exception as error:
-                            response.deserialized_body = result
+                    resp_struct = await self.get_response_body_schema_async(request.action)
+                    result = XMLClient.parse_xml(body_str, resp_struct)
+                    try:
+                        response.deserialized_body = UtilClient.assert_as_map(result)
+                    except Exception as error:
+                        response.deserialized_body = result
             elif UtilClient.equal_string(request.body_type, 'binary'):
                 response.deserialized_body = response.body
             elif UtilClient.equal_string(request.body_type, 'byte'):
@@ -561,7 +557,7 @@ class Client(SPIClient):
                     if UtilClient.equal_number(ArrayClient.size(item), 2):
                         value = Encoder.percent_encode(item[1])
                         value = StringClient.replace(value, '+', '%20', None)
-                    # for go : queryMap[tea.StringValue(key)] = value;
+                    # for go : queryMap[tea.StringValue(key)] = value
                     query_map[key] = value
         canonicalized_uri = '/'
         if not UtilClient.empty(bucket_name):
@@ -577,7 +573,7 @@ class Client(SPIClient):
                 query_value = StringClient.replace(query_value, '+', '%20', None)
             query_key = Encoder.percent_encode(query_key)
             query_key = StringClient.replace(query_key, '+', '%20', None)
-            # for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+            # for go : queryMap[tea.StringValue(queryKey)] = queryValue
             query_map[query_key] = query_value
         canonicalized_query_string = self.build_canonicalized_query_string_v4(query_map)
         canonicalized_headers = self.build_canonicalized_headers_v4(headers)
@@ -617,7 +613,7 @@ class Client(SPIClient):
                     if UtilClient.equal_number(ArrayClient.size(item), 2):
                         value = Encoder.percent_encode(item[1])
                         value = StringClient.replace(value, '+', '%20', None)
-                    # for go : queryMap[tea.StringValue(key)] = value;
+                    # for go : queryMap[tea.StringValue(key)] = value
                     query_map[key] = value
         canonicalized_uri = '/'
         if not UtilClient.empty(bucket_name):
@@ -633,7 +629,7 @@ class Client(SPIClient):
                 query_value = StringClient.replace(query_value, '+', '%20', None)
             query_key = Encoder.percent_encode(query_key)
             query_key = StringClient.replace(query_key, '+', '%20', None)
-            # for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+            # for go : queryMap[tea.StringValue(queryKey)] = queryValue
             query_map[query_key] = query_value
         canonicalized_query_string = await self.build_canonicalized_query_string_v4_async(query_map)
         canonicalized_headers = await self.build_canonicalized_headers_v4_async(headers)
@@ -764,7 +760,7 @@ class Client(SPIClient):
                         value = None
                         if UtilClient.equal_number(ArrayClient.size(item), 2):
                             value = item[1]
-                        # for go : subResourcesMap[tea.StringValue(key)] = value;
+                        # for go : subResourcesMap[tea.StringValue(key)] = value
                         sub_resources_map[key] = value
         sub_resources_array = MapClient.key_set(sub_resources_map)
         new_query_list = sub_resources_array
@@ -810,7 +806,7 @@ class Client(SPIClient):
                         value = None
                         if UtilClient.equal_number(ArrayClient.size(item), 2):
                             value = item[1]
-                        # for go : subResourcesMap[tea.StringValue(key)] = value;
+                        # for go : subResourcesMap[tea.StringValue(key)] = value
                         sub_resources_map[key] = value
         sub_resources_array = MapClient.key_set(sub_resources_map)
         new_query_list = sub_resources_array
@@ -892,3 +888,15 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         return ''
+
+    @staticmethod
+    def get_response_body_schema(
+        api_name: str,
+    ) -> object:
+        return None
+
+    @staticmethod
+    async def get_response_body_schema_async(
+        api_name: str,
+    ) -> object:
+        return None

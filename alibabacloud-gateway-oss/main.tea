@@ -100,6 +100,28 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     user-agent = request.userAgent,
     ...request.headers
   };
+
+  var originPath = request.pathname;
+  var originQuery = request.query;
+  if (!Util.empty(originPath)) {
+    var pathAndQueries : [string] = String.split(originPath, `?`, 2);
+    request.pathname = pathAndQueries[0];
+    if (Util.equalNumber(Array.size(pathAndQueries), 2)) {
+      var pathQueries : [string] = String.split(pathAndQueries[1], '&', null);
+      for (var sub : pathQueries) {
+        var item : [string] = String.split(sub, '=', null);
+        var queryKey : string = item[0];
+        var queryValue : string = '';
+        if (Util.equalNumber(Array.size(item), 2)) {
+          queryValue = item[1];
+        }
+        if (Util.empty(originQuery[queryKey])) {
+          request.query[queryKey] = queryValue;
+        }
+      }
+    }
+  }
+
   request.headers.authorization = getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
 }
 
@@ -171,15 +193,12 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       bodyStr = Util.readAsString(response.body);
       response.deserializedBody = bodyStr;
       if (!Util.empty(bodyStr)) {
-        var result : map[string]any = XML.parseXml(bodyStr, null);
-        var list : [string] = Map.keySet(result);
-        if (Util.equalNumber(Array.size(list), 1)) {
-          var tmp = list[0];
-          try {
-            response.deserializedBody = Util.assertAsMap(result[tmp]);
-          } catch (error) {
-            response.deserializedBody = result;
-          }
+        var respStruct = getResponseBodySchema(request.action);
+        var result : map[string]any = XML.parseXml(bodyStr, respStruct);
+        try {
+            response.deserializedBody = Util.assertAsMap(result);
+        } catch (error) {
+          response.deserializedBody = result;
         }
       }
     } else if (Util.equalString(request.bodyType, 'binary')) {
@@ -276,24 +295,7 @@ async function getSignatureV4(bucketName: string, pathname: string, method: stri
   var objectName : string = '/';
   var queryMap : map[string]string = {};
   if (!Util.empty(pathname)) {
-    var paths : [string] = String.split(pathname, `?`, 2);
-    objectName = paths[0];
-    if (Util.equalNumber(Array.size(paths), 2)) {
-      var subResources : [string] = String.split(paths[1], '&', null);
-      for (var sub : subResources) {
-        var item : [string] = String.split(sub, '=', null);
-        var key : string = item[0];
-        key = EncodeUtil.percentEncode(key);
-        key = String.replace(key, '+', '%20', null);
-        var value : string = null;
-        if (Util.equalNumber(Array.size(item), 2)) {
-          value = EncodeUtil.percentEncode(item[1]);
-          value = String.replace(value, '+', '%20', null);
-        }
-        // for go : queryMap[tea.StringValue(key)] = value
-        queryMap[key] = value;
-      }
-    }
+    objectName = pathname;
   }
 
   var canonicalizedUri : string = '/';
@@ -450,4 +452,8 @@ async function buildCanonicalizedHeaders(headers: map[string]string): string {
 
 async function getSignatureV2(bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, secret: string): string {
   return '';
+}
+
+static async function getResponseBodySchema(apiName: string): class {
+  return null;
 }

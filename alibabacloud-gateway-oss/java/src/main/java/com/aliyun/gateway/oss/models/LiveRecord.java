@@ -1,0 +1,45 @@
+// This file is auto-generated, don't edit it. Thanks.
+package com.aliyun.gateway.oss.models;
+
+import com.aliyun.tea.*;
+
+public class LiveRecord extends TeaModel {
+    @NameInMap("EndTime")
+    public String endTime;
+
+    @NameInMap("RemoteAddr")
+    public String remoteAddr;
+
+    @NameInMap("StartTime")
+    public String startTime;
+
+    public static LiveRecord build(java.util.Map<String, ?> map) throws Exception {
+        LiveRecord self = new LiveRecord();
+        return TeaModel.build(map, self);
+    }
+
+    public LiveRecord setEndTime(String endTime) {
+        this.endTime = endTime;
+        return this;
+    }
+    public String getEndTime() {
+        return this.endTime;
+    }
+
+    public LiveRecord setRemoteAddr(String remoteAddr) {
+        this.remoteAddr = remoteAddr;
+        return this;
+    }
+    public String getRemoteAddr() {
+        return this.remoteAddr;
+    }
+
+    public LiveRecord setStartTime(String startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+    public String getStartTime() {
+        return this.startTime;
+    }
+
+}

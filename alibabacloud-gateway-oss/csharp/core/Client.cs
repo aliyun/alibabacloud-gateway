@@ -333,27 +333,23 @@ namespace AlibabaCloud.GatewayOss
                     response.DeserializedBody = bodyStr;
                     if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                     {
-                        Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                        List<string> list = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(result);
-                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(list), 1))
+                        Type respStruct = GetResponseBodySchema(request.Action);
+                        Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, typeof(respStruct));
+                        try
                         {
-                            string tmp = list[0];
-                            try
+                            response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result);
+                        }
+                        catch (TeaException error)
+                        {
+                            response.DeserializedBody = result;
+                        }
+                        catch (Exception _error)
+                        {
+                            TeaException error = new TeaException(new Dictionary<string, object>
                             {
-                                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result.Get(tmp));
-                            }
-                            catch (TeaException error)
-                            {
-                                response.DeserializedBody = result;
-                            }
-                            catch (Exception _error)
-                            {
-                                TeaException error = new TeaException(new Dictionary<string, object>
-                                {
-                                    { "message", _error.Message }
-                                });
-                                response.DeserializedBody = result;
-                            }
+                                { "message", _error.Message }
+                            });
+                            response.DeserializedBody = result;
                         }
                     }
                 }
@@ -471,27 +467,23 @@ namespace AlibabaCloud.GatewayOss
                     response.DeserializedBody = bodyStr;
                     if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                     {
-                        Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
-                        List<string> list = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(result);
-                        if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(list), 1))
+                        Type respStruct = await GetResponseBodySchemaAsync(request.Action);
+                        Dictionary<string, object> result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, typeof(respStruct));
+                        try
                         {
-                            string tmp = list[0];
-                            try
+                            response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result);
+                        }
+                        catch (TeaException error)
+                        {
+                            response.DeserializedBody = result;
+                        }
+                        catch (Exception _error)
+                        {
+                            TeaException error = new TeaException(new Dictionary<string, object>
                             {
-                                response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result.Get(tmp));
-                            }
-                            catch (TeaException error)
-                            {
-                                response.DeserializedBody = result;
-                            }
-                            catch (Exception _error)
-                            {
-                                TeaException error = new TeaException(new Dictionary<string, object>
-                                {
-                                    { "message", _error.Message }
-                                });
-                                response.DeserializedBody = result;
-                            }
+                                { "message", _error.Message }
+                            });
+                            response.DeserializedBody = result;
                         }
                     }
                 }
@@ -1129,6 +1121,16 @@ namespace AlibabaCloud.GatewayOss
         public async Task<string> GetSignatureV2Async(string bucketName, string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string secret)
         {
             return "";
+        }
+
+        public static Type GetResponseBodySchema(string apiName)
+        {
+            return null;
+        }
+
+        public static async Task<Type> GetResponseBodySchemaAsync(string apiName)
+        {
+            return null;
         }
 
     }
