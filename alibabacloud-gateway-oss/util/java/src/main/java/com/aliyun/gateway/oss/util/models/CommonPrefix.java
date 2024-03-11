@@ -1,0 +1,23 @@
+// This file is auto-generated, don't edit it. Thanks.
+package com.aliyun.gateway.oss.utils.models;
+
+import com.aliyun.tea.*;
+
+public class CommonPrefix extends TeaModel {
+    @NameInMap("Prefix")
+    public String prefix;
+
+    public static CommonPrefix build(java.util.Map<String, ?> map) throws Exception {
+        CommonPrefix self = new CommonPrefix();
+        return TeaModel.build(map, self);
+    }
+
+    public CommonPrefix setPrefix(String prefix) {
+        this.prefix = prefix;
+        return this;
+    }
+    public String getPrefix() {
+        return this.prefix;
+    }
+
+}
