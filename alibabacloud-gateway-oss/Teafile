@@ -15,6 +15,7 @@
     "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
     "Credential": "alibabacloud:Credential:*",
     "OSSUtil": "alibabacloud:OSSUtil:*",
+    "OSS_Util": "alibabacloud:GatewayOSS_Util:*",
     "XML": "darabonba:XML:*",
     "String": "darabonba:String:*",
     "Map": "darabonba:Map:*",

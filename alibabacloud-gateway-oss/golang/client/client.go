@@ -2,6 +2,7 @@
 package client
 
 import (
+	oss_util "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client"
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
 	encodeutil "github.com/alibabacloud-go/darabonba-encode-util/client"
@@ -261,35 +262,34 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 			response.DeserializedBody = bodyStr
 			if !tea.BoolValue(util.Empty(bodyStr)) {
-				result := xml.ParseXml(bodyStr, nil)
-				list := map_.KeySet(result)
-				if tea.BoolValue(util.EqualNumber(array.Size(list), tea.Int(1))) {
-					tmp := list[0]
-					tryErr := func() (_e error) {
-						defer func() {
-							if r := tea.Recover(recover()); r != nil {
-								_e = r
-							}
-						}()
-						response.DeserializedBody, _err = util.AssertAsMap(result[tea.StringValue(tmp)])
-						if _err != nil {
-							return _err
-						}
-
-						return nil
-					}()
-
-					if tryErr != nil {
-						var error = &tea.SDKError{}
-						if _t, ok := tryErr.(*tea.SDKError); ok {
-							error = _t
-						} else {
-							error.Message = tea.String(tryErr.Error())
-						}
-						response.DeserializedBody = result
-					}
+				result, _err := oss_util.ParseXml(bodyStr, request.Action)
+				if _err != nil {
+					return _err
 				}
 
+				tryErr := func() (_e error) {
+					defer func() {
+						if r := tea.Recover(recover()); r != nil {
+							_e = r
+						}
+					}()
+					response.DeserializedBody, _err = util.AssertAsMap(result)
+					if _err != nil {
+						return _err
+					}
+
+					return nil
+				}()
+
+				if tryErr != nil {
+					var error = &tea.SDKError{}
+					if _t, ok := tryErr.(*tea.SDKError); ok {
+						error = _t
+					} else {
+						error.Message = tea.String(tryErr.Error())
+					}
+					response.DeserializedBody = result
+				}
 			}
 
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {

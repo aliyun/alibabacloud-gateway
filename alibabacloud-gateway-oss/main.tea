@@ -10,6 +10,7 @@ import Array;
 import EncodeUtil;
 import SignatureUtil;
 import Time;
+import OSS_Util;
 
 extends SPI;
 
@@ -201,15 +202,11 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       bodyStr = Util.readAsString(response.body);
       response.deserializedBody = bodyStr;
       if (!Util.empty(bodyStr)) {
-        var result : map[string]any = XML.parseXml(bodyStr, null);
-        var list : [string] = Map.keySet(result);
-        if (Util.equalNumber(Array.size(list), 1)) {
-          var tmp = list[0];
-          try {
-            response.deserializedBody = Util.assertAsMap(result[tmp]);
-          } catch (error) {
-            response.deserializedBody = result;
-          }
+        var result : any = OSS_Util.parseXml(bodyStr, request.action);
+        try {
+          response.deserializedBody = Util.assertAsMap(result);
+        } catch (error) {
+          response.deserializedBody = result;
         }
       }
     } else if (Util.equalString(request.bodyType, 'binary')) {

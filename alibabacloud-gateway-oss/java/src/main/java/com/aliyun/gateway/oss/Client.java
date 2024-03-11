@@ -278,20 +278,15 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 bodyStr = com.aliyun.teautil.Common.readAsString(response.body);
                 response.deserializedBody = bodyStr;
                 if (!com.aliyun.teautil.Common.empty(bodyStr)) {
-                    java.util.Map<String, Object> result = com.aliyun.teaxml.Client.parseXml(bodyStr, null);
-                    java.util.List<String> list = com.aliyun.darabonba.map.Client.keySet(result);
-                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(list), 1)) {
-                        String tmp = list.get(0);
-                        try {
-                            response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result.get(tmp));
-                        } catch (TeaException error) {
-                            response.deserializedBody = result;
-                        } catch (Exception _error) {
-                            TeaException error = new TeaException(_error.getMessage(), _error);
-                            response.deserializedBody = result;
-                        }                        
-                    }
-
+                    Object result = com.aliyun.gateway.oss.util.Client.parseXml(bodyStr, request.action);
+                    try {
+                        response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result);
+                    } catch (TeaException error) {
+                        response.deserializedBody = result;
+                    } catch (Exception _error) {
+                        TeaException error = new TeaException(_error.getMessage(), _error);
+                        response.deserializedBody = result;
+                    }                    
                 }
 
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
