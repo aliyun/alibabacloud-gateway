@@ -141,6 +141,30 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		"date":       util.GetDateUTCString(),
 		"user-agent": request.UserAgent,
 	}, request.Headers)
+	originPath := request.Pathname
+	originQuery := request.Query
+	if !tea.BoolValue(util.Empty(originPath)) {
+		pathAndQueries := string_.Split(originPath, tea.String("?"), tea.Int(2))
+		request.Pathname = pathAndQueries[0]
+		if tea.BoolValue(util.EqualNumber(array.Size(pathAndQueries), tea.Int(2))) {
+			pathQueries := string_.Split(pathAndQueries[1], tea.String("&"), nil)
+			for _, sub := range pathQueries {
+				item := string_.Split(sub, tea.String("="), nil)
+				queryKey := item[0]
+				queryValue := tea.String("")
+				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
+					queryValue = item[1]
+				}
+
+				if tea.BoolValue(util.Empty(originQuery[tea.StringValue(queryKey)])) {
+					request.Query[tea.StringValue(queryKey)] = queryValue
+				}
+
+			}
+		}
+
+	}
+
 	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v1"))
 	request.Headers["authorization"], _err = client.GetAuthorization(signatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret, regionId)
 	if _err != nil {
@@ -422,26 +446,7 @@ func (client *Client) GetSignatureV4(bucketName *string, pathname *string, metho
 	objectName := tea.String("/")
 	queryMap := make(map[string]*string)
 	if !tea.BoolValue(util.Empty(pathname)) {
-		paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
-		objectName = paths[0]
-		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-			subResources := string_.Split(paths[1], tea.String("&"), nil)
-			for _, sub := range subResources {
-				item := string_.Split(sub, tea.String("="), nil)
-				key := item[0]
-				key = encodeutil.PercentEncode(key)
-				key = string_.Replace(key, tea.String("+"), tea.String("%20"), nil)
-				var value *string
-				if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
-					value = encodeutil.PercentEncode(item[1])
-					value = string_.Replace(value, tea.String("+"), tea.String("%20"), nil)
-				}
-
-				// for go : queryMap[tea.StringValue(key)] = value
-				queryMap[tea.StringValue(key)] = value
-			}
-		}
-
+		objectName = pathname
 	}
 
 	canonicalizedUri := tea.String("/")

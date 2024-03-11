@@ -182,6 +182,30 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ),
             request.headers
         );
+        String originPath = request.pathname;
+        java.util.Map<String, String> originQuery = request.query;
+        if (!com.aliyun.teautil.Common.empty(originPath)) {
+            java.util.List<String> pathAndQueries = com.aliyun.darabonbastring.Client.split(originPath, "?", 2);
+            request.pathname = pathAndQueries.get(0);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(pathAndQueries), 2)) {
+                java.util.List<String> pathQueries = com.aliyun.darabonbastring.Client.split(pathAndQueries.get(1), "&", null);
+                for (String sub : pathQueries) {
+                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
+                    String queryKey = item.get(0);
+                    String queryValue = "";
+                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
+                        queryValue = item.get(1);
+                    }
+
+                    if (com.aliyun.teautil.Common.empty(originQuery.get(queryKey))) {
+                        request.query.put(queryKey, queryValue);
+                    }
+
+                }
+            }
+
+        }
+
         String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
         request.headers.put("authorization", this.getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId));
     }
@@ -372,26 +396,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String objectName = "/";
         java.util.Map<String, String> queryMap = new java.util.HashMap<>();
         if (!com.aliyun.teautil.Common.empty(pathname)) {
-            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
-            objectName = paths.get(0);
-            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-                java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
-                for (String sub : subResources) {
-                    java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
-                    String key = item.get(0);
-                    key = com.aliyun.darabonba.encode.Encoder.percentEncode(key);
-                    key = com.aliyun.darabonbastring.Client.replace(key, "+", "%20", null);
-                    String value = null;
-                    if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
-                        value = com.aliyun.darabonba.encode.Encoder.percentEncode(item.get(1));
-                        value = com.aliyun.darabonbastring.Client.replace(value, "+", "%20", null);
-                    }
-
-                    // for go : queryMap[tea.StringValue(key)] = value
-                    queryMap.put(key, value);
-                }
-            }
-
+            objectName = pathname;
         }
 
         String canonicalizedUri = "/";
