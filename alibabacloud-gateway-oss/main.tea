@@ -107,6 +107,28 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     user-agent = request.userAgent,
     ...request.headers
   };
+
+  var originPath = request.pathname;
+  var originQuery = request.query;
+  if (!Util.empty(originPath)) {
+    var pathAndQueries : [string] = String.split(originPath, `?`, 2);
+    request.pathname = pathAndQueries[0];
+    if (Util.equalNumber(Array.size(pathAndQueries), 2)) {
+      var pathQueries : [string] = String.split(pathAndQueries[1], '&', null);
+      for (var sub : pathQueries) {
+        var item : [string] = String.split(sub, '=', null);
+        var queryKey : string = item[0];
+        var queryValue : string = '';
+        if (Util.equalNumber(Array.size(item), 2)) {
+          queryValue = item[1];
+        }
+        if (Util.empty(originQuery[queryKey])) {
+          request.query[queryKey] = queryValue;
+        }
+      }
+    }
+  }
+
   var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
   request.headers.authorization = getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
 }
@@ -284,24 +306,7 @@ async function getSignatureV4(bucketName: string, pathname: string, method: stri
   var objectName : string = '/';
   var queryMap : map[string]string = {};
   if (!Util.empty(pathname)) {
-    var paths : [string] = String.split(pathname, `?`, 2);
-    objectName = paths[0];
-    if (Util.equalNumber(Array.size(paths), 2)) {
-      var subResources : [string] = String.split(paths[1], '&', null);
-      for (var sub : subResources) {
-        var item : [string] = String.split(sub, '=', null);
-        var key : string = item[0];
-        key = EncodeUtil.percentEncode(key);
-        key = String.replace(key, '+', '%20', null);
-        var value : string = null;
-        if (Util.equalNumber(Array.size(item), 2)) {
-          value = EncodeUtil.percentEncode(item[1]);
-          value = String.replace(value, '+', '%20', null);
-        }
-        // for go : queryMap[tea.StringValue(key)] = value
-        queryMap[key] = value;
-      }
-    }
+    objectName = pathname;
   }
 
   var canonicalizedUri : string = '/';
