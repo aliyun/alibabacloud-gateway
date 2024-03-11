@@ -25,47 +25,96 @@ class Client(SPIClient):
     def __init__(self):
         super(Client, self).__init__()
         self._default_signed_params = [
-            'location',
-            'cors',
-            'objectMeta',
-            'uploadId',
-            'partNumber',
-            'security-token',
-            'position',
-            'img',
-            'style',
-            'styleName',
-            'replication',
-            'replicationProgress',
-            'replicationLocation',
-            'cname',
-            'qos',
-            'startTime',
-            'endTime',
-            'symlink',
-            'x-oss-process',
             'response-content-type',
             'response-content-language',
-            'response-expires',
             'response-cache-control',
-            'response-content-disposition',
+            'logging',
             'response-content-encoding',
-            'udf',
-            'udfName',
-            'udfImage',
-            'udfId',
-            'udfImageDesc',
-            'udfApplication',
-            'udfApplicationLog',
+            'acl',
+            'uploadId',
+            'uploads',
+            'partNumber',
+            'group',
+            'link',
+            'delete',
+            'website',
+            'location',
+            'objectInfo',
+            'objectMeta',
+            'response-expires',
+            'response-content-disposition',
+            'cors',
+            'lifecycle',
             'restore',
+            'qos',
+            'referer',
+            'stat',
+            'bucketInfo',
+            'append',
+            'position',
+            'security-token',
+            'live',
+            'comp',
+            'status',
+            'vod',
+            'startTime',
+            'endTime',
+            'x-oss-process',
+            'symlink',
             'callback',
             'callback-var',
-            'policy',
+            'tagging',
             'encryption',
             'versions',
             'versioning',
             'versionId',
-            'wormId'
+            'policy',
+            'requestPayment',
+            'x-oss-traffic-limit',
+            'qosInfo',
+            'asyncFetch',
+            'x-oss-request-payer',
+            'sequential',
+            'inventory',
+            'inventoryId',
+            'continuation-token',
+            'callback',
+            'callback-var',
+            'worm',
+            'wormId',
+            'wormExtend',
+            'replication',
+            'replicationLocation',
+            'replicationProgress',
+            'transferAcceleration',
+            'cname',
+            'metaQuery',
+            'x-oss-ac-source-ip',
+            'x-oss-ac-subnet-mask',
+            'x-oss-ac-vpc-id',
+            'x-oss-ac-forward-allow',
+            'resourceGroup',
+            'style',
+            'styleName',
+            'x-oss-async-process',
+            'rtc',
+            'accessPoint',
+            'accessPointPolicy',
+            'httpsConfig',
+            'regionsV2',
+            'publicAccessBlock',
+            'policyStatus',
+            'redundancyTransition',
+            'redundancyType',
+            'redundancyProgress',
+            'dataAccelerator',
+            'verbose',
+            'accessPointForObjectProcess',
+            'accessPointConfigForObjectProcess',
+            'accessPointPolicyForObjectProcess',
+            'bucketArchiveDirectRead',
+            'responseHeader',
+            'userDefinedLogFieldsConfig'
         ]
         self._except_signed_params = [
             'list-type',
@@ -129,7 +178,8 @@ class Client(SPIClient):
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
-        request.headers['authorization'] = self.get_authorization(request.signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        request.headers['authorization'] = self.get_authorization(signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
 
     def modify_response(self, context, attribute_map):
         request = context.request
@@ -283,7 +333,7 @@ class Client(SPIClient):
                     if UtilClient.equal_number(ArrayClient.size(item), 2):
                         value = Encoder.percent_encode(item[1])
                         value = StringClient.replace(value, '+', '%20', None)
-                    # for go : queryMap[tea.StringValue(key)] = value;
+                    # for go : queryMap[tea.StringValue(key)] = value
                     query_map[key] = value
         canonicalized_uri = '/'
         if not UtilClient.empty(bucket_name):
@@ -299,7 +349,7 @@ class Client(SPIClient):
                 query_value = StringClient.replace(query_value, '+', '%20', None)
             query_key = Encoder.percent_encode(query_key)
             query_key = StringClient.replace(query_key, '+', '%20', None)
-            # for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+            # for go : queryMap[tea.StringValue(queryKey)] = queryValue
             query_map[query_key] = query_value
         canonicalized_query_string = self.build_canonicalized_query_string_v4(query_map)
         canonicalized_headers = self.build_canonicalized_headers_v4(headers)
@@ -364,7 +414,7 @@ class Client(SPIClient):
                         value = None
                         if UtilClient.equal_number(ArrayClient.size(item), 2):
                             value = item[1]
-                        # for go : subResourcesMap[tea.StringValue(key)] = value;
+                        # for go : subResourcesMap[tea.StringValue(key)] = value
                         sub_resources_map[key] = value
         sub_resources_array = MapClient.key_set(sub_resources_map)
         new_query_list = sub_resources_array

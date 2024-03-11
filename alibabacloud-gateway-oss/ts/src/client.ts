@@ -21,47 +21,96 @@ export default class Client extends SPI {
   constructor() {
     super();
     this._default_signed_params = [
-      "location",
-      "cors",
-      "objectMeta",
-      "uploadId",
-      "partNumber",
-      "security-token",
-      "position",
-      "img",
-      "style",
-      "styleName",
-      "replication",
-      "replicationProgress",
-      "replicationLocation",
-      "cname",
-      "qos",
-      "startTime",
-      "endTime",
-      "symlink",
-      "x-oss-process",
       "response-content-type",
       "response-content-language",
-      "response-expires",
       "response-cache-control",
-      "response-content-disposition",
+      "logging",
       "response-content-encoding",
-      "udf",
-      "udfName",
-      "udfImage",
-      "udfId",
-      "udfImageDesc",
-      "udfApplication",
-      "udfApplicationLog",
+      "acl",
+      "uploadId",
+      "uploads",
+      "partNumber",
+      "group",
+      "link",
+      "delete",
+      "website",
+      "location",
+      "objectInfo",
+      "objectMeta",
+      "response-expires",
+      "response-content-disposition",
+      "cors",
+      "lifecycle",
       "restore",
+      "qos",
+      "referer",
+      "stat",
+      "bucketInfo",
+      "append",
+      "position",
+      "security-token",
+      "live",
+      "comp",
+      "status",
+      "vod",
+      "startTime",
+      "endTime",
+      "x-oss-process",
+      "symlink",
       "callback",
       "callback-var",
-      "policy",
+      "tagging",
       "encryption",
       "versions",
       "versioning",
       "versionId",
-      "wormId"
+      "policy",
+      "requestPayment",
+      "x-oss-traffic-limit",
+      "qosInfo",
+      "asyncFetch",
+      "x-oss-request-payer",
+      "sequential",
+      "inventory",
+      "inventoryId",
+      "continuation-token",
+      "callback",
+      "callback-var",
+      "worm",
+      "wormId",
+      "wormExtend",
+      "replication",
+      "replicationLocation",
+      "replicationProgress",
+      "transferAcceleration",
+      "cname",
+      "metaQuery",
+      "x-oss-ac-source-ip",
+      "x-oss-ac-subnet-mask",
+      "x-oss-ac-vpc-id",
+      "x-oss-ac-forward-allow",
+      "resourceGroup",
+      "style",
+      "styleName",
+      "x-oss-async-process",
+      "rtc",
+      "accessPoint",
+      "accessPointPolicy",
+      "httpsConfig",
+      "regionsV2",
+      "publicAccessBlock",
+      "policyStatus",
+      "redundancyTransition",
+      "redundancyType",
+      "redundancyProgress",
+      "dataAccelerator",
+      "verbose",
+      "accessPointForObjectProcess",
+      "accessPointConfigForObjectProcess",
+      "accessPointPolicyForObjectProcess",
+      "bucketArchiveDirectRead",
+      "responseHeader",
+      "userDefinedLogFieldsConfig"
     ];
     this._except_signed_params = [
       "list-type",
@@ -143,7 +192,8 @@ export default class Client extends SPI {
       'user-agent': request.userAgent,
       ...request.headers,
     };
-    request.headers["authorization"] = await this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
+    let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
+    request.headers["authorization"] = await this.getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
   }
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -222,7 +272,7 @@ export default class Client extends SPI {
               response.deserializedBody = Util.assertAsMap(result[tmp]);
             } catch (error) {
               response.deserializedBody = result;
-            }
+            }            
           }
 
         }
@@ -345,7 +395,7 @@ export default class Client extends SPI {
             value = String.replace(value, "+", "%20", null);
           }
 
-          // for go : queryMap[tea.StringValue(key)] = value;
+          // for go : queryMap[tea.StringValue(key)] = value
           queryMap[key] = value;
         }
       }
@@ -371,7 +421,7 @@ export default class Client extends SPI {
 
       queryKey = EncodeUtil.percentEncode(queryKey);
       queryKey = String.replace(queryKey, "+", "%20", null);
-      // for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+      // for go : queryMap[tea.StringValue(queryKey)] = queryValue
       queryMap[queryKey] = queryValue;
     }
     let canonicalizedQueryString = await this.buildCanonicalizedQueryStringV4(queryMap);
@@ -460,7 +510,7 @@ export default class Client extends SPI {
               value = item[1];
             }
 
-            // for go : subResourcesMap[tea.StringValue(key)] = value;
+            // for go : subResourcesMap[tea.StringValue(key)] = value
             subResourcesMap[key] = value;
           }
 

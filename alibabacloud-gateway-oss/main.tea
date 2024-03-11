@@ -18,19 +18,26 @@ type @except_signed_params = [ string ]
 
 init(){
   super();
-  @default_signed_params = ['location', 'cors', 'objectMeta',
-  'uploadId', 'partNumber', 'security-token',
-  'position', 'img', 'style', 'styleName',
-  'replication', 'replicationProgress',
-  'replicationLocation', 'cname', 'qos',
-  'startTime', 'endTime', 'symlink',
-  'x-oss-process', 'response-content-type',
-  'response-content-language', 'response-expires',
-  'response-cache-control', 'response-content-disposition',
-  'response-content-encoding', 'udf', 'udfName', 'udfImage',
-  'udfId', 'udfImageDesc', 'udfApplication',
-  'udfApplicationLog', 'restore', 'callback', 'callback-var',
-  'policy', 'encryption', 'versions', 'versioning', 'versionId', 'wormId'];
+  @default_signed_params = [
+  'response-content-type', 'response-content-language',
+  'response-cache-control', 'logging', 'response-content-encoding',
+  'acl', 'uploadId', 'uploads', 'partNumber', 'group', 'link',
+  'delete', 'website', 'location', 'objectInfo', 'objectMeta',
+  'response-expires', 'response-content-disposition', 'cors', 'lifecycle',
+  'restore', 'qos', 'referer', 'stat', 'bucketInfo', 'append', 'position', 'security-token',
+  'live', 'comp', 'status', 'vod', 'startTime', 'endTime', 'x-oss-process',
+  'symlink', 'callback', 'callback-var', 'tagging', 'encryption', 'versions',
+  'versioning', 'versionId', 'policy', 'requestPayment', 'x-oss-traffic-limit', 'qosInfo', 'asyncFetch',
+  'x-oss-request-payer', 'sequential', 'inventory', 'inventoryId', 'continuation-token', 'callback',
+  'callback-var', 'worm', 'wormId', 'wormExtend', 'replication', 'replicationLocation',
+  'replicationProgress', 'transferAcceleration', 'cname', 'metaQuery',
+  'x-oss-ac-source-ip', 'x-oss-ac-subnet-mask', 'x-oss-ac-vpc-id', 'x-oss-ac-forward-allow',
+  'resourceGroup', 'style', 'styleName', 'x-oss-async-process', 'rtc', 'accessPoint',
+  'accessPointPolicy', "httpsConfig", 'regionsV2', 'publicAccessBlock', 'policyStatus',
+  'redundancyTransition', 'redundancyType', 'redundancyProgress', 'dataAccelerator', 'verbose',
+  'accessPointForObjectProcess', 'accessPointConfigForObjectProcess', 'accessPointPolicyForObjectProcess',
+  'bucketArchiveDirectRead', 'responseHeader', 'userDefinedLogFieldsConfig'
+  ];
   @except_signed_params = ['list-type', 'regions'];
 }
 
@@ -100,7 +107,8 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     user-agent = request.userAgent,
     ...request.headers
   };
-  request.headers.authorization = getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
+  var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
+  request.headers.authorization = getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
 }
 
 async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
