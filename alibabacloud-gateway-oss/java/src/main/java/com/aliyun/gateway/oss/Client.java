@@ -10,47 +10,96 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public Client() throws Exception {
         super();
         this._default_signed_params = java.util.Arrays.asList(
-            "location",
-            "cors",
-            "objectMeta",
-            "uploadId",
-            "partNumber",
-            "security-token",
-            "position",
-            "img",
-            "style",
-            "styleName",
-            "replication",
-            "replicationProgress",
-            "replicationLocation",
-            "cname",
-            "qos",
-            "startTime",
-            "endTime",
-            "symlink",
-            "x-oss-process",
             "response-content-type",
             "response-content-language",
-            "response-expires",
             "response-cache-control",
-            "response-content-disposition",
+            "logging",
             "response-content-encoding",
-            "udf",
-            "udfName",
-            "udfImage",
-            "udfId",
-            "udfImageDesc",
-            "udfApplication",
-            "udfApplicationLog",
+            "acl",
+            "uploadId",
+            "uploads",
+            "partNumber",
+            "group",
+            "link",
+            "delete",
+            "website",
+            "location",
+            "objectInfo",
+            "objectMeta",
+            "response-expires",
+            "response-content-disposition",
+            "cors",
+            "lifecycle",
             "restore",
+            "qos",
+            "referer",
+            "stat",
+            "bucketInfo",
+            "append",
+            "position",
+            "security-token",
+            "live",
+            "comp",
+            "status",
+            "vod",
+            "startTime",
+            "endTime",
+            "x-oss-process",
+            "symlink",
             "callback",
             "callback-var",
-            "policy",
+            "tagging",
             "encryption",
             "versions",
             "versioning",
             "versionId",
-            "wormId"
+            "policy",
+            "requestPayment",
+            "x-oss-traffic-limit",
+            "qosInfo",
+            "asyncFetch",
+            "x-oss-request-payer",
+            "sequential",
+            "inventory",
+            "inventoryId",
+            "continuation-token",
+            "callback",
+            "callback-var",
+            "worm",
+            "wormId",
+            "wormExtend",
+            "replication",
+            "replicationLocation",
+            "replicationProgress",
+            "transferAcceleration",
+            "cname",
+            "metaQuery",
+            "x-oss-ac-source-ip",
+            "x-oss-ac-subnet-mask",
+            "x-oss-ac-vpc-id",
+            "x-oss-ac-forward-allow",
+            "resourceGroup",
+            "style",
+            "styleName",
+            "x-oss-async-process",
+            "rtc",
+            "accessPoint",
+            "accessPointPolicy",
+            "httpsConfig",
+            "regionsV2",
+            "publicAccessBlock",
+            "policyStatus",
+            "redundancyTransition",
+            "redundancyType",
+            "redundancyProgress",
+            "dataAccelerator",
+            "verbose",
+            "accessPointForObjectProcess",
+            "accessPointConfigForObjectProcess",
+            "accessPointPolicyForObjectProcess",
+            "bucketArchiveDirectRead",
+            "responseHeader",
+            "userDefinedLogFieldsConfig"
         );
         this._except_signed_params = java.util.Arrays.asList(
             "list-type",
@@ -133,7 +182,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ),
             request.headers
         );
-        request.headers.put("authorization", this.getAuthorization(request.signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId));
+        String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
+        request.headers.put("authorization", this.getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId));
     }
 
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
@@ -215,7 +265,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                         } catch (Exception _error) {
                             TeaException error = new TeaException(_error.getMessage(), _error);
                             response.deserializedBody = result;
-                        }
+                        }                        
                     }
 
                 }
@@ -337,7 +387,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                         value = com.aliyun.darabonbastring.Client.replace(value, "+", "%20", null);
                     }
 
-                    // for go : queryMap[tea.StringValue(key)] = value;
+                    // for go : queryMap[tea.StringValue(key)] = value
                     queryMap.put(key, value);
                 }
             }
@@ -363,7 +413,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
             queryKey = com.aliyun.darabonba.encode.Encoder.percentEncode(queryKey);
             queryKey = com.aliyun.darabonbastring.Client.replace(queryKey, "+", "%20", null);
-            // for go : queryMap[tea.StringValue(queryKey)] = queryValue;
+            // for go : queryMap[tea.StringValue(queryKey)] = queryValue
             queryMap.put(queryKey, queryValue);
         }
         String canonicalizedQueryString = this.buildCanonicalizedQueryStringV4(queryMap);
@@ -448,7 +498,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
                             value = item.get(1);
                         }
 
-                        // for go : subResourcesMap[tea.StringValue(key)] = value;
+                        // for go : subResourcesMap[tea.StringValue(key)] = value
                         subResourcesMap.put(key, value);
                     }
 
