@@ -10,7 +10,6 @@
     }
   ],
   "libraries": {
-    "Credential": "alibabacloud:Credential:*"
   },
   "releases": {
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client:v0.0.1",
