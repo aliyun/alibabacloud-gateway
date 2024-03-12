@@ -475,60 +475,15 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String buildCanonicalizedResource(String pathname, java.util.Map<String, String> query) throws Exception {
-        java.util.Map<String, String> subResourcesMap = new java.util.HashMap<>();
         String canonicalizedResource = pathname;
-        if (!com.aliyun.teautil.Common.empty(pathname)) {
-            java.util.List<String> paths = com.aliyun.darabonbastring.Client.split(pathname, "?", 2);
-            canonicalizedResource = paths.get(0);
-            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(paths), 2)) {
-                java.util.List<String> subResources = com.aliyun.darabonbastring.Client.split(paths.get(1), "&", null);
-                for (String sub : subResources) {
-                    Boolean hasExcepts = false;
-                    for (String excepts : _except_signed_params) {
-                        if (com.aliyun.darabonbastring.Client.contains(sub, excepts)) {
-                            hasExcepts = true;
-                        }
-
-                    }
-                    if (!hasExcepts) {
-                        java.util.List<String> item = com.aliyun.darabonbastring.Client.split(sub, "=", null);
-                        String key = item.get(0);
-                        String value = null;
-                        if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(item), 2)) {
-                            value = item.get(1);
-                        }
-
-                        // for go : subResourcesMap[tea.StringValue(key)] = value
-                        subResourcesMap.put(key, value);
-                    }
-
-                }
-            }
-
-        }
-
-        java.util.List<String> subResourcesArray = com.aliyun.darabonba.map.Client.keySet(subResourcesMap);
-        java.util.List<String> newQueryList = subResourcesArray;
-        if (!com.aliyun.teautil.Common.isUnset(query)) {
-            java.util.List<String> queryList = com.aliyun.darabonba.map.Client.keySet(query);
-            newQueryList = com.aliyun.darabonba.array.Client.concat(queryList, subResourcesArray);
-        }
-
-        java.util.List<String> sortedParams = com.aliyun.darabonba.array.Client.ascSort(newQueryList);
+        java.util.List<String> queryKeys = com.aliyun.darabonba.map.Client.keySet(query);
+        java.util.List<String> sortedParams = com.aliyun.darabonba.array.Client.ascSort(queryKeys);
         String separator = "?";
         for (String paramName : sortedParams) {
             if (com.aliyun.darabonba.array.Client.contains(_default_signed_params, paramName)) {
                 canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + paramName + "";
-                if (!com.aliyun.teautil.Common.isUnset(query) && !com.aliyun.teautil.Common.isUnset(query.get(paramName))) {
+                if (!com.aliyun.teautil.Common.empty(query.get(paramName))) {
                     canonicalizedResource = "" + canonicalizedResource + "=" + query.get(paramName) + "";
-                } else if (!com.aliyun.teautil.Common.isUnset(subResourcesMap.get(paramName))) {
-                    canonicalizedResource = "" + canonicalizedResource + "=" + subResourcesMap.get(paramName) + "";
-                }
-
-            } else if (com.aliyun.darabonba.array.Client.contains(subResourcesArray, paramName)) {
-                canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + paramName + "";
-                if (!com.aliyun.teautil.Common.isUnset(subResourcesMap.get(paramName))) {
-                    canonicalizedResource = "" + canonicalizedResource + "=" + subResourcesMap.get(paramName) + "";
                 }
 
             }

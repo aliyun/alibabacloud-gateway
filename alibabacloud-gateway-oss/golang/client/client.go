@@ -551,60 +551,15 @@ func (client *Client) GetSignatureV1(bucketName *string, pathname *string, metho
 }
 
 func (client *Client) BuildCanonicalizedResource(pathname *string, query map[string]*string) (_result *string, _err error) {
-	subResourcesMap := make(map[string]*string)
 	canonicalizedResource := pathname
-	if !tea.BoolValue(util.Empty(pathname)) {
-		paths := string_.Split(pathname, tea.String("?"), tea.Int(2))
-		canonicalizedResource = paths[0]
-		if tea.BoolValue(util.EqualNumber(array.Size(paths), tea.Int(2))) {
-			subResources := string_.Split(paths[1], tea.String("&"), nil)
-			for _, sub := range subResources {
-				hasExcepts := tea.Bool(false)
-				for _, excepts := range client.Except_signed_params {
-					if tea.BoolValue(string_.Contains(sub, excepts)) {
-						hasExcepts = tea.Bool(true)
-					}
-
-				}
-				if !tea.BoolValue(hasExcepts) {
-					item := string_.Split(sub, tea.String("="), nil)
-					key := item[0]
-					var value *string
-					if tea.BoolValue(util.EqualNumber(array.Size(item), tea.Int(2))) {
-						value = item[1]
-					}
-
-					// for go : subResourcesMap[tea.StringValue(key)] = value
-					subResourcesMap[tea.StringValue(key)] = value
-				}
-
-			}
-		}
-
-	}
-
-	subResourcesArray := map_.KeySet(subResourcesMap)
-	newQueryList := subResourcesArray
-	if !tea.BoolValue(util.IsUnset(query)) {
-		queryList := map_.KeySet(query)
-		newQueryList = array.Concat(queryList, subResourcesArray)
-	}
-
-	sortedParams := array.AscSort(newQueryList)
+	queryKeys := map_.KeySet(query)
+	sortedParams := array.AscSort(queryKeys)
 	separator := tea.String("?")
 	for _, paramName := range sortedParams {
 		if tea.BoolValue(array.Contains(client.Default_signed_params, paramName)) {
 			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(paramName))
-			if !tea.BoolValue(util.IsUnset(query)) && !tea.BoolValue(util.IsUnset(query[tea.StringValue(paramName)])) {
+			if !tea.BoolValue(util.Empty(query[tea.StringValue(paramName)])) {
 				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(query[tea.StringValue(paramName)]))
-			} else if !tea.BoolValue(util.IsUnset(subResourcesMap[tea.StringValue(paramName)])) {
-				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(subResourcesMap[tea.StringValue(paramName)]))
-			}
-
-		} else if tea.BoolValue(array.Contains(subResourcesArray, paramName)) {
-			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(paramName))
-			if !tea.BoolValue(util.IsUnset(subResourcesMap[tea.StringValue(paramName)])) {
-				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(subResourcesMap[tea.StringValue(paramName)]))
 			}
 
 		}

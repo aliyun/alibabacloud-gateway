@@ -383,53 +383,15 @@ async function getSignatureV1(bucketName: string, pathname: string, method: stri
 }
 
 async function buildCanonicalizedResource(pathname: string, query: map[string]string): string {
-  var subResourcesMap : map[string]string = {};
   var canonicalizedResource : string = pathname;
-  if (!Util.empty(pathname)) {
-    var paths : [string] = String.split(pathname, `?`, 2);
-    canonicalizedResource = paths[0];
-    if (Util.equalNumber(Array.size(paths), 2)) {
-      var subResources : [string] = String.split(paths[1], '&', null);
-      for (var sub : subResources) {
-        var hasExcepts : boolean = false;
-        for (var excepts : @except_signed_params) {
-          if (String.contains(sub, excepts)) {
-            hasExcepts = true;
-          }
-        }
-        if (!hasExcepts) {
-          var item : [string] = String.split(sub, '=', null);
-          var key : string = item[0];
-          var value : string = null;
-          if (Util.equalNumber(Array.size(item), 2)) {
-            value = item[1];
-          }
-          // for go : subResourcesMap[tea.StringValue(key)] = value
-          subResourcesMap[key] = value;
-        }
-      }
-    }
-  }
-  var subResourcesArray : [string] = Map.keySet(subResourcesMap);
-  var newQueryList : [string] = subResourcesArray;
-  if (!Util.isUnset(query)) {
-    var queryList : [string] = Map.keySet(query);
-    newQueryList = Array.concat(queryList, subResourcesArray);
-  }
-  var sortedParams = Array.ascSort(newQueryList);
+  var queryKeys : [string] = Map.keySet(query);
+  var sortedParams = Array.ascSort(queryKeys);
   var separator : string = '?';
   for(var paramName : sortedParams) {
     if (Array.contains(@default_signed_params, paramName)) {
       canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-      if (!Util.isUnset(query) && !Util.isUnset(query[paramName])) {
+      if (!Util.empty(query[paramName])) {
         canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
-      } else if (!Util.isUnset(subResourcesMap[paramName])) {
-        canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
-      }
-    } else if (Array.contains(subResourcesArray, paramName)) {
-      canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-      if (!Util.isUnset(subResourcesMap[paramName])) {
-        canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
       }
     }
     separator = '&';
