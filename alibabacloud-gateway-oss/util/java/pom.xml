@@ -54,7 +54,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>tea-xml</artifactId>
-      <version>0.1.5</version>
+      <version>0.1.6</version>
     </dependency>
   </dependencies>
   <build>
