@@ -243,7 +243,7 @@ namespace AlibabaCloud.GatewaySls
                 Stream uncompressedData = response.Body;
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(bodyrawSize) && !AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
                 {
-                    uncompressedData = AlibabaCloud.GatewaySls_Util.Common.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
+                    uncompressedData = AlibabaCloud.GatewaySls_Util.Client.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
                 }
                 if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
@@ -302,7 +302,7 @@ namespace AlibabaCloud.GatewaySls
                 Stream uncompressedData = response.Body;
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(bodyrawSize) && !AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
                 {
-                    uncompressedData = AlibabaCloud.GatewaySls_Util.Common.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
+                    uncompressedData = AlibabaCloud.GatewaySls_Util.Client.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
                 }
                 if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
