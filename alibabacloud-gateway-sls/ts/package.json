@@ -1,6 +1,6 @@
 {
   "name": "@alicloud/gateway-sls",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "main": "dist/client.js",
   "scripts": {
