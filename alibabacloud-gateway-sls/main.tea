@@ -94,6 +94,13 @@ async function MakeContentHash(content: string, signatureVersion: string) : stri
   return String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5Sign(content)));
 }
 
+async function getDefault(val: any, default: any) : any {
+  if (!Util.isUnset(val)) {
+    return val;
+  }
+  return default;
+}
+
 async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var response = context.response;
@@ -101,8 +108,8 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     var error = Util.readAsJSON(response.body);
     var resMap = Util.assertAsMap(error);
     throw {
-      code = resMap['errorCode'],
-      message = resMap['errorMessage'],
+      code = getDefault(resMap['errorCode'], resMap['ErrorCode']),
+      message = getDefault(resMap['errorMessage'], resMap['ErrorMessage']),
       data = {
         httpCode = response.statusCode,
         requestId = response.headers['x-log-requestid'],
