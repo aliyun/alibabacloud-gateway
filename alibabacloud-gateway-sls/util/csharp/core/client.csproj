@@ -40,5 +40,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
   </ItemGroup>
 </Project>
