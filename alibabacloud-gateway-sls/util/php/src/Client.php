@@ -4,6 +4,7 @@
 namespace Darabonba\GatewaySls\Util;
 
 use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7\Utils;
 use \Exception;
 
 /**
@@ -19,7 +20,17 @@ class Client {
      * @param string $bodyRawSize
      * @return Stream
      */
-    public static function readAndUncompressBlock($stream, $compressType, $bodyRawSize){
-        throw new Exception('Un-implemented');
+    public static function readAndUncompressBlock($stream, $compressType, $bodyRawSize){        
+        if ($compressType[0] !== 'gzip') {
+            throw new Exception("Unknown compression type: '$compressType[0]'");
+        }
+        $rawSize = intval($bodyRawSize[0]);
+        $stream->rewind();
+        $uncompressedData = gzuncompress($stream);
+        if ($uncompressedData === false || strlen($uncompressedData) !== $rawSize) {
+            throw new Exception('GZIP decompression failed.');
+        }
+
+        return Utils::streamFor($uncompressedData);
     }
 }
