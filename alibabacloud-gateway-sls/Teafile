@@ -22,7 +22,7 @@
     "SLS_Util": "alibabacloud:GatewaySLS_Util:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-sls:^0.0.7",
+    "ts": "@alicloud/gateway-sls:^0.0.5",
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.7",
     "java": "com.aliyun:alibabacloud-gateway-sls:0.0.8",
     "python": "alibabacloud_gateway_sls:0.0.7",
