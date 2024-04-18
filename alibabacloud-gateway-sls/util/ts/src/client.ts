@@ -5,13 +5,12 @@
  * @return the parsed result
  */
 import { Readable } from 'stream';
-import * as lz4 from 'lz4';
-
+const zlib = require('zlib');
 
 export default class Client {
 
   static async readAndUncompressBlock(stream: Readable, compressType: string, bodyRawSize: string): Promise<Readable> {
-    if (compressType !== 'lz4') {
+    if (compressType !== 'gzip') {
       throw new Error(`Unsupported compress type: ${compressType}`);
     }
     const uncompressedBodySize = parseInt(bodyRawSize, 10);
@@ -24,22 +23,19 @@ export default class Client {
         resolve(Buffer.concat(chunks));
       });
     });
-
     try {
-      const decompressedData = Buffer.allocUnsafe(uncompressedBodySize);
-      const decompressedDataSize = lz4.decodeBlock(compressedData, decompressedData);
-      if (decompressedDataSize !== uncompressedBodySize) {
+      const decompressedData = await new Promise<Buffer>((resolve, reject) => {
+        zlib.inflate(compressedData, (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        });
+      });
+      if (decompressedData.length !== uncompressedBodySize) {
         throw new Error('Decompressed data size does not match the expected uncompressed body size');
       }
-      const decompressedStream = new Readable({
-        read() {
-          this.push(decompressedData);
-          this.push(null);
-        }
-      });
-      return decompressedStream;
+      return Readable.from([decompressedData]);
     } catch (error) {
-      throw new Error(`Failed to decompress LZ4 block: ${error.message}`);
+      throw new Error(`Failed to decompress gzip block: ${error.message}`);
     }
   }
 
