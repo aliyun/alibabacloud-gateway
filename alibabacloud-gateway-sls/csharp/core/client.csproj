@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyName>AlibabaCloud.GatewaySls</AssemblyName>
-    <Version>0.0.7</Version>
+    <Version>0.0.8</Version>
     <LangVersion>5</LangVersion>
     <Authors>Alibaba Cloud</Authors>
     <Description>Alibaba Cloud SLS Gateway Library for .NET</Description>
@@ -50,6 +50,6 @@
     <PackageReference Include="AlibabaCloud.DarabonbaEncodeUtil" Version="0.0.2"/>
     <PackageReference Include="AlibabaCloud.DarabonbaSignatureUtil" Version="0.0.4"/>
     <PackageReference Include="Tea" Version="1.0.11"/>
-    <PackageReference Include="AlibabaCloud.GatewaySls_Util" Version="0.0.1"/>
+    <PackageReference Include="AlibabaCloud.GatewaySls_Util" Version="0.0.2"/>
   </ItemGroup>
 </Project>
