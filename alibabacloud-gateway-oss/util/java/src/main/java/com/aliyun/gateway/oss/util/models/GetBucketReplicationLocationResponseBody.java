@@ -24,6 +24,9 @@ public class GetBucketReplicationLocationResponseBody extends TeaModel {
     }
 
     public static class LocationRTCConstraint extends TeaModel {
+        /**
+         * <p>The regions where RTC is supported.</p>
+         */
         @NameInMap("Location")
         public java.util.List<String> location;
 
@@ -71,6 +74,9 @@ public class GetBucketReplicationLocationResponseBody extends TeaModel {
         @NameInMap("Location")
         public java.util.List<String> location;
 
+        /**
+         * <p>The container that stores regions in which the RTC can be enabled.</p>
+         */
         @NameInMap("LocationRTCConstraint")
         public LocationRTCConstraint locationRTCConstraint;
 

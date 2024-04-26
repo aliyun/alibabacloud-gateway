@@ -7,6 +7,9 @@ public class LifecycleRule extends TeaModel {
     @NameInMap("AbortMultipartUpload")
     public LifecycleAbortMultipartUpload lifecycleAbortMultipartUpload;
 
+    @NameInMap("AtimeBase")
+    public Long atimeBase;
+
     @NameInMap("Expiration")
     public LifecycleExpiration lifecycleExpiration;
 
@@ -45,6 +48,14 @@ public class LifecycleRule extends TeaModel {
     }
     public LifecycleAbortMultipartUpload getLifecycleAbortMultipartUpload() {
         return this.lifecycleAbortMultipartUpload;
+    }
+
+    public LifecycleRule setAtimeBase(Long atimeBase) {
+        this.atimeBase = atimeBase;
+        return this;
+    }
+    public Long getAtimeBase() {
+        return this.atimeBase;
     }
 
     public LifecycleRule setLifecycleExpiration(LifecycleExpiration lifecycleExpiration) {
@@ -123,6 +134,9 @@ public class LifecycleRule extends TeaModel {
         @NameInMap("CreatedBeforeDate")
         public String createdBeforeDate;
 
+        @NameInMap("Date")
+        public String date;
+
         @NameInMap("Days")
         public Integer days;
 
@@ -139,6 +153,14 @@ public class LifecycleRule extends TeaModel {
             return this.createdBeforeDate;
         }
 
+        public LifecycleAbortMultipartUpload setDate(String date) {
+            this.date = date;
+            return this;
+        }
+        public String getDate() {
+            return this.date;
+        }
+
         public LifecycleAbortMultipartUpload setDays(Integer days) {
             this.days = days;
             return this;
@@ -152,6 +174,9 @@ public class LifecycleRule extends TeaModel {
     public static class LifecycleExpiration extends TeaModel {
         @NameInMap("CreatedBeforeDate")
         public String createdBeforeDate;
+
+        @NameInMap("Date")
+        public String date;
 
         @NameInMap("Days")
         public Integer days;
@@ -170,6 +195,14 @@ public class LifecycleRule extends TeaModel {
         }
         public String getCreatedBeforeDate() {
             return this.createdBeforeDate;
+        }
+
+        public LifecycleExpiration setDate(String date) {
+            this.date = date;
+            return this;
+        }
+        public String getDate() {
+            return this.date;
         }
 
         public LifecycleExpiration setDays(Integer days) {
@@ -224,6 +257,12 @@ public class LifecycleRule extends TeaModel {
         @NameInMap("Not")
         public Not not;
 
+        @NameInMap("ObjectSizeGreaterThan")
+        public Long objectSizeGreaterThan;
+
+        @NameInMap("ObjectSizeLessThan")
+        public Long objectSizeLessThan;
+
         public static Filter build(java.util.Map<String, ?> map) throws Exception {
             Filter self = new Filter();
             return TeaModel.build(map, self);
@@ -235,6 +274,22 @@ public class LifecycleRule extends TeaModel {
         }
         public Not getNot() {
             return this.not;
+        }
+
+        public Filter setObjectSizeGreaterThan(Long objectSizeGreaterThan) {
+            this.objectSizeGreaterThan = objectSizeGreaterThan;
+            return this;
+        }
+        public Long getObjectSizeGreaterThan() {
+            return this.objectSizeGreaterThan;
+        }
+
+        public Filter setObjectSizeLessThan(Long objectSizeLessThan) {
+            this.objectSizeLessThan = objectSizeLessThan;
+            return this;
+        }
+        public Long getObjectSizeLessThan() {
+            return this.objectSizeLessThan;
         }
 
     }

@@ -8,7 +8,7 @@ public class InventoryEncryption extends TeaModel {
     public SSEKMS SSEKMS;
 
     @NameInMap("SSE-OSS")
-    public SSEOSS SSEOSS;
+    public String SSEOSS;
 
     public static InventoryEncryption build(java.util.Map<String, ?> map) throws Exception {
         InventoryEncryption self = new InventoryEncryption();
@@ -23,11 +23,11 @@ public class InventoryEncryption extends TeaModel {
         return this.SSEKMS;
     }
 
-    public InventoryEncryption setSSEOSS(SSEOSS SSEOSS) {
+    public InventoryEncryption setSSEOSS(String SSEOSS) {
         this.SSEOSS = SSEOSS;
         return this;
     }
-    public SSEOSS getSSEOSS() {
+    public String getSSEOSS() {
         return this.SSEOSS;
     }
 

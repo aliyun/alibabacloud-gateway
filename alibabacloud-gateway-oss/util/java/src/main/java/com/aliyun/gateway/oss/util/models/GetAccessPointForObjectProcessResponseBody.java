@@ -66,11 +66,17 @@ public class GetAccessPointForObjectProcessResponseBody extends TeaModel {
         @NameInMap("AccountId")
         public String accountId;
 
+        @NameInMap("AllowAnonymousAccessForObjectProcess")
+        public String allowAnonymousAccessForObjectProcess;
+
         @NameInMap("CreationDate")
         public String creationDate;
 
         @NameInMap("Endpoints")
         public Endpoints endpoints;
+
+        @NameInMap("PublicAccessBlockConfiguration")
+        public PublicAccessBlockConfiguration publicAccessBlockConfiguration;
 
         @NameInMap("Status")
         public String status;
@@ -120,6 +126,14 @@ public class GetAccessPointForObjectProcessResponseBody extends TeaModel {
             return this.accountId;
         }
 
+        public GetAccessPointForObjectProcessResult setAllowAnonymousAccessForObjectProcess(String allowAnonymousAccessForObjectProcess) {
+            this.allowAnonymousAccessForObjectProcess = allowAnonymousAccessForObjectProcess;
+            return this;
+        }
+        public String getAllowAnonymousAccessForObjectProcess() {
+            return this.allowAnonymousAccessForObjectProcess;
+        }
+
         public GetAccessPointForObjectProcessResult setCreationDate(String creationDate) {
             this.creationDate = creationDate;
             return this;
@@ -134,6 +148,14 @@ public class GetAccessPointForObjectProcessResponseBody extends TeaModel {
         }
         public Endpoints getEndpoints() {
             return this.endpoints;
+        }
+
+        public GetAccessPointForObjectProcessResult setPublicAccessBlockConfiguration(PublicAccessBlockConfiguration publicAccessBlockConfiguration) {
+            this.publicAccessBlockConfiguration = publicAccessBlockConfiguration;
+            return this;
+        }
+        public PublicAccessBlockConfiguration getPublicAccessBlockConfiguration() {
+            return this.publicAccessBlockConfiguration;
         }
 
         public GetAccessPointForObjectProcessResult setStatus(String status) {

@@ -24,6 +24,9 @@ public class CreateAccessPointForObjectProcessRequest extends TeaModel {
         @NameInMap("AccessPointName")
         public String accessPointName;
 
+        @NameInMap("AllowAnonymousAccessForObjectProcess")
+        public String allowAnonymousAccessForObjectProcess;
+
         @NameInMap("ObjectProcessConfiguration")
         public ObjectProcessConfiguration objectProcessConfiguration;
 
@@ -38,6 +41,14 @@ public class CreateAccessPointForObjectProcessRequest extends TeaModel {
         }
         public String getAccessPointName() {
             return this.accessPointName;
+        }
+
+        public CreateAccessPointForObjectProcessConfiguration setAllowAnonymousAccessForObjectProcess(String allowAnonymousAccessForObjectProcess) {
+            this.allowAnonymousAccessForObjectProcess = allowAnonymousAccessForObjectProcess;
+            return this;
+        }
+        public String getAllowAnonymousAccessForObjectProcess() {
+            return this.allowAnonymousAccessForObjectProcess;
         }
 
         public CreateAccessPointForObjectProcessConfiguration setObjectProcessConfiguration(ObjectProcessConfiguration objectProcessConfiguration) {

@@ -69,6 +69,44 @@ public class ObjectProcessConfiguration extends TeaModel {
 
     }
 
+    public static class CustomForwardHeaders extends TeaModel {
+        @NameInMap("CustomForwardHeader")
+        public java.util.List<String> customForwardHeader;
+
+        public static CustomForwardHeaders build(java.util.Map<String, ?> map) throws Exception {
+            CustomForwardHeaders self = new CustomForwardHeaders();
+            return TeaModel.build(map, self);
+        }
+
+        public CustomForwardHeaders setCustomForwardHeader(java.util.List<String> customForwardHeader) {
+            this.customForwardHeader = customForwardHeader;
+            return this;
+        }
+        public java.util.List<String> getCustomForwardHeader() {
+            return this.customForwardHeader;
+        }
+
+    }
+
+    public static class AdditionalFeatures extends TeaModel {
+        @NameInMap("CustomForwardHeaders")
+        public CustomForwardHeaders customForwardHeaders;
+
+        public static AdditionalFeatures build(java.util.Map<String, ?> map) throws Exception {
+            AdditionalFeatures self = new AdditionalFeatures();
+            return TeaModel.build(map, self);
+        }
+
+        public AdditionalFeatures setCustomForwardHeaders(CustomForwardHeaders customForwardHeaders) {
+            this.customForwardHeaders = customForwardHeaders;
+            return this;
+        }
+        public CustomForwardHeaders getCustomForwardHeaders() {
+            return this.customForwardHeaders;
+        }
+
+    }
+
     public static class FunctionCompute extends TeaModel {
         @NameInMap("FunctionArn")
         public String functionArn;
@@ -100,12 +138,23 @@ public class ObjectProcessConfiguration extends TeaModel {
     }
 
     public static class ContentTransformation extends TeaModel {
+        @NameInMap("AdditionalFeatures")
+        public AdditionalFeatures additionalFeatures;
+
         @NameInMap("FunctionCompute")
         public FunctionCompute functionCompute;
 
         public static ContentTransformation build(java.util.Map<String, ?> map) throws Exception {
             ContentTransformation self = new ContentTransformation();
             return TeaModel.build(map, self);
+        }
+
+        public ContentTransformation setAdditionalFeatures(AdditionalFeatures additionalFeatures) {
+            this.additionalFeatures = additionalFeatures;
+            return this;
+        }
+        public AdditionalFeatures getAdditionalFeatures() {
+            return this.additionalFeatures;
         }
 
         public ContentTransformation setFunctionCompute(FunctionCompute functionCompute) {

@@ -3,7 +3,7 @@ package com.aliyun.gateway.oss.util.models;
 
 import com.aliyun.tea.*;
 
-public class GetServiceResponse extends TeaModel {
+public class GetBucketPolicyStatusResponse extends TeaModel {
     @NameInMap("headers")
     public java.util.Map<String, String> headers;
 
@@ -11,14 +11,14 @@ public class GetServiceResponse extends TeaModel {
     public Integer statusCode;
 
     @NameInMap("body")
-    public GetServiceResponseBody body;
+    public GetBucketPolicyStatusResponseBody body;
 
-    public static GetServiceResponse build(java.util.Map<String, ?> map) throws Exception {
-        GetServiceResponse self = new GetServiceResponse();
+    public static GetBucketPolicyStatusResponse build(java.util.Map<String, ?> map) throws Exception {
+        GetBucketPolicyStatusResponse self = new GetBucketPolicyStatusResponse();
         return TeaModel.build(map, self);
     }
 
-    public GetServiceResponse setHeaders(java.util.Map<String, String> headers) {
+    public GetBucketPolicyStatusResponse setHeaders(java.util.Map<String, String> headers) {
         this.headers = headers;
         return this;
     }
@@ -26,7 +26,7 @@ public class GetServiceResponse extends TeaModel {
         return this.headers;
     }
 
-    public GetServiceResponse setStatusCode(Integer statusCode) {
+    public GetBucketPolicyStatusResponse setStatusCode(Integer statusCode) {
         this.statusCode = statusCode;
         return this;
     }
@@ -34,11 +34,11 @@ public class GetServiceResponse extends TeaModel {
         return this.statusCode;
     }
 
-    public GetServiceResponse setBody(GetServiceResponseBody body) {
+    public GetBucketPolicyStatusResponse setBody(GetBucketPolicyStatusResponseBody body) {
         this.body = body;
         return this;
     }
-    public GetServiceResponseBody getBody() {
+    public GetBucketPolicyStatusResponseBody getBody() {
         return this.body;
     }
 

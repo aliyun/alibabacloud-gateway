@@ -5,18 +5,18 @@ import com.aliyun.tea.*;
 
 public class ReplicationConfiguration extends TeaModel {
     @NameInMap("Rule")
-    public ReplicationRule rule;
+    public PutReplicationRule rule;
 
     public static ReplicationConfiguration build(java.util.Map<String, ?> map) throws Exception {
         ReplicationConfiguration self = new ReplicationConfiguration();
         return TeaModel.build(map, self);
     }
 
-    public ReplicationConfiguration setRule(ReplicationRule rule) {
+    public ReplicationConfiguration setRule(PutReplicationRule rule) {
         this.rule = rule;
         return this;
     }
-    public ReplicationRule getRule() {
+    public PutReplicationRule getRule() {
         return this.rule;
     }
 

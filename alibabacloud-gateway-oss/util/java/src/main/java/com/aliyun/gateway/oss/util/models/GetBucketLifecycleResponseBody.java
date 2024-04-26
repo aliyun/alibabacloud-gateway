@@ -28,19 +28,19 @@ public class GetBucketLifecycleResponseBody extends TeaModel {
          * <p>The container that stores the lifecycle rules.</p>
          */
         @NameInMap("Rule")
-        public java.util.List<LifecycleRule> rules;
+        public java.util.List<LifecycleRule> rule;
 
         public static LifecycleConfiguration build(java.util.Map<String, ?> map) throws Exception {
             LifecycleConfiguration self = new LifecycleConfiguration();
             return TeaModel.build(map, self);
         }
 
-        public LifecycleConfiguration setRules(java.util.List<LifecycleRule> rules) {
-            this.rules = rules;
+        public LifecycleConfiguration setRule(java.util.List<LifecycleRule> rule) {
+            this.rule = rule;
             return this;
         }
-        public java.util.List<LifecycleRule> getRules() {
-            return this.rules;
+        public java.util.List<LifecycleRule> getRule() {
+            return this.rule;
         }
 
     }

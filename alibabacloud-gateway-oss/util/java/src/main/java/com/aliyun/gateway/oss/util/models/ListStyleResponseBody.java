@@ -28,19 +28,19 @@ public class ListStyleResponseBody extends TeaModel {
          * <p>The list of styles.</p>
          */
         @NameInMap("Style")
-        public java.util.List<StyleInfo> styles;
+        public java.util.List<StyleInfo> style;
 
         public static StyleList build(java.util.Map<String, ?> map) throws Exception {
             StyleList self = new StyleList();
             return TeaModel.build(map, self);
         }
 
-        public StyleList setStyles(java.util.List<StyleInfo> styles) {
-            this.styles = styles;
+        public StyleList setStyle(java.util.List<StyleInfo> style) {
+            this.style = style;
             return this;
         }
-        public java.util.List<StyleInfo> getStyles() {
-            return this.styles;
+        public java.util.List<StyleInfo> getStyle() {
+            return this.style;
         }
 
     }

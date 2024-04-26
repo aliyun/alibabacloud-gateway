@@ -28,19 +28,19 @@ public class GetBucketReplicationResponseBody extends TeaModel {
          * <p>The container that stores the data replication rules.</p>
          */
         @NameInMap("Rule")
-        public java.util.List<ReplicationRule> rules;
+        public java.util.List<ReplicationRule> rule;
 
         public static ReplicationConfiguration build(java.util.Map<String, ?> map) throws Exception {
             ReplicationConfiguration self = new ReplicationConfiguration();
             return TeaModel.build(map, self);
         }
 
-        public ReplicationConfiguration setRules(java.util.List<ReplicationRule> rules) {
-            this.rules = rules;
+        public ReplicationConfiguration setRule(java.util.List<ReplicationRule> rule) {
+            this.rule = rule;
             return this;
         }
-        public java.util.List<ReplicationRule> getRules() {
-            return this.rules;
+        public java.util.List<ReplicationRule> getRule() {
+            return this.rule;
         }
 
     }

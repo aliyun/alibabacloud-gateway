@@ -81,6 +81,12 @@ public class CopyObjectHeaders extends TeaModel {
     public String acl;
 
     /**
+     * <p>The server side data encryption algorithm. Invalid value: SM4</p>
+     */
+    @NameInMap("x-oss-server-side-data-encryption")
+    public String xOssServerSideDataEncryption;
+
+    /**
      * <p>The entropy coding-based encryption algorithm that OSS uses to encrypt an object when you create the object. The valid values of the header are **AES256** and **KMS**. You must activate Key Management Service (KMS) in the OSS console before you can use the KMS encryption algorithm. Otherwise, the KmsServiceNotEnabled error is returned.</p>
      * <br>
      * <p>*   If you do not specify the **x-oss-server-side-encryption** header in the CopyObject request, the destination object is not encrypted on the server regardless of whether the source object is encrypted on the server.</p>
@@ -210,6 +216,14 @@ public class CopyObjectHeaders extends TeaModel {
     }
     public String getAcl() {
         return this.acl;
+    }
+
+    public CopyObjectHeaders setXOssServerSideDataEncryption(String xOssServerSideDataEncryption) {
+        this.xOssServerSideDataEncryption = xOssServerSideDataEncryption;
+        return this;
+    }
+    public String getXOssServerSideDataEncryption() {
+        return this.xOssServerSideDataEncryption;
     }
 
     public CopyObjectHeaders setServerSideEncryption(String serverSideEncryption) {
