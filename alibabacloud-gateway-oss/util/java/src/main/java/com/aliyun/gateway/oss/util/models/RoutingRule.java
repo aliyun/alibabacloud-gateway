@@ -7,6 +7,9 @@ public class RoutingRule extends TeaModel {
     @NameInMap("Condition")
     public RoutingRuleCondition condition;
 
+    @NameInMap("LuaConfig")
+    public RoutingRuleLuaConfig luaConfig;
+
     @NameInMap("Redirect")
     public RoutingRuleRedirect redirect;
 
@@ -24,6 +27,14 @@ public class RoutingRule extends TeaModel {
     }
     public RoutingRuleCondition getCondition() {
         return this.condition;
+    }
+
+    public RoutingRule setLuaConfig(RoutingRuleLuaConfig luaConfig) {
+        this.luaConfig = luaConfig;
+        return this;
+    }
+    public RoutingRuleLuaConfig getLuaConfig() {
+        return this.luaConfig;
     }
 
     public RoutingRule setRedirect(RoutingRuleRedirect redirect) {

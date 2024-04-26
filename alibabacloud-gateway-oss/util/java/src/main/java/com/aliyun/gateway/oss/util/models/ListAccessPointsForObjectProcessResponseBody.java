@@ -30,6 +30,9 @@ public class ListAccessPointsForObjectProcessResponseBody extends TeaModel {
         @NameInMap("AccessPointNameForObjectProcess")
         public String accessPointNameForObjectProcess;
 
+        @NameInMap("AllowAnonymousAccessForObjectProcess")
+        public String allowAnonymousAccessForObjectProcess;
+
         @NameInMap("Status")
         public String status;
 
@@ -60,6 +63,14 @@ public class ListAccessPointsForObjectProcessResponseBody extends TeaModel {
         }
         public String getAccessPointNameForObjectProcess() {
             return this.accessPointNameForObjectProcess;
+        }
+
+        public AccessPointForObjectProcess setAllowAnonymousAccessForObjectProcess(String allowAnonymousAccessForObjectProcess) {
+            this.allowAnonymousAccessForObjectProcess = allowAnonymousAccessForObjectProcess;
+            return this;
+        }
+        public String getAllowAnonymousAccessForObjectProcess() {
+            return this.allowAnonymousAccessForObjectProcess;
         }
 
         public AccessPointForObjectProcess setStatus(String status) {

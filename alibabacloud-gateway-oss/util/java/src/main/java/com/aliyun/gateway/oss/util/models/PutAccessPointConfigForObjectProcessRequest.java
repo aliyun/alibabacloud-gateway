@@ -21,12 +21,26 @@ public class PutAccessPointConfigForObjectProcessRequest extends TeaModel {
     }
 
     public static class PutAccessPointConfigForObjectProcessConfiguration extends TeaModel {
+        @NameInMap("AllowAnonymousAccessForObjectProcess")
+        public String allowAnonymousAccessForObjectProcess;
+
         @NameInMap("ObjectProcessConfiguration")
         public ObjectProcessConfiguration objectProcessConfiguration;
+
+        @NameInMap("PublicAccessBlockConfiguration")
+        public PublicAccessBlockConfiguration publicAccessBlockConfiguration;
 
         public static PutAccessPointConfigForObjectProcessConfiguration build(java.util.Map<String, ?> map) throws Exception {
             PutAccessPointConfigForObjectProcessConfiguration self = new PutAccessPointConfigForObjectProcessConfiguration();
             return TeaModel.build(map, self);
+        }
+
+        public PutAccessPointConfigForObjectProcessConfiguration setAllowAnonymousAccessForObjectProcess(String allowAnonymousAccessForObjectProcess) {
+            this.allowAnonymousAccessForObjectProcess = allowAnonymousAccessForObjectProcess;
+            return this;
+        }
+        public String getAllowAnonymousAccessForObjectProcess() {
+            return this.allowAnonymousAccessForObjectProcess;
         }
 
         public PutAccessPointConfigForObjectProcessConfiguration setObjectProcessConfiguration(ObjectProcessConfiguration objectProcessConfiguration) {
@@ -35,6 +49,14 @@ public class PutAccessPointConfigForObjectProcessRequest extends TeaModel {
         }
         public ObjectProcessConfiguration getObjectProcessConfiguration() {
             return this.objectProcessConfiguration;
+        }
+
+        public PutAccessPointConfigForObjectProcessConfiguration setPublicAccessBlockConfiguration(PublicAccessBlockConfiguration publicAccessBlockConfiguration) {
+            this.publicAccessBlockConfiguration = publicAccessBlockConfiguration;
+            return this;
+        }
+        public PublicAccessBlockConfiguration getPublicAccessBlockConfiguration() {
+            return this.publicAccessBlockConfiguration;
         }
 
     }

@@ -10,6 +10,9 @@ public class PutStyleRequest extends TeaModel {
     @NameInMap("Style")
     public Style style;
 
+    @NameInMap("category")
+    public String category;
+
     /**
      * <p>The name of the image style.</p>
      */
@@ -27,6 +30,14 @@ public class PutStyleRequest extends TeaModel {
     }
     public Style getStyle() {
         return this.style;
+    }
+
+    public PutStyleRequest setCategory(String category) {
+        this.category = category;
+        return this;
+    }
+    public String getCategory() {
+        return this.category;
     }
 
     public PutStyleRequest setStyleName(String styleName) {

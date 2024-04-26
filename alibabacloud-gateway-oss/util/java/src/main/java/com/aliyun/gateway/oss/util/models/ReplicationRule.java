@@ -11,7 +11,7 @@ public class ReplicationRule extends TeaModel {
     public ReplicationDestination destination;
 
     @NameInMap("EncryptionConfiguration")
-    public EncryptionConfiguration encryptionConfiguration;
+    public ReplicationEncryptionConfiguration encryptionConfiguration;
 
     @NameInMap("HistoricalObjectReplication")
     public String historicalObjectReplication;
@@ -55,11 +55,11 @@ public class ReplicationRule extends TeaModel {
         return this.destination;
     }
 
-    public ReplicationRule setEncryptionConfiguration(EncryptionConfiguration encryptionConfiguration) {
+    public ReplicationRule setEncryptionConfiguration(ReplicationEncryptionConfiguration encryptionConfiguration) {
         this.encryptionConfiguration = encryptionConfiguration;
         return this;
     }
-    public EncryptionConfiguration getEncryptionConfiguration() {
+    public ReplicationEncryptionConfiguration getEncryptionConfiguration() {
         return this.encryptionConfiguration;
     }
 
@@ -117,44 +117,6 @@ public class ReplicationRule extends TeaModel {
     }
     public String getSyncRole() {
         return this.syncRole;
-    }
-
-    public static class EncryptionConfiguration extends TeaModel {
-        @NameInMap("ReplicaKmsKeyID")
-        public String replicaKmsKeyID;
-
-        public static EncryptionConfiguration build(java.util.Map<String, ?> map) throws Exception {
-            EncryptionConfiguration self = new EncryptionConfiguration();
-            return TeaModel.build(map, self);
-        }
-
-        public EncryptionConfiguration setReplicaKmsKeyID(String replicaKmsKeyID) {
-            this.replicaKmsKeyID = replicaKmsKeyID;
-            return this;
-        }
-        public String getReplicaKmsKeyID() {
-            return this.replicaKmsKeyID;
-        }
-
-    }
-
-    public static class RTC extends TeaModel {
-        @NameInMap("Status")
-        public String status;
-
-        public static RTC build(java.util.Map<String, ?> map) throws Exception {
-            RTC self = new RTC();
-            return TeaModel.build(map, self);
-        }
-
-        public RTC setStatus(String status) {
-            this.status = status;
-            return this;
-        }
-        public String getStatus() {
-            return this.status;
-        }
-
     }
 
 }

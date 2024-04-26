@@ -19,11 +19,17 @@ public class GetAccessPointResult extends TeaModel {
     @NameInMap("Bucket")
     public String bucket;
 
+    @NameInMap("CreationDate")
+    public String creationDate;
+
     @NameInMap("Endpoints")
     public Endpoints endpoints;
 
     @NameInMap("NetworkOrigin")
     public String networkOrigin;
+
+    @NameInMap("PublicAccessBlockConfiguration")
+    public PublicAccessBlockConfiguration publicAccessBlockConfiguration;
 
     @NameInMap("Status")
     public String status;
@@ -76,6 +82,14 @@ public class GetAccessPointResult extends TeaModel {
         return this.bucket;
     }
 
+    public GetAccessPointResult setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+        return this;
+    }
+    public String getCreationDate() {
+        return this.creationDate;
+    }
+
     public GetAccessPointResult setEndpoints(Endpoints endpoints) {
         this.endpoints = endpoints;
         return this;
@@ -90,6 +104,14 @@ public class GetAccessPointResult extends TeaModel {
     }
     public String getNetworkOrigin() {
         return this.networkOrigin;
+    }
+
+    public GetAccessPointResult setPublicAccessBlockConfiguration(PublicAccessBlockConfiguration publicAccessBlockConfiguration) {
+        this.publicAccessBlockConfiguration = publicAccessBlockConfiguration;
+        return this;
+    }
+    public PublicAccessBlockConfiguration getPublicAccessBlockConfiguration() {
+        return this.publicAccessBlockConfiguration;
     }
 
     public GetAccessPointResult setStatus(String status) {

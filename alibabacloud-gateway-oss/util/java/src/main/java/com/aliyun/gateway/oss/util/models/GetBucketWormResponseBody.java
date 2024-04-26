@@ -30,6 +30,9 @@ public class GetBucketWormResponseBody extends TeaModel {
         @NameInMap("CreationDate")
         public String creationDate;
 
+        /**
+         * <p>The time at which the retention policy will be expired.</p>
+         */
         @NameInMap("ExpirationDate")
         public String expirationDate;
 

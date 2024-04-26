@@ -54,15 +54,29 @@ public class RoutingRuleCondition extends TeaModel {
     }
 
     public static class IncludeHeader extends TeaModel {
+        @NameInMap("EndsWith")
+        public String endsWith;
+
         @NameInMap("Equals")
         public String equals;
 
         @NameInMap("Key")
         public String key;
 
+        @NameInMap("StartsWith")
+        public String startsWith;
+
         public static IncludeHeader build(java.util.Map<String, ?> map) throws Exception {
             IncludeHeader self = new IncludeHeader();
             return TeaModel.build(map, self);
+        }
+
+        public IncludeHeader setEndsWith(String endsWith) {
+            this.endsWith = endsWith;
+            return this;
+        }
+        public String getEndsWith() {
+            return this.endsWith;
         }
 
         public IncludeHeader setEquals(String equals) {
@@ -79,6 +93,14 @@ public class RoutingRuleCondition extends TeaModel {
         }
         public String getKey() {
             return this.key;
+        }
+
+        public IncludeHeader setStartsWith(String startsWith) {
+            this.startsWith = startsWith;
+            return this;
+        }
+        public String getStartsWith() {
+            return this.startsWith;
         }
 
     }
