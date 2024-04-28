@@ -1,5 +1,5 @@
 // This file is auto-generated, don't edit it. Thanks.
-package com.aliyun.oss20190517.models;
+package com.aliyun.gateway.oss.util.models;
 
 import com.aliyun.tea.*;
 
