@@ -139,6 +139,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         String regionId = config.regionId;
+        if (com.aliyun.teautil.Common.isUnset(regionId) || com.aliyun.teautil.Common.empty(regionId)) {
+            regionId = this.getRegionIdFromEndpoint(config.endpoint);
+        }
+
         com.aliyun.credentials.Client credential = request.credential;
         String accessKeyId = credential.getAccessKeyId();
         String accessKeySecret = credential.getAccessKeySecret();
@@ -308,6 +312,18 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
+    }
+
+    public String getRegionIdFromEndpoint(String endpoint) throws Exception {
+        if (!com.aliyun.teautil.Common.empty(endpoint)) {
+            if (com.aliyun.darabonbastring.Client.hasPrefix(endpoint, "oss-") && com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".aliyuncs.com")) {
+                Integer idx = com.aliyun.darabonbastring.Client.index(endpoint, ".aliyuncs.com");
+                return com.aliyun.darabonbastring.Client.subString(endpoint, 4, idx);
+            }
+
+        }
+
+        return "cn-hangzhou";
     }
 
     public String getEndpoint(String regionId, String network, String endpoint) throws Exception {
@@ -480,7 +496,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.List<String> sortedParams = com.aliyun.darabonba.array.Client.ascSort(queryKeys);
         String separator = "?";
         for (String paramName : sortedParams) {
-            if (com.aliyun.darabonba.array.Client.contains(_default_signed_params, paramName)) {
+            if (com.aliyun.darabonba.array.Client.contains(_default_signed_params, paramName) || com.aliyun.darabonbastring.Client.hasPrefix(paramName, "x-oss-")) {
                 canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + paramName + "";
                 if (!com.aliyun.teautil.Common.empty(query.get(paramName))) {
                     canonicalizedResource = "" + canonicalizedResource + "=" + query.get(paramName) + "";
