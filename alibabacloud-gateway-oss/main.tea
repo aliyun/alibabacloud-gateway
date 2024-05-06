@@ -70,6 +70,9 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   }
   var config = context.configuration;
   var regionId = config.regionId;
+  if (Util.isUnset(regionId) || Util.empty(regionId)) {
+    regionId = getRegionIdFromEndpoint(config.endpoint);
+  }
   var credential : Credential = request.credential;
   var accessKeyId = credential.getAccessKeyId();
   var accessKeySecret = credential.getAccessKeySecret();
@@ -226,6 +229,16 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       response.deserializedBody = Util.readAsString(response.body);
     }
   }
+}
+
+async function getRegionIdFromEndpoint(endpoint: string) : string {
+  if (!Util.empty(endpoint)) {
+    if (String.hasPrefix(endpoint, 'oss-') && String.hasSuffix(endpoint, '.aliyuncs.com')) {
+      var idx = String.index(endpoint, '.aliyuncs.com');
+      return String.subString(endpoint, 4, idx);
+    }
+  }
+  return 'cn-hangzhou';
 }
 
 async function getEndpoint(regionId: string, network: string, endpoint: string) : string{
@@ -388,7 +401,7 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
   var sortedParams = Array.ascSort(queryKeys);
   var separator : string = '?';
   for(var paramName : sortedParams) {
-    if (Array.contains(@default_signed_params, paramName)) {
+    if (Array.contains(@default_signed_params, paramName) || String.hasPrefix(paramName, 'x-oss-')) {
       canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
       if (!Util.empty(query[paramName])) {
         canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
