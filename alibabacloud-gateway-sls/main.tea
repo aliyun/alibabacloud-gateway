@@ -59,7 +59,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     accept = 'application/json',
     host = host,
     user-agent = request.userAgent,
-    x-log-apiversion = '0.6.0',
+    x-log-apiversion = '0.6.0', 
     x-log-bodyrawsize = '0',
     ...request.headers
   };
@@ -312,8 +312,10 @@ async function getSignedHeaderStrV4(headers: map[string]string): string {
   var separator : string = '';
   for(var key : sortedHeadersArray) {
     var lowerKey = String.toLower(key);
-    if (String.hasPrefix(lowerKey, 'x-log-') || String.equals(lowerKey, 'host')
-            || String.equals(lowerKey, 'content-type')) {
+    if (String.hasPrefix(lowerKey, 'x-log-') || 
+        String.hasPrefix(lowerKey, 'x-acs-') ||
+        String.equals(lowerKey, 'host') ||
+        String.equals(lowerKey, 'content-type')) {
       if (!String.contains(tmp, lowerKey)) {
         tmp = `${tmp}${separator}${lowerKey}`;
         separator = ';';
