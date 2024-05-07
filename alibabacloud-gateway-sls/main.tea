@@ -312,12 +312,12 @@ async function getSignedHeaderStrV4(headers: map[string]string): string {
   var separator : string = '';
   for(var key : sortedHeadersArray) {
     var lowerKey = String.toLower(key);
-    if (String.hasPrefix(lowerKey, 'x-log-') || String.equals(lowerKey, 'host')
-            || String.equals(lowerKey, 'content-type')) {
-      if (!String.contains(tmp, lowerKey)) {
+    if (String.hasPrefix(lowerKey, 'x-log-') || 
+        String.hasPrefix(lowerKey, 'x-acs-') ||
+        String.equals(lowerKey, 'host') ||
+        String.equals(lowerKey, 'content-type')) {
         tmp = `${tmp}${separator}${lowerKey}`;
         separator = ';';
-      }
     }
   }
   return tmp;
