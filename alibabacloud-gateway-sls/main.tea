@@ -316,10 +316,8 @@ async function getSignedHeaderStrV4(headers: map[string]string): string {
         String.hasPrefix(lowerKey, 'x-acs-') ||
         String.equals(lowerKey, 'host') ||
         String.equals(lowerKey, 'content-type')) {
-      if (!String.contains(tmp, lowerKey)) {
         tmp = `${tmp}${separator}${lowerKey}`;
         separator = ';';
-      }
     }
   }
   return tmp;
