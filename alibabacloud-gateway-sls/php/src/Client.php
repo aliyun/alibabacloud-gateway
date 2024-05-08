@@ -132,6 +132,7 @@ class Client extends DarabonbaGatewaySpiClient {
             throw new TeaError([
                 "code" => @$resMap["errorCode"],
                 "message" => @$resMap["errorMessage"],
+                "accessDeniedDetail" => @$resMap["accessDeniedDetail"],
                 "data" => [
                     "httpCode" => $response->statusCode,
                     "requestId" => @$response->headers["x-log-requestid"],

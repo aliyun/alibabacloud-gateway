@@ -183,8 +183,9 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		}
 
 		_err = tea.NewSDKError(map[string]interface{}{
-			"code":    resMap["errorCode"],
-			"message": resMap["errorMessage"],
+			"code":               resMap["errorCode"],
+			"message":            resMap["errorMessage"],
+			"accessDeniedDetail": resMap["accessDeniedDetail"],
 			"data": map[string]interface{}{
 				"httpCode":   tea.IntValue(response.StatusCode),
 				"requestId":  tea.StringValue(response.Headers["x-log-requestid"]),
