@@ -1,0 +1,8 @@
+import HttpClient;
+
+extends HttpClient;
+
+init(){
+}
+
+async function call(request: HttpClient.HttpRequest, transport: HttpClient.HttpTransport): HttpClient.HttpResponse;
