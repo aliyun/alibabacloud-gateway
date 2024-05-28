@@ -1,0 +1,30 @@
+{
+  "scope": "alibabacloud",
+  "name": "SLS_HttpClient",
+  "version": "0.0.1",
+  "main": "./http.dara",
+  "maintainers": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "libraries": {
+    "HttpClient": "darabonba:HttpClient:*"
+  },
+  "releases": {
+    "ts": "@alicloud/gateway-sls:^0.0.8",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/http:v0.0.7",
+    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.8",
+    "python": "alibabacloud_gateway_sls:0.0.7",
+    "python2": "alibabacloud_gateway_sls_py2:0.0.6",
+    "csharp": "AlibabaCloud.GatewaySls:0.0.8",
+    "php": "alibabacloud/gateway-sls:^0.0.11"
+  },
+  "go": {
+    "package": [
+      "io"
+    ],
+    "clientName": "HttpClient"
+  }
+}
