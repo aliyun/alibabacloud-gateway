@@ -15,7 +15,7 @@ import (
 )
 
 type Client struct {
-	Client spi.Client
+	spi.Client
 	Sha256 *string
 	Sm3    *string
 }
@@ -102,37 +102,53 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	if !tea.BoolValue(util.EqualString(request.AuthType, tea.String("Anonymous"))) {
 		credential := request.Credential
-		accessKeyId, _err := credential.GetAccessKeyId()
-		if _err != nil {
+		if tea.BoolValue(util.IsUnset(credential)) {
+			_err = tea.NewSDKError(map[string]interface{}{
+				"code":    "ParameterMissing",
+				"message": "'config.credential' can not be unset",
+			})
 			return _err
 		}
 
-		accessKeySecret, _err := credential.GetAccessKeySecret()
-		if _err != nil {
-			return _err
-		}
+		authType := credential.GetType()
+		if tea.BoolValue(util.EqualString(authType, tea.String("bearer"))) {
+			bearerToken := credential.GetBearerToken()
+			request.Headers["x-acs-bearer-token"] = bearerToken
+			request.Headers["Authorization"] = tea.String("Bearer " + tea.StringValue(bearerToken))
+		} else {
+			accessKeyId, _err := credential.GetAccessKeyId()
+			if _err != nil {
+				return _err
+			}
 
-		securityToken, _err := credential.GetSecurityToken()
-		if _err != nil {
-			return _err
-		}
+			accessKeySecret, _err := credential.GetAccessKeySecret()
+			if _err != nil {
+				return _err
+			}
 
-		if !tea.BoolValue(util.Empty(securityToken)) {
-			request.Headers["x-acs-accesskey-id"] = accessKeyId
-			request.Headers["x-acs-security-token"] = securityToken
-		}
+			securityToken, _err := credential.GetSecurityToken()
+			if _err != nil {
+				return _err
+			}
 
-		dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
-		dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
-		region := client.GetRegion(request.ProductId, config.Endpoint)
-		signingkey, _err := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
-		if _err != nil {
-			return _err
-		}
+			if !tea.BoolValue(util.Empty(securityToken)) {
+				request.Headers["x-acs-accesskey-id"] = accessKeyId
+				request.Headers["x-acs-security-token"] = securityToken
+			}
 
-		request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
-		if _err != nil {
-			return _err
+			dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
+			dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
+			region := client.GetRegion(request.ProductId, config.Endpoint)
+			signingkey, _err := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
+			if _err != nil {
+				return _err
+			}
+
+			request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
+			if _err != nil {
+				return _err
+			}
+
 		}
 
 	}

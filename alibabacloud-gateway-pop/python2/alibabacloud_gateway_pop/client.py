@@ -70,17 +70,28 @@ class Client(SPIClient):
             request.headers['x-acs-content-sha256'] = hashed_request_payload
         if not UtilClient.equal_string(request.auth_type, 'Anonymous'):
             credential = request.credential
-            access_key_id = credential.get_access_key_id()
-            access_key_secret = credential.get_access_key_secret()
-            security_token = credential.get_security_token()
-            if not UtilClient.empty(security_token):
-                request.headers['x-acs-accesskey-id'] = access_key_id
-                request.headers['x-acs-security-token'] = security_token
-            date_new = StringClient.sub_string(date, 0, 10)
-            date_new = StringClient.replace(date_new, '-', '', None)
-            region = self.get_region(request.product_id, config.endpoint)
-            signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
-            request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
+            if UtilClient.is_unset(credential):
+                raise TeaException({
+                    'code': 'ParameterMissing',
+                    'message': "'config.credential' can not be unset"
+                })
+            auth_type = credential.get_type()
+            if UtilClient.equal_string(auth_type, 'bearer'):
+                bearer_token = credential.get_bearer_token()
+                request.headers['x-acs-bearer-token'] = bearer_token
+                request.headers['Authorization'] = 'Bearer %s' % TeaConverter.to_unicode(bearer_token)
+            else:
+                access_key_id = credential.get_access_key_id()
+                access_key_secret = credential.get_access_key_secret()
+                security_token = credential.get_security_token()
+                if not UtilClient.empty(security_token):
+                    request.headers['x-acs-accesskey-id'] = access_key_id
+                    request.headers['x-acs-security-token'] = security_token
+                date_new = StringClient.sub_string(date, 0, 10)
+                date_new = StringClient.replace(date_new, '-', '', None)
+                region = self.get_region(request.product_id, config.endpoint)
+                signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
+                request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
     def modify_response(self, context, attribute_map):
         request = context.request
