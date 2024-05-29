@@ -4,12 +4,12 @@
 namespace Darabonba\GatewayPop;
 
 use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
+use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Utils\Utils;
 use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\Darabonba\String\StringUtil;
-use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Endpoint\Endpoint;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
@@ -44,6 +44,7 @@ class Client extends DarabonbaGatewaySpiClient {
      * @param InterceptorContext $context
      * @param AttributeMap $attributeMap
      * @return void
+     * @throws TeaError
      */
     public function modifyRequest($context, $attributeMap){
         $request = $context->request;
@@ -91,18 +92,32 @@ class Client extends DarabonbaGatewaySpiClient {
         }
         if (!Utils::equalString($request->authType, "Anonymous")) {
             $credential = $request->credential;
-            $accessKeyId = $credential->getAccessKeyId();
-            $accessKeySecret = $credential->getAccessKeySecret();
-            $securityToken = $credential->getSecurityToken();
-            if (!Utils::empty_($securityToken)) {
-                $request->headers["x-acs-accesskey-id"] = $accessKeyId;
-                $request->headers["x-acs-security-token"] = $securityToken;
+            if (Utils::isUnset($credential)) {
+                throw new TeaError([
+                    "code" => "ParameterMissing",
+                    "message" => "'config.credential' can not be unset"
+                ]);
             }
-            $dateNew = StringUtil::subString($date, 0, 10);
-            $dateNew = StringUtil::replace($dateNew, "-", "", null);
-            $region = $this->getRegion($request->productId, $config->endpoint);
-            $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew);
-            $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
+            $authType = $credential->getType();
+            if (Utils::equalString($authType, "bearer")) {
+                $bearerToken = $credential->getBearerToken();
+                $request->headers["x-acs-bearer-token"] = $bearerToken;
+                $request->headers["Authorization"] = "Bearer " . $bearerToken . "";
+            }
+            else {
+                $accessKeyId = $credential->getAccessKeyId();
+                $accessKeySecret = $credential->getAccessKeySecret();
+                $securityToken = $credential->getSecurityToken();
+                if (!Utils::empty_($securityToken)) {
+                    $request->headers["x-acs-accesskey-id"] = $accessKeyId;
+                    $request->headers["x-acs-security-token"] = $securityToken;
+                }
+                $dateNew = StringUtil::subString($date, 0, 10);
+                $dateNew = StringUtil::replace($dateNew, "-", "", null);
+                $region = $this->getRegion($request->productId, $config->endpoint);
+                $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew);
+                $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
+            }
         }
     }
 
@@ -119,6 +134,9 @@ class Client extends DarabonbaGatewaySpiClient {
             $_res = Utils::readAsJSON($response->body);
             $err = Utils::assertAsMap($_res);
             $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
+            if (!Utils::isUnset(@$response->headers["x-acs-request-id"])) {
+                $requestId = @$response->headers["x-acs-request-id"];
+            }
             @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",

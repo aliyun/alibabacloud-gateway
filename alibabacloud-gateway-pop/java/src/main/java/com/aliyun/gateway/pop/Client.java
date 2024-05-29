@@ -70,19 +70,34 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         if (!com.aliyun.teautil.Common.equalString(request.authType, "Anonymous")) {
             com.aliyun.credentials.Client credential = request.credential;
-            String accessKeyId = credential.getAccessKeyId();
-            String accessKeySecret = credential.getAccessKeySecret();
-            String securityToken = credential.getSecurityToken();
-            if (!com.aliyun.teautil.Common.empty(securityToken)) {
-                request.headers.put("x-acs-accesskey-id", accessKeyId);
-                request.headers.put("x-acs-security-token", securityToken);
+            if (com.aliyun.teautil.Common.isUnset(credential)) {
+                throw new TeaException(TeaConverter.buildMap(
+                    new TeaPair("code", "ParameterMissing"),
+                    new TeaPair("message", "'config.credential' can not be unset")
+                ));
             }
 
-            String dateNew = com.aliyun.darabonbastring.Client.subString(date, 0, 10);
-            dateNew = com.aliyun.darabonbastring.Client.replace(dateNew, "-", "", null);
-            String region = this.getRegion(request.productId, config.endpoint);
-            byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-            request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
+            String authType = credential.getType();
+            if (com.aliyun.teautil.Common.equalString(authType, "bearer")) {
+                String bearerToken = credential.getBearerToken();
+                request.headers.put("x-acs-bearer-token", bearerToken);
+                request.headers.put("Authorization", "Bearer " + bearerToken + "");
+            } else {
+                String accessKeyId = credential.getAccessKeyId();
+                String accessKeySecret = credential.getAccessKeySecret();
+                String securityToken = credential.getSecurityToken();
+                if (!com.aliyun.teautil.Common.empty(securityToken)) {
+                    request.headers.put("x-acs-accesskey-id", accessKeyId);
+                    request.headers.put("x-acs-security-token", securityToken);
+                }
+
+                String dateNew = com.aliyun.darabonbastring.Client.subString(date, 0, 10);
+                dateNew = com.aliyun.darabonbastring.Client.replace(dateNew, "-", "", null);
+                String region = this.getRegion(request.productId, config.endpoint);
+                byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
+                request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
+            }
+
         }
 
     }

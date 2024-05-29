@@ -75,19 +75,33 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 
   if (!Util.equalString(request.authType, 'Anonymous')) {
     var credential : Credential = request.credential;
-    var accessKeyId = credential.getAccessKeyId();
-    var accessKeySecret = credential.getAccessKeySecret();
-    var securityToken = credential.getSecurityToken();
-
-    if (!Util.empty(securityToken)) {
-      request.headers.x-acs-accesskey-id = accessKeyId;
-      request.headers.x-acs-security-token = securityToken;
+    if (Util.isUnset(credential)) {
+      throw {
+        code = 'ParameterMissing',
+        message = '\'config.credential\' can not be unset'
+      };
     }
-    var dateNew = String.subString(date, 0, 10);
-    dateNew = String.replace(dateNew, '-', '', null);
-    var region = getRegion(request.productId, config.endpoint);
-    var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-    request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+    var authType = credential.getType();
+    if (Util.equalString(authType, 'bearer')) {
+      var bearerToken = credential.getBearerToken();
+      request.headers.x-acs-bearer-token = bearerToken;
+      request.headers.Authorization = `Bearer ${bearerToken}`;
+    } else {
+      var accessKeyId = credential.getAccessKeyId();
+      var accessKeySecret = credential.getAccessKeySecret();
+      var securityToken = credential.getSecurityToken();
+
+      if (!Util.empty(securityToken)) {
+        request.headers.x-acs-accesskey-id = accessKeyId;
+        request.headers.x-acs-security-token = securityToken;
+      }
+      var dateNew = String.subString(date, 0, 10);
+      dateNew = String.replace(dateNew, '-', '', null);
+      var region = getRegion(request.productId, config.endpoint);
+      var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
+      request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+    }
+    
   }
 }
 

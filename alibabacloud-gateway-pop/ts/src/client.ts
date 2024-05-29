@@ -77,19 +77,34 @@ export default class Client extends SPI {
 
     if (!Util.equalString(request.authType, "Anonymous")) {
       let credential : Credential = request.credential;
-      let accessKeyId = await credential.getAccessKeyId();
-      let accessKeySecret = await credential.getAccessKeySecret();
-      let securityToken = await credential.getSecurityToken();
-      if (!Util.empty(securityToken)) {
-        request.headers["x-acs-accesskey-id"] = accessKeyId;
-        request.headers["x-acs-security-token"] = securityToken;
+      if (Util.isUnset(credential)) {
+        throw $tea.newError({
+          code: "ParameterMissing",
+          message: "'config.credential' can not be unset",
+        });
       }
 
-      let dateNew = String.subString(date, 0, 10);
-      dateNew = String.replace(dateNew, "-", "", null);
-      let region = this.getRegion(request.productId, config.endpoint);
-      let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-      request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+      let authType = credential.getType();
+      if (Util.equalString(authType, "bearer")) {
+        let bearerToken = credential.getBearerToken();
+        request.headers["x-acs-bearer-token"] = bearerToken;
+        request.headers["Authorization"] = `Bearer ${bearerToken}`;
+      } else {
+        let accessKeyId = await credential.getAccessKeyId();
+        let accessKeySecret = await credential.getAccessKeySecret();
+        let securityToken = await credential.getSecurityToken();
+        if (!Util.empty(securityToken)) {
+          request.headers["x-acs-accesskey-id"] = accessKeyId;
+          request.headers["x-acs-security-token"] = securityToken;
+        }
+
+        let dateNew = String.subString(date, 0, 10);
+        dateNew = String.replace(dateNew, "-", "", null);
+        let region = this.getRegion(request.productId, config.endpoint);
+        let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
+        request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+      }
+
     }
 
   }
