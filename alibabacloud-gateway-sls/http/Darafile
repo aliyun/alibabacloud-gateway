@@ -14,7 +14,7 @@
   },
   "releases": {
     "ts": "@alicloud/gateway-sls:^0.0.8",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/http:v0.0.7",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/http:v0.0.9",
     "java": "com.aliyun:alibabacloud-gateway-sls:0.0.8",
     "python": "alibabacloud_gateway_sls:0.0.7",
     "python2": "alibabacloud_gateway_sls_py2:0.0.6",
