@@ -103,6 +103,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     throw {
       code = resMap['errorCode'],
       message = resMap['errorMessage'],
+      accessDeniedDetail = resMap['accessDeniedDetail'],
       data = {
         httpCode = response.statusCode,
         requestId = response.headers['x-log-requestid'],
