@@ -1,0 +1,39 @@
+name: POP Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-pop/golang
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ["1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20", "1.21"]
+      fail-fast: false
+
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Export Env
+      run: export GO111MODULE=on
+    - name: Build
+      run: go mod tidy
+    - name: Test
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic ./service/...
+    - name: CodeCov
+      run: bash <(curl -s https://codecov.io/bash) -cF golang
