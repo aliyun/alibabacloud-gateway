@@ -238,19 +238,18 @@ export default class Client extends SPI {
   }
 
   getRegion(product: string, endpoint: string): string {
+    let region = "center";
     if (Util.empty(product) || Util.empty(endpoint)) {
-      return "center";
-    }
-
-    let popcode = String.toLower(product);
-    let region : string = String.replace(endpoint, popcode, "", null);
-    region = String.replace(region, "aliyuncs.com", "", null);
-    region = String.replace(region, ".", "", null);
-    if (!Util.empty(region)) {
       return region;
     }
 
-    return "center";
+    let preRegion : string = String.replace(endpoint, ".aliyuncs.com", "", null);
+    let nodes = String.split(preRegion, ".", null);
+    if (Util.equalNumber(Array.size(nodes), 2)) {
+      region = nodes[1];
+    }
+
+    return region;
   }
 
   async buildCanonicalizedResource(query: {[key: string ]: string}): Promise<string> {

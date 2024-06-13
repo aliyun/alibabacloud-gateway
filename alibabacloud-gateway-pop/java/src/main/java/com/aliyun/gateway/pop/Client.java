@@ -231,19 +231,18 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getRegion(String product, String endpoint) throws Exception {
+        String region = "center";
         if (com.aliyun.teautil.Common.empty(product) || com.aliyun.teautil.Common.empty(endpoint)) {
-            return "center";
-        }
-
-        String popcode = com.aliyun.darabonbastring.Client.toLower(product);
-        String region = com.aliyun.darabonbastring.Client.replace(endpoint, popcode, "", null);
-        region = com.aliyun.darabonbastring.Client.replace(region, "aliyuncs.com", "", null);
-        region = com.aliyun.darabonbastring.Client.replace(region, ".", "", null);
-        if (!com.aliyun.teautil.Common.empty(region)) {
             return region;
         }
 
-        return "center";
+        String preRegion = com.aliyun.darabonbastring.Client.replace(endpoint, ".aliyuncs.com", "", null);
+        java.util.List<String> nodes = com.aliyun.darabonbastring.Client.split(preRegion, ".", null);
+        if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(nodes), 2)) {
+            region = nodes.get(1);
+        }
+
+        return region;
     }
 
     public String buildCanonicalizedResource(java.util.Map<String, String> query) throws Exception {

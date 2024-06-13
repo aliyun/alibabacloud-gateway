@@ -307,17 +307,16 @@ class Client extends DarabonbaGatewaySpiClient {
      * @return string
      */
     public function getRegion($product, $endpoint){
+        $region = "center";
         if (Utils::empty_($product) || Utils::empty_($endpoint)) {
-            return 'center';
-        }
-        $popcode = StringUtil::toLower($product);
-        $region = StringUtil::replace($endpoint, $popcode, "", null);
-        $region = StringUtil::replace($region, "aliyuncs.com", "", null);
-        $region = StringUtil::replace($region, ".", "", null);
-        if (!Utils::empty_($region)) {
             return $region;
         }
-        return 'center';
+        $preRegion = StringUtil::replace($endpoint, ".aliyuncs.com", "", null);
+        $nodes = StringUtil::split($preRegion, ".", null);
+        if (Utils::equalNumber(ArrayUtil::size($nodes), 2)) {
+            $region = @$nodes[1];
+        }
+        return $region;
     }
 
     /**

@@ -223,17 +223,16 @@ async function getSigningkey(signatureAlgorithm: string, secret: string, product
 }
 
 function getRegion(product: string, endpoint: string): string {
+  var region = 'center';
   if (Util.empty(product) || Util.empty(endpoint)) {
-    return 'center';
-  }
-  var popcode = String.toLower(product);
-  var region: string = String.replace(endpoint, popcode, '', null);
-  region = String.replace(region, 'aliyuncs.com', '', null);
-  region = String.replace(region, '.', '', null);
-  if (!Util.empty(region)) {
     return region;
   }
-  return 'center';
+  var preRegion: string = String.replace(endpoint, '.aliyuncs.com', '', null);
+  var nodes = String.split(preRegion, '.', null);
+  if (Util.equalNumber(Array.size(nodes), 2)) {
+    region = nodes[1];
+  }
+  return region;
 }
 
 async function buildCanonicalizedResource(query: map[string]string): string {

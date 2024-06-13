@@ -520,19 +520,18 @@ namespace AlibabaCloud.GatewayPop
 
         public string GetRegion(string product, string endpoint)
         {
+            string region = "center";
             if (AlibabaCloud.TeaUtil.Common.Empty(product) || AlibabaCloud.TeaUtil.Common.Empty(endpoint))
-            {
-                return "center";
-            }
-            string popcode = AlibabaCloud.DarabonbaString.StringUtil.ToLower(product);
-            string region = AlibabaCloud.DarabonbaString.StringUtil.Replace(endpoint, popcode, "", null);
-            region = AlibabaCloud.DarabonbaString.StringUtil.Replace(region, "aliyuncs.com", "", null);
-            region = AlibabaCloud.DarabonbaString.StringUtil.Replace(region, ".", "", null);
-            if (!AlibabaCloud.TeaUtil.Common.Empty(region))
             {
                 return region;
             }
-            return "center";
+            string preRegion = AlibabaCloud.DarabonbaString.StringUtil.Replace(endpoint, ".aliyuncs.com", "", null);
+            List<string> nodes = AlibabaCloud.DarabonbaString.StringUtil.Split(preRegion, ".", null);
+            if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(nodes), 2))
+            {
+                region = nodes[1];
+            }
+            return region;
         }
 
         public string BuildCanonicalizedResource(Dictionary<string, string> query)
