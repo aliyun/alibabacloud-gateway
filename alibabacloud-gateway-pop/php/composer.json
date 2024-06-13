@@ -27,13 +27,26 @@
       "Darabonba\\GatewayPop\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Darabonba\\GatewayPop\\Tests\\": "tests"
+    }
+  },
   "scripts": {
-    "fixer": "php-cs-fixer fix ./"
+    "fixer": "php-cs-fixer fix ./",
+    "test": [
+      "@clearCache",
+      "./vendor/bin/phpunit --colors=always"
+    ],
+    "clearCache": "rm -rf cache/*"
   },
   "config": {
     "sort-packages": true,
     "preferred-install": "dist",
     "optimize-autoloader": true
   },
-  "prefer-stable": true
+  "prefer-stable": true,
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
 }

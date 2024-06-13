@@ -34,6 +34,6 @@ jobs:
     - name: Build
       run: go mod tidy
     - name: Test
-      run: go test -race -coverprofile=coverage.txt -covermode=atomic ./service/...
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic ./client/...
     - name: CodeCov
       run: bash <(curl -s https://codecov.io/bash) -cF golang

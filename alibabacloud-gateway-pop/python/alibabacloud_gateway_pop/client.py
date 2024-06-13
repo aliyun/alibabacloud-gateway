@@ -443,15 +443,14 @@ class Client(SPIClient):
         product: str,
         endpoint: str,
     ) -> str:
+        region = 'center'
         if UtilClient.empty(product) or UtilClient.empty(endpoint):
-            return 'center'
-        popcode = StringClient.to_lower(product)
-        region = StringClient.replace(endpoint, popcode, '', None)
-        region = StringClient.replace(region, 'aliyuncs.com', '', None)
-        region = StringClient.replace(region, '.', '', None)
-        if not UtilClient.empty(region):
             return region
-        return 'center'
+        pre_region = StringClient.replace(endpoint, '.aliyuncs.com', '', None)
+        nodes = StringClient.split(pre_region, '.', None)
+        if UtilClient.equal_number(ArrayClient.size(nodes), 2):
+            region = nodes[1]
+        return region
 
     def build_canonicalized_resource(
         self,

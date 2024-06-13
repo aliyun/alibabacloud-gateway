@@ -355,21 +355,19 @@ func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, 
 }
 
 func (client *Client) GetRegion(product *string, endpoint *string) (_result *string) {
+	region := tea.String("center")
 	if tea.BoolValue(util.Empty(product)) || tea.BoolValue(util.Empty(endpoint)) {
-		_result = tea.String("center")
-		return _result
-	}
-
-	popcode := string_.ToLower(product)
-	region := string_.Replace(endpoint, popcode, tea.String(""), nil)
-	region = string_.Replace(region, tea.String("aliyuncs.com"), tea.String(""), nil)
-	region = string_.Replace(region, tea.String("."), tea.String(""), nil)
-	if !tea.BoolValue(util.Empty(region)) {
 		_result = region
 		return _result
 	}
 
-	_result = tea.String("center")
+	preRegion := string_.Replace(endpoint, tea.String(".aliyuncs.com"), tea.String(""), nil)
+	nodes := string_.Split(preRegion, tea.String("."), nil)
+	if tea.BoolValue(util.EqualNumber(array.Size(nodes), tea.Int(2))) {
+		region = nodes[1]
+	}
+
+	_result = region
 	return _result
 }
 
