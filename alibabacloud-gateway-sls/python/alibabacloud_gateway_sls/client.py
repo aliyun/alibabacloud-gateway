@@ -660,10 +660,9 @@ class Client(SPIClient):
         separator = ''
         for key in sorted_headers_array:
             lower_key = StringClient.to_lower(key)
-            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
-                    tmp = f'{tmp}{separator}{lower_key}'
-                    separator = ';'
+            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
+                tmp = f'{tmp}{separator}{lower_key}'
+                separator = ';'
         return tmp
 
     async def get_signed_header_str_v4_async(
@@ -676,10 +675,9 @@ class Client(SPIClient):
         separator = ''
         for key in sorted_headers_array:
             lower_key = StringClient.to_lower(key)
-            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
-                    tmp = f'{tmp}{separator}{lower_key}'
-                    separator = ';'
+            if StringClient.has_prefix(lower_key, 'x-log-') or StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
+                tmp = f'{tmp}{separator}{lower_key}'
+                separator = ';'
         return tmp
 
     def get_region(

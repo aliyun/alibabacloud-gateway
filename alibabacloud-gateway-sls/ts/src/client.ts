@@ -350,12 +350,9 @@ export default class Client extends SPI {
 
     for (let key of sortedHeadersArray) {
       let lowerKey = String.toLower(key);
-      if (String.hasPrefix(lowerKey, "x-log-") || String.equals(lowerKey, "host") || String.equals(lowerKey, "content-type")) {
-        if (!String.contains(tmp, lowerKey)) {
-          tmp = `${tmp}${separator}${lowerKey}`;
-          separator = ";";
-        }
-
+      if (String.hasPrefix(lowerKey, "x-log-") || String.hasPrefix(lowerKey, "x-acs-") || String.equals(lowerKey, "host") || String.equals(lowerKey, "content-type")) {
+        tmp = `${tmp}${separator}${lowerKey}`;
+        separator = ";";
       }
 
     }

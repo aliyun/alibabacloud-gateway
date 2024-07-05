@@ -757,13 +757,10 @@ namespace AlibabaCloud.GatewaySls
 
             foreach (var key in sortedHeadersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
-                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-log-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-log-") || AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
-                    {
-                        tmp = "" + tmp + separator + lowerKey;
-                        separator = ";";
-                    }
+                    tmp = "" + tmp + separator + lowerKey;
+                    separator = ";";
                 }
             }
             return tmp;
@@ -778,13 +775,10 @@ namespace AlibabaCloud.GatewaySls
 
             foreach (var key in sortedHeadersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
-                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-log-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-log-") || AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
-                    {
-                        tmp = "" + tmp + separator + lowerKey;
-                        separator = ";";
-                    }
+                    tmp = "" + tmp + separator + lowerKey;
+                    separator = ";";
                 }
             }
             return tmp;
