@@ -427,11 +427,9 @@ class Client extends DarabonbaGatewaySpiClient {
         $separator = "";
         foreach($sortedHeadersArray as $key){
             $lowerKey = StringUtil::toLower($key);
-            if (StringUtil::hasPrefix($lowerKey, "x-log-") || StringUtil::equals($lowerKey, "host") || StringUtil::equals($lowerKey, "content-type")) {
-                if (!StringUtil::contains($tmp, $lowerKey)) {
-                    $tmp = "" . $tmp . "" . $separator . "" . $lowerKey . "";
-                    $separator = ";";
-                }
+            if (StringUtil::hasPrefix($lowerKey, "x-log-") || StringUtil::hasPrefix($lowerKey, "x-acs-") || StringUtil::equals($lowerKey, "host") || StringUtil::equals($lowerKey, "content-type")) {
+                $tmp = "" . $tmp . "" . $separator . "" . $lowerKey . "";
+                $separator = ";";
             }
         }
         return $tmp;

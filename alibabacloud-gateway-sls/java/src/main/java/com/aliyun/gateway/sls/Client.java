@@ -336,12 +336,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String separator = "";
         for (String key : sortedHeadersArray) {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
-            if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-log-") || com.aliyun.darabonbastring.Client.equals(lowerKey, "host") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-type")) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
-                    tmp = "" + tmp + "" + separator + "" + lowerKey + "";
-                    separator = ";";
-                }
-
+            if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-log-") || com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-acs-") || com.aliyun.darabonbastring.Client.equals(lowerKey, "host") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-type")) {
+                tmp = "" + tmp + "" + separator + "" + lowerKey + "";
+                separator = ";";
             }
 
         }

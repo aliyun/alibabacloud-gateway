@@ -498,12 +498,9 @@ func (client *Client) GetSignedHeaderStrV4(headers map[string]*string) (_result 
 	separator := tea.String("")
 	for _, key := range sortedHeadersArray {
 		lowerKey := string_.ToLower(key)
-		if tea.BoolValue(string_.HasPrefix(lowerKey, tea.String("x-log-"))) || tea.BoolValue(string_.Equals(lowerKey, tea.String("host"))) || tea.BoolValue(string_.Equals(lowerKey, tea.String("content-type"))) {
-			if !tea.BoolValue(string_.Contains(tmp, lowerKey)) {
-				tmp = tea.String(tea.StringValue(tmp) + tea.StringValue(separator) + tea.StringValue(lowerKey))
-				separator = tea.String(";")
-			}
-
+		if tea.BoolValue(string_.HasPrefix(lowerKey, tea.String("x-log-"))) || tea.BoolValue(string_.HasPrefix(lowerKey, tea.String("x-acs-"))) || tea.BoolValue(string_.Equals(lowerKey, tea.String("host"))) || tea.BoolValue(string_.Equals(lowerKey, tea.String("content-type"))) {
+			tmp = tea.String(tea.StringValue(tmp) + tea.StringValue(separator) + tea.StringValue(lowerKey))
+			separator = tea.String(";")
 		}
 
 	}
