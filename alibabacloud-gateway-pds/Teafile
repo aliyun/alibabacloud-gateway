@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayPDS",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -21,13 +21,13 @@
     "Array": "darabonba:Array:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-pds:^0.0.7",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pds/client:v0.0.7",
-    "java": "com.aliyun:alibabacloud-gateway-pds:0.0.7",
-    "python": "alibabacloud_gateway_pds:0.0.7",
+    "ts": "@alicloud/gateway-pds:^0.0.8",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pds/client:v0.0.8",
+    "java": "com.aliyun:alibabacloud-gateway-pds:0.0.8",
+    "python": "alibabacloud_gateway_pds:0.0.8",
     "python2": "alibabacloud_gateway_pds_py2:0.0.7",
-    "csharp": "AlibabaCloud.GatewayPds:0.0.8",
-    "php": "alibabacloud/gateway-pds:^0.0.8"
+    "csharp": "AlibabaCloud.GatewayPds:0.0.9",
+    "php": "alibabacloud/gateway-pds:^0.0.9"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayPds",
@@ -91,7 +91,7 @@
   },
   "releaselog": {
     "changelog": [
-      "feat: improve bearer token auth"
+      "feat: improve error message"
     ],
     "compatible": true
   }
