@@ -140,9 +140,10 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		headers := response.Headers
 		requestId := headers["x-ca-request-id"]
 		err["statusCode"] = response.StatusCode
+		err["requestId"] = requestId
 		_err = tea.NewSDKError(map[string]interface{}{
 			"code":    tea.ToString(client.DefaultAny(err["Code"], err["code"])),
-			"message": "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.StringValue(requestId),
+			"message": tea.ToString(client.DefaultAny(err["Message"], err["message"])),
 			"data":    err,
 		})
 		return _err

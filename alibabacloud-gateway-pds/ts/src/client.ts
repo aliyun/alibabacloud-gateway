@@ -90,9 +90,10 @@ export default class Client extends SPI {
       let headers : {[key: string ]: string} = response.headers;
       let requestId = headers["x-ca-request-id"];
       err["statusCode"] = response.statusCode;
+      err["requestId"] = requestId;
       throw $tea.newError({
         code: `${this.defaultAny(err["Code"], err["code"])}`,
-        message: `code: ${response.statusCode}, ${this.defaultAny(err["Message"], err["message"])} request id: ${requestId}`,
+        message: `${this.defaultAny(err["Message"], err["message"])}`,
         data: err,
       });
     }

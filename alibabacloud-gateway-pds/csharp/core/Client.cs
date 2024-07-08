@@ -181,10 +181,11 @@ namespace AlibabaCloud.GatewayPds
                 Dictionary<string, string> headers = response.Headers;
                 string requestId = headers.Get("x-ca-request-id");
                 err["statusCode"] = response.StatusCode;
+                err["requestId"] = requestId;
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
-                    {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + requestId},
+                    {"message", "" + DefaultAny(err.Get("Message"), err.Get("message"))},
                     {"data", err},
                 });
             }
@@ -234,10 +235,11 @@ namespace AlibabaCloud.GatewayPds
                 Dictionary<string, string> headers = response.Headers;
                 string requestId = headers.Get("x-ca-request-id");
                 err["statusCode"] = response.StatusCode;
+                err["requestId"] = requestId;
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "" + DefaultAny(err.Get("Code"), err.Get("code"))},
-                    {"message", "code: " + response.StatusCode + ", " + DefaultAny(err.Get("Message"), err.Get("message")) + " request id: " + requestId},
+                    {"message", "" + DefaultAny(err.Get("Message"), err.Get("message"))},
                     {"data", err},
                 });
             }

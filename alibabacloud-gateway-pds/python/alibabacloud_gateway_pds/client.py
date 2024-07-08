@@ -144,9 +144,10 @@ class Client(SPIClient):
             headers = response.headers
             request_id = headers.get('x-ca-request-id')
             err['statusCode'] = response.status_code
+            err['requestId'] = request_id
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
-                'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
+                'message': f"{self.default_any(err.get('Message'), err.get('message'))}",
                 'data': err
             })
         if not UtilClient.is_unset(response.body):
@@ -180,9 +181,10 @@ class Client(SPIClient):
             headers = response.headers
             request_id = headers.get('x-ca-request-id')
             err['statusCode'] = response.status_code
+            err['requestId'] = request_id
             raise TeaException({
                 'code': f"{self.default_any(err.get('Code'), err.get('code'))}",
-                'message': f"code: {response.status_code}, {self.default_any(err.get('Message'), err.get('message'))} request id: {request_id}",
+                'message': f"{self.default_any(err.get('Message'), err.get('message'))}",
                 'data': err
             })
         if not UtilClient.is_unset(response.body):

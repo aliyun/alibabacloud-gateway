@@ -106,9 +106,10 @@ class Client extends DarabonbaGatewaySpiClient {
             $headers = $response->headers;
             $requestId = @$headers["x-ca-request-id"];
             @$err["statusCode"] = $response->statusCode;
+            @$err["requestId"] = $requestId;
             throw new TeaError([
                 "code" => "" . (string) ($this->defaultAny(@$err["Code"], @$err["code"])) . "",
-                "message" => "code: " . (string) ($response->statusCode) . ", " . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . " request id: " . $requestId . "",
+                "message" => "" . (string) ($this->defaultAny(@$err["Message"], @$err["message"])) . "",
                 "data" => $err
             ]);
         }

@@ -84,9 +84,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
             java.util.Map<String, String> headers = response.headers;
             String requestId = headers.get("x-ca-request-id");
             err.put("statusCode", response.statusCode);
+            err.put("requestId", requestId);
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", "" + this.defaultAny(err.get("Code"), err.get("code")) + ""),
-                new TeaPair("message", "code: " + response.statusCode + ", " + this.defaultAny(err.get("Message"), err.get("message")) + " request id: " + requestId + ""),
+                new TeaPair("message", "" + this.defaultAny(err.get("Message"), err.get("message")) + ""),
                 new TeaPair("data", err)
             ));
         }

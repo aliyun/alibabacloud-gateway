@@ -82,7 +82,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     var headers : map[string]string = response.headers;
     var requestId = headers.x-ca-request-id;
     err.statusCode = response.statusCode;
-    err.requestId = requestId
+    err.requestId = requestId;
     throw {
       code = `${defaultAny(err.Code, err.code)}`,
       message = `${defaultAny(err.Message, err.message)}`,
