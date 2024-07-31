@@ -48,9 +48,10 @@ class Client(SPIClient):
         project = host_map.get('project')
         config = context.configuration
         credential = request.credential
-        access_key_id = credential.get_access_key_id()
-        access_key_secret = credential.get_access_key_secret()
-        security_token = credential.get_security_token()
+        credential_model = credential.get_credential()
+        access_key_id = credential_model.access_key_id
+        access_key_secret = credential_model.access_key_secret
+        security_token = credential_model.security_token
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
@@ -106,9 +107,10 @@ class Client(SPIClient):
         project = host_map.get('project')
         config = context.configuration
         credential = request.credential
-        access_key_id = await credential.get_access_key_id_async()
-        access_key_secret = await credential.get_access_key_secret_async()
-        security_token = await credential.get_security_token_async()
+        credential_model = await credential.get_credential_async()
+        access_key_id = credential_model.access_key_id
+        access_key_secret = credential_model.access_key_secret
+        security_token = credential_model.security_token
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
         signature_version = UtilClient.default_string(request.signature_version, 'v1')

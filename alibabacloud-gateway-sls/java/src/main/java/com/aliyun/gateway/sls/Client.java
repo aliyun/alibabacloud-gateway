@@ -25,9 +25,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String project = hostMap.get("project");
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         com.aliyun.credentials.Client credential = request.credential;
-        String accessKeyId = credential.getAccessKeyId();
-        String accessKeySecret = credential.getAccessKeySecret();
-        String securityToken = credential.getSecurityToken();
+        com.aliyun.credentials.models.CredentialModel credentialModel = credential.getCredential();
+        String accessKeyId = credentialModel.accessKeyId;
+        String accessKeySecret = credentialModel.accessKeySecret;
+        String securityToken = credentialModel.securityToken;
         if (!com.aliyun.teautil.Common.empty(securityToken)) {
             request.headers.put("x-acs-security-token", securityToken);
         }

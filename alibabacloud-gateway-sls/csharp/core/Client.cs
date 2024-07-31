@@ -43,9 +43,10 @@ namespace AlibabaCloud.GatewaySls
             string project = hostMap.Get("project");
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             Aliyun.Credentials.Client credential = request.Credential;
-            string accessKeyId = credential.GetAccessKeyId();
-            string accessKeySecret = credential.GetAccessKeySecret();
-            string securityToken = credential.GetSecurityToken();
+            Aliyun.Credentials.Models.CredentialModel credentialModel = credential.GetCredential();
+            string accessKeyId = credentialModel.AccessKeyId;
+            string accessKeySecret = credentialModel.AccessKeySecret;
+            string securityToken = credentialModel.SecurityToken;
             if (!AlibabaCloud.TeaUtil.Common.Empty(securityToken))
             {
                 request.Headers["x-acs-security-token"] = securityToken;
@@ -122,9 +123,10 @@ namespace AlibabaCloud.GatewaySls
             string project = hostMap.Get("project");
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             Aliyun.Credentials.Client credential = request.Credential;
-            string accessKeyId = await credential.GetAccessKeyIdAsync();
-            string accessKeySecret = await credential.GetAccessKeySecretAsync();
-            string securityToken = await credential.GetSecurityTokenAsync();
+            Aliyun.Credentials.Models.CredentialModel credentialModel = await credential.GetCredentialAsync();
+            string accessKeyId = credentialModel.AccessKeyId;
+            string accessKeySecret = credentialModel.AccessKeySecret;
+            string securityToken = credentialModel.SecurityToken;
             if (!AlibabaCloud.TeaUtil.Common.Empty(securityToken))
             {
                 request.Headers["x-acs-security-token"] = securityToken;
