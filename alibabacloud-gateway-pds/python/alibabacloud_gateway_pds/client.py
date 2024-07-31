@@ -70,15 +70,16 @@ class Client(SPIClient):
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
         if not UtilClient.equal_string(request.auth_type, 'Anonymous') and not UtilClient.is_unset(request.credential):
             credential = request.credential
-            auth_type = credential.get_type()
+            credential_model = credential.get_credential()
+            auth_type = credential_model.type
             if UtilClient.equal_string(auth_type, 'bearer'):
-                bearer_token = credential.get_bearer_token()
+                bearer_token = credential_model.bearer_token
                 request.headers['x-acs-bearer-token'] = bearer_token
                 request.headers['Authorization'] = f'Bearer {bearer_token}'
             else:
-                access_key_id = credential.get_access_key_id()
-                access_key_secret = credential.get_access_key_secret()
-                security_token = credential.get_security_token()
+                access_key_id = credential_model.access_key_id
+                access_key_secret = credential_model.access_key_secret
+                security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-security-token'] = security_token
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
@@ -118,15 +119,16 @@ class Client(SPIClient):
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
         if not UtilClient.equal_string(request.auth_type, 'Anonymous') and not UtilClient.is_unset(request.credential):
             credential = request.credential
-            auth_type = credential.get_type()
+            credential_model = await credential.get_credential_async()
+            auth_type = credential_model.type
             if UtilClient.equal_string(auth_type, 'bearer'):
-                bearer_token = credential.get_bearer_token()
+                bearer_token = credential_model.bearer_token
                 request.headers['x-acs-bearer-token'] = bearer_token
                 request.headers['Authorization'] = f'Bearer {bearer_token}'
             else:
-                access_key_id = await credential.get_access_key_id_async()
-                access_key_secret = await credential.get_access_key_secret_async()
-                security_token = await credential.get_security_token_async()
+                access_key_id = credential_model.access_key_id
+                access_key_secret = credential_model.access_key_secret
+                security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-security-token'] = security_token
                 request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)

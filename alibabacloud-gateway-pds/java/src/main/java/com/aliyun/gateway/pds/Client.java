@@ -55,15 +55,16 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         if (!com.aliyun.teautil.Common.equalString(request.authType, "Anonymous") && !com.aliyun.teautil.Common.isUnset(request.credential)) {
             com.aliyun.credentials.Client credential = request.credential;
-            String authType = credential.getType();
+            com.aliyun.credentials.models.CredentialModel credentialModel = credential.getCredential();
+            String authType = credentialModel.type;
             if (com.aliyun.teautil.Common.equalString(authType, "bearer")) {
-                String bearerToken = credential.getBearerToken();
+                String bearerToken = credentialModel.bearerToken;
                 request.headers.put("x-acs-bearer-token", bearerToken);
                 request.headers.put("Authorization", "Bearer " + bearerToken + "");
             } else {
-                String accessKeyId = credential.getAccessKeyId();
-                String accessKeySecret = credential.getAccessKeySecret();
-                String securityToken = credential.getSecurityToken();
+                String accessKeyId = credentialModel.accessKeyId;
+                String accessKeySecret = credentialModel.accessKeySecret;
+                String securityToken = credentialModel.securityToken;
                 if (!com.aliyun.teautil.Common.empty(securityToken)) {
                     request.headers.put("x-acs-security-token", securityToken);
                 }

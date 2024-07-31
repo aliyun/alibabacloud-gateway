@@ -56,15 +56,16 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 
   if (!Util.equalString(request.authType, 'Anonymous') && !Util.isUnset(request.credential)) {
     var credential : Credential = request.credential;
-    var authType = credential.getType();
+    var credentialModel = credential.getCredential();
+    var authType = credentialModel.type;
     if (Util.equalString(authType, 'bearer')) {
-      var bearerToken = credential.getBearerToken();
+      var bearerToken = credentialModel.bearerToken;
       request.headers.x-acs-bearer-token = bearerToken;
       request.headers.Authorization = `Bearer ${bearerToken}`;
     } else {
-      var accessKeyId = credential.getAccessKeyId();
-      var accessKeySecret = credential.getAccessKeySecret();
-      var securityToken = credential.getSecurityToken();
+      var accessKeyId = credentialModel.accessKeyId;
+      var accessKeySecret = credentialModel.accessKeySecret;
+      var securityToken = credentialModel.securityToken;
       if (!Util.empty(securityToken)) {
         request.headers.x-acs-security-token = securityToken;
       }

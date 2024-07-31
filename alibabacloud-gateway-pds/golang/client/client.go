@@ -86,27 +86,20 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	if !tea.BoolValue(util.EqualString(request.AuthType, tea.String("Anonymous"))) && !tea.BoolValue(util.IsUnset(request.Credential)) {
 		credential := request.Credential
-		authType := credential.GetType()
+		credentialModel, _err := credential.GetCredential()
+		if _err != nil {
+			return _err
+		}
+
+		authType := credentialModel.Type
 		if tea.BoolValue(util.EqualString(authType, tea.String("bearer"))) {
-			bearerToken := credential.GetBearerToken()
+			bearerToken := credentialModel.BearerToken
 			request.Headers["x-acs-bearer-token"] = bearerToken
 			request.Headers["Authorization"] = tea.String("Bearer " + tea.StringValue(bearerToken))
 		} else {
-			accessKeyId, _err := credential.GetAccessKeyId()
-			if _err != nil {
-				return _err
-			}
-
-			accessKeySecret, _err := credential.GetAccessKeySecret()
-			if _err != nil {
-				return _err
-			}
-
-			securityToken, _err := credential.GetSecurityToken()
-			if _err != nil {
-				return _err
-			}
-
+			accessKeyId := credentialModel.AccessKeyId
+			accessKeySecret := credentialModel.AccessKeySecret
+			securityToken := credentialModel.SecurityToken
 			if !tea.BoolValue(util.Empty(securityToken)) {
 				request.Headers["x-acs-security-token"] = securityToken
 			}
