@@ -228,6 +228,7 @@ namespace AlibabaCloud.GatewaySls
                 {
                     {"code", resMap.Get("errorCode")},
                     {"message", resMap.Get("errorMessage")},
+                    {"accessDeniedDetail", resMap.Get("accessDeniedDetail")},
                     {"data", new Dictionary<string, object>
                     {
                         {"httpCode", response.StatusCode},
@@ -287,6 +288,7 @@ namespace AlibabaCloud.GatewaySls
                 {
                     {"code", resMap.Get("errorCode")},
                     {"message", resMap.Get("errorMessage")},
+                    {"accessDeniedDetail", resMap.Get("accessDeniedDetail")},
                     {"data", new Dictionary<string, object>
                     {
                         {"httpCode", response.StatusCode},

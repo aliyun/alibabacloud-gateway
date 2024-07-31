@@ -108,6 +108,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", resMap.get("errorCode")),
                 new TeaPair("message", resMap.get("errorMessage")),
+                new TeaPair("accessDeniedDetail", resMap.get("accessDeniedDetail")),
                 new TeaPair("data", TeaConverter.buildMap(
                     new TeaPair("httpCode", response.statusCode),
                     new TeaPair("requestId", response.headers.get("x-log-requestid")),

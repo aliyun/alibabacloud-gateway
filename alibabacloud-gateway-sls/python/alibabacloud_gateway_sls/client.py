@@ -187,6 +187,7 @@ class Client(SPIClient):
             raise TeaException({
                 'code': res_map.get('errorCode'),
                 'message': res_map.get('errorMessage'),
+                'accessDeniedDetail': res_map.get('accessDeniedDetail'),
                 'data': {
                     'httpCode': response.status_code,
                     'requestId': response.headers.get('x-log-requestid'),
@@ -228,6 +229,7 @@ class Client(SPIClient):
             raise TeaException({
                 'code': res_map.get('errorCode'),
                 'message': res_map.get('errorMessage'),
+                'accessDeniedDetail': res_map.get('accessDeniedDetail'),
                 'data': {
                     'httpCode': response.status_code,
                     'requestId': response.headers.get('x-log-requestid'),
