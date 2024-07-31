@@ -9,6 +9,7 @@ import Array from '@alicloud/darabonba-array';
 import EncodeUtil from '@alicloud/darabonba-encode-util';
 import SignatureUtil from '@alicloud/darabonba-signature-util';
 import SLS_Util from '@alicloud/gateway-sls-util';
+import { Readable } from 'stream';
 import * as $tea from '@alicloud/tea-typescript';
 
 
