@@ -35,9 +35,10 @@ export default class Client extends SPI {
     let project = hostMap["project"];
     let config = context.configuration;
     let credential : Credential = request.credential;
-    let accessKeyId = await credential.getAccessKeyId();
-    let accessKeySecret = await credential.getAccessKeySecret();
-    let securityToken = await credential.getSecurityToken();
+    let credentialModel = await credential.getCredential();
+    let accessKeyId = credentialModel.accessKeyId;
+    let accessKeySecret = credentialModel.accessKeySecret;
+    let securityToken = credentialModel.securityToken;
     if (!Util.empty(securityToken)) {
       request.headers["x-acs-security-token"] = securityToken;
     }

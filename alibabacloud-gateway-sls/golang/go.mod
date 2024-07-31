@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/alibabacloud-go/alibabacloud-gateway-sls-util v0.0.1
-	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4
+	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5
 	github.com/alibabacloud-go/darabonba-array v0.1.0
 	github.com/alibabacloud-go/darabonba-encode-util v0.0.2
 	github.com/alibabacloud-go/darabonba-map v0.0.2

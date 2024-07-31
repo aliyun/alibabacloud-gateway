@@ -29,9 +29,10 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   var project = hostMap.project;
   var config = context.configuration;
   var credential : Credential = request.credential;
-  var accessKeyId = credential.getAccessKeyId();
-  var accessKeySecret = credential.getAccessKeySecret();
-  var securityToken = credential.getSecurityToken();
+  var credentialModel = credential.getCredential();
+  var accessKeyId = credentialModel.accessKeyId;
+  var accessKeySecret = credentialModel.accessKeySecret;
+  var securityToken = credentialModel.securityToken;
   if (!Util.empty(securityToken)) {
       request.headers['x-acs-security-token'] = securityToken;
   }

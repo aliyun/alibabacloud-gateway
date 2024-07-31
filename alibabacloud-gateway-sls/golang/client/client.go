@@ -52,21 +52,14 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	project := hostMap["project"]
 	config := context.Configuration
 	credential := request.Credential
-	accessKeyId, _err := credential.GetAccessKeyId()
+	credentialModel, _err := credential.GetCredential()
 	if _err != nil {
 		return _err
 	}
 
-	accessKeySecret, _err := credential.GetAccessKeySecret()
-	if _err != nil {
-		return _err
-	}
-
-	securityToken, _err := credential.GetSecurityToken()
-	if _err != nil {
-		return _err
-	}
-
+	accessKeyId := credentialModel.AccessKeyId
+	accessKeySecret := credentialModel.AccessKeySecret
+	securityToken := credentialModel.SecurityToken
 	if !tea.BoolValue(util.Empty(securityToken)) {
 		request.Headers["x-acs-security-token"] = securityToken
 	}
