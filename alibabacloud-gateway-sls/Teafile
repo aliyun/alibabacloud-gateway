@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -22,13 +22,13 @@
     "SLS_Util": "alibabacloud:GatewaySLS_Util:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-sls:^0.0.9",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.0.10",
-    "java": "com.aliyun:alibabacloud-gateway-sls:0.0.9",
-    "python": "alibabacloud_gateway_sls:0.0.9",
+    "ts": "@alicloud/gateway-sls:^0.1.0",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls/client:v0.1.0",
+    "java": "com.aliyun:alibabacloud-gateway-sls:0.1.0",
+    "python": "alibabacloud_gateway_sls:0.1.0",
     "python2": "alibabacloud_gateway_sls_py2:0.0.6",
-    "csharp": "AlibabaCloud.GatewaySls:0.0.9",
-    "php": "alibabacloud/gateway-sls:^0.0.12"
+    "csharp": "AlibabaCloud.GatewaySls:0.1.0",
+    "php": "alibabacloud/gateway-sls:^0.1.0"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewaySls",
@@ -93,9 +93,8 @@
   },
   "releaselog": {
     "changelog": [
-      "[go/java]feat: support parsing compressed data.",
-      "[csharp/go/java/php/python/python2/ts]feat: default support sha256.",
-      "[csharp/go/java/php/python/python2/ts]feat: support sign v4."
+      "fix: solve the inconsistency of credentials refreshes.",
+      "feat: support accessDeniedDetail in error."
     ],
     "compatible": true
   }
