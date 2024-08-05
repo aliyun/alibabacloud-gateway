@@ -177,7 +177,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
-        String host = this.getHost(config.endpointType, bucketName, config.endpoint);
+        String host = this.getHost(config.endpointType, bucketName, config.endpoint, context);
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
                 new TeaPair("host", host),
@@ -349,7 +349,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return "oss-" + regionId + ".aliyuncs.com";
     }
 
-    public String getHost(String endpointType, String bucketName, String endpoint) throws Exception {
+    public String getHost(String endpointType, String bucketName, String endpoint, com.aliyun.gateway.spi.models.InterceptorContext context) throws Exception {
+        if (com.aliyun.darabonbastring.Client.contains(endpoint, ".mgw.aliyuncs.com") && !com.aliyun.teautil.Common.isUnset(context.request.hostMap.get("userid"))) {
+            return "" + context.request.hostMap.get("userid") + "." + endpoint + "";
+        }
+
         if (com.aliyun.teautil.Common.empty(bucketName)) {
             return endpoint;
         }
