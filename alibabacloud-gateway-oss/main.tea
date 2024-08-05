@@ -104,7 +104,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       request.headers.content-type = 'application/octet-stream';
     }
   }
-  var host = getHost(config.endpointType, bucketName, config.endpoint);
+  var host = getHost(config.endpointType, bucketName, config.endpoint, context);
   request.headers = {
     host = host,
     date = Util.getDateUTCString(),
@@ -260,7 +260,10 @@ async function getEndpoint(regionId: string, network: string, endpoint: string) 
   return `oss-${regionId}.aliyuncs.com`;
 }
 
-async function getHost(endpointType: string, bucketName: string, endpoint: string): string {
+async function getHost(endpointType: string, bucketName: string, endpoint: string, context: SPI.InterceptorContext): string {
+  if (String.contains(endpoint,'.mgw.aliyuncs.com') && !Util.isUnset(context.request.hostMap.userid)) {
+    return `${context.request.hostMap.userid}.${endpoint}`;
+  }
   if (Util.empty(bucketName)) {
     return endpoint;
   }
