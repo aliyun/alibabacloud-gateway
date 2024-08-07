@@ -506,9 +506,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                     canonicalizedResource = "" + canonicalizedResource + "=" + query.get(paramName) + "";
                 }
 
+                separator = "&";
             }
 
-            separator = "&";
         }
         return canonicalizedResource;
     }
