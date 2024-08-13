@@ -28,7 +28,8 @@
     "python": "alibabacloud_gateway_pop:0.0.5",
     "python2": "alibabacloud_gateway_pop_py2:0.0.4",
     "csharp": "AlibabaCloud.GatewayPop:0.0.5",
-    "php": "alibabacloud/gateway-pop:^0.0.5"
+    "php": "alibabacloud/gateway-pop:^0.0.5",
+    "swift": "alibabacloud-sdk-swift/alibabacloud-gateway-pop:0.0.1"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayPop",
@@ -88,6 +89,16 @@
         "scope": "alibabacloud-sdk-cpp",
         "project": "gateway-pop"
       }
+    }
+  },
+  "swift": {
+    "clientName": "Client",
+    "packageInfo": {
+      "name": "AlibabacloudGatewayPOP",
+      "desc": "Alibaba Cloud Gateway SPI SDK Library for Swift",
+      "github": "https://github.com/alibabacloud-sdk-swift/alibabacloud-gateway-pop",
+      "author": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
     }
   },
   "releaselog": {
