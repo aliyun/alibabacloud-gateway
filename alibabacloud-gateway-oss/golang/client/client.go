@@ -140,7 +140,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	}
 
-	host, _err := client.GetHost(config.EndpointType, bucketName, config.Endpoint)
+	host, _err := client.GetHost(config.EndpointType, bucketName, config.Endpoint, context)
 	if _err != nil {
 		return _err
 	}
@@ -389,7 +389,12 @@ func (client *Client) GetEndpoint(regionId *string, network *string, endpoint *s
 	return _result, _err
 }
 
-func (client *Client) GetHost(endpointType *string, bucketName *string, endpoint *string) (_result *string, _err error) {
+func (client *Client) GetHost(endpointType *string, bucketName *string, endpoint *string, context *spi.InterceptorContext) (_result *string, _err error) {
+	if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw.aliyuncs.com"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
+		_result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
+		return _result, _err
+	}
+
 	if tea.BoolValue(util.Empty(bucketName)) {
 		_result = endpoint
 		return _result, _err
