@@ -17015,7 +17015,7 @@ type GetAgentResp struct {
 	// example:
 	//
 	// test_tunnel_id
-	TunnelID *string `json:"TunnelID,omitempty" xml:"TunnelID,omitempty"`
+	TunnelId *string `json:"TunnelId,omitempty" xml:"TunnelId,omitempty"`
 	// example:
 	//
 	// test_agent_id
@@ -17070,8 +17070,8 @@ func (s *GetAgentResp) SetTags(v string) *GetAgentResp {
 	return s
 }
 
-func (s *GetAgentResp) SetTunnelID(v string) *GetAgentResp {
-	s.TunnelID = &v
+func (s *GetAgentResp) SetTunnelId(v string) *GetAgentResp {
+	s.TunnelId = &v
 	return s
 }
 
@@ -19157,7 +19157,7 @@ type ListJobRequest struct {
 	// example:
 	//
 	// true
-	All *string `json:"all,omitempty" xml:"all,omitempty"`
+	All *bool `json:"all,omitempty" xml:"all,omitempty"`
 	// example:
 	//
 	// 1000
@@ -19180,7 +19180,7 @@ func (s ListJobRequest) GoString() string {
 	return s.String()
 }
 
-func (s *ListJobRequest) SetAll(v string) *ListJobRequest {
+func (s *ListJobRequest) SetAll(v bool) *ListJobRequest {
 	s.All = &v
 	return s
 }
@@ -19201,7 +19201,7 @@ func (s *ListJobRequest) SetParentName(v string) *ListJobRequest {
 }
 
 type ListJobResponseBody struct {
-	JobList *ListJobResp `json:"JobList,omitempty" xml:"JobList,omitempty"`
+	ImportJobList *ListJobResp `json:"ImportJobList,omitempty" xml:"ImportJobList,omitempty"`
 }
 
 func (s ListJobResponseBody) String() string {
@@ -19212,8 +19212,8 @@ func (s ListJobResponseBody) GoString() string {
 	return s.String()
 }
 
-func (s *ListJobResponseBody) SetJobList(v *ListJobResp) *ListJobResponseBody {
-	s.JobList = v
+func (s *ListJobResponseBody) SetImportJobList(v *ListJobResp) *ListJobResponseBody {
+	s.ImportJobList = v
 	return s
 }
 
