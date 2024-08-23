@@ -9,7 +9,7 @@ public class ListJobRequest extends TeaModel {
      * <p>true</p>
      */
     @NameInMap("all")
-    public String all;
+    public Boolean all;
 
     /**
      * <strong>example:</strong>
@@ -37,11 +37,11 @@ public class ListJobRequest extends TeaModel {
         return TeaModel.build(map, self);
     }
 
-    public ListJobRequest setAll(String all) {
+    public ListJobRequest setAll(Boolean all) {
         this.all = all;
         return this;
     }
-    public String getAll() {
+    public Boolean getAll() {
         return this.all;
     }
 

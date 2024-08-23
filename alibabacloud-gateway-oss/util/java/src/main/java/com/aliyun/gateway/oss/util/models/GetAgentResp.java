@@ -60,8 +60,8 @@ public class GetAgentResp extends TeaModel {
      * <strong>example:</strong>
      * <p>test_tunnel_id</p>
      */
-    @NameInMap("TunnelID")
-    public String tunnelID;
+    @NameInMap("TunnelId")
+    public String tunnelId;
 
     /**
      * <strong>example:</strong>
@@ -139,12 +139,12 @@ public class GetAgentResp extends TeaModel {
         return this.tags;
     }
 
-    public GetAgentResp setTunnelID(String tunnelID) {
-        this.tunnelID = tunnelID;
+    public GetAgentResp setTunnelId(String tunnelId) {
+        this.tunnelId = tunnelId;
         return this;
     }
-    public String getTunnelID() {
-        return this.tunnelID;
+    public String getTunnelId() {
+        return this.tunnelId;
     }
 
     public GetAgentResp setVersion(String version) {

@@ -116,9 +116,6 @@ public class GetJobResp extends TeaModel {
     @NameInMap("Version")
     public String version;
 
-    @NameInMap("WithStorageClass")
-    public Boolean withStorageClass;
-
     public static GetJobResp build(java.util.Map<String, ?> map) throws Exception {
         GetJobResp self = new GetJobResp();
         return TeaModel.build(map, self);
@@ -282,14 +279,6 @@ public class GetJobResp extends TeaModel {
     }
     public String getVersion() {
         return this.version;
-    }
-
-    public GetJobResp setWithStorageClass(Boolean withStorageClass) {
-        this.withStorageClass = withStorageClass;
-        return this;
-    }
-    public Boolean getWithStorageClass() {
-        return this.withStorageClass;
     }
 
 }
