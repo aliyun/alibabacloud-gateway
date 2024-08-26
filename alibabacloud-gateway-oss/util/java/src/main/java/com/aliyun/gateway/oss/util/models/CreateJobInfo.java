@@ -84,13 +84,6 @@ public class CreateJobInfo extends TeaModel {
     @NameInMap("TransferMode")
     public String transferMode;
 
-    /**
-     * <strong>example:</strong>
-     * <p>false</p>
-     */
-    @NameInMap("WithStorageClass")
-    public Boolean withStorageClass;
-
     public static CreateJobInfo build(java.util.Map<String, ?> map) throws Exception {
         CreateJobInfo self = new CreateJobInfo();
         return TeaModel.build(map, self);
@@ -206,14 +199,6 @@ public class CreateJobInfo extends TeaModel {
     }
     public String getTransferMode() {
         return this.transferMode;
-    }
-
-    public CreateJobInfo setWithStorageClass(Boolean withStorageClass) {
-        this.withStorageClass = withStorageClass;
-        return this;
-    }
-    public Boolean getWithStorageClass() {
-        return this.withStorageClass;
     }
 
 }
