@@ -97,7 +97,7 @@ func init() {
 	typeRegistry["GetTunnel"] = reflect.TypeOf(GetTunnelResponseBody{})
 	typeRegistry["ListAddress"] = reflect.TypeOf(ListAddressResponseBody{})
 	typeRegistry["ListAgent"] = reflect.TypeOf(ListAgentResponseBody{})
-	typeRegistry["ListJobResponse"] = reflect.TypeOf(ListJobResponseBody{})
+	typeRegistry["ListJob"] = reflect.TypeOf(ListJobResponseBody{})
 	typeRegistry["ListJobHistory"] = reflect.TypeOf(ListJobHistoryResponseBody{})
 	typeRegistry["ListTunnel"] = reflect.TypeOf(ListTunnelResponseBody{})
 	typeRegistry["VerifyAddress"] = reflect.TypeOf(VerifyAddressResponseBody{})
