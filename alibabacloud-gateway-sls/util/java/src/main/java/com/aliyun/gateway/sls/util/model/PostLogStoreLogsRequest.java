@@ -4,17 +4,26 @@ import com.aliyun.tea.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
 public class PostLogStoreLogsRequest implements Serializable {
     private static final long serialVersionUID = 7226856831224917838L;
     private String topic;
     private String source;
-    private String hashKey;
     private List<LogItem> logItems;
     private List<LogTag> tags = null;
     private String compressType = "lz4";
-    private Integer hashRouteKeySeqId;
+
+    // POST /logstores/{logStore}/shards/lb
+    // content-type: application/x-protobuf
+    // extra header:
+    //      x-log-compresstype: {compressType}
+    //      x-log-bodyrawsize: {rawSize}
+    public PostLogStoreLogsRequest(String topic, String source, List<LogItem> logItems, List<LogTag> tags) {
+        this.topic = topic;
+        this.source = source;
+        this.logItems = logItems;
+        this.tags = tags;
+    }
 
     public byte[] serializeToPbBytes() {
         Logs.LogGroup.Builder logs = Logs.LogGroup.newBuilder();
@@ -126,21 +135,4 @@ public class PostLogStoreLogsRequest implements Serializable {
     public void setTags(List<LogTag> tags) {
         this.tags = tags;
     }
-
-    public String getHashKey() {
-        return hashKey;
-    }
-
-    public void setHashKey(String mHashKey) {
-        this.hashKey = mHashKey;
-    }
-
-    public Integer getHashRouteKeySeqId() {
-        return hashRouteKeySeqId;
-    }
-
-    public void setHashRouteKeySeqId(Integer hashRouteKeySeqId) {
-        this.hashRouteKeySeqId = hashRouteKeySeqId;
-    }
-
 }

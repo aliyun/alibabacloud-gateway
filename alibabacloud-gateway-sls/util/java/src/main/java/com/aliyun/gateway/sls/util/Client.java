@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.aliyun.gateway.sls.util.model.PostLogStoreLogsRequest;
-import com.aliyun.gateway.sls.util.model.PullLogsResponseBody;
+import com.aliyun.gateway.sls.util.model.PostLogStoreLogsResponse;
 
 public class Client {
 
@@ -21,7 +21,7 @@ public class Client {
         return request.serializeToPbBytes();
     }
 
-    public static PullLogsResponseBody DeserializeFromPbBytes(byte[] uncompressedData, int statusCode, Map<String, String> headers) throws Exception {
-        return new PullLogsResponseBody(uncompressedData, statusCode, headers);
+    public static PostLogStoreLogsResponse.PullLogsResponseBody DeserializeFromPbBytes(byte[] uncompressedData, int statusCode, Map<String, String> headers) throws Exception {
+        return new PostLogStoreLogsResponse.PullLogsResponseBody(uncompressedData, statusCode, headers);
     }
 }
