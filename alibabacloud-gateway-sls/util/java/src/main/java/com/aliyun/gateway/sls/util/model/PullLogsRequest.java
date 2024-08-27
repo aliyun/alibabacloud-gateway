@@ -24,32 +24,36 @@ public class PullLogsRequest {
         return cursor;
     }
 
-    public void setCursor(String cursor) {
+    public PullLogsRequest setCursor(String cursor) {
         this.cursor = cursor;
+        return this;
     }
 
     public String getEndCursor() {
         return endCursor;
     }
 
-    public void setEndCursor(String endCursor) {
+    public PullLogsRequest setEndCursor(String endCursor) {
         this.endCursor = endCursor;
+        return this;
     }
 
     public int getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public PullLogsRequest setCount(int count) {
         this.count = count;
+        return this;
     }
 
     public String getQuery() {
         return query;
     }
 
-    public void setQuery(String query) {
+    public PullLogsRequest setQuery(String query) {
         this.query = query;
+        return this;
     }
 
 }

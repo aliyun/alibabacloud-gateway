@@ -65,8 +65,9 @@ public class PostLogStoreLogsRequest implements Serializable {
         return compressType;
     }
 
-    public void setCompressType(String compressType) {
+    public PostLogStoreLogsRequest setCompressType(String compressType) {
         this.compressType = compressType;
+        return this;
     }
 
     /**
@@ -83,8 +84,9 @@ public class PostLogStoreLogsRequest implements Serializable {
      *
      * @param topic topic value
      */
-    public void setTopic(String topic) {
+    public PostLogStoreLogsRequest setTopic(String topic) {
         this.topic = topic;
+        return this;
     }
 
     /**
@@ -101,8 +103,9 @@ public class PostLogStoreLogsRequest implements Serializable {
      *
      * @param source log source
      */
-    public void setSource(String source) {
+    public PostLogStoreLogsRequest setSource(String source) {
         this.source = source;
+        return this;
     }
 
     /**
@@ -128,11 +131,13 @@ public class PostLogStoreLogsRequest implements Serializable {
      *
      * @param logItems log data
      */
-    public void setLogItems(List<LogItem> logItems) {
+    public PostLogStoreLogsRequest setLogItems(List<LogItem> logItems) {
         this.logItems = logItems;
+        return this;
     }
 
-    public void setTags(List<LogTag> tags) {
+    public PostLogStoreLogsRequest setTags(List<LogTag> tags) {
         this.tags = tags;
+        return this;
     }
 }
