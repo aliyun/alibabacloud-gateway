@@ -3,6 +3,10 @@ package com.aliyun.gateway.sls.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Map;
+
+import com.aliyun.gateway.sls.util.model.PostLogStoreLogsRequest;
+import com.aliyun.gateway.sls.util.model.PullLogsResponseBody;
 
 public class Client {
 
@@ -12,5 +16,12 @@ public class Client {
         rawData = DecompressorFactory.getDecompressor(compressType).decompress(rawData, rawSize);
         String data = new String(rawData, "UTF-8");
         return new ByteArrayInputStream(data.getBytes());
+    }
+    public static byte[] SerializeToPbBytes(PostLogStoreLogsRequest request) throws Exception {
+        return request.serializeToPbBytes();
+    }
+
+    public static PullLogsResponseBody DeserializeFromPbBytes(byte[] uncompressedData, int statusCode, Map<String, String> headers) throws Exception {
+        return new PullLogsResponseBody(uncompressedData, statusCode, headers);
     }
 }

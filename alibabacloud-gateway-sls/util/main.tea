@@ -1,34 +1,12 @@
+typedef PostLogStoreLogsRequest;
+typedef PullLogResponse;
+
 
 /**
  * Read data from a readable stream, and parse it by JSON format
  * @param stream the readable stream
  * @return the parsed result
  */
-static async function readAndUncompressBlock(stream: readable, compressType: string, bodyRawSize: string): readable
-
-model LogContent {
-    key: string(name='key', description='Key of log content'),
-    value: string(name='value', description='Value of log content')
-}
-
-model LogTag {
-    key: string(name='key', description='Key of log tag'),
-    value: string(name='key', description='Value of log tag')
-}
-
-model Log {
-    time: uint32(name='time', description='Log time, unix timestamp in seconds', example='1724057168'),
-    contents: [LogContent](name='contents', description='Contents of the log, contains of key/value pair'),
-    timeNs ?: uint32(name='timeNs', description='Nano part of the log time, between [0, 999999999]', example='123456789')
-}
-
-model LogGroup {
-    topic ?: string(name='topic', description='Topic of logGroup', example='my-topic'),
-    source ?: string(name='time', description='Source of logGroup', example='127.0.0.1'),
-    logs: [Log](name='logs', description='Logs of logGroup'),
-    logTags ?: [LogTag](name='logTags', description='Tags of logGroup')
-}
-
-model LogGroupList {
-    logGroupList: [LogGroup]
-}
+static async function readAndUncompressBlock(stream: readable, compressType: string, bodyRawSize: string): readable;
+static async function SerializeToPbBytes(request: PostLogStoreLogsRequest) : bytes;
+static async function DeserializeFromPbBytes(resp: PullLogResponse, data: bytes) : void;
