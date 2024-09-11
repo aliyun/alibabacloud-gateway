@@ -590,9 +590,9 @@ func (client *Client) BuildCanonicalizedResource(pathname *string, query map[str
 				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(query[tea.StringValue(paramName)]))
 			}
 
+			separator = tea.String("&")
 		}
 
-		separator = tea.String("&")
 	}
 	_result = canonicalizedResource
 	return _result, _err
