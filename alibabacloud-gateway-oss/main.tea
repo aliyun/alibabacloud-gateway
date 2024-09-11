@@ -409,8 +409,8 @@ async function buildCanonicalizedResource(pathname: string, query: map[string]st
       if (!Util.empty(query[paramName])) {
         canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
       }
+      separator = '&';
     }
-    separator = '&';
   }
   return canonicalizedResource;
 }
