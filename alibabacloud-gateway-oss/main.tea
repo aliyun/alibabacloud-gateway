@@ -155,6 +155,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
           ecCode = err.EC,
           Recommend = err.RecommendDoc,
           hostId = err.HostId,
+          AccessDeniedDetail = err.AccessDeniedDetail,
         }
       };
     } else {
