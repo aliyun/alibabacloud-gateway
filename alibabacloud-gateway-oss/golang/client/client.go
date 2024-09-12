@@ -204,11 +204,12 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				"code":    err["Code"],
 				"message": err["Message"],
 				"data": map[string]interface{}{
-					"statusCode": tea.IntValue(response.StatusCode),
-					"requestId":  err["RequestId"],
-					"ecCode":     err["EC"],
-					"Recommend":  err["RecommendDoc"],
-					"hostId":     err["HostId"],
+					"statusCode":         tea.IntValue(response.StatusCode),
+					"requestId":          err["RequestId"],
+					"ecCode":             err["EC"],
+					"Recommend":          err["RecommendDoc"],
+					"hostId":             err["HostId"],
+					"AccessDeniedDetail": err["AccessDeniedDetail"],
 				},
 			})
 			return _err

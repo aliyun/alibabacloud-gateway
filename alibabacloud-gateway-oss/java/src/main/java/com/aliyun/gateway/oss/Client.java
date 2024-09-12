@@ -231,7 +231,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                         new TeaPair("requestId", err.get("RequestId")),
                         new TeaPair("ecCode", err.get("EC")),
                         new TeaPair("Recommend", err.get("RecommendDoc")),
-                        new TeaPair("hostId", err.get("HostId"))
+                        new TeaPair("hostId", err.get("HostId")),
+                        new TeaPair("AccessDeniedDetail", err.get("AccessDeniedDetail"))
                     ))
                 ));
             } else {
