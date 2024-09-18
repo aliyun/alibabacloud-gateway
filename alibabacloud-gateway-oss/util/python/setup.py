@@ -22,34 +22,21 @@ import os
 from setuptools import setup, find_packages
 
 """
-setup module for alibabacloud_gateway_oss.
+setup module for alibabacloud_gateway_oss_util.
 
-Created on 18/09/2024
+Created on 26/09/2024
 
 @author: Alibaba Cloud SDK
 """
 
-PACKAGE = "alibabacloud_gateway_oss"
-NAME = "alibabacloud_gateway_oss" or "alibabacloud-package"
-DESCRIPTION = "Alibaba Cloud OSS SDK Library for Python"
+PACKAGE = "alibabacloud_gateway_oss_util"
+NAME = "alibabacloud_gateway_oss_util" or "alibabacloud-package"
+DESCRIPTION = "Alibaba Cloud OSS Util Library for Python"
 AUTHOR = "Alibaba Cloud SDK"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
-REQUIRES = [
-    "alibabacloud_gateway_spi>=0.0.2, <1.0.0",
-    "alibabacloud_credentials>=0.3.4, <1.0.0",
-    "alibabacloud_tea_util>=0.3.13, <1.0.0",
-    "alibabacloud_oss_util>=0.0.5, <1.0.0",
-    "alibabacloud_openapi_util>=0.2.1, <1.0.0",
-    "alibabacloud_tea_xml>=0.0.2, <1.0.0",
-    "alibabacloud_darabonba_string>=0.0.4, <1.0.0",
-    "alibabacloud_darabonba_map>=0.0.1, <1.0.0",
-    "alibabacloud_darabonba_array>=0.1.0, <1.0.0",
-    "alibabacloud_darabonba_encode_util>=0.0.2, <1.0.0",
-    "alibabacloud_darabonba_signature_util>=0.0.4, <1.0.0",
-    "alibabacloud_darabonba_time>=0.0.1, <1.0.0"
-]
+REQUIRES = []
 
 LONG_DESCRIPTION = ''
 if os.path.exists('./README.md'):
@@ -66,7 +53,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     license="Apache License 2.0",
     url=URL,
-    keywords=["alibabacloud","gateway","oss"],
+    keywords=["alibabacloud","gateway","oss","util"],
     packages=find_packages(exclude=["tests*"]),
     include_package_data=True,
     platforms="any",

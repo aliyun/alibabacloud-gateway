@@ -1,0 +1,298 @@
+# -*- coding: utf-8 -*-
+# This file is auto-generated, don't edit it. Thanks.
+# -*- coding: utf-8 -*-
+# import alibabacloud_tea_xml.client
+
+from Tea.model import TeaModel
+from typing import Dict
+from xml.etree import ElementTree
+from collections import defaultdict
+import inspect
+from typing_extensions import get_origin, get_args
+from Tea.exceptions import RequiredArgumentException
+from .structs import *
+
+typeRegistry = {}
+# for oss
+typeRegistry["CompleteMultipartUpload"] = CompleteMultipartUploadResponseBody
+typeRegistry["CopyObject"] = CopyObjectResponseBody
+typeRegistry["CreateAccessPoint"] = CreateAccessPointResponseBody
+typeRegistry["CreateAccessPointForObjectProcess"] = CreateAccessPointForObjectProcessResponseBody
+typeRegistry["CreateBucketDataRedundancyTransition"] = CreateBucketDataRedundancyTransitionResponseBody
+typeRegistry["CreateCnameToken"] = CreateCnameTokenResponseBody
+typeRegistry["DeleteMultipleObjects"] = DeleteMultipleObjectsResponseBody
+typeRegistry["DescribeRegions"] = DescribeRegionsResponseBody
+typeRegistry["DoMetaQuery"] = DoMetaQueryResponseBody
+typeRegistry["GetAccessPoint"] = GetAccessPointResponseBody
+typeRegistry["GetAccessPointConfigForObjectProcess"] = GetAccessPointConfigForObjectProcessResponseBody
+typeRegistry["GetAccessPointForObjectProcess"] = GetAccessPointForObjectProcessResponseBody
+typeRegistry["GetAccessPointPublicAccessBlock"] = GetAccessPointPublicAccessBlockResponseBody
+typeRegistry["GetBucketAccessMonitor"] = GetBucketAccessMonitorResponseBody
+typeRegistry["GetBucketAcl"] = GetBucketAclResponseBody
+typeRegistry["GetBucketArchiveDirectRead"] = GetBucketArchiveDirectReadResponseBody
+typeRegistry["GetBucketCallbackPolicy"] = GetBucketCallbackPolicyResponseBody
+typeRegistry["GetBucketCors"] = GetBucketCorsResponseBody
+typeRegistry["GetBucketDataRedundancyTransition"] = GetBucketDataRedundancyTransitionResponseBody
+typeRegistry["GetBucketEncryption"] = GetBucketEncryptionResponseBody
+typeRegistry["GetBucketHttpsConfig"] = GetBucketHttpsConfigResponseBody
+typeRegistry["GetBucketInfo"] = GetBucketInfoResponseBody
+typeRegistry["GetBucketInventory"] = GetBucketInventoryResponseBody
+typeRegistry["GetBucketLifecycle"] = GetBucketLifecycleResponseBody
+typeRegistry["GetBucketLocation"] = GetBucketLocationResponseBody
+typeRegistry["GetBucketLogging"] = GetBucketLoggingResponseBody
+typeRegistry["GetBucketPolicyStatus"] = GetBucketPolicyStatusResponseBody
+typeRegistry["GetBucketPublicAccessBlock"] = GetBucketPublicAccessBlockResponseBody
+typeRegistry["GetBucketReferer"] = GetBucketRefererResponseBody
+typeRegistry["GetBucketReplication"] = GetBucketReplicationResponseBody
+typeRegistry["GetBucketReplicationLocation"] = GetBucketReplicationLocationResponseBody
+typeRegistry["GetBucketReplicationProgress"] = GetBucketReplicationProgressResponseBody
+typeRegistry["GetBucketRequestPayment"] = GetBucketRequestPaymentResponseBody
+typeRegistry["GetBucketResourceGroup"] = GetBucketResourceGroupResponseBody
+typeRegistry["GetBucketResponseHeader"] = GetBucketResponseHeaderResponseBody
+typeRegistry["GetBucketStat"] = GetBucketStatResponseBody
+typeRegistry["GetBucketTags"] = GetBucketTagsResponseBody
+typeRegistry["GetBucketTransferAcceleration"] = GetBucketTransferAccelerationResponseBody
+typeRegistry["GetBucketVersioning"] = GetBucketVersioningResponseBody
+typeRegistry["GetBucketWebsite"] = GetBucketWebsiteResponseBody
+typeRegistry["GetBucketWorm"] = GetBucketWormResponseBody
+typeRegistry["GetCnameToken"] = GetCnameTokenResponseBody
+typeRegistry["GetLiveChannelHistory"] = GetLiveChannelHistoryResponseBody
+typeRegistry["GetLiveChannelInfo"] = GetLiveChannelInfoResponseBody
+typeRegistry["GetLiveChannelStat"] = GetLiveChannelStatResponseBody
+typeRegistry["GetMetaQueryStatus"] = GetMetaQueryStatusResponseBody
+typeRegistry["GetObjectAcl"] = GetObjectAclResponseBody
+typeRegistry["GetObjectTagging"] = GetObjectTaggingResponseBody
+typeRegistry["GetPublicAccessBlock"] = GetPublicAccessBlockResponseBody
+typeRegistry["GetStyle"] = GetStyleResponseBody
+typeRegistry["GetUserAntiDDosInfo"] = GetUserAntiDDosInfoResponseBody
+typeRegistry["GetUserDefinedLogFieldsConfig"] = GetUserDefinedLogFieldsConfigResponseBody
+typeRegistry["InitiateMultipartUpload"] = InitiateMultipartUploadResponseBody
+typeRegistry["ListAccessPoints"] = ListAccessPointsResponseBody
+typeRegistry["ListAccessPointsForObjectProcess"] = ListAccessPointsForObjectProcessResponseBody
+typeRegistry["ListBucketAntiDDosInfo"] = ListBucketAntiDDosInfoResponseBody
+typeRegistry["ListBucketDataRedundancyTransition"] = ListBucketDataRedundancyTransitionResponseBody
+typeRegistry["ListBucketInventory"] = ListBucketInventoryResponseBody
+typeRegistry["ListBuckets"] = ListBucketsResponseBody
+typeRegistry["ListCname"] = ListCnameResponseBody
+typeRegistry["ListLiveChannel"] = ListLiveChannelResponseBody
+typeRegistry["ListMultipartUploads"] = ListMultipartUploadsResponseBody
+typeRegistry["ListObjectVersions"] = ListObjectVersionsResponseBody
+typeRegistry["ListObjects"] = ListObjectsResponseBody
+typeRegistry["ListObjectsV2"] = ListObjectsV2ResponseBody
+typeRegistry["ListParts"] = ListPartsResponseBody
+typeRegistry["ListStyle"] = ListStyleResponseBody
+typeRegistry["PutLiveChannel"] = PutLiveChannelResponseBody
+typeRegistry["UploadPartCopy"] = UploadPartCopyResponseBody
+
+# for hcs-mgw
+typeRegistry["GetAddress"] = GetAddressResponseBody
+typeRegistry["GetAgent"] = GetAgentResponseBody
+typeRegistry["GetAgentStatus"] = GetAgentStatusResponseBody
+typeRegistry["GetJob"] = GetJobResponseBody
+typeRegistry["GetJobResult"] = GetJobResultResponseBody
+typeRegistry["GetReport"] = GetReportResponseBody
+typeRegistry["GetTunnel"] = GetTunnelResponseBody
+typeRegistry["ListAddress"] = ListAddressResponseBody
+typeRegistry["ListAgent"] = ListAgentResponseBody
+typeRegistry["ListJob"] = ListJobResponseBody
+typeRegistry["ListJobHistory"] = ListJobHistoryResponseBody
+typeRegistry["ListTunnel"] = ListTunnelResponseBody
+typeRegistry["VerifyAddress"] = VerifyAddressResponseBody
+
+basic_instance = {}
+basic_instance[str] = ''
+basic_instance[int] = 0
+basic_instance[bool] = False
+basic_instance[Dict[str, str]] = {'':''}
+
+def build_instance_from_model(model):
+    if model in basic_instance:
+        return basic_instance[model]
+    sig = inspect.signature(model.__init__)
+    params = {}
+    for para_name, param in sig.parameters.items():
+        if para_name == "self":
+            continue
+        origin_type = get_origin(param.annotation)
+        if origin_type is not None and issubclass(origin_type, list):
+            params[para_name] = [build_instance_from_model(get_args(param.annotation)[0])]
+        else:
+            params[para_name] = build_instance_from_model(param.annotation)
+    return model(**params)
+
+
+instanceRegistry = {}
+# for oss
+instanceRegistry["CompleteMultipartUpload"] = build_instance_from_model(CompleteMultipartUploadResponseBody)
+instanceRegistry["CopyObject"] = build_instance_from_model(CopyObjectResponseBody)
+instanceRegistry["CreateAccessPoint"] = build_instance_from_model(CreateAccessPointResponseBody)
+instanceRegistry["CreateAccessPointForObjectProcess"] = build_instance_from_model(CreateAccessPointForObjectProcessResponseBody)
+instanceRegistry["CreateBucketDataRedundancyTransition"] = build_instance_from_model(CreateBucketDataRedundancyTransitionResponseBody)
+instanceRegistry["CreateCnameToken"] = build_instance_from_model(CreateCnameTokenResponseBody)
+instanceRegistry["DeleteMultipleObjects"] = build_instance_from_model(DeleteMultipleObjectsResponseBody)
+instanceRegistry["DescribeRegions"] = build_instance_from_model(DescribeRegionsResponseBody)
+instanceRegistry["DoMetaQuery"] = build_instance_from_model(DoMetaQueryResponseBody)
+instanceRegistry["GetAccessPoint"] = build_instance_from_model(GetAccessPointResponseBody)
+instanceRegistry["GetAccessPointConfigForObjectProcess"] = build_instance_from_model(GetAccessPointConfigForObjectProcessResponseBody)
+instanceRegistry["GetAccessPointForObjectProcess"] = build_instance_from_model(GetAccessPointForObjectProcessResponseBody)
+instanceRegistry["GetAccessPointPublicAccessBlock"] = build_instance_from_model(GetAccessPointPublicAccessBlockResponseBody)
+instanceRegistry["GetBucketAccessMonitor"] = build_instance_from_model(GetBucketAccessMonitorResponseBody)
+instanceRegistry["GetBucketAcl"] = build_instance_from_model(GetBucketAclResponseBody)
+instanceRegistry["GetBucketArchiveDirectRead"] = build_instance_from_model(GetBucketArchiveDirectReadResponseBody)
+instanceRegistry["GetBucketCallbackPolicy"] = build_instance_from_model(GetBucketCallbackPolicyResponseBody)
+instanceRegistry["GetBucketCors"] = build_instance_from_model(GetBucketCorsResponseBody)
+instanceRegistry["GetBucketDataRedundancyTransition"] = build_instance_from_model(GetBucketDataRedundancyTransitionResponseBody)
+instanceRegistry["GetBucketEncryption"] = build_instance_from_model(GetBucketEncryptionResponseBody)
+instanceRegistry["GetBucketHttpsConfig"] = build_instance_from_model(GetBucketHttpsConfigResponseBody)
+instanceRegistry["GetBucketInfo"] = build_instance_from_model(GetBucketInfoResponseBody)
+instanceRegistry["GetBucketInventory"] = build_instance_from_model(GetBucketInventoryResponseBody)
+instanceRegistry["GetBucketLifecycle"] = build_instance_from_model(GetBucketLifecycleResponseBody)
+instanceRegistry["GetBucketLocation"] = build_instance_from_model(GetBucketLocationResponseBody)
+instanceRegistry["GetBucketLogging"] = build_instance_from_model(GetBucketLoggingResponseBody)
+instanceRegistry["GetBucketPolicyStatus"] = build_instance_from_model(GetBucketPolicyStatusResponseBody)
+instanceRegistry["GetBucketPublicAccessBlock"] = build_instance_from_model(GetBucketPublicAccessBlockResponseBody)
+instanceRegistry["GetBucketReferer"] = build_instance_from_model(GetBucketRefererResponseBody)
+instanceRegistry["GetBucketReplication"] = build_instance_from_model(GetBucketReplicationResponseBody)
+instanceRegistry["GetBucketReplicationLocation"] = build_instance_from_model(GetBucketReplicationLocationResponseBody)
+instanceRegistry["GetBucketReplicationProgress"] = build_instance_from_model(GetBucketReplicationProgressResponseBody)
+instanceRegistry["GetBucketRequestPayment"] = build_instance_from_model(GetBucketRequestPaymentResponseBody)
+instanceRegistry["GetBucketResourceGroup"] = build_instance_from_model(GetBucketResourceGroupResponseBody)
+instanceRegistry["GetBucketResponseHeader"] = build_instance_from_model(GetBucketResponseHeaderResponseBody)
+instanceRegistry["GetBucketStat"] = build_instance_from_model(GetBucketStatResponseBody)
+instanceRegistry["GetBucketTags"] = build_instance_from_model(GetBucketTagsResponseBody)
+instanceRegistry["GetBucketTransferAcceleration"] = build_instance_from_model(GetBucketTransferAccelerationResponseBody)
+instanceRegistry["GetBucketVersioning"] = build_instance_from_model(GetBucketVersioningResponseBody)
+instanceRegistry["GetBucketWebsite"] = build_instance_from_model(GetBucketWebsiteResponseBody)
+instanceRegistry["GetBucketWorm"] = build_instance_from_model(GetBucketWormResponseBody)
+instanceRegistry["GetCnameToken"] = build_instance_from_model(GetCnameTokenResponseBody)
+instanceRegistry["GetLiveChannelHistory"] = build_instance_from_model(GetLiveChannelHistoryResponseBody)
+instanceRegistry["GetLiveChannelInfo"] = build_instance_from_model(GetLiveChannelInfoResponseBody)
+instanceRegistry["GetLiveChannelStat"] = build_instance_from_model(GetLiveChannelStatResponseBody)
+instanceRegistry["GetMetaQueryStatus"] = build_instance_from_model(GetMetaQueryStatusResponseBody)
+instanceRegistry["GetObjectAcl"] = build_instance_from_model(GetObjectAclResponseBody)
+instanceRegistry["GetObjectTagging"] = build_instance_from_model(GetObjectTaggingResponseBody)
+instanceRegistry["GetPublicAccessBlock"] = build_instance_from_model(GetPublicAccessBlockResponseBody)
+instanceRegistry["GetStyle"] = build_instance_from_model(GetStyleResponseBody)
+instanceRegistry["GetUserAntiDDosInfo"] = build_instance_from_model(GetUserAntiDDosInfoResponseBody)
+instanceRegistry["GetUserDefinedLogFieldsConfig"] = build_instance_from_model(GetUserDefinedLogFieldsConfigResponseBody)
+instanceRegistry["InitiateMultipartUpload"] = build_instance_from_model(InitiateMultipartUploadResponseBody)
+instanceRegistry["ListAccessPoints"] = build_instance_from_model(ListAccessPointsResponseBody)
+instanceRegistry["ListAccessPointsForObjectProcess"] = build_instance_from_model(ListAccessPointsForObjectProcessResponseBody)
+instanceRegistry["ListBucketAntiDDosInfo"] = build_instance_from_model(ListBucketAntiDDosInfoResponseBody)
+instanceRegistry["ListBucketDataRedundancyTransition"] = build_instance_from_model(ListBucketDataRedundancyTransitionResponseBody)
+instanceRegistry["ListBucketInventory"] = build_instance_from_model(ListBucketInventoryResponseBody)
+instanceRegistry["ListBuckets"] = build_instance_from_model(ListBucketsResponseBody)
+instanceRegistry["ListCname"] = build_instance_from_model(ListCnameResponseBody)
+instanceRegistry["ListLiveChannel"] = build_instance_from_model(ListLiveChannelResponseBody)
+instanceRegistry["ListMultipartUploads"] = build_instance_from_model(ListMultipartUploadsResponseBody)
+instanceRegistry["ListObjectVersions"] = build_instance_from_model(ListObjectVersionsResponseBody)
+instanceRegistry["ListObjects"] = build_instance_from_model(ListObjectsResponseBody)
+instanceRegistry["ListObjectsV2"] = build_instance_from_model(ListObjectsV2ResponseBody)
+instanceRegistry["ListParts"] = build_instance_from_model(ListPartsResponseBody)
+instanceRegistry["ListStyle"] = build_instance_from_model(ListStyleResponseBody)
+instanceRegistry["PutLiveChannel"] = build_instance_from_model(PutLiveChannelResponseBody)
+instanceRegistry["UploadPartCopy"] = build_instance_from_model(UploadPartCopyResponseBody)
+
+# for hcs-mgw
+instanceRegistry["GetAddress"] = build_instance_from_model(GetAddressResponseBody)
+instanceRegistry["GetAgent"] = build_instance_from_model(GetAgentResponseBody)
+instanceRegistry["GetAgentStatus"] = build_instance_from_model(GetAgentStatusResponseBody)
+instanceRegistry["GetJob"] = build_instance_from_model(GetJobResponseBody)
+instanceRegistry["GetJobResult"] = build_instance_from_model(GetJobResultResponseBody)
+instanceRegistry["GetReport"] = build_instance_from_model(GetReportResponseBody)
+instanceRegistry["GetTunnel"] = build_instance_from_model(GetTunnelResponseBody)
+instanceRegistry["ListAddress"] = build_instance_from_model(ListAddressResponseBody)
+instanceRegistry["ListAgent"] = build_instance_from_model(ListAgentResponseBody)
+instanceRegistry["ListJob"] = build_instance_from_model(ListJobResponseBody)
+instanceRegistry["ListJobHistory"] = build_instance_from_model(ListJobHistoryResponseBody)
+instanceRegistry["ListTunnel"] = build_instance_from_model(ListTunnelResponseBody)
+instanceRegistry["VerifyAddress"] = build_instance_from_model(VerifyAddressResponseBody)
+
+
+class Client:
+    @staticmethod
+    def __parse_xml_impl(t, m):
+        d = {t.tag: {} if t.attrib else None}
+        children = list(t)
+        if children:
+            m = m[t.tag]
+            mc = m[0] if isinstance(m, list) else m
+            dd = defaultdict(list)
+            for dc in [Client.__parse_xml_impl(c, mc) for c in children]:
+                for k, v in dc.items():
+                    dd[k].append(v)
+            d = {t.tag: {k: v[0] if len(v) == 1 and not isinstance(mc[k], list) else v for k, v in dd.items() if k in mc}}
+
+        if t.attrib:
+            d[t.tag].update(('@' + k, v) for k, v in t.attrib.items())
+
+        if t.text:
+            text = t.text.strip()
+            if children or t.attrib:
+                if text:
+                    d[t.tag]['#text'] = text
+            else:
+                d[t.tag] = text
+        return d
+
+    @staticmethod
+    def parse_xml(bodyStr: str, apiName: str):
+        d = Client.__parse_xml_impl(ElementTree.fromstring(bodyStr), instanceRegistry[apiName].to_map())
+        return typeRegistry[apiName]().from_map(d)
+    
+    @staticmethod
+    def __get_xml_factory(elem, val, parent_element=None):
+        if val is None:
+            return
+
+        if isinstance(val, dict):
+            Client.__get_xml_by_dict(elem, val)
+        elif isinstance(val, (list, tuple, set)):
+            if parent_element is None:
+                raise RequiredArgumentException("Missing root tag")
+            Client.__get_xml_by_list(elem, val, parent_element)
+        elif isinstance(val, bool):
+            elem.text = str(val).lower()
+        else:
+            elem.text = str(val)
+
+    @staticmethod
+    def __get_xml_by_dict(elem, val):
+        for k in val:
+            sub_elem = ElementTree.SubElement(elem, k)
+            Client.__get_xml_factory(sub_elem, val[k], elem)
+
+    @staticmethod
+    def __get_xml_by_list(elem, val, parent_element):
+        i = 0
+        tag_name = elem.tag
+        if val.__len__() > 0:
+            Client.__get_xml_factory(elem, val[0], parent_element)
+
+        for item in val:
+            if i > 0:
+                sub_elem = ElementTree.SubElement(parent_element, tag_name)
+                Client.__get_xml_factory(sub_elem, item, parent_element)
+            i = i + 1
+    
+    @staticmethod
+    def to_xml(body):
+        if body is None:
+            return
+
+        dic = {}
+        if isinstance(body, TeaModel):
+            dic = body.to_map()
+        elif isinstance(body, dict):
+            dic = body
+
+        if dic.__len__() == 0:
+            return ""
+        else:
+            result_xml = '<?xml version="1.0" encoding="utf-8"?>'
+            for k in dic:
+                elem = ElementTree.Element(k)
+                Client.__get_xml_factory(elem, dic[k])
+                result_xml += bytes.decode(ElementTree.tostring(elem), encoding="utf-8")
+            return result_xml
+
