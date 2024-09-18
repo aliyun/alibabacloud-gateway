@@ -15,6 +15,7 @@ from alibabacloud_tea_xml.client import Client as XMLClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_oss_util.client import Client as OSSUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
+from alibabacloud_gateway_oss_util.client import Client as OSS_UtilClient
 
 
 class Client(SPIClient):
@@ -159,6 +160,8 @@ class Client(SPIClient):
                 request.headers[new_key] = meta_data.get(key)
         config = context.configuration
         region_id = config.region_id
+        if UtilClient.is_unset(region_id) or UtilClient.empty(region_id):
+            region_id = self.get_region_id_from_endpoint(config.endpoint)
         credential = request.credential
         access_key_id = credential.get_access_key_id()
         access_key_secret = credential.get_access_key_secret()
@@ -168,7 +171,7 @@ class Client(SPIClient):
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
-                xml_str = XMLClient.to_xml(req_body_map)
+                xml_str = OSS_UtilClient.to_xml(req_body_map)
                 request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
                 request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
@@ -187,12 +190,27 @@ class Client(SPIClient):
                 }
                 request.stream = OSSUtilClient.inject(request.stream, attribute_map.key)
                 request.headers['content-type'] = 'application/octet-stream'
-        host = self.get_host(config.endpoint_type, bucket_name, config.endpoint)
+        host = self.get_host(config.endpoint_type, bucket_name, config.endpoint, context)
         request.headers = TeaCore.merge({
             'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
+        origin_path = request.pathname
+        origin_query = request.query
+        if not UtilClient.empty(origin_path):
+            path_and_queries = StringClient.split(origin_path, f'?', 2)
+            request.pathname = path_and_queries[0]
+            if UtilClient.equal_number(ArrayClient.size(path_and_queries), 2):
+                path_queries = StringClient.split(path_and_queries[1], '&', None)
+                for sub in path_queries:
+                    item = StringClient.split(sub, '=', None)
+                    query_key = item[0]
+                    query_value = ''
+                    if UtilClient.equal_number(ArrayClient.size(item), 2):
+                        query_value = item[1]
+                    if UtilClient.empty(origin_query.get(query_key)):
+                        request.query[query_key] = query_value
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
         request.headers['authorization'] = self.get_authorization(signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
 
@@ -219,6 +237,8 @@ class Client(SPIClient):
                 request.headers[new_key] = meta_data.get(key)
         config = context.configuration
         region_id = config.region_id
+        if UtilClient.is_unset(region_id) or UtilClient.empty(region_id):
+            region_id = await self.get_region_id_from_endpoint_async(config.endpoint)
         credential = request.credential
         access_key_id = await credential.get_access_key_id_async()
         access_key_secret = await credential.get_access_key_secret_async()
@@ -228,7 +248,7 @@ class Client(SPIClient):
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
-                xml_str = XMLClient.to_xml(req_body_map)
+                xml_str = OSS_UtilClient.to_xml(req_body_map)
                 request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
                 request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
@@ -247,12 +267,27 @@ class Client(SPIClient):
                 }
                 request.stream = OSSUtilClient.inject(request.stream, attribute_map.key)
                 request.headers['content-type'] = 'application/octet-stream'
-        host = await self.get_host_async(config.endpoint_type, bucket_name, config.endpoint)
+        host = await self.get_host_async(config.endpoint_type, bucket_name, config.endpoint, context)
         request.headers = TeaCore.merge({
             'host': host,
             'date': UtilClient.get_date_utcstring(),
             'user-agent': request.user_agent
         }, request.headers)
+        origin_path = request.pathname
+        origin_query = request.query
+        if not UtilClient.empty(origin_path):
+            path_and_queries = StringClient.split(origin_path, f'?', 2)
+            request.pathname = path_and_queries[0]
+            if UtilClient.equal_number(ArrayClient.size(path_and_queries), 2):
+                path_queries = StringClient.split(path_and_queries[1], '&', None)
+                for sub in path_queries:
+                    item = StringClient.split(sub, '=', None)
+                    query_key = item[0]
+                    query_value = ''
+                    if UtilClient.equal_number(ArrayClient.size(item), 2):
+                        query_value = item[1]
+                    if UtilClient.empty(origin_query.get(query_key)):
+                        request.query[query_key] = query_value
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
         request.headers['authorization'] = await self.get_authorization_async(signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
 
@@ -277,7 +312,8 @@ class Client(SPIClient):
                         'requestId': err.get('RequestId'),
                         'ecCode': err.get('EC'),
                         'Recommend': err.get('RecommendDoc'),
-                        'hostId': err.get('HostId')
+                        'hostId': err.get('HostId'),
+                        'AccessDeniedDetail': err.get('AccessDeniedDetail')
                     }
                 })
             else:
@@ -318,14 +354,11 @@ class Client(SPIClient):
                 body_str = UtilClient.read_as_string(response.body)
                 response.deserialized_body = body_str
                 if not UtilClient.empty(body_str):
-                    result = XMLClient.parse_xml(body_str, None)
-                    list = MapClient.key_set(result)
-                    if UtilClient.equal_number(ArrayClient.size(list), 1):
-                        tmp = list[0]
-                        try:
-                            response.deserialized_body = UtilClient.assert_as_map(result.get(tmp))
-                        except Exception as error:
-                            response.deserialized_body = result
+                    result = OSS_UtilClient.parse_xml(body_str, request.action)
+                    try:
+                        response.deserialized_body = UtilClient.assert_as_map(result)
+                    except Exception as error:
+                        response.deserialized_body = result
             elif UtilClient.equal_string(request.body_type, 'binary'):
                 response.deserialized_body = response.body
             elif UtilClient.equal_string(request.body_type, 'byte'):
@@ -363,7 +396,8 @@ class Client(SPIClient):
                         'requestId': err.get('RequestId'),
                         'ecCode': err.get('EC'),
                         'Recommend': err.get('RecommendDoc'),
-                        'hostId': err.get('HostId')
+                        'hostId': err.get('HostId'),
+                        'AccessDeniedDetail': err.get('AccessDeniedDetail')
                     }
                 })
             else:
@@ -404,14 +438,11 @@ class Client(SPIClient):
                 body_str = await UtilClient.read_as_string_async(response.body)
                 response.deserialized_body = body_str
                 if not UtilClient.empty(body_str):
-                    result = XMLClient.parse_xml(body_str, None)
-                    list = MapClient.key_set(result)
-                    if UtilClient.equal_number(ArrayClient.size(list), 1):
-                        tmp = list[0]
-                        try:
-                            response.deserialized_body = UtilClient.assert_as_map(result.get(tmp))
-                        except Exception as error:
-                            response.deserialized_body = result
+                    result = await OSS_UtilClient.parse_xml_async(body_str, request.action)
+                    try:
+                        response.deserialized_body = UtilClient.assert_as_map(result)
+                    except Exception as error:
+                        response.deserialized_body = result
             elif UtilClient.equal_string(request.body_type, 'binary'):
                 response.deserialized_body = response.body
             elif UtilClient.equal_string(request.body_type, 'byte'):
@@ -427,6 +458,26 @@ class Client(SPIClient):
                 response.deserialized_body = await UtilClient.read_as_json_async(response.body)
             else:
                 response.deserialized_body = await UtilClient.read_as_string_async(response.body)
+
+    def get_region_id_from_endpoint(
+        self,
+        endpoint: str,
+    ) -> str:
+        if not UtilClient.empty(endpoint):
+            if StringClient.has_prefix(endpoint, 'oss-') and StringClient.has_suffix(endpoint, '.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 4, idx)
+        return ''
+
+    async def get_region_id_from_endpoint_async(
+        self,
+        endpoint: str,
+    ) -> str:
+        if not UtilClient.empty(endpoint):
+            if StringClient.has_prefix(endpoint, 'oss-') and StringClient.has_suffix(endpoint, '.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 4, idx)
+        return ''
 
     def get_endpoint(
         self,
@@ -471,7 +522,10 @@ class Client(SPIClient):
         endpoint_type: str,
         bucket_name: str,
         endpoint: str,
+        context: spi_models.InterceptorContext,
     ) -> str:
+        if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+            return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'
@@ -487,7 +541,10 @@ class Client(SPIClient):
         endpoint_type: str,
         bucket_name: str,
         endpoint: str,
+        context: spi_models.InterceptorContext,
     ) -> str:
+        if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+            return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'
@@ -599,21 +656,7 @@ class Client(SPIClient):
         object_name = '/'
         query_map = {}
         if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'?', 2)
-            object_name = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                sub_resources = StringClient.split(paths[1], '&', None)
-                for sub in sub_resources:
-                    item = StringClient.split(sub, '=', None)
-                    key = item[0]
-                    key = Encoder.percent_encode(key)
-                    key = StringClient.replace(key, '+', '%20', None)
-                    value = None
-                    if UtilClient.equal_number(ArrayClient.size(item), 2):
-                        value = Encoder.percent_encode(item[1])
-                        value = StringClient.replace(value, '+', '%20', None)
-                    # for go : queryMap[tea.StringValue(key)] = value
-                    query_map[key] = value
+            object_name = pathname
         canonicalized_uri = '/'
         if not UtilClient.empty(bucket_name):
             canonicalized_uri = f'/{bucket_name}{object_name}'
@@ -655,21 +698,7 @@ class Client(SPIClient):
         object_name = '/'
         query_map = {}
         if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'?', 2)
-            object_name = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                sub_resources = StringClient.split(paths[1], '&', None)
-                for sub in sub_resources:
-                    item = StringClient.split(sub, '=', None)
-                    key = item[0]
-                    key = Encoder.percent_encode(key)
-                    key = StringClient.replace(key, '+', '%20', None)
-                    value = None
-                    if UtilClient.equal_number(ArrayClient.size(item), 2):
-                        value = Encoder.percent_encode(item[1])
-                        value = StringClient.replace(value, '+', '%20', None)
-                    # for go : queryMap[tea.StringValue(key)] = value
-                    query_map[key] = value
+            object_name = pathname
         canonicalized_uri = '/'
         if not UtilClient.empty(bucket_name):
             canonicalized_uri = f'/{bucket_name}{object_name}'
@@ -797,45 +826,16 @@ class Client(SPIClient):
         pathname: str,
         query: Dict[str, str],
     ) -> str:
-        sub_resources_map = {}
         canonicalized_resource = pathname
-        if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'?', 2)
-            canonicalized_resource = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                sub_resources = StringClient.split(paths[1], '&', None)
-                for sub in sub_resources:
-                    has_excepts = False
-                    for excepts in self._except_signed_params:
-                        if StringClient.contains(sub, excepts):
-                            has_excepts = True
-                    if not has_excepts:
-                        item = StringClient.split(sub, '=', None)
-                        key = item[0]
-                        value = None
-                        if UtilClient.equal_number(ArrayClient.size(item), 2):
-                            value = item[1]
-                        # for go : subResourcesMap[tea.StringValue(key)] = value
-                        sub_resources_map[key] = value
-        sub_resources_array = MapClient.key_set(sub_resources_map)
-        new_query_list = sub_resources_array
-        if not UtilClient.is_unset(query):
-            query_list = MapClient.key_set(query)
-            new_query_list = ArrayClient.concat(query_list, sub_resources_array)
-        sorted_params = ArrayClient.asc_sort(new_query_list)
+        query_keys = MapClient.key_set(query)
+        sorted_params = ArrayClient.asc_sort(query_keys)
         separator = '?'
         for param_name in sorted_params:
-            if ArrayClient.contains(self._default_signed_params, param_name):
+            if ArrayClient.contains(self._default_signed_params, param_name) or StringClient.has_prefix(param_name, 'x-oss-'):
                 canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                if not UtilClient.is_unset(query) and not UtilClient.is_unset(query.get(param_name)):
+                if not UtilClient.empty(query.get(param_name)):
                     canonicalized_resource = f'{canonicalized_resource}={query.get(param_name)}'
-                elif not UtilClient.is_unset(sub_resources_map.get(param_name)):
-                    canonicalized_resource = f'{canonicalized_resource}={sub_resources_map.get(param_name)}'
-            elif ArrayClient.contains(sub_resources_array, param_name):
-                canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                if not UtilClient.is_unset(sub_resources_map.get(param_name)):
-                    canonicalized_resource = f'{canonicalized_resource}={sub_resources_map.get(param_name)}'
-            separator = '&'
+                separator = '&'
         return canonicalized_resource
 
     async def build_canonicalized_resource_async(
@@ -843,45 +843,16 @@ class Client(SPIClient):
         pathname: str,
         query: Dict[str, str],
     ) -> str:
-        sub_resources_map = {}
         canonicalized_resource = pathname
-        if not UtilClient.empty(pathname):
-            paths = StringClient.split(pathname, f'?', 2)
-            canonicalized_resource = paths[0]
-            if UtilClient.equal_number(ArrayClient.size(paths), 2):
-                sub_resources = StringClient.split(paths[1], '&', None)
-                for sub in sub_resources:
-                    has_excepts = False
-                    for excepts in self._except_signed_params:
-                        if StringClient.contains(sub, excepts):
-                            has_excepts = True
-                    if not has_excepts:
-                        item = StringClient.split(sub, '=', None)
-                        key = item[0]
-                        value = None
-                        if UtilClient.equal_number(ArrayClient.size(item), 2):
-                            value = item[1]
-                        # for go : subResourcesMap[tea.StringValue(key)] = value
-                        sub_resources_map[key] = value
-        sub_resources_array = MapClient.key_set(sub_resources_map)
-        new_query_list = sub_resources_array
-        if not UtilClient.is_unset(query):
-            query_list = MapClient.key_set(query)
-            new_query_list = ArrayClient.concat(query_list, sub_resources_array)
-        sorted_params = ArrayClient.asc_sort(new_query_list)
+        query_keys = MapClient.key_set(query)
+        sorted_params = ArrayClient.asc_sort(query_keys)
         separator = '?'
         for param_name in sorted_params:
-            if ArrayClient.contains(self._default_signed_params, param_name):
+            if ArrayClient.contains(self._default_signed_params, param_name) or StringClient.has_prefix(param_name, 'x-oss-'):
                 canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                if not UtilClient.is_unset(query) and not UtilClient.is_unset(query.get(param_name)):
+                if not UtilClient.empty(query.get(param_name)):
                     canonicalized_resource = f'{canonicalized_resource}={query.get(param_name)}'
-                elif not UtilClient.is_unset(sub_resources_map.get(param_name)):
-                    canonicalized_resource = f'{canonicalized_resource}={sub_resources_map.get(param_name)}'
-            elif ArrayClient.contains(sub_resources_array, param_name):
-                canonicalized_resource = f'{canonicalized_resource}{separator}{param_name}'
-                if not UtilClient.is_unset(sub_resources_map.get(param_name)):
-                    canonicalized_resource = f'{canonicalized_resource}={sub_resources_map.get(param_name)}'
-            separator = '&'
+                separator = '&'
         return canonicalized_resource
 
     def build_canonicalized_headers(

@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_oss.
 
-Created on 11/03/2024
+Created on 18/09/2024
 
 @author: Alibaba Cloud SDK
 """
@@ -37,9 +37,9 @@ AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
-    "alibabacloud_gateway_spi>=0.0.1, <1.0.0",
-    "alibabacloud_credentials>=0.3.1, <1.0.0",
-    "alibabacloud_tea_util>=0.3.11, <1.0.0",
+    "alibabacloud_gateway_spi>=0.0.2, <1.0.0",
+    "alibabacloud_credentials>=0.3.4, <1.0.0",
+    "alibabacloud_tea_util>=0.3.13, <1.0.0",
     "alibabacloud_oss_util>=0.0.5, <1.0.0",
     "alibabacloud_openapi_util>=0.2.1, <1.0.0",
     "alibabacloud_tea_xml>=0.0.2, <1.0.0",
