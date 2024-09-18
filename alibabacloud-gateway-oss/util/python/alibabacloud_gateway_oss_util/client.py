@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# This file is auto-generated, don't edit it. Thanks.
+# -*- coding: utf-8 -*-
 # import alibabacloud_tea_xml.client
 
 from Tea.model import TeaModel
@@ -219,7 +221,7 @@ class Client:
             for dc in [Client.__parse_xml_impl(c, mc) for c in children]:
                 for k, v in dc.items():
                     dd[k].append(v)
-            d = {t.tag: {k: v[0] if len(v) == 1 and not isinstance(mc[k], list) else v for k, v in dd.items()} if k in mc}
+            d = {t.tag: {k: v[0] if len(v) == 1 and not isinstance(mc[k], list) else v for k, v in dd.items() if k in mc}}
 
         if t.attrib:
             d[t.tag].update(('@' + k, v) for k, v in t.attrib.items())
@@ -293,3 +295,4 @@ class Client:
                 Client.__get_xml_factory(elem, dic[k])
                 result_xml += bytes.decode(ElementTree.tostring(elem), encoding="utf-8")
             return result_xml
+
