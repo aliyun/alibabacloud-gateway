@@ -83,6 +83,8 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'xml')) {
       var reqBodyMap = Util.assertAsMap(request.body);
+      // for python:
+      // xml_str = OSS_UtilClient.to_xml(req_body_map)
       var xmlStr = XML.toXML(reqBodyMap);
       request.stream = xmlStr;
       request.headers.content-type = 'application/xml';
