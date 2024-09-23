@@ -8,7 +8,8 @@ package client
 
 import (
 	"bytes"
-	"compress/gzip"
+	"compress/zlib"
+
 	"fmt"
 	"io"
 	"strconv"
@@ -50,7 +51,7 @@ func decompressGzip(stream io.Reader, bodyRawSize *string) (_result io.Reader, _
 	}
 	if rawSize != 0 {
 		body, _ := util.ReadAsBytes(stream)
-		reader, err := gzip.NewReader(bytes.NewReader(body))
+		reader, err := zlib.NewReader(bytes.NewReader(body))
 		if err != nil {
 			return nil, err
 		}
