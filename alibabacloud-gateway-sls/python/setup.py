@@ -46,7 +46,7 @@ REQUIRES = [
     "alibabacloud_darabonba_array>=0.1.0, <1.0.0",
     "alibabacloud_darabonba_encode_util>=0.0.2, <1.0.0",
     "alibabacloud_darabonba_signature_util>=0.0.4, <1.0.0",
-    "alibabacloud_gateway_sls_util>=0.0.1, <1.0.0"
+    "alibabacloud_gateway_sls_util>=0.0.3, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''
