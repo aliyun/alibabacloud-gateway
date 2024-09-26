@@ -13,13 +13,13 @@
     "Credential": "alibabacloud:Credential:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-sls-util:^0.0.1",
+    "ts": "@alicloud/gateway-sls-util:^0.0.2",
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client:v0.0.2",
     "java": "com.aliyun:alibabacloud-gateway-sls-util:0.0.1",
     "python": "alibabacloud_gateway_sls_util:0.0.3",
     "python2": "alibabacloud_gateway_sls_util_py2:0.0.1",
-    "csharp": "AlibabaCloud.GatewaySls_Util:0.0.1",
-    "php": "alibabacloud/gateway-sls-util:^0.0.1"
+    "csharp": "AlibabaCloud.GatewaySls_Util:0.0.2",
+    "php": "alibabacloud/gateway-sls-util:^0.0.2"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewaySls_Util",
