@@ -46,20 +46,21 @@ export default class Client extends SPI {
     let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
     let contentHash = "";
     if (!Util.isUnset(request.body)) {
-      if (String.equals(request.reqBodyType, "protobuf")) {
-        // var bodyMap = Util.assertAsMap(request.body);
-        // 缺少body的Content-MD5计算，以及protobuf处理
-        request.headers["content-type"] = "application/x-protobuf";
-      } else if (String.equals(request.reqBodyType, "json")) {
+      if (String.equals(request.reqBodyType, "json")) {
         let bodyStr = Util.toJSONString(request.body);
-        contentHash = await this.MakeContentHash(bodyStr, signatureVersion);
+        contentHash = await this.MakeContentHash(Util.toBytes(bodyStr), signatureVersion);
         request.stream = new $tea.BytesReadable(bodyStr);
         request.headers["content-type"] = "application/json";
       } else if (String.equals(request.reqBodyType, "formData")) {
         let str = Util.toJSONString(request.body);
-        contentHash = await this.MakeContentHash(str, signatureVersion);
+        contentHash = await this.MakeContentHash(Util.toBytes(str), signatureVersion);
         request.stream = new $tea.BytesReadable(str);
         request.headers["content-type"] = "application/json";
+      } else if (String.equals(request.reqBodyType, "binary")) {
+        // content-type: application/octet-stream
+        let bodyBytes = Util.assertAsBytes(request.body);
+        contentHash = await this.MakeContentHash(bodyBytes, signatureVersion);
+        request.stream = new $tea.BytesReadable(bodyBytes);
       }
 
     }
@@ -77,7 +78,7 @@ export default class Client extends SPI {
     // move param in path to query
     if (String.equals(signatureVersion, "v4")) {
       if (Util.empty(contentHash)) {
-        contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
       }
 
       let date = await this.getDateISO8601();
@@ -96,16 +97,17 @@ export default class Client extends SPI {
     request.headers["authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
   }
 
-  async MakeContentHash(content: string, signatureVersion: string): Promise<string> {
+  async MakeContentHash(content: Buffer, signatureVersion: string): Promise<string> {
     if (String.equals(signatureVersion, "v4")) {
-      if (Util.empty(content)) {
+      // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+      if (Util.isUnset(content)) {
         return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
       }
 
-      return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(content), "SLS4-HMAC-SHA256")));
+      return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(content, "SLS4-HMAC-SHA256")));
     }
 
-    return String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5Sign(content)));
+    return String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5SignForBytes(content)));
   }
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {

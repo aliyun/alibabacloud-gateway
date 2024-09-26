@@ -67,13 +67,9 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v1"))
 	contentHash := tea.String("")
 	if !tea.BoolValue(util.IsUnset(request.Body)) {
-		if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("protobuf"))) {
-			// var bodyMap = Util.assertAsMap(request.body);
-			// 缺少body的Content-MD5计算，以及protobuf处理
-			request.Headers["content-type"] = tea.String("application/x-protobuf")
-		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) {
+		if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) {
 			bodyStr := util.ToJSONString(request.Body)
-			contentHash, _err = client.MakeContentHash(bodyStr, signatureVersion)
+			contentHash, _err = client.MakeContentHash(util.ToBytes(bodyStr), signatureVersion)
 			if _err != nil {
 				return _err
 			}
@@ -82,13 +78,26 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			request.Headers["content-type"] = tea.String("application/json")
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
 			str := util.ToJSONString(request.Body)
-			contentHash, _err = client.MakeContentHash(str, signatureVersion)
+			contentHash, _err = client.MakeContentHash(util.ToBytes(str), signatureVersion)
 			if _err != nil {
 				return _err
 			}
 
 			request.Stream = tea.ToReader(str)
 			request.Headers["content-type"] = tea.String("application/json")
+		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("binary"))) {
+			// content-type: application/octet-stream
+			bodyBytes, _err := util.AssertAsBytes(request.Body)
+			if _err != nil {
+				return _err
+			}
+
+			contentHash, _err = client.MakeContentHash(bodyBytes, signatureVersion)
+			if _err != nil {
+				return _err
+			}
+
+			request.Stream = tea.ToReader(bodyBytes)
 		}
 
 	}
@@ -112,7 +121,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	// move param in path to query
 	if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
 		if tea.BoolValue(util.Empty(contentHash)) {
-			contentHash = tea.String("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+			contentHash = tea.String("e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855")
 		}
 
 		date, _err := client.GetDateISO8601()
@@ -144,19 +153,20 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	return _err
 }
 
-func (client *Client) MakeContentHash(content *string, signatureVersion *string) (_result *string, _err error) {
+func (client *Client) MakeContentHash(content []byte, signatureVersion *string) (_result *string, _err error) {
 	if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
-		if tea.BoolValue(util.Empty(content)) {
+		// TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+		if tea.BoolValue(util.IsUnset(content)) {
 			_result = tea.String("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 			return _result, _err
 		}
 
-		_body := string_.ToLower(encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(content), tea.String("SLS4-HMAC-SHA256"))))
+		_body := string_.ToLower(encodeutil.HexEncode(encodeutil.Hash(content, tea.String("SLS4-HMAC-SHA256"))))
 		_result = _body
 		return _result, _err
 	}
 
-	_body := string_.ToUpper(encodeutil.HexEncode(signatureutil.MD5Sign(content)))
+	_body := string_.ToUpper(encodeutil.HexEncode(signatureutil.MD5SignForBytes(content)))
 	_result = _body
 	return _result, _err
 }

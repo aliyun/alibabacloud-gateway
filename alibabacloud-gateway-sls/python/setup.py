@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_sls.
 
-Created on 31/07/2024
+Created on 26/09/2024
 
 @author: Alibaba Cloud SDK
 """
@@ -38,8 +38,8 @@ URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
     "alibabacloud_gateway_spi>=0.0.2, <1.0.0",
-    "alibabacloud_credentials>=0.3.5, <1.0.0",
-    "alibabacloud_tea_util>=0.3.12, <1.0.0",
+    "alibabacloud_credentials>=0.3.4, <1.0.0",
+    "alibabacloud_tea_util>=0.3.13, <1.0.0",
     "alibabacloud_openapi_util>=0.2.1, <1.0.0",
     "alibabacloud_darabonba_string>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map>=0.0.1, <1.0.0",

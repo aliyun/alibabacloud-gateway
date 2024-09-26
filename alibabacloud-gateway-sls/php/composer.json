@@ -13,7 +13,7 @@
     "php": ">5.5",
     "alibabacloud/gateway-spi": "^1",
     "alibabacloud/credentials": "^1.1",
-    "alibabacloud/tea-utils": "^0.2.19",
+    "alibabacloud/tea-utils": "^0.2.21",
     "alibabacloud/openapi-util": "^0.1.10|^0.2.1",
     "alibabacloud/darabonba-string": "^0.1.15",
     "alibabacloud/darabonba-map": "^0.0.1",
