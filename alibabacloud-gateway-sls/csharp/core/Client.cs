@@ -55,25 +55,26 @@ namespace AlibabaCloud.GatewaySls
             string contentHash = "";
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
             {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "protobuf"))
-                {
-                    // var bodyMap = Util.assertAsMap(request.body);
-                    // 缺少body的Content-MD5计算，以及protobuf处理
-                    request.Headers["content-type"] = "application/x-protobuf";
-                }
-                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
                 {
                     string bodyStr = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = MakeContentHash(bodyStr, signatureVersion);
+                    contentHash = MakeContentHash(AlibabaCloud.TeaUtil.Common.ToBytes(bodyStr), signatureVersion);
                     request.Stream = TeaCore.BytesReadable(bodyStr);
                     request.Headers["content-type"] = "application/json";
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData"))
                 {
                     string str = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = MakeContentHash(str, signatureVersion);
+                    contentHash = MakeContentHash(AlibabaCloud.TeaUtil.Common.ToBytes(str), signatureVersion);
                     request.Stream = TeaCore.BytesReadable(str);
                     request.Headers["content-type"] = "application/json";
+                }
+                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "binary"))
+                {
+                    // content-type: application/octet-stream
+                    byte[] bodyBytes = AlibabaCloud.TeaUtil.Common.AssertAsBytes(request.Body);
+                    contentHash = MakeContentHash(bodyBytes, signatureVersion);
+                    request.Stream = TeaCore.BytesReadable(bodyBytes);
                 }
             }
             string host = GetHost(config.Network, project, config.Endpoint);
@@ -95,7 +96,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 if (AlibabaCloud.TeaUtil.Common.Empty(contentHash))
                 {
-                    contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                    contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
                 }
                 string date = GetDateISO8601();
                 request.Headers["x-log-date"] = date;
@@ -135,25 +136,26 @@ namespace AlibabaCloud.GatewaySls
             string contentHash = "";
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
             {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "protobuf"))
-                {
-                    // var bodyMap = Util.assertAsMap(request.body);
-                    // 缺少body的Content-MD5计算，以及protobuf处理
-                    request.Headers["content-type"] = "application/x-protobuf";
-                }
-                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
                 {
                     string bodyStr = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = await MakeContentHashAsync(bodyStr, signatureVersion);
+                    contentHash = await MakeContentHashAsync(AlibabaCloud.TeaUtil.Common.ToBytes(bodyStr), signatureVersion);
                     request.Stream = TeaCore.BytesReadable(bodyStr);
                     request.Headers["content-type"] = "application/json";
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData"))
                 {
                     string str = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = await MakeContentHashAsync(str, signatureVersion);
+                    contentHash = await MakeContentHashAsync(AlibabaCloud.TeaUtil.Common.ToBytes(str), signatureVersion);
                     request.Stream = TeaCore.BytesReadable(str);
                     request.Headers["content-type"] = "application/json";
+                }
+                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "binary"))
+                {
+                    // content-type: application/octet-stream
+                    byte[] bodyBytes = AlibabaCloud.TeaUtil.Common.AssertAsBytes(request.Body);
+                    contentHash = await MakeContentHashAsync(bodyBytes, signatureVersion);
+                    request.Stream = TeaCore.BytesReadable(bodyBytes);
                 }
             }
             string host = await GetHostAsync(config.Network, project, config.Endpoint);
@@ -175,7 +177,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 if (AlibabaCloud.TeaUtil.Common.Empty(contentHash))
                 {
-                    contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                    contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
                 }
                 string date = await GetDateISO8601Async();
                 request.Headers["x-log-date"] = date;
@@ -192,30 +194,32 @@ namespace AlibabaCloud.GatewaySls
             request.Headers["authorization"] = await GetAuthorizationAsync(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
         }
 
-        public string MakeContentHash(string content, string signatureVersion)
+        public string MakeContentHash(byte[] content, string signatureVersion)
         {
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
             {
-                if (AlibabaCloud.TeaUtil.Common.Empty(content))
+                // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+                if (AlibabaCloud.TeaUtil.Common.IsUnset(content))
                 {
                     return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 }
-                return AlibabaCloud.DarabonbaString.StringUtil.ToLower(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(content), "SLS4-HMAC-SHA256")));
+                return AlibabaCloud.DarabonbaString.StringUtil.ToLower(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(content, "SLS4-HMAC-SHA256")));
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.ToUpper(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaSignatureUtil.Signer.MD5Sign(content)));
+            return AlibabaCloud.DarabonbaString.StringUtil.ToUpper(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaSignatureUtil.Signer.MD5SignForBytes(content)));
         }
 
-        public async Task<string> MakeContentHashAsync(string content, string signatureVersion)
+        public async Task<string> MakeContentHashAsync(byte[] content, string signatureVersion)
         {
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
             {
-                if (AlibabaCloud.TeaUtil.Common.Empty(content))
+                // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+                if (AlibabaCloud.TeaUtil.Common.IsUnset(content))
                 {
                     return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 }
-                return AlibabaCloud.DarabonbaString.StringUtil.ToLower(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(content), "SLS4-HMAC-SHA256")));
+                return AlibabaCloud.DarabonbaString.StringUtil.ToLower(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(content, "SLS4-HMAC-SHA256")));
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.ToUpper(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaSignatureUtil.Signer.MD5Sign(content)));
+            return AlibabaCloud.DarabonbaString.StringUtil.ToUpper(AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaSignatureUtil.Signer.MD5SignForBytes(content)));
         }
 
         public void ModifyResponse(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -246,7 +250,7 @@ namespace AlibabaCloud.GatewaySls
                 Stream uncompressedData = response.Body;
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(bodyrawSize) && !AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
                 {
-                    uncompressedData = AlibabaCloud.GatewaySls_Util.Client.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
+                    uncompressedData = AlibabaCloud.GatewaySls_Util.Common.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
                 }
                 if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {
@@ -306,7 +310,7 @@ namespace AlibabaCloud.GatewaySls
                 Stream uncompressedData = response.Body;
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(bodyrawSize) && !AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
                 {
-                    uncompressedData = AlibabaCloud.GatewaySls_Util.Client.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
+                    uncompressedData = AlibabaCloud.GatewaySls_Util.Common.ReadAndUncompressBlock(response.Body, compressType, bodyrawSize);
                 }
                 if (AlibabaCloud.TeaUtil.Common.EqualString(request.BodyType, "binary"))
                 {

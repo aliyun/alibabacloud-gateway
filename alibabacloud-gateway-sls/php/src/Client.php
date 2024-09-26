@@ -47,31 +47,33 @@ class Client extends DarabonbaGatewaySpiClient {
         $project = @$hostMap["project"];
         $config = $context->configuration;
         $credential = $request->credential;
-        $accessKeyId = $credential->getAccessKeyId();
-        $accessKeySecret = $credential->getAccessKeySecret();
-        $securityToken = $credential->getSecurityToken();
+        $credentialModel = $credential->getCredential();
+        $accessKeyId = $credentialModel->accessKeyId;
+        $accessKeySecret = $credentialModel->accessKeySecret;
+        $securityToken = $credentialModel->securityToken;
         if (!Utils::empty_($securityToken)) {
             $request->headers["x-acs-security-token"] = $securityToken;
         }
         $signatureVersion = Utils::defaultString($request->signatureVersion, "v1");
         $contentHash = "";
         if (!Utils::isUnset($request->body)) {
-            if (StringUtil::equals($request->reqBodyType, "protobuf")) {
-                // var bodyMap = Util.assertAsMap(request.body);
-                // 缺少body的Content-MD5计算，以及protobuf处理
-                $request->headers["content-type"] = "application/x-protobuf";
-            }
-            else if (StringUtil::equals($request->reqBodyType, "json")) {
+            if (StringUtil::equals($request->reqBodyType, "json")) {
                 $bodyStr = Utils::toJSONString($request->body);
-                $contentHash = $this->MakeContentHash($bodyStr, $signatureVersion);
+                $contentHash = $this->MakeContentHash(Utils::toBytes($bodyStr), $signatureVersion);
                 $request->stream = $bodyStr;
                 $request->headers["content-type"] = "application/json";
             }
             else if (StringUtil::equals($request->reqBodyType, "formData")) {
                 $str = Utils::toJSONString($request->body);
-                $contentHash = $this->MakeContentHash($str, $signatureVersion);
+                $contentHash = $this->MakeContentHash(Utils::toBytes($str), $signatureVersion);
                 $request->stream = $str;
                 $request->headers["content-type"] = "application/json";
+            }
+            else if (StringUtil::equals($request->reqBodyType, "binary")) {
+                // content-type: application/octet-stream
+                $bodyBytes = Utils::assertAsBytes($request->body);
+                $contentHash = $this->MakeContentHash($bodyBytes, $signatureVersion);
+                $request->stream = $bodyBytes;
             }
         }
         $host = $this->getHost($config->network, $project, $config->endpoint);
@@ -86,7 +88,7 @@ class Client extends DarabonbaGatewaySpiClient {
         // move param in path to query
         if (StringUtil::equals($signatureVersion, "v4")) {
             if (Utils::empty_($contentHash)) {
-                $contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                $contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
             }
             $date = $this->getDateISO8601();
             $request->headers["x-log-date"] = $date;
@@ -103,18 +105,19 @@ class Client extends DarabonbaGatewaySpiClient {
     }
 
     /**
-     * @param string $content
+     * @param int[] $content
      * @param string $signatureVersion
      * @return string
      */
     public function MakeContentHash($content, $signatureVersion){
         if (StringUtil::equals($signatureVersion, "v4")) {
-            if (Utils::empty_($content)) {
+            // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+            if (Utils::isUnset($content)) {
                 return '';
             }
-            return StringUtil::toLower(EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($content), "SLS4-HMAC-SHA256")));
+            return StringUtil::toLower(EncodeUtil::hexEncode(EncodeUtil::hash($content, "SLS4-HMAC-SHA256")));
         }
-        return StringUtil::toUpper(EncodeUtil::hexEncode(SignatureUtil::MD5Sign($content)));
+        return StringUtil::toUpper(EncodeUtil::hexEncode(SignatureUtil::MD5SignForBytes($content)));
     }
 
     /**

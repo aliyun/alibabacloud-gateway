@@ -57,20 +57,21 @@ class Client(SPIClient):
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
         content_hash = ''
         if not UtilClient.is_unset(request.body):
-            if StringClient.equals(request.req_body_type, 'protobuf'):
-                # var bodyMap = Util.assertAsMap(request.body);
-                # 缺少body的Content-MD5计算，以及protobuf处理
-                request.headers['content-type'] = 'application/x-protobuf'
-            elif StringClient.equals(request.req_body_type, 'json'):
+            if StringClient.equals(request.req_body_type, 'json'):
                 body_str = UtilClient.to_jsonstring(request.body)
-                content_hash = self.make_content_hash(body_str, signature_version)
+                content_hash = self.make_content_hash(UtilClient.to_bytes(body_str), signature_version)
                 request.stream = body_str
                 request.headers['content-type'] = 'application/json'
             elif StringClient.equals(request.req_body_type, 'formData'):
                 str = UtilClient.to_jsonstring(request.body)
-                content_hash = self.make_content_hash(str, signature_version)
+                content_hash = self.make_content_hash(UtilClient.to_bytes(str), signature_version)
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
+            elif StringClient.equals(request.req_body_type, 'binary'):
+                # content-type: application/octet-stream
+                body_bytes = UtilClient.assert_as_bytes(request.body)
+                content_hash = self.make_content_hash(body_bytes, signature_version)
+                request.stream = body_bytes
         host = self.get_host(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
@@ -83,7 +84,7 @@ class Client(SPIClient):
         # move param in path to query
         if StringClient.equals(signature_version, 'v4'):
             if UtilClient.empty(content_hash):
-                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855'
             date = self.get_date_iso8601()
             request.headers['x-log-date'] = date
             request.headers['x-log-content-sha256'] = content_hash
@@ -116,20 +117,21 @@ class Client(SPIClient):
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
         content_hash = ''
         if not UtilClient.is_unset(request.body):
-            if StringClient.equals(request.req_body_type, 'protobuf'):
-                # var bodyMap = Util.assertAsMap(request.body);
-                # 缺少body的Content-MD5计算，以及protobuf处理
-                request.headers['content-type'] = 'application/x-protobuf'
-            elif StringClient.equals(request.req_body_type, 'json'):
+            if StringClient.equals(request.req_body_type, 'json'):
                 body_str = UtilClient.to_jsonstring(request.body)
-                content_hash = await self.make_content_hash_async(body_str, signature_version)
+                content_hash = await self.make_content_hash_async(UtilClient.to_bytes(body_str), signature_version)
                 request.stream = body_str
                 request.headers['content-type'] = 'application/json'
             elif StringClient.equals(request.req_body_type, 'formData'):
                 str = UtilClient.to_jsonstring(request.body)
-                content_hash = await self.make_content_hash_async(str, signature_version)
+                content_hash = await self.make_content_hash_async(UtilClient.to_bytes(str), signature_version)
                 request.stream = str
                 request.headers['content-type'] = 'application/json'
+            elif StringClient.equals(request.req_body_type, 'binary'):
+                # content-type: application/octet-stream
+                body_bytes = UtilClient.assert_as_bytes(request.body)
+                content_hash = await self.make_content_hash_async(body_bytes, signature_version)
+                request.stream = body_bytes
         host = await self.get_host_async(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
@@ -142,7 +144,7 @@ class Client(SPIClient):
         # move param in path to query
         if StringClient.equals(signature_version, 'v4'):
             if UtilClient.empty(content_hash):
-                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855'
             date = await self.get_date_iso8601_async()
             request.headers['x-log-date'] = date
             request.headers['x-log-content-sha256'] = content_hash
@@ -156,25 +158,27 @@ class Client(SPIClient):
 
     def make_content_hash(
         self,
-        content: str,
+        content: bytes,
         signature_version: str,
     ) -> str:
         if StringClient.equals(signature_version, 'v4'):
-            if UtilClient.empty(content):
+            # TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+            if UtilClient.is_unset(content):
                 return ''
-            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(content), 'SLS4-HMAC-SHA256')))
-        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(content)))
+            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(content, 'SLS4-HMAC-SHA256')))
+        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign_for_bytes(content)))
 
     async def make_content_hash_async(
         self,
-        content: str,
+        content: bytes,
         signature_version: str,
     ) -> str:
         if StringClient.equals(signature_version, 'v4'):
-            if UtilClient.empty(content):
+            # TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+            if UtilClient.is_unset(content):
                 return ''
-            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(content), 'SLS4-HMAC-SHA256')))
-        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign(content)))
+            return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(content, 'SLS4-HMAC-SHA256')))
+        return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign_for_bytes(content)))
 
     def modify_response(
         self,

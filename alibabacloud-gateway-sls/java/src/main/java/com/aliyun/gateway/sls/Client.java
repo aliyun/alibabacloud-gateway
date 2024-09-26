@@ -36,20 +36,21 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
         String contentHash = "";
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
-            if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "protobuf")) {
-                // var bodyMap = Util.assertAsMap(request.body);
-                // 缺少body的Content-MD5计算，以及protobuf处理
-                request.headers.put("content-type", "application/x-protobuf");
-            } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
+            if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
                 String bodyStr = com.aliyun.teautil.Common.toJSONString(request.body);
-                contentHash = this.MakeContentHash(bodyStr, signatureVersion);
+                contentHash = this.MakeContentHash(com.aliyun.teautil.Common.toBytes(bodyStr), signatureVersion);
                 request.stream = Tea.toReadable(bodyStr);
                 request.headers.put("content-type", "application/json");
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData")) {
                 String str = com.aliyun.teautil.Common.toJSONString(request.body);
-                contentHash = this.MakeContentHash(str, signatureVersion);
+                contentHash = this.MakeContentHash(com.aliyun.teautil.Common.toBytes(str), signatureVersion);
                 request.stream = Tea.toReadable(str);
                 request.headers.put("content-type", "application/json");
+            } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "binary")) {
+                // content-type: application/octet-stream
+                byte[] bodyBytes = com.aliyun.teautil.Common.assertAsBytes(request.body);
+                contentHash = this.MakeContentHash(bodyBytes, signatureVersion);
+                request.stream = Tea.toReadable(bodyBytes);
             }
 
         }
@@ -69,7 +70,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // move param in path to query
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
             if (com.aliyun.teautil.Common.empty(contentHash)) {
-                contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
             }
 
             String date = this.getDateISO8601();
@@ -88,16 +89,17 @@ public class Client extends com.aliyun.gateway.spi.Client {
         request.headers.put("authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
     }
 
-    public String MakeContentHash(String content, String signatureVersion) throws Exception {
+    public String MakeContentHash(byte[] content, String signatureVersion) throws Exception {
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
-            if (com.aliyun.teautil.Common.empty(content)) {
+            // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
+            if (com.aliyun.teautil.Common.isUnset(content)) {
                 return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
             }
 
-            return com.aliyun.darabonbastring.Client.toLower(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(content), "SLS4-HMAC-SHA256")));
+            return com.aliyun.darabonbastring.Client.toLower(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(content, "SLS4-HMAC-SHA256")));
         }
 
-        return com.aliyun.darabonbastring.Client.toUpper(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.signature.Signer.MD5Sign(content)));
+        return com.aliyun.darabonbastring.Client.toUpper(com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.signature.Signer.MD5SignForBytes(content)));
     }
 
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {

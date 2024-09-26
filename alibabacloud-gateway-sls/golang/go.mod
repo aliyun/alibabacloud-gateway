@@ -12,6 +12,5 @@ require (
 	github.com/alibabacloud-go/darabonba-string v1.0.2
 	github.com/alibabacloud-go/openapi-util v0.1.0
 	github.com/alibabacloud-go/tea v1.2.3-0.20240605082020-e6e537a31150
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.5
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.6
 )
