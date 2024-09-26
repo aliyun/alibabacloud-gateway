@@ -70,7 +70,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // move param in path to query
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
             if (com.aliyun.teautil.Common.empty(contentHash)) {
-                contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
+                contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
             }
 
             String date = this.getDateISO8601();

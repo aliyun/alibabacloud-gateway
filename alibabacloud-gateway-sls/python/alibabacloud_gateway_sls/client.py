@@ -84,7 +84,7 @@ class Client(SPIClient):
         # move param in path to query
         if StringClient.equals(signature_version, 'v4'):
             if UtilClient.empty(content_hash):
-                content_hash = 'e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855'
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
             date = self.get_date_iso8601()
             request.headers['x-log-date'] = date
             request.headers['x-log-content-sha256'] = content_hash
@@ -144,7 +144,7 @@ class Client(SPIClient):
         # move param in path to query
         if StringClient.equals(signature_version, 'v4'):
             if UtilClient.empty(content_hash):
-                content_hash = 'e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855'
+                content_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
             date = await self.get_date_iso8601_async()
             request.headers['x-log-date'] = date
             request.headers['x-log-content-sha256'] = content_hash

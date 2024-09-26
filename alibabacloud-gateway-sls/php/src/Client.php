@@ -88,7 +88,7 @@ class Client extends DarabonbaGatewaySpiClient {
         // move param in path to query
         if (StringUtil::equals($signatureVersion, "v4")) {
             if (Utils::empty_($contentHash)) {
-                $contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
+                $contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
             }
             $date = $this->getDateISO8601();
             $request->headers["x-log-date"] = $date;

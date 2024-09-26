@@ -121,7 +121,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	// move param in path to query
 	if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
 		if tea.BoolValue(util.Empty(contentHash)) {
-			contentHash = tea.String("e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855")
+			contentHash = tea.String("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 		}
 
 		date, _err := client.GetDateISO8601()
