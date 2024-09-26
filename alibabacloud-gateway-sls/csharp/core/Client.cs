@@ -96,7 +96,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 if (AlibabaCloud.TeaUtil.Common.Empty(contentHash))
                 {
-                    contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
+                    contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 }
                 string date = GetDateISO8601();
                 request.Headers["x-log-date"] = date;
@@ -177,7 +177,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 if (AlibabaCloud.TeaUtil.Common.Empty(contentHash))
                 {
-                    contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
+                    contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 }
                 string date = await GetDateISO8601Async();
                 request.Headers["x-log-date"] = date;

@@ -71,7 +71,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 
   if (String.equals(signatureVersion, 'v4')) {
     if (Util.empty(contentHash)) {
-      contentHash = 'e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855';
+      contentHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
     }
     var date = getDateISO8601();
     request.headers['x-log-date'] = date;

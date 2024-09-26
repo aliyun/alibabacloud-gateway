@@ -78,7 +78,7 @@ export default class Client extends SPI {
     // move param in path to query
     if (String.equals(signatureVersion, "v4")) {
       if (Util.empty(contentHash)) {
-        contentHash = "e3b0c44298fc1c149afbf4c8996fb9242a7e41e4649b934ca495991b7852b855";
+        contentHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
       }
 
       let date = await this.getDateISO8601();
