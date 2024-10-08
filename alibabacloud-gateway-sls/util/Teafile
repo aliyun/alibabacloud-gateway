@@ -23,6 +23,7 @@
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewaySls_Util",
+    "className": "Client",
     "packageInfo": {
       "description": "Alibaba Cloud SLS Util Library for .NET",
       "company": "Alibaba Cloud",
