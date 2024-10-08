@@ -209,6 +209,8 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
       response.deserializedBody = bodyStr;
       if (!Util.empty(bodyStr)) {
         var result : any = OSS_Util.parseXml(bodyStr, request.action);
+        // for no util language
+        // var result : any = XML.parseXml(bodyStr, null);
         try {
           response.deserializedBody = Util.assertAsMap(result);
         } catch (error) {

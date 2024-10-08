@@ -11,6 +11,7 @@ import Array from '@alicloud/darabonba-array';
 import EncodeUtil from '@alicloud/darabonba-encode-util';
 import SignatureUtil from '@alicloud/darabonba-signature-util';
 import Time from '@darabonba/time';
+import { Readable } from 'stream';
 import * as $tea from '@alicloud/tea-typescript';
 
 
@@ -151,6 +152,10 @@ export default class Client extends SPI {
 
     let config = context.configuration;
     let regionId = config.regionId;
+    if (Util.isUnset(regionId) || Util.empty(regionId)) {
+      regionId = await this.getRegionIdFromEndpoint(config.endpoint);
+    }
+
     let credential : Credential = request.credential;
     let accessKeyId = await credential.getAccessKeyId();
     let accessKeySecret = await credential.getAccessKeySecret();
@@ -162,6 +167,8 @@ export default class Client extends SPI {
     if (!Util.isUnset(request.body)) {
       if (String.equals(request.reqBodyType, "xml")) {
         let reqBodyMap = Util.assertAsMap(request.body);
+        // for python:
+        // xml_str = OSS_UtilClient.to_xml(req_body_map)
         let xmlStr = XML.toXML(reqBodyMap);
         request.stream = new $tea.BytesReadable(xmlStr);
         request.headers["content-type"] = "application/xml";
@@ -185,13 +192,38 @@ export default class Client extends SPI {
 
     }
 
-    let host = await this.getHost(config.endpointType, bucketName, config.endpoint);
+    let host = await this.getHost(config.endpointType, bucketName, config.endpoint, context);
     request.headers = {
       host: host,
       date: Util.getDateUTCString(),
       'user-agent': request.userAgent,
       ...request.headers,
     };
+    let originPath = request.pathname;
+    let originQuery = request.query;
+    if (!Util.empty(originPath)) {
+      let pathAndQueries : string[] = String.split(originPath, `?`, 2);
+      request.pathname = pathAndQueries[0];
+      if (Util.equalNumber(Array.size(pathAndQueries), 2)) {
+        let pathQueries : string[] = String.split(pathAndQueries[1], "&", null);
+
+        for (let sub of pathQueries) {
+          let item : string[] = String.split(sub, "=", null);
+          let queryKey : string = item[0];
+          let queryValue : string = "";
+          if (Util.equalNumber(Array.size(item), 2)) {
+            queryValue = item[1];
+          }
+
+          if (Util.empty(originQuery[queryKey])) {
+            request.query[queryKey] = queryValue;
+          }
+
+        }
+      }
+
+    }
+
     let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
     request.headers["authorization"] = await this.getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
   }
@@ -214,6 +246,7 @@ export default class Client extends SPI {
             ecCode: err["EC"],
             Recommend: err["RecommendDoc"],
             hostId: err["HostId"],
+            AccessDeniedDetail: err["AccessDeniedDetail"],
           },
         });
       } else {
@@ -264,17 +297,13 @@ export default class Client extends SPI {
         bodyStr = await Util.readAsString(response.body);
         response.deserializedBody = bodyStr;
         if (!Util.empty(bodyStr)) {
-          let result : {[key: string ]: any} = XML.parseXml(bodyStr, null);
-          let list : string[] = Map.keySet(result);
-          if (Util.equalNumber(Array.size(list), 1)) {
-            let tmp = list[0];
-            try {
-              response.deserializedBody = Util.assertAsMap(result[tmp]);
-            } catch (error) {
-              response.deserializedBody = result;
-            }            
-          }
-
+          // var result : any = OSS_Util.parseXml(bodyStr, request.action);
+          let result : any = XML.parseXml(bodyStr, null);
+          try {
+            response.deserializedBody = Util.assertAsMap(result);
+          } catch (error) {
+            response.deserializedBody = result;
+          }          
         }
 
       } else if (Util.equalString(request.bodyType, "binary")) {
@@ -296,6 +325,18 @@ export default class Client extends SPI {
 
     }
 
+  }
+
+  async getRegionIdFromEndpoint(endpoint: string): Promise<string> {
+    if (!Util.empty(endpoint)) {
+      if (String.hasPrefix(endpoint, "oss-") && String.hasSuffix(endpoint, ".aliyuncs.com")) {
+        let idx = String.index(endpoint, ".aliyuncs.com");
+        return String.subString(endpoint, 4, idx);
+      }
+
+    }
+
+    return "cn-hangzhou";
   }
 
   async getEndpoint(regionId: string, network: string, endpoint: string): Promise<string> {
@@ -321,7 +362,11 @@ export default class Client extends SPI {
     return `oss-${regionId}.aliyuncs.com`;
   }
 
-  async getHost(endpointType: string, bucketName: string, endpoint: string): Promise<string> {
+  async getHost(endpointType: string, bucketName: string, endpoint: string, context: $SPI.InterceptorContext): Promise<string> {
+    if (String.contains(endpoint, ".mgw.aliyuncs.com") && !Util.isUnset(context.request.hostMap["userid"])) {
+      return `${context.request.hostMap["userid"]}.${endpoint}`;
+    }
+
     if (Util.empty(bucketName)) {
       return endpoint;
     }
@@ -379,27 +424,7 @@ export default class Client extends SPI {
     let objectName : string = "/";
     let queryMap : {[key: string ]: string} = { };
     if (!Util.empty(pathname)) {
-      let paths : string[] = String.split(pathname, `?`, 2);
-      objectName = paths[0];
-      if (Util.equalNumber(Array.size(paths), 2)) {
-        let subResources : string[] = String.split(paths[1], "&", null);
-
-        for (let sub of subResources) {
-          let item : string[] = String.split(sub, "=", null);
-          let key : string = item[0];
-          key = EncodeUtil.percentEncode(key);
-          key = String.replace(key, "+", "%20", null);
-          let value : string = null;
-          if (Util.equalNumber(Array.size(item), 2)) {
-            value = EncodeUtil.percentEncode(item[1]);
-            value = String.replace(value, "+", "%20", null);
-          }
-
-          // for go : queryMap[tea.StringValue(key)] = value
-          queryMap[key] = value;
-        }
-      }
-
+      objectName = pathname;
     }
 
     let canonicalizedUri : string = "/";
@@ -485,68 +510,21 @@ export default class Client extends SPI {
   }
 
   async buildCanonicalizedResource(pathname: string, query: {[key: string ]: string}): Promise<string> {
-    let subResourcesMap : {[key: string ]: string} = { };
     let canonicalizedResource : string = pathname;
-    if (!Util.empty(pathname)) {
-      let paths : string[] = String.split(pathname, `?`, 2);
-      canonicalizedResource = paths[0];
-      if (Util.equalNumber(Array.size(paths), 2)) {
-        let subResources : string[] = String.split(paths[1], "&", null);
-
-        for (let sub of subResources) {
-          let hasExcepts : boolean = false;
-
-          for (let excepts of this._except_signed_params) {
-            if (String.contains(sub, excepts)) {
-              hasExcepts = true;
-            }
-
-          }
-          if (!hasExcepts) {
-            let item : string[] = String.split(sub, "=", null);
-            let key : string = item[0];
-            let value : string = null;
-            if (Util.equalNumber(Array.size(item), 2)) {
-              value = item[1];
-            }
-
-            // for go : subResourcesMap[tea.StringValue(key)] = value
-            subResourcesMap[key] = value;
-          }
-
-        }
-      }
-
-    }
-
-    let subResourcesArray : string[] = Map.keySet(subResourcesMap);
-    let newQueryList : string[] = subResourcesArray;
-    if (!Util.isUnset(query)) {
-      let queryList : string[] = Map.keySet(query);
-      newQueryList = Array.concat(queryList, subResourcesArray);
-    }
-
-    let sortedParams = Array.ascSort(newQueryList);
+    let queryKeys : string[] = Map.keySet(query);
+    let sortedParams = Array.ascSort(queryKeys);
     let separator : string = "?";
 
     for (let paramName of sortedParams) {
-      if (Array.contains(this._default_signed_params, paramName)) {
+      if (Array.contains(this._default_signed_params, paramName) || String.hasPrefix(paramName, "x-oss-")) {
         canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-        if (!Util.isUnset(query) && !Util.isUnset(query[paramName])) {
+        if (!Util.empty(query[paramName])) {
           canonicalizedResource = `${canonicalizedResource}=${query[paramName]}`;
-        } else if (!Util.isUnset(subResourcesMap[paramName])) {
-          canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
         }
 
-      } else if (Array.contains(subResourcesArray, paramName)) {
-        canonicalizedResource = `${canonicalizedResource}${separator}${paramName}`;
-        if (!Util.isUnset(subResourcesMap[paramName])) {
-          canonicalizedResource = `${canonicalizedResource}=${subResourcesMap[paramName]}`;
-        }
-
+        separator = "&";
       }
 
-      separator = "&";
     }
     return canonicalizedResource;
   }
