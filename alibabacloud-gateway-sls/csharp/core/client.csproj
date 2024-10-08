@@ -49,7 +49,7 @@
     <PackageReference Include="AlibabaCloud.DarabonbaArray" Version="0.1.0"/>
     <PackageReference Include="AlibabaCloud.DarabonbaEncodeUtil" Version="0.0.2"/>
     <PackageReference Include="AlibabaCloud.DarabonbaSignatureUtil" Version="0.0.5"/>
-    <PackageReference Include="Tea" Version="1.0.11"/>
+    <PackageReference Include="Tea" Version="1.1.0"/>
     <PackageReference Include="AlibabaCloud.GatewaySls_Util" Version="0.0.2"/>
   </ItemGroup>
 </Project>
