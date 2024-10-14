@@ -12,92 +12,6 @@ from typing_extensions import get_origin, get_args
 from Tea.exceptions import RequiredArgumentException
 from .structs import *
 
-typeRegistry = {}
-# for oss
-typeRegistry["CompleteMultipartUpload"] = CompleteMultipartUploadResponseBody
-typeRegistry["CopyObject"] = CopyObjectResponseBody
-typeRegistry["CreateAccessPoint"] = CreateAccessPointResponseBody
-typeRegistry["CreateAccessPointForObjectProcess"] = CreateAccessPointForObjectProcessResponseBody
-typeRegistry["CreateBucketDataRedundancyTransition"] = CreateBucketDataRedundancyTransitionResponseBody
-typeRegistry["CreateCnameToken"] = CreateCnameTokenResponseBody
-typeRegistry["DeleteMultipleObjects"] = DeleteMultipleObjectsResponseBody
-typeRegistry["DescribeRegions"] = DescribeRegionsResponseBody
-typeRegistry["DoMetaQuery"] = DoMetaQueryResponseBody
-typeRegistry["GetAccessPoint"] = GetAccessPointResponseBody
-typeRegistry["GetAccessPointConfigForObjectProcess"] = GetAccessPointConfigForObjectProcessResponseBody
-typeRegistry["GetAccessPointForObjectProcess"] = GetAccessPointForObjectProcessResponseBody
-typeRegistry["GetAccessPointPublicAccessBlock"] = GetAccessPointPublicAccessBlockResponseBody
-typeRegistry["GetBucketAccessMonitor"] = GetBucketAccessMonitorResponseBody
-typeRegistry["GetBucketAcl"] = GetBucketAclResponseBody
-typeRegistry["GetBucketArchiveDirectRead"] = GetBucketArchiveDirectReadResponseBody
-typeRegistry["GetBucketCallbackPolicy"] = GetBucketCallbackPolicyResponseBody
-typeRegistry["GetBucketCors"] = GetBucketCorsResponseBody
-typeRegistry["GetBucketDataRedundancyTransition"] = GetBucketDataRedundancyTransitionResponseBody
-typeRegistry["GetBucketEncryption"] = GetBucketEncryptionResponseBody
-typeRegistry["GetBucketHttpsConfig"] = GetBucketHttpsConfigResponseBody
-typeRegistry["GetBucketInfo"] = GetBucketInfoResponseBody
-typeRegistry["GetBucketInventory"] = GetBucketInventoryResponseBody
-typeRegistry["GetBucketLifecycle"] = GetBucketLifecycleResponseBody
-typeRegistry["GetBucketLocation"] = GetBucketLocationResponseBody
-typeRegistry["GetBucketLogging"] = GetBucketLoggingResponseBody
-typeRegistry["GetBucketPolicyStatus"] = GetBucketPolicyStatusResponseBody
-typeRegistry["GetBucketPublicAccessBlock"] = GetBucketPublicAccessBlockResponseBody
-typeRegistry["GetBucketReferer"] = GetBucketRefererResponseBody
-typeRegistry["GetBucketReplication"] = GetBucketReplicationResponseBody
-typeRegistry["GetBucketReplicationLocation"] = GetBucketReplicationLocationResponseBody
-typeRegistry["GetBucketReplicationProgress"] = GetBucketReplicationProgressResponseBody
-typeRegistry["GetBucketRequestPayment"] = GetBucketRequestPaymentResponseBody
-typeRegistry["GetBucketResourceGroup"] = GetBucketResourceGroupResponseBody
-typeRegistry["GetBucketResponseHeader"] = GetBucketResponseHeaderResponseBody
-typeRegistry["GetBucketStat"] = GetBucketStatResponseBody
-typeRegistry["GetBucketTags"] = GetBucketTagsResponseBody
-typeRegistry["GetBucketTransferAcceleration"] = GetBucketTransferAccelerationResponseBody
-typeRegistry["GetBucketVersioning"] = GetBucketVersioningResponseBody
-typeRegistry["GetBucketWebsite"] = GetBucketWebsiteResponseBody
-typeRegistry["GetBucketWorm"] = GetBucketWormResponseBody
-typeRegistry["GetCnameToken"] = GetCnameTokenResponseBody
-typeRegistry["GetLiveChannelHistory"] = GetLiveChannelHistoryResponseBody
-typeRegistry["GetLiveChannelInfo"] = GetLiveChannelInfoResponseBody
-typeRegistry["GetLiveChannelStat"] = GetLiveChannelStatResponseBody
-typeRegistry["GetMetaQueryStatus"] = GetMetaQueryStatusResponseBody
-typeRegistry["GetObjectAcl"] = GetObjectAclResponseBody
-typeRegistry["GetObjectTagging"] = GetObjectTaggingResponseBody
-typeRegistry["GetPublicAccessBlock"] = GetPublicAccessBlockResponseBody
-typeRegistry["GetStyle"] = GetStyleResponseBody
-typeRegistry["GetUserAntiDDosInfo"] = GetUserAntiDDosInfoResponseBody
-typeRegistry["GetUserDefinedLogFieldsConfig"] = GetUserDefinedLogFieldsConfigResponseBody
-typeRegistry["InitiateMultipartUpload"] = InitiateMultipartUploadResponseBody
-typeRegistry["ListAccessPoints"] = ListAccessPointsResponseBody
-typeRegistry["ListAccessPointsForObjectProcess"] = ListAccessPointsForObjectProcessResponseBody
-typeRegistry["ListBucketAntiDDosInfo"] = ListBucketAntiDDosInfoResponseBody
-typeRegistry["ListBucketDataRedundancyTransition"] = ListBucketDataRedundancyTransitionResponseBody
-typeRegistry["ListBucketInventory"] = ListBucketInventoryResponseBody
-typeRegistry["ListBuckets"] = ListBucketsResponseBody
-typeRegistry["ListCname"] = ListCnameResponseBody
-typeRegistry["ListLiveChannel"] = ListLiveChannelResponseBody
-typeRegistry["ListMultipartUploads"] = ListMultipartUploadsResponseBody
-typeRegistry["ListObjectVersions"] = ListObjectVersionsResponseBody
-typeRegistry["ListObjects"] = ListObjectsResponseBody
-typeRegistry["ListObjectsV2"] = ListObjectsV2ResponseBody
-typeRegistry["ListParts"] = ListPartsResponseBody
-typeRegistry["ListStyle"] = ListStyleResponseBody
-typeRegistry["PutLiveChannel"] = PutLiveChannelResponseBody
-typeRegistry["UploadPartCopy"] = UploadPartCopyResponseBody
-
-# for hcs-mgw
-typeRegistry["GetAddress"] = GetAddressResponseBody
-typeRegistry["GetAgent"] = GetAgentResponseBody
-typeRegistry["GetAgentStatus"] = GetAgentStatusResponseBody
-typeRegistry["GetJob"] = GetJobResponseBody
-typeRegistry["GetJobResult"] = GetJobResultResponseBody
-typeRegistry["GetReport"] = GetReportResponseBody
-typeRegistry["GetTunnel"] = GetTunnelResponseBody
-typeRegistry["ListAddress"] = ListAddressResponseBody
-typeRegistry["ListAgent"] = ListAgentResponseBody
-typeRegistry["ListJob"] = ListJobResponseBody
-typeRegistry["ListJobHistory"] = ListJobHistoryResponseBody
-typeRegistry["ListTunnel"] = ListTunnelResponseBody
-typeRegistry["VerifyAddress"] = VerifyAddressResponseBody
 
 basic_instance = {}
 basic_instance[str] = ''
@@ -237,8 +151,7 @@ class Client:
 
     @staticmethod
     def parse_xml(bodyStr: str, apiName: str):
-        d = Client.__parse_xml_impl(ElementTree.fromstring(bodyStr), instanceRegistry[apiName].to_map())
-        return typeRegistry[apiName]().from_map(d)
+        return Client.__parse_xml_impl(ElementTree.fromstring(bodyStr), instanceRegistry[apiName].to_map())
     
     @staticmethod
     def __get_xml_factory(elem, val, parent_element=None):
