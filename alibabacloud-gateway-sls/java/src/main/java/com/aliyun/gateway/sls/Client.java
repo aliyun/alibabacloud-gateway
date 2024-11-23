@@ -51,6 +51,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 byte[] bodyBytes = com.aliyun.teautil.Common.assertAsBytes(request.body);
                 contentHash = this.MakeContentHash(bodyBytes, signatureVersion);
                 request.stream = Tea.toReadable(bodyBytes);
+            } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "protobuf")) {
+                byte[] pbBytes = com.aliyun.gateway.sls.util.Client.serializeToPbBytes(request.body);
+                request.stream = Tea.toReadable(pbBytes);
+                request.headers.put("content-type", "application/x-protobuf");
             }
 
         }
@@ -105,7 +109,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
-        if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
+        Number statusCode = response.statusCode;
+        String requestId = response.headers.get("x-log-requestid");
+        if (com.aliyun.teautil.Common.is4xx(statusCode) || com.aliyun.teautil.Common.is5xx(statusCode)) {
             Object error = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> resMap = com.aliyun.teautil.Common.assertAsMap(error);
             throw new TeaException(TeaConverter.buildMap(
@@ -113,9 +119,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 new TeaPair("message", resMap.get("errorMessage")),
                 new TeaPair("accessDeniedDetail", resMap.get("accessDeniedDetail")),
                 new TeaPair("data", TeaConverter.buildMap(
-                    new TeaPair("httpCode", response.statusCode),
-                    new TeaPair("requestId", response.headers.get("x-log-requestid")),
-                    new TeaPair("statusCode", response.statusCode)
+                    new TeaPair("httpCode", statusCode),
+                    new TeaPair("requestId", requestId),
+                    new TeaPair("statusCode", statusCode)
                 ))
             ));
         }
@@ -141,6 +147,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 response.deserializedBody = obj;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(uncompressedData);
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "protobuf")) {
+                byte[] pbBytes = com.aliyun.teautil.Common.readAsBytes(uncompressedData);
+                response.deserializedBody = com.aliyun.gateway.sls.util.Client.deserializeFromPbBytes(pbBytes, statusCode, response.headers);
             } else {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
             }

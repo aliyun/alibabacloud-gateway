@@ -18,9 +18,14 @@
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@alicloud/tea-typescript": "^1.7.1",
+    "zlib": "^1.0.5",
+    "pomelo-protobuf": "^0.4.0"
+  },
   "files": [
     "dist",
     "src"
-  ]
+  ],
+  "repository": "git@github.com:aliyun/alibabacloud-gateway.git"
 }

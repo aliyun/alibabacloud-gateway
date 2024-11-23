@@ -5,3 +5,6 @@
  * @return the parsed result
  */
 static async function readAndUncompressBlock(stream: readable, compressType: string, bodyRawSize: string): readable
+
+static function serializeToPbBytes(request: any) : bytes;
+static function deserializeFromPbBytes(data: bytes, statusCode: integer, headers: map[string]string) : any;

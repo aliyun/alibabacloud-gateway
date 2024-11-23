@@ -1,6 +1,6 @@
 // This file is auto-generated, don't edit it
 import SPI, * as $SPI from '@alicloud/gateway-spi';
-import Credential from '@alicloud/credentials';
+import Credential, * as $Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
 import OpenApiUtil from '@alicloud/openapi-util';
 import String from '@alicloud/darabonba-string';
@@ -61,6 +61,10 @@ export default class Client extends SPI {
         let bodyBytes = Util.assertAsBytes(request.body);
         contentHash = await this.MakeContentHash(bodyBytes, signatureVersion);
         request.stream = new $tea.BytesReadable(bodyBytes);
+      } else if (String.equals(request.reqBodyType, "protobuf")) {
+        let pbBytes = SLS_Util.serializeToPbBytes(request.body);
+        request.stream = new $tea.BytesReadable(pbBytes);
+        request.headers["content-type"] = "application/x-protobuf";
       }
 
     }
@@ -113,7 +117,9 @@ export default class Client extends SPI {
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let response = context.response;
-    if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
+    let statusCode = response.statusCode;
+    let requestId = response.headers["x-log-requestid"];
+    if (Util.is4xx(statusCode) || Util.is5xx(statusCode)) {
       let error = await Util.readAsJSON(response.body);
       let resMap = Util.assertAsMap(error);
       throw $tea.newError({
@@ -121,9 +127,9 @@ export default class Client extends SPI {
         message: resMap["errorMessage"],
         accessDeniedDetail: resMap["accessDeniedDetail"],
         data: {
-          httpCode: response.statusCode,
-          requestId: response.headers["x-log-requestid"],
-          statusCode: response.statusCode,
+          httpCode: statusCode,
+          requestId: requestId,
+          statusCode: statusCode,
         },
       });
     }
@@ -149,6 +155,9 @@ export default class Client extends SPI {
         response.deserializedBody = obj;
       } else if (Util.equalString(request.bodyType, "array")) {
         response.deserializedBody = await Util.readAsJSON(uncompressedData);
+      } else if (Util.equalString(request.bodyType, "protobuf")) {
+        let pbBytes = await Util.readAsBytes(uncompressedData);
+        response.deserializedBody = SLS_Util.deserializeFromPbBytes(pbBytes, statusCode, response.headers);
       } else {
         response.deserializedBody = await Util.readAsString(uncompressedData);
       }
