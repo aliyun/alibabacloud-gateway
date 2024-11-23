@@ -73,6 +73,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "binary")) {
                 // content-type: application/octet-stream
                 bodyBytes = com.aliyun.teautil.Common.assertAsBytes(request.body);
+            } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "protobuf")) {
+                bodyBytes = com.aliyun.gateway.sls.util.Client.serializeToPbBytes(request.body);
+                request.headers.put("content-type", "application/x-protobuf");
             }
 
         }
@@ -83,12 +86,12 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // for php bug, Argument #1 ($value) could not be passed by reference
         if (!com.aliyun.teautil.Common.isUnset(rawSizeRef)) {
             bodyRawSize = rawSizeRef;
-        } else if (!com.aliyun.teautil.Common.isUnset(request.body)) {
+        } else if (!com.aliyun.teautil.Common.isUnset(bodyBytes)) {
             bodyRawSize = "" + com.aliyun.gateway.sls.util.Client.bytesLength(bodyBytes) + "";
         }
 
         // compress if needed, and set body and hash
-        if (!com.aliyun.teautil.Common.isUnset(request.body)) {
+        if (!com.aliyun.teautil.Common.isUnset(bodyBytes)) {
             if (!com.aliyun.teautil.Common.empty(finalCompressType)) {
                 byte[] compressed = com.aliyun.gateway.sls.util.Client.compress(bodyBytes, finalCompressType);
                 bodyBytes = compressed;
@@ -199,7 +202,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
-        if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
+        Number statusCode = response.statusCode;
+        String requestId = response.headers.get("x-log-requestid");
+        if (com.aliyun.teautil.Common.is4xx(statusCode) || com.aliyun.teautil.Common.is5xx(statusCode)) {
             Object error = com.aliyun.teautil.Common.readAsJSON(response.body);
             java.util.Map<String, Object> resMap = com.aliyun.teautil.Common.assertAsMap(error);
             throw new TeaException(TeaConverter.buildMap(
@@ -207,9 +212,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 new TeaPair("message", resMap.get("errorMessage")),
                 new TeaPair("accessDeniedDetail", resMap.get("accessDeniedDetail")),
                 new TeaPair("data", TeaConverter.buildMap(
-                    new TeaPair("httpCode", response.statusCode),
-                    new TeaPair("requestId", response.headers.get("x-log-requestid")),
-                    new TeaPair("statusCode", response.statusCode)
+                    new TeaPair("httpCode", statusCode),
+                    new TeaPair("requestId", requestId),
+                    new TeaPair("statusCode", statusCode)
                 ))
             ));
         }
@@ -235,6 +240,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 response.deserializedBody = obj;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "array")) {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsJSON(uncompressedData);
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "protobuf")) {
+                byte[] pbBytes = com.aliyun.teautil.Common.readAsBytes(uncompressedData);
+                response.deserializedBody = com.aliyun.gateway.sls.util.Client.deserializeFromPbBytes(pbBytes, statusCode, response.headers);
             } else {
                 response.deserializedBody = com.aliyun.teautil.Common.readAsString(uncompressedData);
             }

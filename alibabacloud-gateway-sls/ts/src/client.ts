@@ -84,6 +84,9 @@ export default class Client extends SPI {
       } else if (String.equals(request.reqBodyType, "binary")) {
         // content-type: application/octet-stream
         bodyBytes = Util.assertAsBytes(request.body);
+      } else if (String.equals(request.reqBodyType, "protobuf")) {
+        bodyBytes = SLS_Util.serializeToPbBytes(request.body);
+        request.headers["content-type"] = "application/x-protobuf";
       }
 
     }
@@ -94,12 +97,12 @@ export default class Client extends SPI {
     // for php bug, Argument #1 ($value) could not be passed by reference
     if (!Util.isUnset(rawSizeRef)) {
       bodyRawSize = rawSizeRef;
-    } else if (!Util.isUnset(request.body)) {
+    } else if (!Util.isUnset(bodyBytes)) {
       bodyRawSize = `${await SLS_Util.bytesLength(bodyBytes)}`;
     }
 
     // compress if needed, and set body and hash
-    if (!Util.isUnset(request.body)) {
+    if (!Util.isUnset(bodyBytes)) {
       if (!Util.empty(finalCompressType)) {
         let compressed = await SLS_Util.compress(bodyBytes, finalCompressType);
         bodyBytes = compressed;
@@ -183,6 +186,7 @@ export default class Client extends SPI {
 
     let encodings = this._respBodyDecompressType[action];
     if (!Util.isUnset(encodings)) {
+
       for (let c of encodings) {
         if (await SLS_Util.isDecompressorAvailable(c)) {
           headers["Accept-Encoding"] = c;
@@ -208,7 +212,9 @@ export default class Client extends SPI {
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let response = context.response;
-    if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
+    let statusCode = response.statusCode;
+    let requestId = response.headers["x-log-requestid"];
+    if (Util.is4xx(statusCode) || Util.is5xx(statusCode)) {
       let error = await Util.readAsJSON(response.body);
       let resMap = Util.assertAsMap(error);
       throw $tea.newError({
@@ -216,9 +222,9 @@ export default class Client extends SPI {
         message: resMap["errorMessage"],
         accessDeniedDetail: resMap["accessDeniedDetail"],
         data: {
-          httpCode: response.statusCode,
-          requestId: response.headers["x-log-requestid"],
-          statusCode: response.statusCode,
+          httpCode: statusCode,
+          requestId: requestId,
+          statusCode: statusCode,
         },
       });
     }
@@ -244,6 +250,9 @@ export default class Client extends SPI {
         response.deserializedBody = obj;
       } else if (Util.equalString(request.bodyType, "array")) {
         response.deserializedBody = await Util.readAsJSON(uncompressedData);
+      } else if (Util.equalString(request.bodyType, "protobuf")) {
+        let pbBytes = await Util.readAsBytes(uncompressedData);
+        response.deserializedBody = SLS_Util.deserializeFromPbBytes(pbBytes, statusCode, response.headers);
       } else {
         response.deserializedBody = await Util.readAsString(uncompressedData);
       }
