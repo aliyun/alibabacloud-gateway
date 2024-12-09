@@ -1,52 +1,141 @@
-/**
- * Read data from a readable stream, and parse it by JSON format
- * @param stream the readable stream
- * @return the parsed result
- */
 // This file is auto-generated, don't edit it. Thanks.
 
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Ionic.Zlib;
 
 namespace AlibabaCloud.GatewaySls_Util
 {
+
     public class Client 
     {
-
+        /// <term><b>Description:</b></term>
+        /// <description>
+        /// <para>Read data from a readable stream, and parse it by JSON format</para>
+        /// </description>
+        /// 
+        /// <param name="stream">
+        /// the readable stream
+        /// </param>
+        /// 
+        /// <returns>
+        /// the parsed result
+        /// </returns>
         public static Stream ReadAndUncompressBlock(Stream stream, string compressType, string bodyRawSize)
         {
-            if (!string.Equals(compressType, "gzip", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotSupportedException(string.Format("{0} compression type is not implemented.", compressType));
-            }
             long expectedSize;
             if (!long.TryParse(bodyRawSize, out expectedSize))
             {
                 throw new ArgumentException("Invalid bodyRawSize value. It must be a valid numeric string.");
             }
-
             stream.Position = 0;
-            MemoryStream decompressedStream = new MemoryStream();
-            using (var decompressionStream = new ZlibStream(stream, Ionic.Zlib.CompressionMode.Decompress))
+
+            Stream output;
+            if (compressType == "deflate" || compressType == "gzip")
             {
-                decompressionStream.CopyTo(decompressedStream);
+                output = Decompressor.GzipDecompress(stream, expectedSize);
             }
-            decompressedStream.Position = 0;
-            if (decompressedStream.Length != expectedSize)
+            else
+            {
+                throw new NotSupportedException(string.Format("unsupported decompression type {0}.", compressType));
+            }
+            output.Position = 0;
+            if (output.Length != expectedSize)
             {
                 throw new InvalidDataException(
-                    string.Format("Decompressed data size is {0}, which does not match the expected size of {1}.",
-                    decompressedStream.Length, expectedSize));
+                    string.Format("unexpected uncompressed size: {0}, expected: {1}, compressType: {2}.", output.Length, expectedSize, compressType));
             }
-            return decompressedStream;
+            return output;
         }
 
+        #pragma warning disable 1998
         public static async Task<Stream> ReadAndUncompressBlockAsync(Stream stream, string compressType, string bodyRawSize)
         {
             throw new NotImplementedException();
         }
 
+        /// <term><b>Description:</b></term>
+        /// <description>
+        /// <para>Compress data by specified compress type, use isCompressorAvailable to check if the compress type is supported.</para>
+        /// </description>
+        /// 
+        /// <param name="src">
+        /// the data to be compressed
+        /// </param>
+        /// <param name="compressType">
+        /// the compress type
+        /// </param>
+        /// 
+        /// <returns>
+        /// the compressed data
+        /// </returns>
+        /// 
+        /// <term><b>Exception:</b></term>
+        /// error if the compress type is not supported or the compress failed
+        public static byte[] Compress(byte[] src, string compressType)
+        {
+            if (compressType == "deflate" || compressType == "gzip")
+            {
+                return Compressor.GzipCompress(src);
+            }
+            else
+            {
+                throw new NotSupportedException(string.Format("unsupported compression type {0}.", compressType));
+            }
+        }
+
+        /// <term><b>Description:</b></term>
+        /// <description>
+        /// <para>Compress data by specified compress type, use isCompressorAvailable to check if the compress type is supported.</para>
+        /// </description>
+        /// 
+        /// <param name="src">
+        /// the data to be compressed
+        /// </param>
+        /// <param name="compressType">
+        /// the compress type
+        /// </param>
+        /// 
+        /// <returns>
+        /// the compressed data
+        /// </returns>
+        /// 
+        /// <term><b>Exception:</b></term>
+        /// error if the compress type is not supported or the compress failed
+        public static async Task<byte[]> CompressAsync(byte[] src, string compressType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsCompressorAvailable(string compressType)
+        {
+            return Compressor.IsCompressorAvailable(compressType);
+        }
+
+        public static async Task<bool> IsCompressorAvailableAsync(string compressType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsDecompressorAvailable(string compressType)
+        {
+            return Decompressor.IsDecompressorAvailable(compressType);
+        }
+
+        public static async Task<bool> IsDecompressorAvailableAsync(string compressType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static long BytesLength(byte[] src)
+        {
+            return src.Length;
+        }
+
+        public static async Task<long> BytesLengthAsync(byte[] src)
+        {
+            return await Task.FromResult<long>(src.Length);
+        }
+        #pragma warning restore 1998
     }
 }
