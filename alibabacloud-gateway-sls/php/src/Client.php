@@ -6,11 +6,11 @@ namespace Darabonba\GatewaySls;
 use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
 use AlibabaCloud\Tea\Utils\Utils;
 use AlibabaCloud\Darabonba\String\StringUtil;
+use Darabonba\GatewaySls\Util\Client as DarabonbaGatewaySlsUtilClient;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
 use AlibabaCloud\Tea\Exception\TeaError;
-use Darabonba\GatewaySls\Util\Client as DarabonbaGatewaySlsUtilClient;
 use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
@@ -19,8 +19,37 @@ use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
 
 class Client extends DarabonbaGatewaySpiClient {
+    protected $_respBodyDecompressType;
+
+    protected $_reqBodyCompressType;
+
     public function __construct(){
         parent::__construct();
+        $this->_respBodyDecompressType = [
+            "PullLogs" => [
+                "zstd",
+                "lz4",
+                "gzip"
+            ],
+            "GetLogsV2" => [
+                "zstd",
+                "lz4",
+                "gzip"
+            ],
+            "PreviewSPL" => [
+                "lz4"
+            ]
+        ];
+        $this->_reqBodyCompressType = [
+            "PutLogs" => [
+                "zstd",
+                "lz4",
+                "deflate"
+            ],
+            "PreviewSPL" => [
+                "lz4"
+            ]
+        ];
     }
 
     /**
@@ -55,35 +84,49 @@ class Client extends DarabonbaGatewaySpiClient {
             $request->headers["x-acs-security-token"] = $securityToken;
         }
         $signatureVersion = Utils::defaultString($request->signatureVersion, "v1");
+        $finalCompressType = $this->getFinalRequestCompressType($request->action, $request->headers);
         $contentHash = "";
+        // get body bytes
+        $bodyBytes = null;
         if (!Utils::isUnset($request->body)) {
-            if (StringUtil::equals($request->reqBodyType, "json")) {
+            if (StringUtil::equals($request->reqBodyType, "json") || StringUtil::equals($request->reqBodyType, "formData")) {
+                $request->headers["content-type"] = "application/json";
                 $bodyStr = Utils::toJSONString($request->body);
-                $contentHash = $this->MakeContentHash(Utils::toBytes($bodyStr), $signatureVersion);
-                $request->stream = $bodyStr;
-                $request->headers["content-type"] = "application/json";
-            }
-            else if (StringUtil::equals($request->reqBodyType, "formData")) {
-                $str = Utils::toJSONString($request->body);
-                $contentHash = $this->MakeContentHash(Utils::toBytes($str), $signatureVersion);
-                $request->stream = $str;
-                $request->headers["content-type"] = "application/json";
+                $bodyBytes = Utils::toBytes($bodyStr);
             }
             else if (StringUtil::equals($request->reqBodyType, "binary")) {
                 // content-type: application/octet-stream
                 $bodyBytes = Utils::assertAsBytes($request->body);
-                $contentHash = $this->MakeContentHash($bodyBytes, $signatureVersion);
-                $request->stream = $bodyBytes;
             }
+        }
+        // get body raw size
+        $bodyRawSize = "0";
+        $rawSizeRef = @$request->headers["x-log-bodyrawsize"];
+        // for php bug, Argument #1 ($value) could not be passed by reference
+        if (!Utils::isUnset($rawSizeRef)) {
+            $bodyRawSize = $rawSizeRef;
+        }
+        else if (!Utils::isUnset($request->body)) {
+            $bodyRawSize = "" . (string) (DarabonbaGatewaySlsUtilClient::bytesLength($bodyBytes)) . "";
+        }
+        // compress if needed, and set body and hash
+        if (!Utils::isUnset($request->body)) {
+            if (!Utils::empty_($finalCompressType)) {
+                $compressed = DarabonbaGatewaySlsUtilClient::compress($bodyBytes, $finalCompressType);
+                $bodyBytes = $compressed;
+            }
+            $contentHash = $this->makeContentHash($bodyBytes, $signatureVersion);
+            $request->stream = $bodyBytes;
         }
         $host = $this->getHost($config->network, $project, $config->endpoint);
         $request->headers = Tea::merge([
             "accept" => "application/json",
             "host" => $host,
             "user-agent" => $request->userAgent,
-            "x-log-apiversion" => "0.6.0",
-            "x-log-bodyrawsize" => "0"
+            "x-log-apiversion" => "0.6.0"
         ], $request->headers);
+        $request->headers["x-log-bodyrawsize"] = $bodyRawSize;
+        $this->setDefaultAcceptEncoding($request->action, $request->headers);
         $this->buildRequest($context);
         // move param in path to query
         if (StringUtil::equals($signatureVersion, "v4")) {
@@ -105,14 +148,67 @@ class Client extends DarabonbaGatewaySpiClient {
     }
 
     /**
+     * @param string $action
+     * @param string[] $headers
+     * @return string
+     */
+    public function getFinalRequestCompressType($action, $headers){
+        $compressType = @$headers["x-log-compresstype"];
+        $rawSize = @$headers["x-log-bodyrawsize"];
+        // for php bug, Argument #1 ($value) could not be passed by reference
+        // 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+        if (!Utils::isUnset($compressType) && !Utils::isUnset($rawSize)) {
+            return '';
+        }
+        // 2. not compressed, but has x-log-compresstype in header, we need compress here
+        if (!Utils::isUnset($compressType)) {
+            return $compressType;
+        }
+        // 3. not compressed, in pre-defined api list, try use default supported compress type in order
+        $encodings = @$this->_reqBodyCompressType[$action];
+        if (!Utils::isUnset($encodings)) {
+            foreach($encodings as $encoding){
+                if (DarabonbaGatewaySlsUtilClient::isCompressorAvailable($encoding)) {
+                    $headers["x-log-compresstype"] = $encoding;
+                    // set header x-log-compresstype
+                    return $encoding;
+                }
+            }
+        }
+        // 4. otherwise we dont need compress here
+        return '';
+    }
+
+    /**
+     * @param string $action
+     * @param string[] $headers
+     * @return void
+     */
+    public function setDefaultAcceptEncoding($action, $headers){
+        $acceptEncoding = @$headers["Accept-Encoding"];
+        // for php warning, dont rm this line
+        if (!Utils::isUnset($acceptEncoding)) {
+            return null;
+        }
+        $encodings = @$this->_respBodyDecompressType[$action];
+        if (!Utils::isUnset($encodings)) {
+            foreach($encodings as $c){
+                if (DarabonbaGatewaySlsUtilClient::isDecompressorAvailable($c)) {
+                    $headers["Accept-Encoding"] = $c;
+                    return null;
+                }
+            }
+        }
+    }
+
+    /**
      * @param int[] $content
      * @param string $signatureVersion
      * @return string
      */
-    public function MakeContentHash($content, $signatureVersion){
+    public function makeContentHash($content, $signatureVersion){
         if (StringUtil::equals($signatureVersion, "v4")) {
-            // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-            if (Utils::isUnset($content)) {
+            if (Utils::isUnset($content) || Utils::equalString("" . (string) (DarabonbaGatewaySlsUtilClient::bytesLength($content)) . "", "0")) {
                 return '';
             }
             return StringUtil::toLower(EncodeUtil::hexEncode(EncodeUtil::hash($content, "SLS4-HMAC-SHA256")));

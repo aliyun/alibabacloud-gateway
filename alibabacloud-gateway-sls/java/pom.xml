@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.aliyun</groupId>
   <artifactId>alibabacloud-gateway-sls</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
   <packaging>jar</packaging>
   <name>alibabacloud-gateway-sls</name>
   <description>
@@ -99,7 +99,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>alibabacloud-gateway-sls-util</artifactId>
-      <version>0.0.1</version>
+      <version>0.3.0</version>
     </dependency>
   </dependencies>
   <build>

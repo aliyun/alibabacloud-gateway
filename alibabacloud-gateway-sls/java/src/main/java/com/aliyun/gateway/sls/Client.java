@@ -5,8 +5,35 @@ import com.aliyun.tea.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
+    public java.util.Map<String, java.util.List<String>> _respBodyDecompressType;
+    public java.util.Map<String, java.util.List<String>> _reqBodyCompressType;
     public Client() throws Exception {
         super();
+        this._respBodyDecompressType = TeaConverter.buildMap(
+            new TeaPair("PullLogs", java.util.Arrays.asList(
+                "zstd",
+                "lz4",
+                "gzip"
+            )),
+            new TeaPair("GetLogsV2", java.util.Arrays.asList(
+                "zstd",
+                "lz4",
+                "gzip"
+            )),
+            new TeaPair("PreviewSPL", java.util.Arrays.asList(
+                "lz4"
+            ))
+        );
+        this._reqBodyCompressType = TeaConverter.buildMap(
+            new TeaPair("PutLogs", java.util.Arrays.asList(
+                "zstd",
+                "lz4",
+                "deflate"
+            )),
+            new TeaPair("PreviewSPL", java.util.Arrays.asList(
+                "lz4"
+            ))
+        );
     }
 
 
@@ -34,25 +61,41 @@ public class Client extends com.aliyun.gateway.spi.Client {
         }
 
         String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
+        String finalCompressType = this.getFinalRequestCompressType(request.action, request.headers);
         String contentHash = "";
+        // get body bytes
+        byte[] bodyBytes = null;
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
-            if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json")) {
+            if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json") || com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData")) {
+                request.headers.put("content-type", "application/json");
                 String bodyStr = com.aliyun.teautil.Common.toJSONString(request.body);
-                contentHash = this.MakeContentHash(com.aliyun.teautil.Common.toBytes(bodyStr), signatureVersion);
-                request.stream = Tea.toReadable(bodyStr);
-                request.headers.put("content-type", "application/json");
-            } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData")) {
-                String str = com.aliyun.teautil.Common.toJSONString(request.body);
-                contentHash = this.MakeContentHash(com.aliyun.teautil.Common.toBytes(str), signatureVersion);
-                request.stream = Tea.toReadable(str);
-                request.headers.put("content-type", "application/json");
+                bodyBytes = com.aliyun.teautil.Common.toBytes(bodyStr);
             } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "binary")) {
                 // content-type: application/octet-stream
-                byte[] bodyBytes = com.aliyun.teautil.Common.assertAsBytes(request.body);
-                contentHash = this.MakeContentHash(bodyBytes, signatureVersion);
-                request.stream = Tea.toReadable(bodyBytes);
+                bodyBytes = com.aliyun.teautil.Common.assertAsBytes(request.body);
             }
 
+        }
+
+        // get body raw size
+        String bodyRawSize = "0";
+        String rawSizeRef = request.headers.get("x-log-bodyrawsize");
+        // for php bug, Argument #1 ($value) could not be passed by reference
+        if (!com.aliyun.teautil.Common.isUnset(rawSizeRef)) {
+            bodyRawSize = rawSizeRef;
+        } else if (!com.aliyun.teautil.Common.isUnset(request.body)) {
+            bodyRawSize = "" + com.aliyun.gateway.sls.util.Client.bytesLength(bodyBytes) + "";
+        }
+
+        // compress if needed, and set body and hash
+        if (!com.aliyun.teautil.Common.isUnset(request.body)) {
+            if (!com.aliyun.teautil.Common.empty(finalCompressType)) {
+                byte[] compressed = com.aliyun.gateway.sls.util.Client.compress(bodyBytes, finalCompressType);
+                bodyBytes = compressed;
+            }
+
+            contentHash = this.makeContentHash(bodyBytes, signatureVersion);
+            request.stream = Tea.toReadable(bodyBytes);
         }
 
         String host = this.getHost(config.network, project, config.endpoint);
@@ -61,11 +104,12 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 new TeaPair("accept", "application/json"),
                 new TeaPair("host", host),
                 new TeaPair("user-agent", request.userAgent),
-                new TeaPair("x-log-apiversion", "0.6.0"),
-                new TeaPair("x-log-bodyrawsize", "0")
+                new TeaPair("x-log-apiversion", "0.6.0")
             ),
             request.headers
         );
+        request.headers.put("x-log-bodyrawsize", bodyRawSize);
+        this.setDefaultAcceptEncoding(request.action, request.headers);
         this.buildRequest(context);
         // move param in path to query
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
@@ -89,10 +133,60 @@ public class Client extends com.aliyun.gateway.spi.Client {
         request.headers.put("authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
     }
 
-    public String MakeContentHash(byte[] content, String signatureVersion) throws Exception {
+    public String getFinalRequestCompressType(String action, java.util.Map<String, String> headers) throws Exception {
+        String compressType = headers.get("x-log-compresstype");
+        String rawSize = headers.get("x-log-bodyrawsize");
+        // for php bug, Argument #1 ($value) could not be passed by reference
+        // 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+        if (!com.aliyun.teautil.Common.isUnset(compressType) && !com.aliyun.teautil.Common.isUnset(rawSize)) {
+            return "";
+        }
+
+        // 2. not compressed, but has x-log-compresstype in header, we need compress here
+        if (!com.aliyun.teautil.Common.isUnset(compressType)) {
+            return compressType;
+        }
+
+        // 3. not compressed, in pre-defined api list, try use default supported compress type in order
+        java.util.List<String> encodings = _reqBodyCompressType.get(action);
+        if (!com.aliyun.teautil.Common.isUnset(encodings)) {
+            for (String encoding : encodings) {
+                if (com.aliyun.gateway.sls.util.Client.isCompressorAvailable(encoding)) {
+                    headers.put("x-log-compresstype", encoding);
+                    // set header x-log-compresstype
+                    return encoding;
+                }
+
+            }
+        }
+
+        // 4. otherwise we dont need compress here
+        return "";
+    }
+
+    public void setDefaultAcceptEncoding(String action, java.util.Map<String, String> headers) throws Exception {
+        String acceptEncoding = headers.get("Accept-Encoding");
+        // for php warning, dont rm this line
+        if (!com.aliyun.teautil.Common.isUnset(acceptEncoding)) {
+            return ;
+        }
+
+        java.util.List<String> encodings = _respBodyDecompressType.get(action);
+        if (!com.aliyun.teautil.Common.isUnset(encodings)) {
+            for (String c : encodings) {
+                if (com.aliyun.gateway.sls.util.Client.isDecompressorAvailable(c)) {
+                    headers.put("Accept-Encoding", c);
+                    return ;
+                }
+
+            }
+        }
+
+    }
+
+    public String makeContentHash(byte[] content, String signatureVersion) throws Exception {
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
-            // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-            if (com.aliyun.teautil.Common.isUnset(content)) {
+            if (com.aliyun.teautil.Common.isUnset(content) || com.aliyun.teautil.Common.equalString("" + com.aliyun.gateway.sls.util.Client.bytesLength(content) + "", "0")) {
                 return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
             }
 
