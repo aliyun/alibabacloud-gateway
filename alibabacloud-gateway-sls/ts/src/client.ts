@@ -1,6 +1,6 @@
 // This file is auto-generated, don't edit it
 import SPI, * as $SPI from '@alicloud/gateway-spi';
-import Credential from '@alicloud/credentials';
+import Credential, * as $Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
 import OpenApiUtil from '@alicloud/openapi-util';
 import String from '@alicloud/darabonba-string';
@@ -11,12 +11,40 @@ import SignatureUtil from '@alicloud/darabonba-signature-util';
 import SLS_Util from '@alicloud/gateway-sls-util';
 import { Readable } from 'stream';
 import * as $tea from '@alicloud/tea-typescript';
+import crypto from 'crypto';
 
 
 export default class Client extends SPI {
+  _respBodyDecompressType: {[key: string ]: string[]};
+  _reqBodyCompressType: {[key: string ]: string[]};
 
   constructor() {
     super();
+    this._respBodyDecompressType = {
+      PullLogs: [
+        "zstd",
+        "lz4",
+        "gzip"
+      ],
+      GetLogsV2: [
+        "zstd",
+        "lz4",
+        "gzip"
+      ],
+      PreviewSPL: [
+        "lz4"
+      ],
+    };
+    this._reqBodyCompressType = {
+      PutLogs: [
+        "zstd",
+        "lz4",
+        "deflate"
+      ],
+      PreviewSPL: [
+        "lz4"
+      ],
+    };
   }
 
 
@@ -44,25 +72,41 @@ export default class Client extends SPI {
     }
 
     let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
+    let finalCompressType = await this.getFinalRequestCompressType(request.action, request.headers);
     let contentHash = "";
+    // get body bytes
+    let bodyBytes : Buffer = null;
     if (!Util.isUnset(request.body)) {
-      if (String.equals(request.reqBodyType, "json")) {
+      if (String.equals(request.reqBodyType, "json") || String.equals(request.reqBodyType, "formData")) {
+        request.headers["content-type"] = "application/json";
         let bodyStr = Util.toJSONString(request.body);
-        contentHash = await this.MakeContentHash(Util.toBytes(bodyStr), signatureVersion);
-        request.stream = new $tea.BytesReadable(bodyStr);
-        request.headers["content-type"] = "application/json";
-      } else if (String.equals(request.reqBodyType, "formData")) {
-        let str = Util.toJSONString(request.body);
-        contentHash = await this.MakeContentHash(Util.toBytes(str), signatureVersion);
-        request.stream = new $tea.BytesReadable(str);
-        request.headers["content-type"] = "application/json";
+        bodyBytes = Util.toBytes(bodyStr);
       } else if (String.equals(request.reqBodyType, "binary")) {
         // content-type: application/octet-stream
-        let bodyBytes = Util.assertAsBytes(request.body);
-        contentHash = await this.MakeContentHash(bodyBytes, signatureVersion);
-        request.stream = new $tea.BytesReadable(bodyBytes);
+        bodyBytes = Util.assertAsBytes(request.body);
       }
 
+    }
+
+    // get body raw size
+    let bodyRawSize : string = "0";
+    let rawSizeRef = request.headers["x-log-bodyrawsize"];
+    // for php bug, Argument #1 ($value) could not be passed by reference
+    if (!Util.isUnset(rawSizeRef)) {
+      bodyRawSize = rawSizeRef;
+    } else if (!Util.isUnset(request.body)) {
+      bodyRawSize = `${await SLS_Util.bytesLength(bodyBytes)}`;
+    }
+
+    // compress if needed, and set body and hash
+    if (!Util.isUnset(request.body)) {
+      if (!Util.empty(finalCompressType)) {
+        let compressed = await SLS_Util.compress(bodyBytes, finalCompressType);
+        bodyBytes = compressed;
+      }
+
+      contentHash = await this.makeContentHash(bodyBytes, signatureVersion);
+      request.stream = new $tea.BytesReadable(bodyBytes);
     }
 
     let host = await this.getHost(config.network, project, config.endpoint);
@@ -71,9 +115,10 @@ export default class Client extends SPI {
       host: host,
       'user-agent': request.userAgent,
       'x-log-apiversion': "0.6.0",
-      'x-log-bodyrawsize': "0",
       ...request.headers,
     };
+    request.headers["x-log-bodyrawsize"] = bodyRawSize;
+    await this.setDefaultAcceptEncoding(request.action, request.headers);
     await this.buildRequest(context);
     // move param in path to query
     if (String.equals(signatureVersion, "v4")) {
@@ -97,17 +142,67 @@ export default class Client extends SPI {
     request.headers["authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
   }
 
-  async MakeContentHash(content: Buffer, signatureVersion: string): Promise<string> {
+  async getFinalRequestCompressType(action: string, headers: {[key: string ]: string}): Promise<string> {
+    let compressType = headers["x-log-compresstype"];
+    let rawSize = headers["x-log-bodyrawsize"];
+    // for php bug, Argument #1 ($value) could not be passed by reference
+    // 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+    if (!Util.isUnset(compressType) && !Util.isUnset(rawSize)) {
+      return "";
+    }
+
+    // 2. not compressed, but has x-log-compresstype in header, we need compress here
+    if (!Util.isUnset(compressType)) {
+      return compressType;
+    }
+
+    // 3. not compressed, in pre-defined api list, try use default supported compress type in order
+    let encodings = this._reqBodyCompressType[action];
+    if (!Util.isUnset(encodings)) {
+
+      for (let encoding of encodings) {
+        if (await SLS_Util.isCompressorAvailable(encoding)) {
+          headers["x-log-compresstype"] = encoding;
+          // set header x-log-compresstype
+          return encoding;
+        }
+
+      }
+    }
+
+    // 4. otherwise we dont need compress here
+    return "";
+  }
+
+  async setDefaultAcceptEncoding(action: string, headers: {[key: string ]: string}): Promise<void> {
+    let acceptEncoding = headers["Accept-Encoding"];
+    // for php warning, dont rm this line
+    if (!Util.isUnset(acceptEncoding)) {
+      return ;
+    }
+
+    let encodings = this._respBodyDecompressType[action];
+    if (!Util.isUnset(encodings)) {
+      for (let c of encodings) {
+        if (await SLS_Util.isDecompressorAvailable(c)) {
+          headers["Accept-Encoding"] = c;
+          return ;
+        }
+
+      }
+    }
+
+  }
+
+  async makeContentHash(content: Buffer, signatureVersion: string): Promise<string> {
     if (String.equals(signatureVersion, "v4")) {
-      // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-      if (Util.isUnset(content)) {
+      if (Util.isUnset(content) || Util.equalString(`${await SLS_Util.bytesLength(content)}`, "0")) {
         return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
       }
 
       return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(content, "SLS4-HMAC-SHA256")));
     }
-
-    return String.toUpper(EncodeUtil.hexEncode(SignatureUtil.MD5SignForBytes(content)));
+    return String.toUpper(EncodeUtil.hexEncode(Client.MD5SignForBytes(content)));
   }
 
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -392,6 +487,16 @@ export default class Client extends SPI {
     // 2024-02-04T11:31:58Z
     date = String.replace(date, "-", "", null);
     return String.replace(date, ":", "", null);
+  }
+
+  /**
+    * MD5 Signature, SignatureUtil has bug in js implemention for MD5SignForBytes.
+    *
+    * @param bytesToSign bytes
+    * @return signed bytes
+    */
+  static MD5SignForBytes(bytesToSign) {
+      return crypto.createHash('md5').update(bytesToSign).digest();
   }
 
 }

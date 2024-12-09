@@ -14,9 +14,43 @@ namespace AlibabaCloud.GatewaySls
 {
     public class Client : AlibabaCloud.GatewaySpi.Client
     {
+        protected Dictionary<string, List<string>> _respBodyDecompressType;
+        protected Dictionary<string, List<string>> _reqBodyCompressType;
 
         public Client(): base()
         {
+            this._respBodyDecompressType = new Dictionary<string, List<string>>
+            {
+                {"PullLogs", new List<string>
+                {
+                    "zstd",
+                    "lz4",
+                    "gzip"
+                }},
+                {"GetLogsV2", new List<string>
+                {
+                    "zstd",
+                    "lz4",
+                    "gzip"
+                }},
+                {"PreviewSPL", new List<string>
+                {
+                    "lz4"
+                }},
+            };
+            this._reqBodyCompressType = new Dictionary<string, List<string>>
+            {
+                {"PutLogs", new List<string>
+                {
+                    "zstd",
+                    "lz4",
+                    "deflate"
+                }},
+                {"PreviewSPL", new List<string>
+                {
+                    "lz4"
+                }},
+            };
         }
 
 
@@ -26,6 +60,7 @@ namespace AlibabaCloud.GatewaySls
             config.Endpoint = GetEndpoint(config.RegionId, config.Network, config.Endpoint);
         }
 
+        #pragma warning disable 1998
         public async Task ModifyConfigurationAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
@@ -52,30 +87,46 @@ namespace AlibabaCloud.GatewaySls
                 request.Headers["x-acs-security-token"] = securityToken;
             }
             string signatureVersion = AlibabaCloud.TeaUtil.Common.DefaultString(request.SignatureVersion, "v1");
+            string finalCompressType = GetFinalRequestCompressType(request.Action, request.Headers);
             string contentHash = "";
+            // get body bytes
+            byte[] bodyBytes = null;
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
             {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json") || AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData"))
                 {
+                    request.Headers["content-type"] = "application/json";
                     string bodyStr = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = MakeContentHash(AlibabaCloud.TeaUtil.Common.ToBytes(bodyStr), signatureVersion);
-                    request.Stream = TeaCore.BytesReadable(bodyStr);
-                    request.Headers["content-type"] = "application/json";
-                }
-                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData"))
-                {
-                    string str = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = MakeContentHash(AlibabaCloud.TeaUtil.Common.ToBytes(str), signatureVersion);
-                    request.Stream = TeaCore.BytesReadable(str);
-                    request.Headers["content-type"] = "application/json";
+                    bodyBytes = AlibabaCloud.TeaUtil.Common.ToBytes(bodyStr);
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "binary"))
                 {
                     // content-type: application/octet-stream
-                    byte[] bodyBytes = AlibabaCloud.TeaUtil.Common.AssertAsBytes(request.Body);
-                    contentHash = MakeContentHash(bodyBytes, signatureVersion);
-                    request.Stream = TeaCore.BytesReadable(bodyBytes);
+                    bodyBytes = AlibabaCloud.TeaUtil.Common.AssertAsBytes(request.Body);
                 }
+            }
+            // get body raw size
+            string bodyRawSize = "0";
+            string rawSizeRef = request.Headers.Get("x-log-bodyrawsize");
+            // for php bug, Argument #1 ($value) could not be passed by reference
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(rawSizeRef))
+            {
+                bodyRawSize = rawSizeRef;
+            }
+            else if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
+            {
+                bodyRawSize = "" + AlibabaCloud.GatewaySls_Util.Client.BytesLength(bodyBytes);
+            }
+            // compress if needed, and set body and hash
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
+            {
+                if (!AlibabaCloud.TeaUtil.Common.Empty(finalCompressType))
+                {
+                    byte[] compressed = AlibabaCloud.GatewaySls_Util.Client.Compress(bodyBytes, finalCompressType);
+                    bodyBytes = compressed;
+                }
+                contentHash = MakeContentHash(bodyBytes, signatureVersion);
+                request.Stream = TeaCore.BytesReadable(bodyBytes);
             }
             string host = GetHost(config.Network, project, config.Endpoint);
             request.Headers = TeaConverter.merge<string>
@@ -86,10 +137,11 @@ namespace AlibabaCloud.GatewaySls
                     {"host", host},
                     {"user-agent", request.UserAgent},
                     {"x-log-apiversion", "0.6.0"},
-                    {"x-log-bodyrawsize", "0"},
                 },
                 request.Headers
             );
+            request.Headers["x-log-bodyrawsize"] = bodyRawSize;
+            SetDefaultAcceptEncoding(request.Action, request.Headers);
             BuildRequest(context);
             // move param in path to query
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
@@ -133,30 +185,46 @@ namespace AlibabaCloud.GatewaySls
                 request.Headers["x-acs-security-token"] = securityToken;
             }
             string signatureVersion = AlibabaCloud.TeaUtil.Common.DefaultString(request.SignatureVersion, "v1");
+            string finalCompressType = await GetFinalRequestCompressTypeAsync(request.Action, request.Headers);
             string contentHash = "";
+            // get body bytes
+            byte[] bodyBytes = null;
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
             {
-                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "json") || AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData"))
                 {
+                    request.Headers["content-type"] = "application/json";
                     string bodyStr = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = await MakeContentHashAsync(AlibabaCloud.TeaUtil.Common.ToBytes(bodyStr), signatureVersion);
-                    request.Stream = TeaCore.BytesReadable(bodyStr);
-                    request.Headers["content-type"] = "application/json";
-                }
-                else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData"))
-                {
-                    string str = AlibabaCloud.TeaUtil.Common.ToJSONString(request.Body);
-                    contentHash = await MakeContentHashAsync(AlibabaCloud.TeaUtil.Common.ToBytes(str), signatureVersion);
-                    request.Stream = TeaCore.BytesReadable(str);
-                    request.Headers["content-type"] = "application/json";
+                    bodyBytes = AlibabaCloud.TeaUtil.Common.ToBytes(bodyStr);
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "binary"))
                 {
                     // content-type: application/octet-stream
-                    byte[] bodyBytes = AlibabaCloud.TeaUtil.Common.AssertAsBytes(request.Body);
-                    contentHash = await MakeContentHashAsync(bodyBytes, signatureVersion);
-                    request.Stream = TeaCore.BytesReadable(bodyBytes);
+                    bodyBytes = AlibabaCloud.TeaUtil.Common.AssertAsBytes(request.Body);
                 }
+            }
+            // get body raw size
+            string bodyRawSize = "0";
+            string rawSizeRef = request.Headers.Get("x-log-bodyrawsize");
+            // for php bug, Argument #1 ($value) could not be passed by reference
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(rawSizeRef))
+            {
+                bodyRawSize = rawSizeRef;
+            }
+            else if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
+            {
+                bodyRawSize = "" + AlibabaCloud.GatewaySls_Util.Client.BytesLength(bodyBytes);
+            }
+            // compress if needed, and set body and hash
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
+            {
+                if (!AlibabaCloud.TeaUtil.Common.Empty(finalCompressType))
+                {
+                    byte[] compressed = AlibabaCloud.GatewaySls_Util.Client.Compress(bodyBytes, finalCompressType);
+                    bodyBytes = compressed;
+                }
+                contentHash = await MakeContentHashAsync(bodyBytes, signatureVersion);
+                request.Stream = TeaCore.BytesReadable(bodyBytes);
             }
             string host = await GetHostAsync(config.Network, project, config.Endpoint);
             request.Headers = TeaConverter.merge<string>
@@ -167,10 +235,11 @@ namespace AlibabaCloud.GatewaySls
                     {"host", host},
                     {"user-agent", request.UserAgent},
                     {"x-log-apiversion", "0.6.0"},
-                    {"x-log-bodyrawsize", "0"},
                 },
                 request.Headers
             );
+            request.Headers["x-log-bodyrawsize"] = bodyRawSize;
+            await SetDefaultAcceptEncodingAsync(request.Action, request.Headers);
             await BuildRequestAsync(context);
             // move param in path to query
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
@@ -194,12 +263,121 @@ namespace AlibabaCloud.GatewaySls
             request.Headers["authorization"] = await GetAuthorizationAsync(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
         }
 
+        public string GetFinalRequestCompressType(string action, Dictionary<string, string> headers)
+        {
+            string compressType = headers.Get("x-log-compresstype");
+            string rawSize = headers.Get("x-log-bodyrawsize");
+            // for php bug, Argument #1 ($value) could not be passed by reference
+            // 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(compressType) && !AlibabaCloud.TeaUtil.Common.IsUnset(rawSize))
+            {
+                return "";
+            }
+            // 2. not compressed, but has x-log-compresstype in header, we need compress here
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
+            {
+                return compressType;
+            }
+            // 3. not compressed, in pre-defined api list, try use default supported compress type in order
+            List<string> encodings = _reqBodyCompressType.Get(action);
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(encodings))
+            {
+
+                foreach (var encoding in encodings) {
+                    if (AlibabaCloud.GatewaySls_Util.Client.IsCompressorAvailable(encoding))
+                    {
+                        headers["x-log-compresstype"] = encoding;
+                        // set header x-log-compresstype
+                        return encoding;
+                    }
+                }
+            }
+            // 4. otherwise we dont need compress here
+            return "";
+        }
+
+        public async Task<string> GetFinalRequestCompressTypeAsync(string action, Dictionary<string, string> headers)
+        {
+            string compressType = headers.Get("x-log-compresstype");
+            string rawSize = headers.Get("x-log-bodyrawsize");
+            // for php bug, Argument #1 ($value) could not be passed by reference
+            // 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(compressType) && !AlibabaCloud.TeaUtil.Common.IsUnset(rawSize))
+            {
+                return "";
+            }
+            // 2. not compressed, but has x-log-compresstype in header, we need compress here
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(compressType))
+            {
+                return compressType;
+            }
+            // 3. not compressed, in pre-defined api list, try use default supported compress type in order
+            List<string> encodings = _reqBodyCompressType.Get(action);
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(encodings))
+            {
+
+                foreach (var encoding in encodings) {
+                    if (AlibabaCloud.GatewaySls_Util.Client.IsCompressorAvailable(encoding))
+                    {
+                        headers["x-log-compresstype"] = encoding;
+                        // set header x-log-compresstype
+                        return encoding;
+                    }
+                }
+            }
+            // 4. otherwise we dont need compress here
+            return "";
+        }
+
+        public void SetDefaultAcceptEncoding(string action, Dictionary<string, string> headers)
+        {
+            string acceptEncoding = headers.Get("Accept-Encoding");
+            // for php warning, dont rm this line
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(acceptEncoding))
+            {
+                return ;
+            }
+            List<string> encodings = _respBodyDecompressType.Get(action);
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(encodings))
+            {
+
+                foreach (var c in encodings) {
+                    if (AlibabaCloud.GatewaySls_Util.Client.IsDecompressorAvailable(c))
+                    {
+                        headers["Accept-Encoding"] = c;
+                        return ;
+                    }
+                }
+            }
+        }
+
+        public async Task SetDefaultAcceptEncodingAsync(string action, Dictionary<string, string> headers)
+        {
+            string acceptEncoding = headers.Get("Accept-Encoding");
+            // for php warning, dont rm this line
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(acceptEncoding))
+            {
+                return ;
+            }
+            List<string> encodings = _respBodyDecompressType.Get(action);
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(encodings))
+            {
+
+                foreach (var c in encodings) {
+                    if (AlibabaCloud.GatewaySls_Util.Client.IsDecompressorAvailable(c))
+                    {
+                        headers["Accept-Encoding"] = c;
+                        return ;
+                    }
+                }
+            }
+        }
+
         public string MakeContentHash(byte[] content, string signatureVersion)
         {
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
             {
-                // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-                if (AlibabaCloud.TeaUtil.Common.IsUnset(content))
+                if (AlibabaCloud.TeaUtil.Common.IsUnset(content) || AlibabaCloud.TeaUtil.Common.EqualString("" + AlibabaCloud.GatewaySls_Util.Client.BytesLength(content), "0"))
                 {
                     return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 }
@@ -212,8 +390,7 @@ namespace AlibabaCloud.GatewaySls
         {
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
             {
-                // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-                if (AlibabaCloud.TeaUtil.Common.IsUnset(content))
+                if (AlibabaCloud.TeaUtil.Common.IsUnset(content) || AlibabaCloud.TeaUtil.Common.EqualString("" + AlibabaCloud.GatewaySls_Util.Client.BytesLength(content), "0"))
                 {
                     return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 }
@@ -859,6 +1036,6 @@ namespace AlibabaCloud.GatewaySls
             date = AlibabaCloud.DarabonbaString.StringUtil.Replace(date, "-", "", null);
             return AlibabaCloud.DarabonbaString.StringUtil.Replace(date, ":", "", null);
         }
-
+        #pragma warning restore 1998
     }
 }

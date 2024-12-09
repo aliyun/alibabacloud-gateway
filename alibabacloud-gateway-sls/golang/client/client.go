@@ -16,6 +16,8 @@ import (
 
 type Client struct {
 	spi.Client
+	RespBodyDecompressType map[string][]*string
+	ReqBodyCompressType    map[string][]*string
 }
 
 func NewClient() (*Client, error) {
@@ -28,6 +30,15 @@ func (client *Client) Init() (_err error) {
 	_err = client.Client.Init()
 	if _err != nil {
 		return _err
+	}
+	client.RespBodyDecompressType = map[string][]*string{
+		"PullLogs":   []*string{tea.String("zstd"), tea.String("lz4"), tea.String("gzip")},
+		"GetLogsV2":  []*string{tea.String("zstd"), tea.String("lz4"), tea.String("gzip")},
+		"PreviewSPL": []*string{tea.String("lz4")},
+	}
+	client.ReqBodyCompressType = map[string][]*string{
+		"PutLogs":    []*string{tea.String("zstd"), tea.String("lz4"), tea.String("deflate")},
+		"PreviewSPL": []*string{tea.String("lz4")},
 	}
 	return nil
 }
@@ -65,41 +76,57 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	}
 
 	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v1"))
+	finalCompressType, _err := client.GetFinalRequestCompressType(request.Action, request.Headers)
+	if _err != nil {
+		return _err
+	}
+
 	contentHash := tea.String("")
+	// get body bytes
+	var bodyBytes []byte
 	if !tea.BoolValue(util.IsUnset(request.Body)) {
-		if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) {
+		if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) || tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
+			request.Headers["content-type"] = tea.String("application/json")
 			bodyStr := util.ToJSONString(request.Body)
-			contentHash, _err = client.MakeContentHash(util.ToBytes(bodyStr), signatureVersion)
-			if _err != nil {
-				return _err
-			}
-
-			request.Stream = tea.ToReader(bodyStr)
-			request.Headers["content-type"] = tea.String("application/json")
-		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
-			str := util.ToJSONString(request.Body)
-			contentHash, _err = client.MakeContentHash(util.ToBytes(str), signatureVersion)
-			if _err != nil {
-				return _err
-			}
-
-			request.Stream = tea.ToReader(str)
-			request.Headers["content-type"] = tea.String("application/json")
+			bodyBytes = util.ToBytes(bodyStr)
 		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("binary"))) {
 			// content-type: application/octet-stream
-			bodyBytes, _err := util.AssertAsBytes(request.Body)
+			bodyBytes, _err = util.AssertAsBytes(request.Body)
 			if _err != nil {
 				return _err
 			}
 
-			contentHash, _err = client.MakeContentHash(bodyBytes, signatureVersion)
-			if _err != nil {
-				return _err
-			}
-
-			request.Stream = tea.ToReader(bodyBytes)
 		}
 
+	}
+
+	// get body raw size
+	bodyRawSize := tea.String("0")
+	rawSizeRef := request.Headers["x-log-bodyrawsize"]
+	// for php bug, Argument #1 ($value) could not be passed by reference
+	if !tea.BoolValue(util.IsUnset(rawSizeRef)) {
+		bodyRawSize = rawSizeRef
+	} else if !tea.BoolValue(util.IsUnset(request.Body)) {
+		bodyRawSize = tea.String(tea.ToString(tea.Int64Value(sls_util.BytesLength(bodyBytes))))
+	}
+
+	// compress if needed, and set body and hash
+	if !tea.BoolValue(util.IsUnset(request.Body)) {
+		if !tea.BoolValue(util.Empty(finalCompressType)) {
+			compressed, _err := sls_util.Compress(bodyBytes, finalCompressType)
+			if _err != nil {
+				return _err
+			}
+
+			bodyBytes = compressed
+		}
+
+		contentHash, _err = client.MakeContentHash(bodyBytes, signatureVersion)
+		if _err != nil {
+			return _err
+		}
+
+		request.Stream = tea.ToReader(bodyBytes)
 	}
 
 	host, _err := client.GetHost(config.Network, project, config.Endpoint)
@@ -108,12 +135,16 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	}
 
 	request.Headers = tea.Merge(map[string]*string{
-		"accept":            tea.String("application/json"),
-		"host":              host,
-		"user-agent":        request.UserAgent,
-		"x-log-apiversion":  tea.String("0.6.0"),
-		"x-log-bodyrawsize": tea.String("0"),
+		"accept":           tea.String("application/json"),
+		"host":             host,
+		"user-agent":       request.UserAgent,
+		"x-log-apiversion": tea.String("0.6.0"),
 	}, request.Headers)
+	request.Headers["x-log-bodyrawsize"] = bodyRawSize
+	_err = client.SetDefaultAcceptEncoding(request.Action, request.Headers)
+	if _err != nil {
+		return _err
+	}
 	_err = client.BuildRequest(context)
 	if _err != nil {
 		return _err
@@ -153,10 +184,65 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	return _err
 }
 
+func (client *Client) GetFinalRequestCompressType(action *string, headers map[string]*string) (_result *string, _err error) {
+	compressType := headers["x-log-compresstype"]
+	rawSize := headers["x-log-bodyrawsize"]
+	// for php bug, Argument #1 ($value) could not be passed by reference
+	// 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+	if !tea.BoolValue(util.IsUnset(compressType)) && !tea.BoolValue(util.IsUnset(rawSize)) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	// 2. not compressed, but has x-log-compresstype in header, we need compress here
+	if !tea.BoolValue(util.IsUnset(compressType)) {
+		_result = compressType
+		return _result, _err
+	}
+
+	// 3. not compressed, in pre-defined api list, try use default supported compress type in order
+	encodings := client.ReqBodyCompressType[tea.StringValue(action)]
+	if !tea.BoolValue(util.IsUnset(encodings)) {
+		for _, encoding := range encodings {
+			if tea.BoolValue(sls_util.IsCompressorAvailable(encoding)) {
+				headers["x-log-compresstype"] = encoding
+				// set header x-log-compresstype
+				_result = encoding
+				return _result, _err
+			}
+
+		}
+	}
+
+	// 4. otherwise we dont need compress here
+	_result = tea.String("")
+	return _result, _err
+}
+
+func (client *Client) SetDefaultAcceptEncoding(action *string, headers map[string]*string) (_err error) {
+	acceptEncoding := headers["Accept-Encoding"]
+	// for php warning, dont rm this line
+	if !tea.BoolValue(util.IsUnset(acceptEncoding)) {
+		return _err
+	}
+
+	encodings := client.RespBodyDecompressType[tea.StringValue(action)]
+	if !tea.BoolValue(util.IsUnset(encodings)) {
+		for _, c := range encodings {
+			if tea.BoolValue(sls_util.IsDecompressorAvailable(c)) {
+				headers["Accept-Encoding"] = c
+				return _err
+			}
+
+		}
+	}
+
+	return _err
+}
+
 func (client *Client) MakeContentHash(content []byte, signatureVersion *string) (_result *string, _err error) {
 	if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
-		// TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-		if tea.BoolValue(util.IsUnset(content)) {
+		if tea.BoolValue(util.IsUnset(content)) || tea.BoolValue(util.EqualString(tea.String(tea.ToString(tea.Int64Value(sls_util.BytesLength(content)))), tea.String("0"))) {
 			_result = tea.String("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 			return _result, _err
 		}

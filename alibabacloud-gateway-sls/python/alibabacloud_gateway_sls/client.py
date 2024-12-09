@@ -3,8 +3,8 @@
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from alibabacloud_darabonba_signature_util.signer import Signer
 from Tea.exceptions import TeaException
+from typing import Dict, List
 from Tea.core import TeaCore
-from typing import Dict
 
 from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_gateway_spi import models as spi_models
@@ -19,6 +19,31 @@ from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 class Client(SPIClient):
     def __init__(self):
         super().__init__()
+        self._resp_body_decompress_type = {
+            'PullLogs': [
+                'zstd',
+                'lz4',
+                'gzip'
+            ],
+            'GetLogsV2': [
+                'zstd',
+                'lz4',
+                'gzip'
+            ],
+            'PreviewSPL': [
+                'lz4'
+            ]
+        }
+        self._req_body_compress_type = {
+            'PutLogs': [
+                'zstd',
+                'lz4',
+                'deflate'
+            ],
+            'PreviewSPL': [
+                'lz4'
+            ]
+        }
 
     def modify_configuration(
         self,
@@ -55,31 +80,42 @@ class Client(SPIClient):
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        final_compress_type = self.get_final_request_compress_type(request.action, request.headers)
         content_hash = ''
+        # get body bytes
+        body_bytes = None
         if not UtilClient.is_unset(request.body):
-            if StringClient.equals(request.req_body_type, 'json'):
+            if StringClient.equals(request.req_body_type, 'json') or StringClient.equals(request.req_body_type, 'formData'):
+                request.headers['content-type'] = 'application/json'
                 body_str = UtilClient.to_jsonstring(request.body)
-                content_hash = self.make_content_hash(UtilClient.to_bytes(body_str), signature_version)
-                request.stream = body_str
-                request.headers['content-type'] = 'application/json'
-            elif StringClient.equals(request.req_body_type, 'formData'):
-                str = UtilClient.to_jsonstring(request.body)
-                content_hash = self.make_content_hash(UtilClient.to_bytes(str), signature_version)
-                request.stream = str
-                request.headers['content-type'] = 'application/json'
+                body_bytes = UtilClient.to_bytes(body_str)
             elif StringClient.equals(request.req_body_type, 'binary'):
                 # content-type: application/octet-stream
                 body_bytes = UtilClient.assert_as_bytes(request.body)
-                content_hash = self.make_content_hash(body_bytes, signature_version)
-                request.stream = body_bytes
+        # get body raw size
+        body_raw_size = '0'
+        raw_size_ref = request.headers.get('x-log-bodyrawsize')
+        # for php bug, Argument #1 ($value) could not be passed by reference
+        if not UtilClient.is_unset(raw_size_ref):
+            body_raw_size = raw_size_ref
+        elif not UtilClient.is_unset(request.body):
+            body_raw_size = f'{SLS_UtilClient.bytes_length(body_bytes)}'
+        # compress if needed, and set body and hash
+        if not UtilClient.is_unset(request.body):
+            if not UtilClient.empty(final_compress_type):
+                compressed = SLS_UtilClient.compress(body_bytes, final_compress_type)
+                body_bytes = compressed
+            content_hash = self.make_content_hash(body_bytes, signature_version)
+            request.stream = body_bytes
         host = self.get_host(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
             'host': host,
             'user-agent': request.user_agent,
-            'x-log-apiversion': '0.6.0',
-            'x-log-bodyrawsize': '0'
+            'x-log-apiversion': '0.6.0'
         }, request.headers)
+        request.headers['x-log-bodyrawsize'] = body_raw_size
+        self.set_default_accept_encoding(request.action, request.headers)
         self.build_request(context)
         # move param in path to query
         if StringClient.equals(signature_version, 'v4'):
@@ -115,31 +151,42 @@ class Client(SPIClient):
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
         signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        final_compress_type = await self.get_final_request_compress_type_async(request.action, request.headers)
         content_hash = ''
+        # get body bytes
+        body_bytes = None
         if not UtilClient.is_unset(request.body):
-            if StringClient.equals(request.req_body_type, 'json'):
+            if StringClient.equals(request.req_body_type, 'json') or StringClient.equals(request.req_body_type, 'formData'):
+                request.headers['content-type'] = 'application/json'
                 body_str = UtilClient.to_jsonstring(request.body)
-                content_hash = await self.make_content_hash_async(UtilClient.to_bytes(body_str), signature_version)
-                request.stream = body_str
-                request.headers['content-type'] = 'application/json'
-            elif StringClient.equals(request.req_body_type, 'formData'):
-                str = UtilClient.to_jsonstring(request.body)
-                content_hash = await self.make_content_hash_async(UtilClient.to_bytes(str), signature_version)
-                request.stream = str
-                request.headers['content-type'] = 'application/json'
+                body_bytes = UtilClient.to_bytes(body_str)
             elif StringClient.equals(request.req_body_type, 'binary'):
                 # content-type: application/octet-stream
                 body_bytes = UtilClient.assert_as_bytes(request.body)
-                content_hash = await self.make_content_hash_async(body_bytes, signature_version)
-                request.stream = body_bytes
+        # get body raw size
+        body_raw_size = '0'
+        raw_size_ref = request.headers.get('x-log-bodyrawsize')
+        # for php bug, Argument #1 ($value) could not be passed by reference
+        if not UtilClient.is_unset(raw_size_ref):
+            body_raw_size = raw_size_ref
+        elif not UtilClient.is_unset(request.body):
+            body_raw_size = f'{SLS_UtilClient.bytes_length(body_bytes)}'
+        # compress if needed, and set body and hash
+        if not UtilClient.is_unset(request.body):
+            if not UtilClient.empty(final_compress_type):
+                compressed = await SLS_UtilClient.compress_async(body_bytes, final_compress_type)
+                body_bytes = compressed
+            content_hash = await self.make_content_hash_async(body_bytes, signature_version)
+            request.stream = body_bytes
         host = await self.get_host_async(config.network, project, config.endpoint)
         request.headers = TeaCore.merge({
             'accept': 'application/json',
             'host': host,
             'user-agent': request.user_agent,
-            'x-log-apiversion': '0.6.0',
-            'x-log-bodyrawsize': '0'
+            'x-log-apiversion': '0.6.0'
         }, request.headers)
+        request.headers['x-log-bodyrawsize'] = body_raw_size
+        await self.set_default_accept_encoding_async(request.action, request.headers)
         await self.build_request_async(context)
         # move param in path to query
         if StringClient.equals(signature_version, 'v4'):
@@ -156,14 +203,95 @@ class Client(SPIClient):
         request.headers['content-md5'] = content_hash
         request.headers['authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
 
+    def get_final_request_compress_type(
+        self,
+        action: str,
+        headers: Dict[str, str],
+    ) -> str:
+        compress_type = headers.get('x-log-compresstype')
+        raw_size = headers.get('x-log-bodyrawsize')
+        # for php bug, Argument #1 ($value) could not be passed by reference
+        # 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+        if not UtilClient.is_unset(compress_type) and not UtilClient.is_unset(raw_size):
+            return ''
+        # 2. not compressed, but has x-log-compresstype in header, we need compress here
+        if not UtilClient.is_unset(compress_type):
+            return compress_type
+        # 3. not compressed, in pre-defined api list, try use default supported compress type in order
+        encodings = self._req_body_compress_type.get(action)
+        if not UtilClient.is_unset(encodings):
+            for encoding in encodings:
+                if SLS_UtilClient.is_compressor_available(encoding):
+                    headers['x-log-compresstype'] = encoding
+                    # set header x-log-compresstype
+                    return encoding
+        # 4. otherwise we dont need compress here
+        return ''
+
+    async def get_final_request_compress_type_async(
+        self,
+        action: str,
+        headers: Dict[str, str],
+    ) -> str:
+        compress_type = headers.get('x-log-compresstype')
+        raw_size = headers.get('x-log-bodyrawsize')
+        # for php bug, Argument #1 ($value) could not be passed by reference
+        # 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+        if not UtilClient.is_unset(compress_type) and not UtilClient.is_unset(raw_size):
+            return ''
+        # 2. not compressed, but has x-log-compresstype in header, we need compress here
+        if not UtilClient.is_unset(compress_type):
+            return compress_type
+        # 3. not compressed, in pre-defined api list, try use default supported compress type in order
+        encodings = self._req_body_compress_type.get(action)
+        if not UtilClient.is_unset(encodings):
+            for encoding in encodings:
+                if await SLS_UtilClient.is_compressor_available_async(encoding):
+                    headers['x-log-compresstype'] = encoding
+                    # set header x-log-compresstype
+                    return encoding
+        # 4. otherwise we dont need compress here
+        return ''
+
+    def set_default_accept_encoding(
+        self,
+        action: str,
+        headers: Dict[str, str],
+    ) -> None:
+        accept_encoding = headers.get('Accept-Encoding')
+        # for php warning, dont rm this line
+        if not UtilClient.is_unset(accept_encoding):
+            return
+        encodings = self._resp_body_decompress_type.get(action)
+        if not UtilClient.is_unset(encodings):
+            for c in encodings:
+                if SLS_UtilClient.is_decompressor_available(c):
+                    headers['Accept-Encoding'] = c
+                    return
+
+    async def set_default_accept_encoding_async(
+        self,
+        action: str,
+        headers: Dict[str, str],
+    ) -> None:
+        accept_encoding = headers.get('Accept-Encoding')
+        # for php warning, dont rm this line
+        if not UtilClient.is_unset(accept_encoding):
+            return
+        encodings = self._resp_body_decompress_type.get(action)
+        if not UtilClient.is_unset(encodings):
+            for c in encodings:
+                if await SLS_UtilClient.is_decompressor_available_async(c):
+                    headers['Accept-Encoding'] = c
+                    return
+
     def make_content_hash(
         self,
         content: bytes,
         signature_version: str,
     ) -> str:
         if StringClient.equals(signature_version, 'v4'):
-            # TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-            if UtilClient.is_unset(content):
+            if UtilClient.is_unset(content) or UtilClient.equal_string(f'{SLS_UtilClient.bytes_length(content)}', '0'):
                 return ''
             return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(content, 'SLS4-HMAC-SHA256')))
         return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign_for_bytes(content)))
@@ -174,8 +302,7 @@ class Client(SPIClient):
         signature_version: str,
     ) -> str:
         if StringClient.equals(signature_version, 'v4'):
-            # TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-            if UtilClient.is_unset(content):
+            if UtilClient.is_unset(content) or UtilClient.equal_string(f'{SLS_UtilClient.bytes_length(content)}', '0'):
                 return ''
             return StringClient.to_lower(Encoder.hex_encode(Encoder.hash(content, 'SLS4-HMAC-SHA256')))
         return StringClient.to_upper(Encoder.hex_encode(Signer.md5sign_for_bytes(content)))

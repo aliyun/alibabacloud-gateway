@@ -11,8 +11,20 @@ import SLS_Util;
 
 extends SPI;
 
-init(){
+type @respBodyDecompressType = map[string][string];
+type @reqBodyCompressType = map[string][string];
+
+init(){ 
   super();
+  @respBodyDecompressType = {
+    PullLogs = ['zstd', 'lz4', 'gzip'],
+    GetLogsV2 = ['zstd', 'lz4', 'gzip'],
+    PreviewSPL = ['lz4']
+  };
+  @reqBodyCompressType = {
+    PutLogs = ['zstd', 'lz4', 'deflate'],
+    PreviewSPL = ['lz4']
+  };
 }
 
 async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
@@ -37,35 +49,53 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       request.headers['x-acs-security-token'] = securityToken;
   }
   var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
+
+  var finalCompressType = getFinalRequestCompressType(request.action, request.headers);
+
   var contentHash = '';
+
+  // get body bytes
+  var bodyBytes : bytes = null;
   if (!Util.isUnset(request.body)) {
-    if (String.equals(request.reqBodyType, 'json')) {
+    if (String.equals(request.reqBodyType, 'json') || String.equals(request.reqBodyType, 'formData')) {
+      request.headers['content-type'] = 'application/json';
       var bodyStr = Util.toJSONString(request.body);
-      contentHash = MakeContentHash(Util.toBytes(bodyStr), signatureVersion);
-      request.stream = bodyStr;
-      request.headers['content-type'] = 'application/json';
-    } else if (String.equals(request.reqBodyType, 'formData')) {
-      var str = Util.toJSONString(request.body);
-      contentHash = MakeContentHash(Util.toBytes(str), signatureVersion);
-      request.stream = str;
-      request.headers['content-type'] = 'application/json';
+      bodyBytes = Util.toBytes(bodyStr);
     } else if (String.equals(request.reqBodyType, 'binary')) {
       // content-type: application/octet-stream
-      var bodyBytes = Util.assertAsBytes(request.body);
-      contentHash = MakeContentHash(bodyBytes, signatureVersion);
-      request.stream = bodyBytes;
+      bodyBytes = Util.assertAsBytes(request.body);
     }
-
   }
+
+  // get body raw size
+  var bodyRawSize : string = '0';
+  var rawSizeRef = request.headers['x-log-bodyrawsize']; // for php bug, Argument #1 ($value) could not be passed by reference
+  if (!Util.isUnset(rawSizeRef)) {
+      bodyRawSize = rawSizeRef;
+  } else if (!Util.isUnset(request.body)) {
+    bodyRawSize = `${SLS_Util.bytesLength(bodyBytes)}`;
+  }
+
+  // compress if needed, and set body and hash
+  if (!Util.isUnset(request.body)) {
+    if (!Util.empty(finalCompressType)) {
+      var compressed = SLS_Util.compress(bodyBytes, finalCompressType);
+      bodyBytes = compressed;
+    } 
+    contentHash = makeContentHash(bodyBytes, signatureVersion);
+    request.stream = bodyBytes;
+  }
+
   var host = getHost(config.network, project, config.endpoint);
   request.headers = {
     accept = 'application/json',
     host = host,
     user-agent = request.userAgent,
     x-log-apiversion = '0.6.0',
-    x-log-bodyrawsize = '0',
     ...request.headers
   };
+  request.headers['x-log-bodyrawsize'] = bodyRawSize;
+  setDefaultAcceptEncoding(request.action, request.headers);
 
   buildRequest(context); // move param in path to query
 
@@ -87,10 +117,54 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   request.headers['authorization'] = getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
 }
 
-async function MakeContentHash(content: bytes, signatureVersion: string) : string {
+async function getFinalRequestCompressType(action: string, headers: map[string]string): string {
+  var compressType = headers['x-log-compresstype'];
+  var rawSize = headers['x-log-bodyrawsize']; // for php bug, Argument #1 ($value) could not be passed by reference
+  // 1. already compressed, has x-log-compresstype and x-log-bodyrawsize in header, we dont need compress here
+  if (!Util.isUnset(compressType) && !Util.isUnset(rawSize)) {
+    return '';
+  }
+
+  // 2. not compressed, but has x-log-compresstype in header, we need compress here
+  if (!Util.isUnset(compressType)) {
+    return compressType;
+  }
+
+  // 3. not compressed, in pre-defined api list, try use default supported compress type in order
+  var encodings = @reqBodyCompressType[action];
+  if (!Util.isUnset(encodings)) {
+    for (var encoding : encodings) {
+      if (SLS_Util.isCompressorAvailable(encoding)) {
+        headers['x-log-compresstype'] = encoding; // set header x-log-compresstype
+        return encoding;
+      }
+    }
+  }
+
+  // 4. otherwise we dont need compress here
+  return '';
+}
+
+
+async function setDefaultAcceptEncoding(action: string, headers: map[string]string): void {
+  var acceptEncoding = headers['Accept-Encoding']; // for php warning, dont rm this line
+  if (!Util.isUnset(acceptEncoding)) {
+    return;
+  }
+  var encodings = @respBodyDecompressType[action];
+  if (!Util.isUnset(encodings)) {
+    for (var c : encodings) {
+      if (SLS_Util.isDecompressorAvailable(c)) {
+        headers['Accept-Encoding'] = c;
+        return;
+      }
+    }
+  }
+}
+
+async function makeContentHash(content: bytes, signatureVersion: string) : string {
   if (String.equals(signatureVersion, 'v4')) {
-    // TODO: 这里应当检查 length == 0，但是还不支持。通常情况下也不会出现 body 设置了但是长度为 0
-    if (Util.isUnset(content)) {
+    if (Util.isUnset(content) || Util.equalString(`${SLS_Util.bytesLength(content)}`, "0")) {
       return 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
     }
     return String.toLower(EncodeUtil.hexEncode(EncodeUtil.hash(content, 'SLS4-HMAC-SHA256')));
