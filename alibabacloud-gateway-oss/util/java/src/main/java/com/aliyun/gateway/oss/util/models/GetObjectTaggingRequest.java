@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class GetObjectTaggingRequest extends TeaModel {
     /**
      * <p>The versionID of the object that you want to query.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQExiBgID.jImWlxciIDQ2ZjgwODIyNDk5MTRhNzBiYmQwYTZkMTYzZjM0****</p>
      */
     @NameInMap("versionId")
     public String versionId;

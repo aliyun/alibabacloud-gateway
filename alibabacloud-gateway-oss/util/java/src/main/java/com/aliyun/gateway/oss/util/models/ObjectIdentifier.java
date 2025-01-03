@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ObjectIdentifier extends TeaModel {
+    /**
+     * <p>This parameter is required.</p>
+     */
     @NameInMap("Key")
     public String key;
 

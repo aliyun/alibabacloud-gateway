@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class RtcConfiguration extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>test_replication_rule_1</p>
+     */
     @NameInMap("ID")
     public String ID;
 

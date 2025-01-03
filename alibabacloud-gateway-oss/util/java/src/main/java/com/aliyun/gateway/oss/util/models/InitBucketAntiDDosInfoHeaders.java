@@ -9,12 +9,20 @@ public class InitBucketAntiDDosInfoHeaders extends TeaModel {
 
     /**
      * <p>The ID of the Anti-DDoS instance.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>cbcac8d2-4f75-4d6d-9f2e-c3447f73****</p>
      */
     @NameInMap("x-oss-defender-instance")
     public String defenderInstance;
 
     /**
      * <p>The type of the Anti-DDoS instance. Set the value to AntiDDosPremimum.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>AntiDDosPremimum</p>
      */
     @NameInMap("x-oss-defender-type")
     public String defenderType;

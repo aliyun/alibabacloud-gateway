@@ -21,9 +21,17 @@ public class BucketInfo extends TeaModel {
     }
 
     public static class BucketPolicy extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
+         */
         @NameInMap("LogBucket")
         public String logBucket;
 
+        /**
+         * <strong>example:</strong>
+         * <p>log/</p>
+         */
         @NameInMap("LogPrefix")
         public String logPrefix;
 
@@ -51,12 +59,24 @@ public class BucketInfo extends TeaModel {
     }
 
     public static class ServerSideEncryptionRule extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>SM4</p>
+         */
         @NameInMap("KMSDataEncryption")
         public String KMSDataEncryption;
 
+        /**
+         * <strong>example:</strong>
+         * <hr>
+         */
         @NameInMap("KMSMasterKeyID")
         public String KMSMasterKeyID;
 
+        /**
+         * <strong>example:</strong>
+         * <p>None</p>
+         */
         @NameInMap("SSEAlgorithm")
         public String SSEAlgorithm;
 
@@ -95,18 +115,36 @@ public class BucketInfo extends TeaModel {
         @NameInMap("AccessControlList")
         public AccessControlList accessControlList;
 
+        /**
+         * <strong>example:</strong>
+         * <p>Disabled</p>
+         */
         @NameInMap("AccessMonitor")
         public String accessMonitor;
 
         @NameInMap("BucketPolicy")
         public BucketPolicy bucketPolicy;
 
+        /**
+         * <strong>example:</strong>
+         * <p>An example bucket.</p>
+         */
         @NameInMap("Comment")
         public String comment;
 
+        /**
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2022-01-06T08:20:09.000Z</p>
+         */
         @NameInMap("CreationDate")
         public String creationDate;
 
+        /**
+         * <strong>example:</strong>
+         * <p>Disabled</p>
+         */
         @NameInMap("CrossRegionReplication")
         public String crossRegionReplication;
 
@@ -119,9 +157,17 @@ public class BucketInfo extends TeaModel {
         @NameInMap("IntranetEndpoint")
         public String intranetEndpoint;
 
+        /**
+         * <strong>example:</strong>
+         * <p>oss-cn-hangzhou</p>
+         */
         @NameInMap("Location")
         public String location;
 
+        /**
+         * <strong>example:</strong>
+         * <p>test-bucket</p>
+         */
         @NameInMap("Name")
         public String name;
 
@@ -137,6 +183,10 @@ public class BucketInfo extends TeaModel {
         @NameInMap("StorageClass")
         public String storageClass;
 
+        /**
+         * <strong>example:</strong>
+         * <p>Disabled</p>
+         */
         @NameInMap("TransferAcceleration")
         public String transferAcceleration;
 

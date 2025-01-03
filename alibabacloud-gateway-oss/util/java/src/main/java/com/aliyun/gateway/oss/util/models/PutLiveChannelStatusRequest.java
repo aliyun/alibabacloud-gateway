@@ -6,12 +6,15 @@ import com.aliyun.tea.*;
 public class PutLiveChannelStatusRequest extends TeaModel {
     /**
      * <p>The status of the LiveChannel. 
-</p>
-     * <p>Valid values:
-</p>
-     * <p>- enabled: enables the LiveChannel.
-</p>
-     * <p>- disabled: disables the LiveChannel.</p>
+     * Valid values:</p>
+     * <ul>
+     * <li>enabled: enables the LiveChannel.</li>
+     * <li>disabled: disables the LiveChannel.</li>
+     * </ul>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>enabled</p>
      */
     @NameInMap("status")
     public String status;

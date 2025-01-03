@@ -10,11 +10,21 @@ public class PutStyleRequest extends TeaModel {
     @NameInMap("Style")
     public Style style;
 
+    /**
+     * <p>The category of the style.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>image</p>
+     */
     @NameInMap("category")
     public String category;
 
     /**
      * <p>The name of the image style.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>imagestyle</p>
      */
     @NameInMap("styleName")
     public String styleName;

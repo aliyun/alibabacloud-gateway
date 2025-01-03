@@ -5,7 +5,10 @@ import com.aliyun.tea.*;
 
 public class ListBucketInventoryRequest extends TeaModel {
     /**
-     * <p>Specify the start position of the list operation. You can obtain this token from the NextContinuationToken field of last ListBucketInventory\"s result.</p>
+     * <p>Specify the start position of the list operation. You can obtain this token from the NextContinuationToken field of last ListBucketInventory\&quot;s result.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>test1.txt</p>
      */
     @NameInMap("continuation-token")
     public String continuationToken;

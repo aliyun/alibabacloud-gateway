@@ -26,32 +26,46 @@ public class ListPartsResponseBody extends TeaModel {
     public static class ListPartResult extends TeaModel {
         /**
          * <p>The name of the bucket.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Bucket")
         public String bucket;
 
         /**
          * <p>Indicates whether the list of parts returned in the response has been truncated. A value of true indicates that the response does not contain all required results. A value of false indicates that the response contains all required results.</p>
-         * <br>
          * <p>Valid values: true and false.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>The name of the object.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>multipart.data</p>
          */
         @NameInMap("Key")
         public String key;
 
         /**
          * <p>The maximum number of parts in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxParts")
         public Long maxParts;
 
         /**
          * <p>The NextPartNumberMarker value that is used for the PartNumberMarker value in a subsequent request when the response does not contain all required results.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>5</p>
          */
         @NameInMap("NextPartNumberMarker")
         public Long nextPartNumberMarker;
@@ -64,12 +78,18 @@ public class ListPartsResponseBody extends TeaModel {
 
         /**
          * <p>The position from which the list starts. All parts whose part numbers are greater than the value of this parameter are listed.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>10</p>
          */
         @NameInMap("PartNumberMarker")
         public Long partNumberMarker;
 
         /**
          * <p>The ID of the upload task.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>0004B999EF5A239BB9138C6227D69F95</p>
          */
         @NameInMap("UploadId")
         public String uploadId;

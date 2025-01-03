@@ -9,12 +9,20 @@ public class UpdateUserAntiDDosInfoHeaders extends TeaModel {
 
     /**
      * <p>The Anti-DDoS instance ID.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>cbcac8d2-4f75-4d6d-9f2e-c3447f73****</p>
      */
     @NameInMap("x-oss-defender-instance")
     public String defenderInstance;
 
     /**
      * <p>The new status of the Anti-DDoS instance. Set the value to HaltDefending, which indicates that the Anti-DDos protection is disabled for a bucket.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>HaltDefending</p>
      */
     @NameInMap("x-oss-defender-status")
     public String defenderStatus;

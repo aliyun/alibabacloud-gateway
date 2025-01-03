@@ -9,6 +9,10 @@ public class DeleteAccessPointHeaders extends TeaModel {
 
     /**
      * <p>The name of the access point.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>ap-01</p>
      */
     @NameInMap("x-oss-access-point-name")
     public String xOssAccessPointName;

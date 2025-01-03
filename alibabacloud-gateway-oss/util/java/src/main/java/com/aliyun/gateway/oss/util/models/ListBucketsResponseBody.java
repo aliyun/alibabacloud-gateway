@@ -54,26 +54,40 @@ public class ListBucketsResponseBody extends TeaModel {
 
         /**
          * <p>Indicates whether all results are returned. Valid values:</p>
-         * <p>- true: All results are not returned in the response. </p>
-         * <p>- false: All results are returned in the response.</p>
+         * <ul>
+         * <li>true: All results are not returned in the response. </li>
+         * <li>false: All results are returned in the response.</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>The name of the bucket from which the buckets are returned.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>abc</p>
          */
         @NameInMap("Marker")
         public String marker;
 
         /**
          * <p>The maximum number of buckets that can be returned.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxKeys")
         public Long maxKeys;
 
         /**
          * <p>The marker for the next ListBuckets (GetService) request. You can use the value of this parameter as the value of marker in the next ListBuckets (GetService) request to retrieve the unreturned results.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>def</p>
          */
         @NameInMap("NextMarker")
         public String nextMarker;
@@ -86,6 +100,9 @@ public class ListBucketsResponseBody extends TeaModel {
 
         /**
          * <p>The prefix contained in the names of returned buckets.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>logs/</p>
          */
         @NameInMap("Prefix")
         public String prefix;

@@ -4,15 +4,27 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class RoutingRuleCondition extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>404</p>
+     */
     @NameInMap("HttpErrorCodeReturnedEquals")
     public Long httpErrorCodeReturnedEquals;
 
     @NameInMap("IncludeHeader")
     public java.util.List<IncludeHeader> includeHeader;
 
+    /**
+     * <strong>example:</strong>
+     * <p>abc/</p>
+     */
     @NameInMap("KeyPrefixEquals")
     public String keyPrefixEquals;
 
+    /**
+     * <strong>example:</strong>
+     * <p>.txt</p>
+     */
     @NameInMap("KeySuffixEquals")
     public String keySuffixEquals;
 
@@ -54,15 +66,31 @@ public class RoutingRuleCondition extends TeaModel {
     }
 
     public static class IncludeHeader extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>-test-suffix</p>
+         */
         @NameInMap("EndsWith")
         public String endsWith;
 
+        /**
+         * <strong>example:</strong>
+         * <p>test-value</p>
+         */
         @NameInMap("Equals")
         public String equals;
 
+        /**
+         * <strong>example:</strong>
+         * <p>test-header</p>
+         */
         @NameInMap("Key")
         public String key;
 
+        /**
+         * <strong>example:</strong>
+         * <p>test-prefix-</p>
+         */
         @NameInMap("StartsWith")
         public String startsWith;
 

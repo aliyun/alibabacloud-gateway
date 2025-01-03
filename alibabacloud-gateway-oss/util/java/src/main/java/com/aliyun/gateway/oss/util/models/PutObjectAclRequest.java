@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class PutObjectAclRequest extends TeaModel {
     /**
      * <p>The version id of the object.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQMhiBgIC3rpSD0BYiIDBjYTk5MmIzN2JlNjQxZTFiNGIzM2E3OTliODA0****</p>
      */
     @NameInMap("versionId")
     public String versionId;

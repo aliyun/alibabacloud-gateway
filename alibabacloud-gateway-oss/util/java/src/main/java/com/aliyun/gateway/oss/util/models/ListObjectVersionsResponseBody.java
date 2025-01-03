@@ -38,57 +38,85 @@ public class ListObjectVersionsResponseBody extends TeaModel {
 
         /**
          * <p>The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result parameter in CommonPrefixes.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>/</p>
          */
         @NameInMap("Delimiter")
         public String delimiter;
 
         /**
          * <p>The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, Marker, Prefix, NextMarker, and Key are encoded in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>url</p>
          */
         @NameInMap("EncodingType")
         public String encodingType;
 
         /**
          * <p>Indicates whether the returned results are truncated.</p>
-         * <br>
-         * <p>- true: indicates that not all results are returned for the request.</p>
-         * <p>- false: indicates that all results are returned for the request.</p>
+         * <ul>
+         * <li>true: indicates that not all results are returned for the request.</li>
+         * <li>false: indicates that all results are returned for the request.</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>Indicates the object from which the ListObjectVersions (GetBucketVersions) operation starts.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>abc</p>
          */
         @NameInMap("KeyMarker")
         public String keyMarker;
 
         /**
          * <p>The maximum number of objects that can be returned in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxKeys")
         public Long maxKeys;
 
         /**
          * <p>The bucket name</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Name")
         public String name;
 
         /**
          * <p>If not all results are returned for the request, the NextKeyMarker parameter is included in the response to indicate the key-marker value of the next ListObjectVersions (GetBucketVersions) request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>def</p>
          */
         @NameInMap("NextKeyMarker")
         public String nextKeyMarker;
 
         /**
          * <p>If not all results are returned for the request, the NextVersionIdMarker parameter is included in the response to indicate the version-id-marker value of the next ListObjectVersions (GetBucketVersions) request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>CAEQMxiBgICbof2D0BYiIGRhZjgwMzJiMjA3MjQ0ODE5MWYxZDYwMzJlZjU1****</p>
          */
         @NameInMap("NextVersionIdMarker")
         public String nextVersionIdMarker;
 
         /**
          * <p>The prefix contained in the names of the returned objects.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>logs/</p>
          */
         @NameInMap("Prefix")
         public String prefix;
@@ -101,6 +129,9 @@ public class ListObjectVersionsResponseBody extends TeaModel {
 
         /**
          * <p>The version from which the ListObjectVersions (GetBucketVersions) operation starts. This parameter is used together with KeyMarker.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>CAEQGBiBgIC_jq7P9xYiIDRiZWJkNjY2Y2Q4NDQ5ZTI5ZGE5ODIxMTIyZThl****</p>
          */
         @NameInMap("VersionIdMarker")
         public String versionIdMarker;

@@ -4,15 +4,27 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ReplicationProgressRule extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>ALL</p>
+     */
     @NameInMap("Action")
     public String action;
 
     @NameInMap("Destination")
     public ReplicationDestination destination;
 
+    /**
+     * <strong>example:</strong>
+     * <p>disabled</p>
+     */
     @NameInMap("HistoricalObjectReplication")
     public String historicalObjectReplication;
 
+    /**
+     * <strong>example:</strong>
+     * <p>replicate001</p>
+     */
     @NameInMap("ID")
     public String ID;
 
@@ -22,6 +34,10 @@ public class ReplicationProgressRule extends TeaModel {
     @NameInMap("Progress")
     public Progress progress;
 
+    /**
+     * <strong>example:</strong>
+     * <p>doing</p>
+     */
     @NameInMap("Status")
     public String status;
 
@@ -87,9 +103,17 @@ public class ReplicationProgressRule extends TeaModel {
     }
 
     public static class Progress extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>0.85</p>
+         */
         @NameInMap("HistoricalObject")
         public String historicalObject;
 
+        /**
+         * <strong>example:</strong>
+         * <p>Thu, 24 Sep 2015 15:39:18 GMT</p>
+         */
         @NameInMap("NewObject")
         public String newObject;
 

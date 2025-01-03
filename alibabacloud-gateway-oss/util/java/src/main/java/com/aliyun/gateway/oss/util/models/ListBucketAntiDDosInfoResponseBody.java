@@ -32,16 +32,24 @@ public class ListBucketAntiDDosInfoResponseBody extends TeaModel {
 
         /**
          * <p>Indicates whether all Anti-DDoS instances are returned.</p>
-         * <br>
-         * <p>- true: All Anti-DDoS instances are returned.</p>
-         * <br>
-         * <p>- false: Not all Anti-DDoS instances are returned.</p>
+         * <ul>
+         * <li><p>true: All Anti-DDoS instances are returned.</p>
+         * </li>
+         * <li><p>false: Not all Anti-DDoS instances are returned.</p>
+         * </li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>The Anti-DDoS instances whose names are alphabetically after the specified marker.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>abc</p>
          */
         @NameInMap("Marker")
         public String marker;

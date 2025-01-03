@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class LoggingEnabled extends TeaModel {
+    /**
+     * <p>This parameter is required.</p>
+     */
     @NameInMap("TargetBucket")
     public String targetBucket;
 

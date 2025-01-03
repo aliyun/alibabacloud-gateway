@@ -26,12 +26,19 @@ public class UploadPartCopyResponseBody extends TeaModel {
     public static class CopyPartResult extends TeaModel {
         /**
          * <p>The ETag of the copied part.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>&quot;5B3C1A2E053D763E1B002CC607C5****&quot;</p>
          */
         @NameInMap("ETag")
         public String ETag;
 
         /**
          * <p>The last modified time of copy source.</p>
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2014-07-17T06:27:54.000Z</p>
          */
         @NameInMap("LastModified")
         public String lastModified;

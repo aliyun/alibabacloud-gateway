@@ -7,6 +7,9 @@ public class CopyPartResult extends TeaModel {
     @NameInMap("ETag")
     public String ETag;
 
+    /**
+     * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+     */
     @NameInMap("LastModified")
     public String lastModified;
 

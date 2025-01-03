@@ -4,12 +4,24 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ReplicationDestination extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>destbucket</p>
+     */
     @NameInMap("Bucket")
     public String bucket;
 
+    /**
+     * <strong>example:</strong>
+     * <p>oss-cn-hangzhou</p>
+     */
     @NameInMap("Location")
     public String location;
 
+    /**
+     * <strong>example:</strong>
+     * <p>internal</p>
+     */
     @NameInMap("TransferType")
     public String transferType;
 

@@ -4,18 +4,35 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class RefererConfiguration extends TeaModel {
+    /**
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("AllowEmptyReferer")
     public Boolean allowEmptyReferer;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("AllowTruncateQueryString")
     public Boolean allowTruncateQueryString;
 
     @NameInMap("RefererBlacklist")
     public RefererBlacklist refererBlacklist;
 
+    /**
+     * <p>This parameter is required.</p>
+     */
     @NameInMap("RefererList")
     public RefererList refererList;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("TruncatePath")
     public Boolean truncatePath;
 

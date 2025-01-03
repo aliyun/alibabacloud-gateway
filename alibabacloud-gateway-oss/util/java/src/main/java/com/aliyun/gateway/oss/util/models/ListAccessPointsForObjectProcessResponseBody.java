@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ListAccessPointsForObjectProcessResponseBody extends TeaModel {
+    /**
+     * <p>The container that stores information about the Object FC Access Points that are returned.</p>
+     */
     @NameInMap("ListAccessPointsForObjectProcessResult")
     public ListAccessPointsForObjectProcessResult listAccessPointsForObjectProcessResult;
 
@@ -21,18 +24,52 @@ public class ListAccessPointsForObjectProcessResponseBody extends TeaModel {
     }
 
     public static class AccessPointForObjectProcess extends TeaModel {
+        /**
+         * <p>The alias of the Object FC Access Point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>fc-ap-01-3b00521f653d2b3223680ec39dbbe2****-opapalias</p>
+         */
         @NameInMap("AccessPointForObjectProcessAlias")
         public String accessPointForObjectProcessAlias;
 
+        /**
+         * <p>The name of the access point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>fc-01</p>
+         */
         @NameInMap("AccessPointName")
         public String accessPointName;
 
+        /**
+         * <p>The name of the Object FC Access Point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>fc-ap-01</p>
+         */
         @NameInMap("AccessPointNameForObjectProcess")
         public String accessPointNameForObjectProcess;
 
+        /**
+         * <p>Whether allow anonymous user access this FC Access Point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>false</p>
+         */
         @NameInMap("AllowAnonymousAccessForObjectProcess")
         public String allowAnonymousAccessForObjectProcess;
 
+        /**
+         * <p>The status of the Object FC Access Point. Valid values:</p>
+         * <p>enable: The Object FC Access Point is created.</p>
+         * <p>disable: The Object FC Access Point is disabled.</p>
+         * <p>creating: The Object FC Access Point is being created.</p>
+         * <p>deleting: The Object FC Access Point is deleted.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>enable</p>
+         */
         @NameInMap("Status")
         public String status;
 
@@ -84,6 +121,9 @@ public class ListAccessPointsForObjectProcessResponseBody extends TeaModel {
     }
 
     public static class AccessPointsForObjectProcess extends TeaModel {
+        /**
+         * <p>The container that stores information about a single Object FC Access Point.</p>
+         */
         @NameInMap("AccessPointForObjectProcess")
         public java.util.List<AccessPointForObjectProcess> accessPointForObjectProcess;
 
@@ -103,15 +143,38 @@ public class ListAccessPointsForObjectProcessResponseBody extends TeaModel {
     }
 
     public static class ListAccessPointsForObjectProcessResult extends TeaModel {
+        /**
+         * <p>The container that stores information about all Object FC Access Points.</p>
+         */
         @NameInMap("AccessPointsForObjectProcess")
         public AccessPointsForObjectProcess accessPointsForObjectProcess;
 
+        /**
+         * <p>The UID of the Alibaba Cloud account to which the Object FC Access Points belong.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>111933544165****</p>
+         */
         @NameInMap("AccountId")
         public String accountId;
 
+        /**
+         * <p>Indicates whether the returned results are truncated. Valid values:</p>
+         * <p>true: indicates that not all results are returned for the request.</p>
+         * <p>false: indicates that all results are returned for the request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
+        /**
+         * <p>Indicates that this ListAccessPointsForObjectProcess request contains subsequent results. You need to set the NextContinuationToken element to continuation-token for subsequent results.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>abc</p>
+         */
         @NameInMap("NextContinuationToken")
         public String nextContinuationToken;
 

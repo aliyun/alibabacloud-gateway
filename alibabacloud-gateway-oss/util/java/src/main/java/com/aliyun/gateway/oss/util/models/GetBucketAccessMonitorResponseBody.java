@@ -26,10 +26,12 @@ public class GetBucketAccessMonitorResponseBody extends TeaModel {
     public static class AccessMonitorConfiguration extends TeaModel {
         /**
          * <p>The access tracking status of the bucket. Valid values:</p>
-         * <br>
-         * <p>- Enabled: Access tracking is enabled.</p>
-         * <br>
-         * <p>- Disabled: Access tracking is disabled.</p>
+         * <ul>
+         * <li><p>Enabled: Access tracking is enabled.</p>
+         * </li>
+         * <li><p>Disabled: Access tracking is disabled.</p>
+         * </li>
+         * </ul>
          */
         @NameInMap("Status")
         public String status;

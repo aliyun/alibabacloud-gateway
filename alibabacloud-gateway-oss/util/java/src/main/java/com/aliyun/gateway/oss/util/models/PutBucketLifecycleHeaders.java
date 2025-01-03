@@ -9,10 +9,11 @@ public class PutBucketLifecycleHeaders extends TeaModel {
 
     /**
      * <p>Specifies whether to allow overlapped prefixes. Valid values:</p>
-     * <br>
      * <p>true: Overlapped prefixes are allowed.</p>
-     * <br>
      * <p>false: Overlapped prefixes are not allowed.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>true</p>
      */
     @NameInMap("x-oss-allow-same-action-overlap")
     public String xOssAllowSameActionOverlap;

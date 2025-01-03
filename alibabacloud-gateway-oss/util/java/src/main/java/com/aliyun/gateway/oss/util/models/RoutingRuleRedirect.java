@@ -4,114 +4,242 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class RoutingRuleRedirect extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("EnableReplacePrefix")
     public Boolean enableReplacePrefix;
 
+    /**
+     * <strong>example:</strong>
+     * <p>example.com</p>
+     */
     @NameInMap("HostName")
     public String hostName;
 
+    /**
+     * <strong>example:</strong>
+     * <p>302</p>
+     */
     @NameInMap("HttpRedirectCode")
     public Long httpRedirectCode;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorAllowGetImageInfo")
     public Boolean mirrorAllowGetImageInfo;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorAllowHeadObject")
     public Boolean mirrorAllowHeadObject;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorAllowVideoSnapshot")
     public Boolean mirrorAllowVideoSnapshot;
 
+    /**
+     * <strong>example:</strong>
+     * <p>303</p>
+     */
     @NameInMap("MirrorAsyncStatus")
     public Long mirrorAsyncStatus;
 
     @NameInMap("MirrorAuth")
     public MirrorAuth mirrorAuth;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorCheckMd5")
     public Boolean mirrorCheckMd5;
 
+    /**
+     * <strong>example:</strong>
+     * <p>cn-hangzhou</p>
+     */
     @NameInMap("MirrorDstRegion")
     public String mirrorDstRegion;
 
+    /**
+     * <strong>example:</strong>
+     * <p>vpc-test-id</p>
+     */
     @NameInMap("MirrorDstSlaveVpcId")
     public String mirrorDstSlaveVpcId;
 
+    /**
+     * <strong>example:</strong>
+     * <p>vpc-test-id</p>
+     */
     @NameInMap("MirrorDstVpcId")
     public String mirrorDstVpcId;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorFollowRedirect")
     public Boolean mirrorFollowRedirect;
 
     @NameInMap("MirrorHeaders")
     public MirrorHeaders mirrorHeaders;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorIsExpressTunnel")
     public Boolean mirrorIsExpressTunnel;
 
     @NameInMap("MirrorMultiAlternates")
     public MirrorMultiAlternates mirrorMultiAlternates;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorPassOriginalSlashes")
     public Boolean mirrorPassOriginalSlashes;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorPassQueryString")
     public Boolean mirrorPassQueryString;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorProxyPass")
     public Boolean mirrorProxyPass;
 
     @NameInMap("MirrorReturnHeaders")
     public MirrorReturnHeaders mirrorReturnHeaders;
 
+    /**
+     * <strong>example:</strong>
+     * <p>aliyun-test-role</p>
+     */
     @NameInMap("MirrorRole")
     public String mirrorRole;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorSNI")
     public Boolean mirrorSNI;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("MirrorSaveOssMeta")
     public Boolean mirrorSaveOssMeta;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorSwitchAllErrors")
     public Boolean mirrorSwitchAllErrors;
 
     @NameInMap("MirrorTaggings")
     public MirrorTaggings mirrorTaggings;
 
+    /**
+     * <strong>example:</strong>
+     * <p>test-tunnel-id</p>
+     */
     @NameInMap("MirrorTunnelId")
     public String mirrorTunnelId;
 
+    /**
+     * <strong>example:</strong>
+     * <p><a href="http://example.com/">http://example.com/</a></p>
+     */
     @NameInMap("MirrorURL")
     public String mirrorURL;
 
+    /**
+     * <strong>example:</strong>
+     * <p><a href="https://example.com/hartbeat">https://example.com/hartbeat</a></p>
+     */
     @NameInMap("MirrorURLProbe")
     public String mirrorURLProbe;
 
+    /**
+     * <strong>example:</strong>
+     * <p><a href="https://example.com">https://example.com</a></p>
+     */
     @NameInMap("MirrorURLSlave")
     public String mirrorURLSlave;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorUserLastModified")
     public Boolean mirrorUserLastModified;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("MirrorUsingRole")
     public Boolean mirrorUsingRole;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("PassQueryString")
     public Boolean passQueryString;
 
+    /**
+     * <strong>example:</strong>
+     * <p>https</p>
+     */
     @NameInMap("Protocol")
     public String protocol;
 
+    /**
+     * <strong>example:</strong>
+     * <p>Mirror</p>
+     */
     @NameInMap("RedirectType")
     public String redirectType;
 
+    /**
+     * <strong>example:</strong>
+     * <p>def/</p>
+     */
     @NameInMap("ReplaceKeyPrefixWith")
     public String replaceKeyPrefixWith;
 
+    /**
+     * <strong>example:</strong>
+     * <p>prefix/${key}.suffix</p>
+     */
     @NameInMap("ReplaceKeyWith")
     public String replaceKeyWith;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("TransparentMirrorResponseCodes")
     public String transparentMirrorResponseCodes;
 
@@ -417,15 +545,31 @@ public class RoutingRuleRedirect extends TeaModel {
     }
 
     public static class MirrorAuth extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>TESTAK</p>
+         */
         @NameInMap("AccessKeyId")
         public String accessKeyId;
 
+        /**
+         * <strong>example:</strong>
+         * <p>TESTSK</p>
+         */
         @NameInMap("AccessKeySecret")
         public String accessKeySecret;
 
+        /**
+         * <strong>example:</strong>
+         * <p>S3V4</p>
+         */
         @NameInMap("AuthType")
         public String authType;
 
+        /**
+         * <strong>example:</strong>
+         * <p>ap-southeast-1</p>
+         */
         @NameInMap("Region")
         public String region;
 
@@ -469,9 +613,17 @@ public class RoutingRuleRedirect extends TeaModel {
     }
 
     public static class Set extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>set-header</p>
+         */
         @NameInMap("Key")
         public String key;
 
+        /**
+         * <strong>example:</strong>
+         * <p>set-value</p>
+         */
         @NameInMap("Value")
         public String value;
 
@@ -502,6 +654,10 @@ public class RoutingRuleRedirect extends TeaModel {
         @NameInMap("Pass")
         public java.util.List<String> pass;
 
+        /**
+         * <strong>example:</strong>
+         * <p>false</p>
+         */
         @NameInMap("PassAll")
         public Boolean passAll;
 
@@ -551,15 +707,31 @@ public class RoutingRuleRedirect extends TeaModel {
     }
 
     public static class MirrorMultiAlternate extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>ap-southeast-1</p>
+         */
         @NameInMap("MirrorMultiAlternateDstRegion")
         public String mirrorMultiAlternateDstRegion;
 
+        /**
+         * <strong>example:</strong>
+         * <p>32</p>
+         */
         @NameInMap("MirrorMultiAlternateNumber")
         public Long mirrorMultiAlternateNumber;
 
+        /**
+         * <strong>example:</strong>
+         * <p><a href="https://test-multi-alter.example.com">https://test-multi-alter.example.com</a></p>
+         */
         @NameInMap("MirrorMultiAlternateURL")
         public String mirrorMultiAlternateURL;
 
+        /**
+         * <strong>example:</strong>
+         * <p>vpc-test-id</p>
+         */
         @NameInMap("MirrorMultiAlternateVpcId")
         public String mirrorMultiAlternateVpcId;
 
@@ -622,9 +794,17 @@ public class RoutingRuleRedirect extends TeaModel {
     }
 
     public static class ReturnHeader extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>test-header</p>
+         */
         @NameInMap("Key")
         public String key;
 
+        /**
+         * <strong>example:</strong>
+         * <p>test-value</p>
+         */
         @NameInMap("Value")
         public String value;
 
@@ -671,9 +851,17 @@ public class RoutingRuleRedirect extends TeaModel {
     }
 
     public static class Taggings extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>test-tagging</p>
+         */
         @NameInMap("Key")
         public String key;
 
+        /**
+         * <strong>example:</strong>
+         * <p>test-value</p>
+         */
         @NameInMap("Value")
         public String value;
 

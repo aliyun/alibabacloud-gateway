@@ -10,12 +10,24 @@ public class InventoryConfiguration extends TeaModel {
     @NameInMap("Filter")
     public InventoryFilter filter;
 
+    /**
+     * <strong>example:</strong>
+     * <p>report1</p>
+     */
     @NameInMap("Id")
     public String id;
 
+    /**
+     * <strong>example:</strong>
+     * <p>Current</p>
+     */
     @NameInMap("IncludedObjectVersions")
     public String includedObjectVersions;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("IsEnabled")
     public Boolean isEnabled;
 

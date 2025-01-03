@@ -4,6 +4,13 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class GetBucketDataRedundancyTransitionRequest extends TeaModel {
+    /**
+     * <p>The ID of the redundancy change task.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>751f5243f8ac4ae89f34726534d1****</p>
+     */
     @NameInMap("x-oss-redundancy-transition-taskid")
     public String xOssRedundancyTransitionTaskid;
 

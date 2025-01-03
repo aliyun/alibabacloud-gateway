@@ -4,9 +4,17 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class InventoryOSSBucketDestination extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>100000000000000</p>
+     */
     @NameInMap("AccountId")
     public String accountId;
 
+    /**
+     * <strong>example:</strong>
+     * <p>acs:oss:::bucket_0001</p>
+     */
     @NameInMap("Bucket")
     public String bucket;
 
@@ -16,9 +24,17 @@ public class InventoryOSSBucketDestination extends TeaModel {
     @NameInMap("Format")
     public String format;
 
+    /**
+     * <strong>example:</strong>
+     * <p>prefix1/</p>
+     */
     @NameInMap("Prefix")
     public String prefix;
 
+    /**
+     * <strong>example:</strong>
+     * <p>acs:ram::100000000000000:role/AliyunOSSRole</p>
+     */
     @NameInMap("RoleArn")
     public String roleArn;
 

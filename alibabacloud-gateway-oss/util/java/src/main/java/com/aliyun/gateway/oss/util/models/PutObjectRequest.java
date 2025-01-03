@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class PutObjectRequest extends TeaModel {
     /**
      * <p>The body of the request.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>Binary content</p>
      */
     @NameInMap("body")
     public java.io.InputStream body;

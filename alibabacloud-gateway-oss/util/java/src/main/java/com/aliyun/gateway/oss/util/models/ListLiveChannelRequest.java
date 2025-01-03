@@ -6,20 +6,28 @@ import com.aliyun.tea.*;
 public class ListLiveChannelRequest extends TeaModel {
     /**
      * <p>The name of the LiveChannel from which the list operation starts. LiveChannels whose names are alphabetically after the value of the marker parameter are returned.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>channel-1</p>
      */
     @NameInMap("marker")
     public String marker;
 
     /**
      * <p>The maximum number of LiveChannels that can be returned for the current request. The value of max-keys cannot exceed 1000. 
-</p>
-     * <p>Default value: 100.</p>
+     * Default value: 100.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>100</p>
      */
     @NameInMap("max-keys")
     public Long maxKeys;
 
     /**
      * <p>The prefix that the names of the LiveChannels that you want to return must contain. If you specify a prefix in the request, the specified prefix is included in the response.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>fun/</p>
      */
     @NameInMap("prefix")
     public String prefix;

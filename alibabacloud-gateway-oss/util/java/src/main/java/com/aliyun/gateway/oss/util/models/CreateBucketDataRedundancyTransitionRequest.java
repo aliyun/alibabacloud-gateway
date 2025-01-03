@@ -4,6 +4,13 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class CreateBucketDataRedundancyTransitionRequest extends TeaModel {
+    /**
+     * <p>The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of a bucket from LRS to ZRS.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>ZRS</p>
+     */
     @NameInMap("x-oss-target-redundancy-type")
     public String xOssTargetRedundancyType;
 

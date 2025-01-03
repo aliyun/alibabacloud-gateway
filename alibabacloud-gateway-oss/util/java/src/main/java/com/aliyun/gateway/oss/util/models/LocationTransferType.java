@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class LocationTransferType extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>oss-eu-west-1</p>
+     */
     @NameInMap("Location")
     public String location;
 
