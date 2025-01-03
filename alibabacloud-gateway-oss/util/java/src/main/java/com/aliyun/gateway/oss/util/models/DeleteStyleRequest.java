@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class DeleteStyleRequest extends TeaModel {
     /**
      * <p>The name of the image style.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>imagestyle</p>
      */
     @NameInMap("styleName")
     public String styleName;

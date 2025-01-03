@@ -13,6 +13,10 @@ public class RoutingRule extends TeaModel {
     @NameInMap("Redirect")
     public RoutingRuleRedirect redirect;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1</p>
+     */
     @NameInMap("RuleNumber")
     public Long ruleNumber;
 

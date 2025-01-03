@@ -65,6 +65,10 @@ public class ResponseHeaderConfiguration extends TeaModel {
         @NameInMap("HideHeaders")
         public HideHeaders hideHeaders;
 
+        /**
+         * <strong>example:</strong>
+         * <p>hiddenHeader</p>
+         */
         @NameInMap("Name")
         public String name;
 

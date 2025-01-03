@@ -5,15 +5,25 @@ import com.aliyun.tea.*;
 
 public class PostVodPlaylistRequest extends TeaModel {
     /**
-     * <p>The end time of the time range during which the TS files that you want to query are generated, </p>
-     * <p>which is a Unix timestamp.</p>
-     * <p>> The value of EndTime must be later than the value of StartTime. The duration between EndTime and StartTime must be shorter than one day.</p>
+     * <p>The end time of the time range during which the TS files that you want to query are generated, 
+     * which is a Unix timestamp.</p>
+     * <blockquote>
+     * <p>The value of EndTime must be later than the value of StartTime. The duration between EndTime and StartTime must be shorter than one day.</p>
+     * </blockquote>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>1636618271</p>
      */
     @NameInMap("endTime")
     public String endTime;
 
     /**
      * <p>The start time of the time range during which the TS files that you want to query are generated, which is a Unix timestamp.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>1636600271</p>
      */
     @NameInMap("startTime")
     public String startTime;

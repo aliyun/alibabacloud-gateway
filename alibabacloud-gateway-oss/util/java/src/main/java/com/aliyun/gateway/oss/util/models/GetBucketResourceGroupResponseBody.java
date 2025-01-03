@@ -26,8 +26,10 @@ public class GetBucketResourceGroupResponseBody extends TeaModel {
     public static class BucketResourceGroupConfiguration extends TeaModel {
         /**
          * <p>The ID of the resource group to which the bucket belongs.</p>
-         * <br>
          * <p>If this element is not specified, the bucket is moved to the default resource group.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>rg-asdfklj***</p>
          */
         @NameInMap("ResourceGroupId")
         public String resourceGroupId;

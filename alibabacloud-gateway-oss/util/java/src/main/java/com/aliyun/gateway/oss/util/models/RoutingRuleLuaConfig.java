@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class RoutingRuleLuaConfig extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>test.lua</p>
+     */
     @NameInMap("Script")
     public String script;
 

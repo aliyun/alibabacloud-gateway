@@ -9,16 +9,25 @@ public class UpdateBucketAntiDDosInfoHeaders extends TeaModel {
 
     /**
      * <p>The Anti-DDoS instance ID.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>cbcac8d2-4f75-4d6d-9f2e-c3447f73****</p>
      */
     @NameInMap("x-oss-defender-instance")
     public String defenderInstance;
 
     /**
      * <p>The new status of the Anti-DDoS instance. Valid values:</p>
-     * <br>
-     * <p>*   Init: You must specify the custom domain name that you want to protect.</p>
-     * <p>*   Defending: You can select whether to specify the custom domain name that you want to protect.</p>
-     * <p>*   HaltDefending: You do not need to specify the custom domain name that you want to protect.</p>
+     * <ul>
+     * <li>Init: You must specify the custom domain name that you want to protect.</li>
+     * <li>Defending: You can select whether to specify the custom domain name that you want to protect.</li>
+     * <li>HaltDefending: You do not need to specify the custom domain name that you want to protect.</li>
+     * </ul>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>Init</p>
      */
     @NameInMap("x-oss-defender-status")
     public String defenderStatus;

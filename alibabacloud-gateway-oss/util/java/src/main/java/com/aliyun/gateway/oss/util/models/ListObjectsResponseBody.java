@@ -38,50 +38,76 @@ public class ListObjectsResponseBody extends TeaModel {
 
         /**
          * <p>The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>/</p>
          */
         @NameInMap("Delimiter")
         public String delimiter;
 
         /**
          * <p>The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, Marker, Prefix, NextMarker, and Key are encoded in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>url</p>
          */
         @NameInMap("EncodingType")
         public String encodingType;
 
         /**
          * <p>Indicates whether the returned list in the result is truncated. Valid values:</p>
-         * <p>- true</p>
-         * <p>- false</p>
+         * <ul>
+         * <li>true</li>
+         * <li>false</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>The name of the object after which the GetBucket (ListObjects) operation begins.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>abc</p>
          */
         @NameInMap("Marker")
         public String marker;
 
         /**
          * <p>The maximum number of returned objects in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxKeys")
         public Integer maxKeys;
 
         /**
          * <p>The name of the bucket.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Name")
         public String name;
 
         /**
          * <p>If not all results are returned, NextMarker is included in the response to indicate the value of marker in the next request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>def</p>
          */
         @NameInMap("NextMarker")
         public String nextMarker;
 
         /**
          * <p>The prefix in the names of the returned objects.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>logs/</p>
          */
         @NameInMap("Prefix")
         public String prefix;

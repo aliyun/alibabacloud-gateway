@@ -26,23 +26,32 @@ public class GetLiveChannelInfoResponseBody extends TeaModel {
     public static class LiveChannelConfiguration extends TeaModel {
         /**
          * <p>The description of the LiveChannel.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>test</p>
          */
         @NameInMap("Description")
         public String description;
 
         /**
          * <p>The status of the LiveChannel.</p>
-         * <br>
          * <p>Valid values:</p>
-         * <p>- enabled: indicates that the LiveChannel is enabled.</p>
-         * <p>- disabled: indicates that the LiveChannel is disabled.</p>
+         * <ul>
+         * <li>enabled: indicates that the LiveChannel is enabled.</li>
+         * <li>disabled: indicates that the LiveChannel is disabled.</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>enabled</p>
          */
         @NameInMap("Status")
         public String status;
 
         /**
          * <p>The container that stores the configurations used by the LiveChannel to store uploaded data.</p>
-         * <p>> FragDuration, FragCount, and PlaylistName are returned only when the value of Type is HLS.</p>
+         * <blockquote>
+         * <p>FragDuration, FragCount, and PlaylistName are returned only when the value of Type is HLS.</p>
+         * </blockquote>
          */
         @NameInMap("Target")
         public LiveChannelTarget target;

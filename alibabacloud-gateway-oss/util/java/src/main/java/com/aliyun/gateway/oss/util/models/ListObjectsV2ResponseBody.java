@@ -38,63 +38,94 @@ public class ListObjectsV2ResponseBody extends TeaModel {
 
         /**
          * <p>If continuation-token is specified in the request, the response contains ContinuationToken.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>CgJiYw--</p>
          */
         @NameInMap("ContinuationToken")
         public String continuationToken;
 
         /**
          * <p>The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>/</p>
          */
         @NameInMap("Delimiter")
         public String delimiter;
 
         /**
          * <p>The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, StartAfter, Prefix, NextContinuationToken, and Key are encoded in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>url</p>
          */
         @NameInMap("EncodingType")
         public String encodingType;
 
         /**
          * <p>Indicates whether the returned results are truncated. Valid values:</p>
-         * <br>
-         * <p>- true</p>
-         * <p>- false</p>
+         * <ul>
+         * <li>true</li>
+         * <li>false</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>The number of objects returned for this request. If delimiter is specified in the request, the value of KeyCount is the sum of the values of Key and CommonPrefixes.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>6</p>
          */
         @NameInMap("KeyCount")
         public Integer keyCount;
 
         /**
          * <p>The maximum number of returned objects in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxKeys")
         public Integer maxKeys;
 
         /**
          * <p>The name of the bucket.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Name")
         public String name;
 
         /**
          * <p>The token from which the next list operation starts. Use the value of NextContinuationToken as the value of continuation-token in the next request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>CgJiYw--</p>
          */
         @NameInMap("NextContinuationToken")
         public String nextContinuationToken;
 
         /**
          * <p>The prefix in the names of the returned objects.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>logs/</p>
          */
         @NameInMap("Prefix")
         public String prefix;
 
         /**
          * <p>If start-after is specified in the request, the response contains StartAfter.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>test.txt</p>
          */
         @NameInMap("StartAfter")
         public String startAfter;

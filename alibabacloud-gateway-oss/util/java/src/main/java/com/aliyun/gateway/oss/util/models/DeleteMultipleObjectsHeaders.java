@@ -7,6 +7,12 @@ public class DeleteMultipleObjectsHeaders extends TeaModel {
     @NameInMap("commonHeaders")
     public java.util.Map<String, String> commonHeaders;
 
+    /**
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>ohhnqLBJFiKkPSBO1eNaUA==</p>
+     */
     @NameInMap("content-md5")
     public String contentMd5;
 

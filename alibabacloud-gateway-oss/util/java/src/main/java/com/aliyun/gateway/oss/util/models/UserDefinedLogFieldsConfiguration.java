@@ -51,6 +51,10 @@ public class UserDefinedLogFieldsConfiguration extends TeaModel {
     }
 
     public static class ParamSet extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>my-param</p>
+         */
         @NameInMap("parameter")
         public java.util.List<String> parameter;
 

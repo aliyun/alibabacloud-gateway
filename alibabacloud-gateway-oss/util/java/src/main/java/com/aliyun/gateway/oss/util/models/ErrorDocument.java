@@ -4,9 +4,17 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ErrorDocument extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>200</p>
+     */
     @NameInMap("HttpStatus")
     public Long httpStatus;
 
+    /**
+     * <strong>example:</strong>
+     * <p>error.html</p>
+     */
     @NameInMap("Key")
     public String key;
 

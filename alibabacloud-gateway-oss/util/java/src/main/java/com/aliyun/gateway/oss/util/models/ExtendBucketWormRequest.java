@@ -12,8 +12,13 @@ public class ExtendBucketWormRequest extends TeaModel {
 
     /**
      * <p>The ID of the retention policy.</p>
-     * <br>
-     * <p>>  If the ID of the retention policy that specifies the number of days for which objects can be retained does not exist, the HTTP status code 404 is returned.</p>
+     * <blockquote>
+     * <p> If the ID of the retention policy that specifies the number of days for which objects can be retained does not exist, the HTTP status code 404 is returned.</p>
+     * </blockquote>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>1666E2CFB2B3418****</p>
      */
     @NameInMap("wormId")
     public String wormId;

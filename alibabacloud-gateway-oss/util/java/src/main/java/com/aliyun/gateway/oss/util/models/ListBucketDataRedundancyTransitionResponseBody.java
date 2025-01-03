@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ListBucketDataRedundancyTransitionResponseBody extends TeaModel {
+    /**
+     * <p>The container for listed redundancy type change tasks.</p>
+     */
     @NameInMap("ListBucketDataRedundancyTransition")
     public ListBucketDataRedundancyTransition listBucketDataRedundancyTransition;
 
@@ -40,4 +43,3 @@ public class ListBucketDataRedundancyTransitionResponseBody extends TeaModel {
     }
 
 }
-

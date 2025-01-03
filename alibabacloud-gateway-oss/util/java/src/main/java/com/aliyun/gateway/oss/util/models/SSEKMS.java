@@ -4,6 +4,13 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class SSEKMS extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>abcd</p>
+     * 
+     * <strong>if can be null:</strong>
+     * <p>true</p>
+     */
     @NameInMap("KeyId")
     public String keyId;
 

@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class GetObjectMetaRequest extends TeaModel {
     /**
      * <p>The versionID of the object.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQNRiBgIDMh4mD0BYiIDUzNDA4OGNmZjBjYTQ0YmI4Y2I4ZmVlYzJlNGVk****</p>
      */
     @NameInMap("versionId")
     public String versionId;

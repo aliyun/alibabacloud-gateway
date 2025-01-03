@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class GetBucketInventoryRequest extends TeaModel {
     /**
      * <p>The name of the inventory to be queried.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>list1</p>
      */
     @NameInMap("inventoryId")
     public String inventoryId;

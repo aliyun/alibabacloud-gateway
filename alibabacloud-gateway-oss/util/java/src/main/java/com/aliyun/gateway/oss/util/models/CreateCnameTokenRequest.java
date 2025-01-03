@@ -26,6 +26,9 @@ public class CreateCnameTokenRequest extends TeaModel {
     public static class Cname extends TeaModel {
         /**
          * <p>The custom domain name.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example.com</p>
          */
         @NameInMap("Domain")
         public String domain;

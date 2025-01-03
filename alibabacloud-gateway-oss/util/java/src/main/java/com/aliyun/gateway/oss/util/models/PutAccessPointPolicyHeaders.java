@@ -9,6 +9,9 @@ public class PutAccessPointPolicyHeaders extends TeaModel {
 
     /**
      * <p>The name of the access point.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>ap-01</p>
      */
     @NameInMap("x-oss-access-point-name")
     public String xOssAccessPointName;

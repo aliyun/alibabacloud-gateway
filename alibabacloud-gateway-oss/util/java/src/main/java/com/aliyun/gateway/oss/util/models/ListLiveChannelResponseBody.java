@@ -26,8 +26,13 @@ public class ListLiveChannelResponseBody extends TeaModel {
     public static class ListLiveChannelResult extends TeaModel {
         /**
          * <p>Indicates whether all results are returned.</p>
-         * <p>- true: All results are returned.</p>
-         * <p>- false: Not all results are returned.</p>
+         * <ul>
+         * <li>true: All results are returned.</li>
+         * <li>false: Not all results are returned.</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
@@ -40,24 +45,36 @@ public class ListLiveChannelResponseBody extends TeaModel {
 
         /**
          * <p>The name of the LiveChannel after which the ListLiveChannel operation starts.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>new</p>
          */
         @NameInMap("Marker")
         public String marker;
 
         /**
          * <p>The maximum number of returned LiveChannels in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxKeys")
         public Long maxKeys;
 
         /**
          * <p>If not all results are returned, the NextMarker parameter is included in the response to indicate the Marker value of the next request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>channel-0</p>
          */
         @NameInMap("NextMarker")
         public String nextMarker;
 
         /**
          * <p>The prefix that the names of the returned LiveChannels contain.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>Channel</p>
          */
         @NameInMap("Prefix")
         public String prefix;

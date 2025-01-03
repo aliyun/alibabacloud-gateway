@@ -6,6 +6,7 @@ import com.aliyun.tea.*;
 public class SelectObjectRequest extends TeaModel {
     /**
      * <p>The container that stores the SelectObject request.</p>
+     * <p>This parameter is required.</p>
      */
     @NameInMap("SelectRequest")
     public SelectRequest selectRequest;

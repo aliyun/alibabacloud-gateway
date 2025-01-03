@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class GetSymlinkRequest extends TeaModel {
     /**
      * <p>The version of the object to which the symbolic link points.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQNRiBgMClj7qD0BYiIDQ5Y2QyMjc3NGZkODRlMTU5M2VkY2U3MWRiNGRh****</p>
      */
     @NameInMap("versionId")
     public String versionId;

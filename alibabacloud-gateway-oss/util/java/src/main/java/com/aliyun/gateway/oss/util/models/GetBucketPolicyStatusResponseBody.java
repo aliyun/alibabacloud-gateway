@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class GetBucketPolicyStatusResponseBody extends TeaModel {
+    /**
+     * <p>The container that stores public access information.</p>
+     */
     @NameInMap("PolicyStatus")
     public PolicyStatus policyStatus;
 
@@ -21,6 +24,14 @@ public class GetBucketPolicyStatusResponseBody extends TeaModel {
     }
 
     public static class PolicyStatus extends TeaModel {
+        /**
+         * <p>Indicates whether the current bucket policy allows public access.</p>
+         * <p>true</p>
+         * <p>false</p>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("IsPublic")
         public Boolean isPublic;
 

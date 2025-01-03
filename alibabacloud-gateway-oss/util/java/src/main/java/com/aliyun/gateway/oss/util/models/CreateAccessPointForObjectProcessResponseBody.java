@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class CreateAccessPointForObjectProcessResponseBody extends TeaModel {
+    /**
+     * <p>The container that stores information about the Object FC Access Point.</p>
+     */
     @NameInMap("CreateAccessPointForObjectProcessResult")
     public CreateAccessPointForObjectProcessResult createAccessPointForObjectProcessResult;
 
@@ -21,9 +24,21 @@ public class CreateAccessPointForObjectProcessResponseBody extends TeaModel {
     }
 
     public static class CreateAccessPointForObjectProcessResult extends TeaModel {
+        /**
+         * <p>The alias of the Object FC Access Point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>fc-ap-01-3b00521f653d2b3223680ec39dbbe2****-opapalias</p>
+         */
         @NameInMap("AccessPointForObjectProcessAlias")
         public String accessPointForObjectProcessAlias;
 
+        /**
+         * <p>The ARN of the Object FC Access Point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>acs:oss:cn-qingdao:119335441657143:accesspointforobjectprocess/fc-ap-01</p>
+         */
         @NameInMap("AccessPointForObjectProcessArn")
         public String accessPointForObjectProcessArn;
 

@@ -10,15 +10,27 @@ public class GetAccessPointResult extends TeaModel {
     @NameInMap("AccessPointName")
     public String accessPointName;
 
+    /**
+     * <strong>example:</strong>
+     * <p>114******818</p>
+     */
     @NameInMap("AccountId")
     public String accountId;
 
     @NameInMap("Alias")
     public String alias;
 
+    /**
+     * <strong>example:</strong>
+     * <p>example-bucket</p>
+     */
     @NameInMap("Bucket")
     public String bucket;
 
+    /**
+     * <strong>example:</strong>
+     * <p>Sat, 27 Apr 2024 15:04:14 GMT</p>
+     */
     @NameInMap("CreationDate")
     public String creationDate;
 

@@ -4,6 +4,12 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class GetAccessPointPublicAccessBlockRequest extends TeaModel {
+    /**
+     * <p>The name of the access point.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>ap-01</p>
+     */
     @NameInMap("x-oss-access-point-name")
     public String xOssAccessPointName;
 

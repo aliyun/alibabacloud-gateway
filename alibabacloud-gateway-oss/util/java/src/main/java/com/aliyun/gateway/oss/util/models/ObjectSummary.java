@@ -4,27 +4,62 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ObjectSummary extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>5B3C1A2E053D763E1B002CC607C5A0FE1****</p>
+     */
     @NameInMap("ETag")
     public String ETag;
 
+    /**
+     * <strong>example:</strong>
+     * <p>fun/test.jpg</p>
+     */
     @NameInMap("Key")
     public String key;
 
+    /**
+     * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+     * 
+     * <strong>example:</strong>
+     * <p>2012-02-24T08:42:32.000Z</p>
+     */
     @NameInMap("LastModified")
     public String lastModified;
 
     @NameInMap("Owner")
     public Owner owner;
 
-    @NameInMap("ResoreInfo")
-    public String resoreInfo;
+    /**
+     * <strong>example:</strong>
+     * <p>ongoing-request=&quot;true”</p>
+     */
+    @NameInMap("RestoreInfo")
+    public String restoreInfo;
 
+    /**
+     * <strong>example:</strong>
+     * <p>344606</p>
+     */
     @NameInMap("Size")
     public Long size;
 
     @NameInMap("StorageClass")
     public String storageClass;
 
+    /**
+     * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+     * 
+     * <strong>example:</strong>
+     * <p>2012-02-24T08:42:32.000Z</p>
+     */
+    @NameInMap("TransitionTime")
+    public String transitionTime;
+
+    /**
+     * <strong>example:</strong>
+     * <p>Normal</p>
+     */
     @NameInMap("Type")
     public String type;
 
@@ -65,12 +100,12 @@ public class ObjectSummary extends TeaModel {
         return this.owner;
     }
 
-    public ObjectSummary setResoreInfo(String resoreInfo) {
-        this.resoreInfo = resoreInfo;
+    public ObjectSummary setRestoreInfo(String restoreInfo) {
+        this.restoreInfo = restoreInfo;
         return this;
     }
-    public String getResoreInfo() {
-        return this.resoreInfo;
+    public String getRestoreInfo() {
+        return this.restoreInfo;
     }
 
     public ObjectSummary setSize(Long size) {
@@ -87,6 +122,14 @@ public class ObjectSummary extends TeaModel {
     }
     public String getStorageClass() {
         return this.storageClass;
+    }
+
+    public ObjectSummary setTransitionTime(String transitionTime) {
+        this.transitionTime = transitionTime;
+        return this;
+    }
+    public String getTransitionTime() {
+        return this.transitionTime;
     }
 
     public ObjectSummary setType(String type) {

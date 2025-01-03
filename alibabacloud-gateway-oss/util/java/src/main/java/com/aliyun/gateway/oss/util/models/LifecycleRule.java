@@ -7,6 +7,10 @@ public class LifecycleRule extends TeaModel {
     @NameInMap("AbortMultipartUpload")
     public LifecycleAbortMultipartUpload lifecycleAbortMultipartUpload;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1626158525</p>
+     */
     @NameInMap("AtimeBase")
     public Long atimeBase;
 
@@ -16,6 +20,12 @@ public class LifecycleRule extends TeaModel {
     @NameInMap("Filter")
     public Filter filter;
 
+    /**
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>rule1</p>
+     */
     @NameInMap("ID")
     public String ID;
 
@@ -25,9 +35,19 @@ public class LifecycleRule extends TeaModel {
     @NameInMap("NoncurrentVersionTransition")
     public java.util.List<NoncurrentVersionTransition> noncurrentVersionTransition;
 
+    /**
+     * <strong>example:</strong>
+     * <p>logs/</p>
+     */
     @NameInMap("Prefix")
     public String prefix;
 
+    /**
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>Enabled</p>
+     */
     @NameInMap("Status")
     public String status;
 
@@ -131,12 +151,19 @@ public class LifecycleRule extends TeaModel {
     }
 
     public static class LifecycleAbortMultipartUpload extends TeaModel {
+        /**
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2002-10-11T00:00:00.000Z</p>
+         */
         @NameInMap("CreatedBeforeDate")
         public String createdBeforeDate;
 
-        @NameInMap("Date")
-        public String date;
-
+        /**
+         * <strong>example:</strong>
+         * <p>300</p>
+         */
         @NameInMap("Days")
         public Integer days;
 
@@ -153,14 +180,6 @@ public class LifecycleRule extends TeaModel {
             return this.createdBeforeDate;
         }
 
-        public LifecycleAbortMultipartUpload setDate(String date) {
-            this.date = date;
-            return this;
-        }
-        public String getDate() {
-            return this.date;
-        }
-
         public LifecycleAbortMultipartUpload setDays(Integer days) {
             this.days = days;
             return this;
@@ -172,15 +191,35 @@ public class LifecycleRule extends TeaModel {
     }
 
     public static class LifecycleExpiration extends TeaModel {
+        /**
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2002-10-11T00:00:00.000Z</p>
+         */
         @NameInMap("CreatedBeforeDate")
         public String createdBeforeDate;
 
+        /**
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2002-10-11T00:00:00.000Z</p>
+         */
         @NameInMap("Date")
         public String date;
 
+        /**
+         * <strong>example:</strong>
+         * <p>365</p>
+         */
         @NameInMap("Days")
         public Integer days;
 
+        /**
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("ExpiredObjectDeleteMarker")
         public Boolean expiredObjectDeleteMarker;
 
@@ -224,6 +263,10 @@ public class LifecycleRule extends TeaModel {
     }
 
     public static class Not extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>logs/keep/</p>
+         */
         @NameInMap("Prefix")
         public String prefix;
 
@@ -257,9 +300,17 @@ public class LifecycleRule extends TeaModel {
         @NameInMap("Not")
         public Not not;
 
+        /**
+         * <strong>example:</strong>
+         * <p>10240</p>
+         */
         @NameInMap("ObjectSizeGreaterThan")
         public Long objectSizeGreaterThan;
 
+        /**
+         * <strong>example:</strong>
+         * <p>10240</p>
+         */
         @NameInMap("ObjectSizeLessThan")
         public Long objectSizeLessThan;
 
@@ -295,6 +346,10 @@ public class LifecycleRule extends TeaModel {
     }
 
     public static class NoncurrentVersionExpiration extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>350</p>
+         */
         @NameInMap("NoncurrentDays")
         public Integer noncurrentDays;
 
@@ -314,15 +369,31 @@ public class LifecycleRule extends TeaModel {
     }
 
     public static class NoncurrentVersionTransition extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("AllowSmallFile")
         public Boolean allowSmallFile;
 
+        /**
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("IsAccessTime")
         public Boolean isAccessTime;
 
+        /**
+         * <strong>example:</strong>
+         * <p>200</p>
+         */
         @NameInMap("NoncurrentDays")
         public Integer noncurrentDays;
 
+        /**
+         * <strong>example:</strong>
+         * <p>false</p>
+         */
         @NameInMap("ReturnToStdWhenVisit")
         public Boolean returnToStdWhenVisit;
 
@@ -377,18 +448,40 @@ public class LifecycleRule extends TeaModel {
     }
 
     public static class LifecycleTransition extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("AllowSmallFile")
         public Boolean allowSmallFile;
 
+        /**
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2002-10-11T00:00:00.000Z</p>
+         */
         @NameInMap("CreatedBeforeDate")
         public String createdBeforeDate;
 
+        /**
+         * <strong>example:</strong>
+         * <p>200</p>
+         */
         @NameInMap("Days")
         public Integer days;
 
+        /**
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("IsAccessTime")
         public Boolean isAccessTime;
 
+        /**
+         * <strong>example:</strong>
+         * <p>false</p>
+         */
         @NameInMap("ReturnToStdWhenVisit")
         public Boolean returnToStdWhenVisit;
 

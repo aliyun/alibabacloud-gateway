@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class GetBucketArchiveDirectReadResponseBody extends TeaModel {
+    /**
+     * <p>The container that stores the configurations for real-time access of Archive objects.</p>
+     */
     @NameInMap("ArchiveDirectReadConfiguration")
     public ArchiveDirectReadConfiguration archiveDirectReadConfiguration;
 

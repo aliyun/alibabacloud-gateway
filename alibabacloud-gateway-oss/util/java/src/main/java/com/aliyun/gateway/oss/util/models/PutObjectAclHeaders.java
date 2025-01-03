@@ -9,6 +9,7 @@ public class PutObjectAclHeaders extends TeaModel {
 
     /**
      * <p>The access control list (ACL) of the object.</p>
+     * <p>This parameter is required.</p>
      */
     @NameInMap("x-oss-object-acl")
     public String acl;

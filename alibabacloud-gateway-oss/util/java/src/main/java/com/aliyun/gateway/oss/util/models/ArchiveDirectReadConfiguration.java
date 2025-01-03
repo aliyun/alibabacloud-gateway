@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ArchiveDirectReadConfiguration extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("Enabled")
     public Boolean enabled;
 

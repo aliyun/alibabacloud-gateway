@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class GetAccessPointPublicAccessBlockResponseBody extends TeaModel {
+    /**
+     * <p>The container in which the Block Public Access configurations are stored.</p>
+     */
     @NameInMap("PublicAccessBlockConfiguration")
     public PublicAccessBlockConfiguration publicAccessBlockConfiguration;
 

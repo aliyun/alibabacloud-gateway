@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class CompleteBucketWormRequest extends TeaModel {
     /**
      * <p>The ID of the retention policy.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>1666E2CFB2B3418****</p>
      */
     @NameInMap("wormId")
     public String wormId;

@@ -26,12 +26,18 @@ public class CopyObjectResponseBody extends TeaModel {
     public static class CopyObjectResult extends TeaModel {
         /**
          * <p>The ETag value of the destination object.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>5B3C1A2E053D763E1B002CC607C5****</p>
          */
         @NameInMap("ETag")
         public String ETag;
 
         /**
          * <p>The time when the destination object was last modified.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>Fri, 24 Feb 2012 07:18:48 GMT</p>
          */
         @NameInMap("LastModified")
         public String lastModified;

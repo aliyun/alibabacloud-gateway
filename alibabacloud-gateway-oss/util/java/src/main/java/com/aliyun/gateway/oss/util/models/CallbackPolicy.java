@@ -21,12 +21,24 @@ public class CallbackPolicy extends TeaModel {
     }
 
     public static class PolicyItem extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>e1wiY2Fsb...9keVwiOlwiYnVja2V0PSR7YnU=</p>
+         */
         @NameInMap("Callback")
         public String callback;
 
+        /**
+         * <strong>example:</strong>
+         * <p>Q2Fs...FcIiwgXCJ4OmJcIjpcImJcIn0=</p>
+         */
         @NameInMap("CallbackVar")
         public String callbackVar;
 
+        /**
+         * <strong>example:</strong>
+         * <p>first</p>
+         */
         @NameInMap("PolicyName")
         public String policyName;
 

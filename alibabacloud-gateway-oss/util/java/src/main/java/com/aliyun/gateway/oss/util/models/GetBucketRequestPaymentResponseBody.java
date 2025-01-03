@@ -26,6 +26,9 @@ public class GetBucketRequestPaymentResponseBody extends TeaModel {
     public static class RequestPaymentConfiguration extends TeaModel {
         /**
          * <p>Indicates who pays the download and request fees.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>Requester</p>
          */
         @NameInMap("Payer")
         public String payer;

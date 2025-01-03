@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ReplicationEncryptionConfiguration extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>c4d49f85-ee30-426b-a5ed-95e9139dxxxxx</p>
+     */
     @NameInMap("ReplicaKmsKeyID")
     public String replicaKmsKeyID;
 

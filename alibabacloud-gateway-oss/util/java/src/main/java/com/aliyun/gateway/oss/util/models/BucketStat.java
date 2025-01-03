@@ -4,72 +4,150 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class BucketStat extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>2</p>
+     */
     @NameInMap("ArchiveObjectCount")
     public Long archiveObjectCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("ArchiveRealStorage")
     public Long archiveRealStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("ArchiveStorage")
     public Long archiveStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>2</p>
+     */
     @NameInMap("ColdArchiveObjectCount")
     public Long coldArchiveObjectCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("ColdArchiveRealStorage")
     public Long coldArchiveRealStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("ColdArchiveStorage")
     public Long coldArchiveStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>2</p>
+     */
     @NameInMap("DeepColdArchiveObjectCount")
     public Long deepColdArchiveObjectCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("DeepColdArchiveRealStorage")
     public Long deepColdArchiveRealStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("DeepColdArchiveStorage")
     public Long deepColdArchiveStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>12</p>
+     */
     @NameInMap("DeleteMarkerCount")
     public Long deleteMarkerCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>2</p>
+     */
     @NameInMap("InfrequentAccessObjectCount")
     public Long infrequentAccessObjectCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("InfrequentAccessRealStorage")
     public Long infrequentAccessRealStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>120</p>
+     */
     @NameInMap("InfrequentAccessStorage")
     public Long infrequentAccessStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1709724731</p>
+     */
     @NameInMap("LastModifiedTime")
     public Long lastModifiedTime;
 
+    /**
+     * <strong>example:</strong>
+     * <p>2</p>
+     */
     @NameInMap("LiveChannelCount")
     public Long liveChannelCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>128</p>
+     */
     @NameInMap("MultipartPartCount")
     public Long multipartPartCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>27</p>
+     */
     @NameInMap("MultipartUploadCount")
     public Long multipartUploadCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>32</p>
+     */
     @NameInMap("ObjectCount")
     public Long objectCount;
 
-    @NameInMap("ReservedCapacityObjectCount")
-    public Long reservedCapacityObjectCount;
-
-    @NameInMap("ReservedCapacityStorage")
-    public Long reservedCapacityStorage;
-
+    /**
+     * <strong>example:</strong>
+     * <p>18</p>
+     */
     @NameInMap("StandardObjectCount")
     public Long standardObjectCount;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1990</p>
+     */
     @NameInMap("StandardStorage")
     public Long standardStorage;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1994</p>
+     */
     @NameInMap("Storage")
     public Long storage;
 
@@ -220,22 +298,6 @@ public class BucketStat extends TeaModel {
     }
     public Long getObjectCount() {
         return this.objectCount;
-    }
-
-    public BucketStat setReservedCapacityObjectCount(Long reservedCapacityObjectCount) {
-        this.reservedCapacityObjectCount = reservedCapacityObjectCount;
-        return this;
-    }
-    public Long getReservedCapacityObjectCount() {
-        return this.reservedCapacityObjectCount;
-    }
-
-    public BucketStat setReservedCapacityStorage(Long reservedCapacityStorage) {
-        this.reservedCapacityStorage = reservedCapacityStorage;
-        return this;
-    }
-    public Long getReservedCapacityStorage() {
-        return this.reservedCapacityStorage;
     }
 
     public BucketStat setStandardObjectCount(Long standardObjectCount) {

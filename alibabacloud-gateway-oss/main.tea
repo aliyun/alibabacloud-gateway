@@ -37,7 +37,11 @@ init(){
   'accessPointPolicy', "httpsConfig", 'regionsV2', 'publicAccessBlock', 'policyStatus',
   'redundancyTransition', 'redundancyType', 'redundancyProgress', 'dataAccelerator', 'verbose',
   'accessPointForObjectProcess', 'accessPointConfigForObjectProcess', 'accessPointPolicyForObjectProcess',
-  'bucketArchiveDirectRead', 'responseHeader', 'userDefinedLogFieldsConfig'
+  'bucketArchiveDirectRead', 'responseHeader', 'userDefinedLogFieldsConfig', 'reservedcapacity',
+  'requesterQosInfo', 'qosRequester', 'resourcePool', 'resourcePoolInfo', 'resourcePoolBuckets',
+  'processConfiguration', 'img', 'asyncFetch', 'virtualBucket', 'copy', 'userRegion', 'partSize',
+  'chunkSize', 'partUploadId', 'chunkNumber', 'userRegion', 'regionList', 'eventnotification',
+  'cacheConfiguration', 'dfs', 'dfsadmin', 'dfssecurity'
   ];
   @except_signed_params = ['list-type', 'regions'];
 }
@@ -238,9 +242,22 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
 
 async function getRegionIdFromEndpoint(endpoint: string) : string {
   if (!Util.empty(endpoint)) {
+    var idx: integer = -1;
     if (String.hasPrefix(endpoint, 'oss-') && String.hasSuffix(endpoint, '.aliyuncs.com')) {
-      var idx = String.index(endpoint, '.aliyuncs.com');
+      idx = String.index(endpoint, '.aliyuncs.com');
       return String.subString(endpoint, 4, idx);
+    }
+    if (String.hasSuffix(endpoint, '.mgw.aliyuncs.com')) {
+      idx = String.index(endpoint, '.mgw.aliyuncs.com');
+      return String.subString(endpoint, 0, idx);
+    }
+    if (String.hasSuffix(endpoint, '-internal.oss-data-acc.aliyuncs.com')) {
+      idx = String.index(endpoint, '-internal.oss-data-acc.aliyuncs.com');
+      return String.subString(endpoint, 0, idx);
+    }
+    if (String.hasSuffix(endpoint, '.oss-dls.aliyuncs.com')) {
+      idx = String.index(endpoint, '.oss-dls.aliyuncs.com');
+      return String.subString(endpoint, 0, idx);
     }
   }
   return 'cn-hangzhou';

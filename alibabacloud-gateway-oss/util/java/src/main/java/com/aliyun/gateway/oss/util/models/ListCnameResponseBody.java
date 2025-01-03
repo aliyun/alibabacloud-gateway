@@ -26,6 +26,9 @@ public class ListCnameResponseBody extends TeaModel {
     public static class ListCnameResult extends TeaModel {
         /**
          * <p>The name of the bucket to which the CNAME records you want to query are mapped.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Bucket")
         public String bucket;
@@ -38,6 +41,9 @@ public class ListCnameResponseBody extends TeaModel {
 
         /**
          * <p>The name of the bucket owner.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>133413***273506</p>
          */
         @NameInMap("Owner")
         public String owner;

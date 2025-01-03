@@ -7,6 +7,9 @@ public class LiveChannel extends TeaModel {
     @NameInMap("Description")
     public String description;
 
+    /**
+     * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+     */
     @NameInMap("LastModified")
     public String lastModified;
 

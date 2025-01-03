@@ -26,33 +26,46 @@ public class GetLiveChannelStatResponseBody extends TeaModel {
     public static class LiveChannelStat extends TeaModel {
         /**
          * <p>The container that stores audio stream information if Status is set to Live.</p>
-         * <p>>Video and audio containers can be returned only if Status is set to Live. However, these two containers may not necessarily be returned if Status is set to Live. For example, if the client has connected to the LiveChannel but no audio or video stream is sent, these two containers are not returned.</p>
+         * <blockquote>
+         * <p>Video and audio containers can be returned only if Status is set to Live. However, these two containers may not necessarily be returned if Status is set to Live. For example, if the client has connected to the LiveChannel but no audio or video stream is sent, these two containers are not returned.</p>
+         * </blockquote>
          */
         @NameInMap("Audio")
         public LiveChannelAudio audio;
 
         /**
          * <p>If Status is set to Live, this element indicates the time when the current client starts to ingest streams. The value of the element is in the ISO 8601 format.</p>
+         * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2016-08-25T06:25:15.000Z</p>
          */
         @NameInMap("ConnectedTime")
         public String connectedTime;
 
         /**
          * <p>If Status is set to Live, this element indicates the IP address of the current client that ingests streams.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>10.1.2.3:47745</p>
          */
         @NameInMap("RemoteAddr")
         public String remoteAddr;
 
         /**
          * <p>The current stream ingestion status of the LiveChannel. Valid value: Disabled、Live、Idle。</p>
+         * 
+         * <strong>example:</strong>
+         * <p>Live</p>
          */
         @NameInMap("Status")
         public String status;
 
         /**
          * <p>The container that stores video stream information if Status is set to Live.</p>
-         * <br>
-         * <p>>Video and audio containers can be returned only if Status is set to Live. However, these two containers may not necessarily be returned if Status is set to Live. For example, if the client has connected to the LiveChannel but no audio or video stream is sent, these two containers are not returned.</p>
+         * <blockquote>
+         * <p>Video and audio containers can be returned only if Status is set to Live. However, these two containers may not necessarily be returned if Status is set to Live. For example, if the client has connected to the LiveChannel but no audio or video stream is sent, these two containers are not returned.</p>
+         * </blockquote>
          */
         @NameInMap("Video")
         public LiveChannelVideo video;

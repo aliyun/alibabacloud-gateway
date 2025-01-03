@@ -12,6 +12,10 @@ public class PutBucketInventoryRequest extends TeaModel {
 
     /**
      * <p>The name of the inventory.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>report1</p>
      */
     @NameInMap("inventoryId")
     public String inventoryId;

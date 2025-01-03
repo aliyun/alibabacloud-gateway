@@ -6,7 +6,6 @@ import com.aliyun.tea.*;
 public class PutBucketCorsRequest extends TeaModel {
     /**
      * <p>The container that stores CORS rules.</p>
-     * <br>
      * <p>You can configure up to 10 CORS rules for a bucket. The XML message body in a request can be up to 16 KB in size.</p>
      */
     @NameInMap("CORSConfiguration")

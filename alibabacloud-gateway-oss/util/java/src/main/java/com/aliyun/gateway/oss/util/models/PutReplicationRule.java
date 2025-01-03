@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class PutReplicationRule extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>ALL</p>
+     */
     @NameInMap("Action")
     public String action;
 
@@ -13,9 +17,17 @@ public class PutReplicationRule extends TeaModel {
     @NameInMap("EncryptionConfiguration")
     public ReplicationEncryptionConfiguration encryptionConfiguration;
 
+    /**
+     * <strong>example:</strong>
+     * <p>disabled</p>
+     */
     @NameInMap("HistoricalObjectReplication")
     public String historicalObjectReplication;
 
+    /**
+     * <strong>example:</strong>
+     * <p>first-repl-rule</p>
+     */
     @NameInMap("ID")
     public String ID;
 
@@ -28,6 +40,10 @@ public class PutReplicationRule extends TeaModel {
     @NameInMap("SourceSelectionCriteria")
     public ReplicationSourceSelectionCriteria sourceSelectionCriteria;
 
+    /**
+     * <strong>example:</strong>
+     * <p>aliyunramrole</p>
+     */
     @NameInMap("SyncRole")
     public String syncRole;
 
