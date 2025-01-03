@@ -21,6 +21,12 @@ public class HttpsConfiguration extends TeaModel {
     }
 
     public static class TLS extends TeaModel {
+        /**
+         * <p>This parameter is required.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("Enable")
         public Boolean enable;
 

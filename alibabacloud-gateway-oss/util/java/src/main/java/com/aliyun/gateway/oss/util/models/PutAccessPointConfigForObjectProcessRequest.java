@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class PutAccessPointConfigForObjectProcessRequest extends TeaModel {
+    /**
+     * <p>The container that stores information about the Object FC Access Point.</p>
+     */
     @NameInMap("PutAccessPointConfigForObjectProcessConfiguration")
     public PutAccessPointConfigForObjectProcessConfiguration putAccessPointConfigForObjectProcessConfiguration;
 
@@ -21,12 +24,24 @@ public class PutAccessPointConfigForObjectProcessRequest extends TeaModel {
     }
 
     public static class PutAccessPointConfigForObjectProcessConfiguration extends TeaModel {
+        /**
+         * <p>Whether allow anonymous user to access this FC Access Point.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>false</p>
+         */
         @NameInMap("AllowAnonymousAccessForObjectProcess")
         public String allowAnonymousAccessForObjectProcess;
 
+        /**
+         * <p>The container that stores the processing information about the Object FC Access Point.</p>
+         */
         @NameInMap("ObjectProcessConfiguration")
         public ObjectProcessConfiguration objectProcessConfiguration;
 
+        /**
+         * <p>The container in which the Block Public Access configurations are stored.</p>
+         */
         @NameInMap("PublicAccessBlockConfiguration")
         public PublicAccessBlockConfiguration publicAccessBlockConfiguration;
 

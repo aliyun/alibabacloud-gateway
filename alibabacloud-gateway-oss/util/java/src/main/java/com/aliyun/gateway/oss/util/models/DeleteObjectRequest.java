@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class DeleteObjectRequest extends TeaModel {
     /**
      * <p>The version ID of the object.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQMxiBgIDh3ZCB0BYiIGE4YjIyMjExZDhhYjQxNzZiNGUyZTI4ZjljZDcz****</p>
      */
     @NameInMap("versionId")
     public String versionId;

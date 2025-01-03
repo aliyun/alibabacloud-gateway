@@ -53,10 +53,12 @@ public class DoMetaQueryResponseBody extends TeaModel {
         public Files files;
 
         /**
-         * <p>The token that is used for the next query when the total number of objects exceeds the value of MaxResults.</p>
-         * <p>The value of NextToken is used to return the unreturned results in the next query.</p>
-         * <br>
+         * <p>The token that is used for the next query when the total number of objects exceeds the value of MaxResults.
+         * The value of NextToken is used to return the unreturned results in the next query.</p>
          * <p>This parameter has a value only when not all objects are returned.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>MTIzNDU2Nzg6aW1tdGVzdDpleGFtcGxlYnVja2V0OmRhdGFzZXQwMDE6b3NzOi8vZXhhbXBsZWJ1Y2tldC9zYW1wbGVvYmplY3QxLmpw****</p>
          */
         @NameInMap("NextToken")
         public String nextToken;

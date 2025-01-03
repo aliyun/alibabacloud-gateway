@@ -4,27 +4,59 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class InventoryFilter extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>1637883649</p>
+     */
     @NameInMap("LastModifyBeginTimeStamp")
     public Long lastModifyBeginTimeStamp;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1638347592</p>
+     */
     @NameInMap("LastModifyEndTimeStamp")
     public Long lastModifyEndTimeStamp;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1024</p>
+     */
     @NameInMap("LowerSizeBound")
     public Long lowerSizeBound;
 
+    /**
+     * <strong>example:</strong>
+     * <p>Pics/</p>
+     */
     @NameInMap("Prefix")
     public String prefix;
 
+    /**
+     * <strong>example:</strong>
+     * <p>All</p>
+     */
     @NameInMap("StorageClass")
     public String storageClass;
 
+    /**
+     * <strong>example:</strong>
+     * <p>tag1#val1;tag2#val2</p>
+     */
     @NameInMap("Tags")
     public String tags;
 
+    /**
+     * <strong>example:</strong>
+     * <p>OR_FILTER</p>
+     */
     @NameInMap("TagsCondition")
     public String tagsCondition;
 
+    /**
+     * <strong>example:</strong>
+     * <p>1048576</p>
+     */
     @NameInMap("UpperSizeBound")
     public Long upperSizeBound;
 

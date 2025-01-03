@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class GetCnameTokenRequest extends TeaModel {
     /**
      * <p>The name of the CNAME record that is mapped to the bucket.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>example.com</p>
      */
     @NameInMap("cname")
     public String cname;

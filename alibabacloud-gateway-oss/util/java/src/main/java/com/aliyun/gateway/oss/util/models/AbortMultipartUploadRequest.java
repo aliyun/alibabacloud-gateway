@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class AbortMultipartUploadRequest extends TeaModel {
     /**
      * <p>The ID of the multipart upload task.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>0004B9895DBBB6E****</p>
      */
     @NameInMap("uploadId")
     public String uploadId;

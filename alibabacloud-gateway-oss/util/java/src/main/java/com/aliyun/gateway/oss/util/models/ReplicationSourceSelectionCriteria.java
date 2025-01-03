@@ -21,6 +21,10 @@ public class ReplicationSourceSelectionCriteria extends TeaModel {
     }
 
     public static class SseKmsEncryptedObjects extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>Disabled</p>
+         */
         @NameInMap("Status")
         public String status;
 

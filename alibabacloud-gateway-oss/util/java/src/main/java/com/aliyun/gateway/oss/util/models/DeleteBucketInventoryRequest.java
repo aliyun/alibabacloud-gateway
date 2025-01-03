@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class DeleteBucketInventoryRequest extends TeaModel {
     /**
      * <p>The name of the inventory that you want to delete.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>list1</p>
      */
     @NameInMap("inventoryId")
     public String inventoryId;

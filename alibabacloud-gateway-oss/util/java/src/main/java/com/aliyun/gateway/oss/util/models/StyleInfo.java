@@ -4,18 +4,38 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class StyleInfo extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>image</p>
+     */
     @NameInMap("Category")
     public String category;
 
+    /**
+     * <strong>example:</strong>
+     * <p>image/resize,p_50</p>
+     */
     @NameInMap("Content")
     public String content;
 
+    /**
+     * <strong>example:</strong>
+     * <p>Wed, 20 May 2020 12:07:15 GMT</p>
+     */
     @NameInMap("CreateTime")
     public String createTime;
 
+    /**
+     * <strong>example:</strong>
+     * <p>Wed, 21 May 2020 12:07:15 GMT</p>
+     */
     @NameInMap("LastModifyTime")
     public String lastModifyTime;
 
+    /**
+     * <strong>example:</strong>
+     * <p>first</p>
+     */
     @NameInMap("Name")
     public String name;
 

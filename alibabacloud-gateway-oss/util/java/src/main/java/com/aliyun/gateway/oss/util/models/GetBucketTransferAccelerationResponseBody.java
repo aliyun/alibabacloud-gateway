@@ -26,6 +26,9 @@ public class GetBucketTransferAccelerationResponseBody extends TeaModel {
     public static class TransferAccelerationConfiguration extends TeaModel {
         /**
          * <p>Whether the transfer acceleration is enabled for this bucket.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("Enabled")
         public Boolean enabled;

@@ -10,6 +10,9 @@ public class DeleteMarkerEntry extends TeaModel {
     @NameInMap("Key")
     public String key;
 
+    /**
+     * <p>Use the UTC time format: yyyy-MM-ddTHH:mmZ</p>
+     */
     @NameInMap("LastModified")
     public String lastModified;
 

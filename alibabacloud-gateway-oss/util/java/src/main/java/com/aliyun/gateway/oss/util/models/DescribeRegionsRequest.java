@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class DescribeRegionsRequest extends TeaModel {
     /**
      * <p>The region ID of the request.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>oss-cn-hangzhou</p>
      */
     @NameInMap("regions")
     public String regions;

@@ -114,7 +114,30 @@ class Client(SPIClient):
             'accessPointPolicyForObjectProcess',
             'bucketArchiveDirectRead',
             'responseHeader',
-            'userDefinedLogFieldsConfig'
+            'userDefinedLogFieldsConfig',
+            'reservedcapacity',
+            'requesterQosInfo',
+            'qosRequester',
+            'resourcePool',
+            'resourcePoolInfo',
+            'resourcePoolBuckets',
+            'processConfiguration',
+            'img',
+            'asyncFetch',
+            'virtualBucket',
+            'copy',
+            'userRegion',
+            'partSize',
+            'chunkSize',
+            'partUploadId',
+            'chunkNumber',
+            'userRegion',
+            'regionList',
+            'eventnotification',
+            'cacheConfiguration',
+            'dfs',
+            'dfsadmin',
+            'dfssecurity'
         ]
         self._except_signed_params = [
             'list-type',
@@ -355,6 +378,8 @@ class Client(SPIClient):
                 response.deserialized_body = body_str
                 if not UtilClient.empty(body_str):
                     result = OSS_UtilClient.parse_xml(body_str, request.action)
+                    # for no util language
+                    # var result : any = XML.parseXml(bodyStr, null);
                     try:
                         response.deserialized_body = UtilClient.assert_as_map(result)
                     except Exception as error:
@@ -439,6 +464,8 @@ class Client(SPIClient):
                 response.deserialized_body = body_str
                 if not UtilClient.empty(body_str):
                     result = await OSS_UtilClient.parse_xml_async(body_str, request.action)
+                    # for no util language
+                    # var result : any = XML.parseXml(bodyStr, null);
                     try:
                         response.deserialized_body = UtilClient.assert_as_map(result)
                     except Exception as error:
@@ -464,9 +491,19 @@ class Client(SPIClient):
         endpoint: str,
     ) -> str:
         if not UtilClient.empty(endpoint):
+            idx = -1
             if StringClient.has_prefix(endpoint, 'oss-') and StringClient.has_suffix(endpoint, '.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 4, idx)
+            if StringClient.has_suffix(endpoint, '.mgw.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.mgw.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
+            if StringClient.has_suffix(endpoint, '-internal.oss-data-acc.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '-internal.oss-data-acc.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
+            if StringClient.has_suffix(endpoint, '.oss-dls.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.oss-dls.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
         return ''
 
     async def get_region_id_from_endpoint_async(
@@ -474,9 +511,19 @@ class Client(SPIClient):
         endpoint: str,
     ) -> str:
         if not UtilClient.empty(endpoint):
+            idx = -1
             if StringClient.has_prefix(endpoint, 'oss-') and StringClient.has_suffix(endpoint, '.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 4, idx)
+            if StringClient.has_suffix(endpoint, '.mgw.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.mgw.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
+            if StringClient.has_suffix(endpoint, '-internal.oss-data-acc.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '-internal.oss-data-acc.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
+            if StringClient.has_suffix(endpoint, '.oss-dls.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.oss-dls.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
         return ''
 
     def get_endpoint(

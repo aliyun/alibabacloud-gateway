@@ -6,7 +6,9 @@ import com.aliyun.tea.*;
 public class GetBucketTagsResponseBody extends TeaModel {
     /**
      * <p>The container that stores the returned tags of the bucket.</p>
-     * <p>> If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.</p>
+     * <blockquote>
+     * <p>If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.</p>
+     * </blockquote>
      */
     @NameInMap("Tagging")
     public Tagging tagging;

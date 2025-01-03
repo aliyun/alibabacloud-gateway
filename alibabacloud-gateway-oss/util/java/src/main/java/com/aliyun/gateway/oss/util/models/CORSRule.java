@@ -16,6 +16,10 @@ public class CORSRule extends TeaModel {
     @NameInMap("ExposeHeader")
     public java.util.List<String> exposeHeader;
 
+    /**
+     * <strong>example:</strong>
+     * <p>300</p>
+     */
     @NameInMap("MaxAgeSeconds")
     public Long maxAgeSeconds;
 

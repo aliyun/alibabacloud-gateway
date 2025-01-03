@@ -9,25 +9,29 @@ public class PutBucketHeaders extends TeaModel {
 
     /**
      * <p>The access control list (ACL) of the bucket to be created. Valid values:</p>
-     * <br>
-     * <p>*   public-read-write</p>
-     * <p>*   public-read</p>
-     * <p>*   private (default)</p>
-     * <br>
-     * <p>For more information, see [Bucket ACL](~~31843~~).</p>
+     * <ul>
+     * <li>public-read-write</li>
+     * <li>public-read</li>
+     * <li>private (default)</li>
+     * </ul>
+     * <p>For more information, see <a href="https://help.aliyun.com/document_detail/31843.html">Bucket ACL</a>.</p>
      */
     @NameInMap("x-oss-acl")
     public String acl;
 
+    @NameInMap("x-oss-bucket-tagging")
+    public String xOssBucketTagging;
+
     /**
      * <p>The ID of the resource group.</p>
-     * <br>
-     * <p>*   If you include the header in the request and specify the ID of the resource group, the bucket that you create belongs to the resource group. If the specified resource group ID is rg-default-id, the bucket that you create belongs to the default resource group.</p>
-     * <p>*   If you do not include the header in the request, the bucket that you create belongs to the default resource group.</p>
-     * <br>
-     * <p>You can obtain the ID of a resource group in the Resource Management console or by calling the ListResourceGroups operation. For more information, see [View basic information of a resource group](~~151181~~) and [ListResourceGroups](~~158855~~).</p>
-     * <br>
-     * <p>>  You cannot configure a resource group for an Anywhere Bucket.</p>
+     * <ul>
+     * <li>If you include the header in the request and specify the ID of the resource group, the bucket that you create belongs to the resource group. If the specified resource group ID is rg-default-id, the bucket that you create belongs to the default resource group.</li>
+     * <li>If you do not include the header in the request, the bucket that you create belongs to the default resource group.</li>
+     * </ul>
+     * <p>You can obtain the ID of a resource group in the Resource Management console or by calling the ListResourceGroups operation. For more information, see <a href="https://help.aliyun.com/document_detail/151181.html">View basic information of a resource group</a> and <a href="https://help.aliyun.com/document_detail/158855.html">ListResourceGroups</a>.</p>
+     * <blockquote>
+     * <p> You cannot configure a resource group for an Anywhere Bucket.</p>
+     * </blockquote>
      */
     @NameInMap("x-oss-resource-group-id")
     public String xOssResourceGroupId;
@@ -51,6 +55,14 @@ public class PutBucketHeaders extends TeaModel {
     }
     public String getAcl() {
         return this.acl;
+    }
+
+    public PutBucketHeaders setXOssBucketTagging(String xOssBucketTagging) {
+        this.xOssBucketTagging = xOssBucketTagging;
+        return this;
+    }
+    public String getXOssBucketTagging() {
+        return this.xOssBucketTagging;
     }
 
     public PutBucketHeaders setXOssResourceGroupId(String xOssResourceGroupId) {

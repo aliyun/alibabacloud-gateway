@@ -108,9 +108,17 @@ public class ObjectProcessConfiguration extends TeaModel {
     }
 
     public static class FunctionCompute extends TeaModel {
+        /**
+         * <strong>example:</strong>
+         * <p>acs:fc:cn-qingdao:111933544165****:services/test-oss-fc.LATEST/functions/fc-01</p>
+         */
         @NameInMap("FunctionArn")
         public String functionArn;
 
+        /**
+         * <strong>example:</strong>
+         * <p>acs:ram::111933544165****:role/aliyunfcdefaultrole</p>
+         */
         @NameInMap("FunctionAssumeRoleArn")
         public String functionAssumeRoleArn;
 

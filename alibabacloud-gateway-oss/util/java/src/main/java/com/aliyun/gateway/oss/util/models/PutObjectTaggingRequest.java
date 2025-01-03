@@ -12,6 +12,9 @@ public class PutObjectTaggingRequest extends TeaModel {
 
     /**
      * <p>The version id of the target object.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQNRiBgMClj7qD0BYiIDQ5Y2QyMjc3NGZkODRlMTU5M2VkY2U3MWRiNGRh****</p>
      */
     @NameInMap("versionId")
     public String versionId;

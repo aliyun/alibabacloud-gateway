@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.aliyun</groupId>
   <artifactId>alibabacloud-gateway-oss-util</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
   <packaging>jar</packaging>
   <name>alibabacloud-gateway-oss-util</name>
   <description>

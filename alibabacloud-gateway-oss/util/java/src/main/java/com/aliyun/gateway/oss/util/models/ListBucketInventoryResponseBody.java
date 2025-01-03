@@ -31,16 +31,24 @@ public class ListBucketInventoryResponseBody extends TeaModel {
         public java.util.List<InventoryConfiguration> inventoryConfigurations;
 
         /**
-         * <p>Specifies whether to list all inventory tasks configured for the bucket.</p>
-         * <p>Valid values: true and false</p>
-         * <p>- The value of false indicates that all inventory tasks configured for the bucket are listed.</p>
-         * <p>- The value of true indicates that not all inventory tasks configured for the bucket are listed. To list the next page of inventory configurations, set the continuation-token parameter in the next request to the value of the NextContinuationToken header in the response to the current request.</p>
+         * <p>Specifies whether to list all inventory tasks configured for the bucket.
+         * Valid values: true and false</p>
+         * <ul>
+         * <li>The value of false indicates that all inventory tasks configured for the bucket are listed.</li>
+         * <li>The value of true indicates that not all inventory tasks configured for the bucket are listed. To list the next page of inventory configurations, set the continuation-token parameter in the next request to the value of the NextContinuationToken header in the response to the current request.</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>If the value of IsTruncated in the response is true and value of this header is not null, set the continuation-token parameter in the next request to the value of this header.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>DFSadfe**</p>
          */
         @NameInMap("NextContinuationToken")
         public String nextContinuationToken;

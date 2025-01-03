@@ -4,21 +4,45 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class CertificateConfiguration extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>493****-cn-hangzhou</p>
+     */
     @NameInMap("CertId")
     public String certId;
 
+    /**
+     * <strong>example:</strong>
+     * <p>-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----</p>
+     */
     @NameInMap("Certificate")
     public String certificate;
 
+    /**
+     * <strong>example:</strong>
+     * <p>false</p>
+     */
     @NameInMap("DeleteCertificate")
     public Boolean deleteCertificate;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("Force")
     public Boolean force;
 
+    /**
+     * <strong>example:</strong>
+     * <p>493****-cn-hangzhou</p>
+     */
     @NameInMap("PreviousCertId")
     public String previousCertId;
 
+    /**
+     * <strong>example:</strong>
+     * <p>-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----</p>
+     */
     @NameInMap("PrivateKey")
     public String privateKey;
 

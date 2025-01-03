@@ -6,9 +6,7 @@ import com.aliyun.tea.*;
 public class ListPartsShrinkRequest extends TeaModel {
     /**
      * <p>The maximum number of parts that can be returned by OSS. </p>
-     * <br>
      * <p>Default value: 1000.</p>
-     * <br>
      * <p>Maximum value: 1000.</p>
      */
     @NameInMap("encoding-type")
@@ -16,26 +14,32 @@ public class ListPartsShrinkRequest extends TeaModel {
 
     /**
      * <p>The maximum number of parts that can be returned by OSS.</p>
-     * <br>
      * <p>Default value: 1000.</p>
-     * <br>
      * <p>Maximum value: 1000.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>1000</p>
      */
     @NameInMap("max-parts")
     public Long maxParts;
 
     /**
      * <p>The position from which the list starts. All parts whose part numbers are greater than the value of this parameter are listed.</p>
-     * <br>
      * <p>By default, this parameter is left empty.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>100</p>
      */
     @NameInMap("part-number-marker")
     public Long partNumberMarker;
 
     /**
      * <p>The ID of the multipart upload task.</p>
-     * <br>
      * <p>By default, this parameter is left empty.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>0004B999EF5A239BB9138C6227D69F95</p>
      */
     @NameInMap("uploadId")
     public String uploadId;

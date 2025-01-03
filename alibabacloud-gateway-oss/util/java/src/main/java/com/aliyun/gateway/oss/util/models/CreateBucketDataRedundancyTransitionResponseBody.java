@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class CreateBucketDataRedundancyTransitionResponseBody extends TeaModel {
+    /**
+     * <p>The container in which the redundancy type conversion task is stored.</p>
+     */
     @NameInMap("BucketDataRedundancyTransition")
     public BucketDataRedundancyTransition bucketDataRedundancyTransition;
 
@@ -21,6 +24,12 @@ public class CreateBucketDataRedundancyTransitionResponseBody extends TeaModel {
     }
 
     public static class BucketDataRedundancyTransition extends TeaModel {
+        /**
+         * <p>The ID of the redundancy type conversion task. The ID can be used to view and delete the redundancy type conversion task.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>4be5beb0f74f490186311b268bf6****</p>
+         */
         @NameInMap("TaskId")
         public String taskId;
 

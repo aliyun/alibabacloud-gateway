@@ -26,6 +26,9 @@ public class ListMultipartUploadsResponseBody extends TeaModel {
     public static class ListMultipartUploadsResult extends TeaModel {
         /**
          * <p>The name of the bucket.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Bucket")
         public String bucket;
@@ -38,52 +41,78 @@ public class ListMultipartUploadsResponseBody extends TeaModel {
 
         /**
          * <p>The character used to group objects by name. If you specify the Delimiter parameter in the request, the response contains the CommonPrefixes element. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in</p>
+         * 
+         * <strong>example:</strong>
+         * <p>/</p>
          */
         @NameInMap("Delimiter")
         public String delimiter;
 
         /**
          * <p>The method used to encode the object name in the response. If encoding-type is specified in the request, values of those elements including Delimiter, KeyMarker, Prefix, NextKeyMarker, and Key are encoded in the returned result.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>url</p>
          */
         @NameInMap("EncodingType")
         public String encodingType;
 
         /**
          * <p>Indicates whether the list of multipart upload tasks returned in the response is truncated. Default value: false. Valid values:</p>
-         * <br>
-         * <p>- true: Only part of the results are returned this time.</p>
-         * <br>
-         * <p>- false: All results are returned.</p>
+         * <ul>
+         * <li><p>true: Only part of the results are returned this time.</p>
+         * </li>
+         * <li><p>false: All results are returned.</p>
+         * </li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
         /**
          * <p>The name of the object that corresponds to the multipart upload task after which the list begins.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>abc</p>
          */
         @NameInMap("KeyMarker")
         public String keyMarker;
 
         /**
          * <p>The maximum number of multipart upload tasks returned by OSS.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("MaxUploads")
         public Long maxUploads;
 
         /**
          * <p>The object name marker in the response for the next request to return the remaining results.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>oss.avi</p>
          */
         @NameInMap("NextKeyMarker")
         public String nextKeyMarker;
 
         /**
          * <p>The NextUploadMarker value that is used for the UploadMarker value in the next request if the response does not contain all required results.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>0004B99B8E707874FC2D692FA5D77D3F</p>
          */
         @NameInMap("NextUploadIdMarker")
         public String nextUploadIdMarker;
 
         /**
          * <p>The prefix that the returned object names must contain. If you specify a prefix in the request, the specified prefix is included in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>logs/</p>
          */
         @NameInMap("Prefix")
         public String prefix;
@@ -96,6 +125,9 @@ public class ListMultipartUploadsResponseBody extends TeaModel {
 
         /**
          * <p>The upload ID of the multipart upload task after which the list begins.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>0004B999EF5A239BB9138C6227D6****</p>
          */
         @NameInMap("UploadIdMarker")
         public String uploadIdMarker;

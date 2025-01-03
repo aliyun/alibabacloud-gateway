@@ -26,35 +26,49 @@ public class GetBucketWormResponseBody extends TeaModel {
     public static class WormConfiguration extends TeaModel {
         /**
          * <p>The time at which the retention policy was created.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2020-10-15T15:50:32</p>
          */
         @NameInMap("CreationDate")
         public String creationDate;
 
         /**
          * <p>The time at which the retention policy will be expired.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>2020-10-16T15:50:32</p>
          */
         @NameInMap("ExpirationDate")
         public String expirationDate;
 
         /**
          * <p>The number of days for which objects can be retained.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>20</p>
          */
         @NameInMap("RetentionPeriodInDays")
         public Integer retentionPeriodInDays;
 
         /**
          * <p>The status of the retention policy. Valid values:</p>
-         * <br>
-         * <p>- InProgress: indicates that the retention policy is in the InProgress state. By default, a retention policy is in the InProgress state after it is created. The policy remains in this state for 24 hours.</p>
-         * <p>- Locked: indicates that the retention policy is in the Locked state.</p>
+         * <ul>
+         * <li>InProgress: indicates that the retention policy is in the InProgress state. By default, a retention policy is in the InProgress state after it is created. The policy remains in this state for 24 hours.</li>
+         * <li>Locked: indicates that the retention policy is in the Locked state.</li>
+         * </ul>
          */
         @NameInMap("State")
         public String state;
 
         /**
          * <p>The ID of the retention policy.</p>
-         * <br>
-         * <p>>Note If the specified retention policy ID that is used to query the retention policy configurations of the bucket does not exist, OSS returns the 404 error code.</p>
+         * <blockquote>
+         * <p>Note If the specified retention policy ID that is used to query the retention policy configurations of the bucket does not exist, OSS returns the 404 error code.</p>
+         * </blockquote>
+         * 
+         * <strong>example:</strong>
+         * <p>1666E2CFB2B3418****</p>
          */
         @NameInMap("WormId")
         public String wormId;

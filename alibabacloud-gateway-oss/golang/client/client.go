@@ -33,7 +33,7 @@ func (client *Client) Init() (_err error) {
 	if _err != nil {
 		return _err
 	}
-	client.Default_signed_params = []*string{tea.String("response-content-type"), tea.String("response-content-language"), tea.String("response-cache-control"), tea.String("logging"), tea.String("response-content-encoding"), tea.String("acl"), tea.String("uploadId"), tea.String("uploads"), tea.String("partNumber"), tea.String("group"), tea.String("link"), tea.String("delete"), tea.String("website"), tea.String("location"), tea.String("objectInfo"), tea.String("objectMeta"), tea.String("response-expires"), tea.String("response-content-disposition"), tea.String("cors"), tea.String("lifecycle"), tea.String("restore"), tea.String("qos"), tea.String("referer"), tea.String("stat"), tea.String("bucketInfo"), tea.String("append"), tea.String("position"), tea.String("security-token"), tea.String("live"), tea.String("comp"), tea.String("status"), tea.String("vod"), tea.String("startTime"), tea.String("endTime"), tea.String("x-oss-process"), tea.String("symlink"), tea.String("callback"), tea.String("callback-var"), tea.String("tagging"), tea.String("encryption"), tea.String("versions"), tea.String("versioning"), tea.String("versionId"), tea.String("policy"), tea.String("requestPayment"), tea.String("x-oss-traffic-limit"), tea.String("qosInfo"), tea.String("asyncFetch"), tea.String("x-oss-request-payer"), tea.String("sequential"), tea.String("inventory"), tea.String("inventoryId"), tea.String("continuation-token"), tea.String("callback"), tea.String("callback-var"), tea.String("worm"), tea.String("wormId"), tea.String("wormExtend"), tea.String("replication"), tea.String("replicationLocation"), tea.String("replicationProgress"), tea.String("transferAcceleration"), tea.String("cname"), tea.String("metaQuery"), tea.String("x-oss-ac-source-ip"), tea.String("x-oss-ac-subnet-mask"), tea.String("x-oss-ac-vpc-id"), tea.String("x-oss-ac-forward-allow"), tea.String("resourceGroup"), tea.String("style"), tea.String("styleName"), tea.String("x-oss-async-process"), tea.String("rtc"), tea.String("accessPoint"), tea.String("accessPointPolicy"), tea.String("httpsConfig"), tea.String("regionsV2"), tea.String("publicAccessBlock"), tea.String("policyStatus"), tea.String("redundancyTransition"), tea.String("redundancyType"), tea.String("redundancyProgress"), tea.String("dataAccelerator"), tea.String("verbose"), tea.String("accessPointForObjectProcess"), tea.String("accessPointConfigForObjectProcess"), tea.String("accessPointPolicyForObjectProcess"), tea.String("bucketArchiveDirectRead"), tea.String("responseHeader"), tea.String("userDefinedLogFieldsConfig")}
+	client.Default_signed_params = []*string{tea.String("response-content-type"), tea.String("response-content-language"), tea.String("response-cache-control"), tea.String("logging"), tea.String("response-content-encoding"), tea.String("acl"), tea.String("uploadId"), tea.String("uploads"), tea.String("partNumber"), tea.String("group"), tea.String("link"), tea.String("delete"), tea.String("website"), tea.String("location"), tea.String("objectInfo"), tea.String("objectMeta"), tea.String("response-expires"), tea.String("response-content-disposition"), tea.String("cors"), tea.String("lifecycle"), tea.String("restore"), tea.String("qos"), tea.String("referer"), tea.String("stat"), tea.String("bucketInfo"), tea.String("append"), tea.String("position"), tea.String("security-token"), tea.String("live"), tea.String("comp"), tea.String("status"), tea.String("vod"), tea.String("startTime"), tea.String("endTime"), tea.String("x-oss-process"), tea.String("symlink"), tea.String("callback"), tea.String("callback-var"), tea.String("tagging"), tea.String("encryption"), tea.String("versions"), tea.String("versioning"), tea.String("versionId"), tea.String("policy"), tea.String("requestPayment"), tea.String("x-oss-traffic-limit"), tea.String("qosInfo"), tea.String("asyncFetch"), tea.String("x-oss-request-payer"), tea.String("sequential"), tea.String("inventory"), tea.String("inventoryId"), tea.String("continuation-token"), tea.String("callback"), tea.String("callback-var"), tea.String("worm"), tea.String("wormId"), tea.String("wormExtend"), tea.String("replication"), tea.String("replicationLocation"), tea.String("replicationProgress"), tea.String("transferAcceleration"), tea.String("cname"), tea.String("metaQuery"), tea.String("x-oss-ac-source-ip"), tea.String("x-oss-ac-subnet-mask"), tea.String("x-oss-ac-vpc-id"), tea.String("x-oss-ac-forward-allow"), tea.String("resourceGroup"), tea.String("style"), tea.String("styleName"), tea.String("x-oss-async-process"), tea.String("rtc"), tea.String("accessPoint"), tea.String("accessPointPolicy"), tea.String("httpsConfig"), tea.String("regionsV2"), tea.String("publicAccessBlock"), tea.String("policyStatus"), tea.String("redundancyTransition"), tea.String("redundancyType"), tea.String("redundancyProgress"), tea.String("dataAccelerator"), tea.String("verbose"), tea.String("accessPointForObjectProcess"), tea.String("accessPointConfigForObjectProcess"), tea.String("accessPointPolicyForObjectProcess"), tea.String("bucketArchiveDirectRead"), tea.String("responseHeader"), tea.String("userDefinedLogFieldsConfig"), tea.String("reservedcapacity"), tea.String("requesterQosInfo"), tea.String("qosRequester"), tea.String("resourcePool"), tea.String("resourcePoolInfo"), tea.String("resourcePoolBuckets"), tea.String("processConfiguration"), tea.String("img"), tea.String("asyncFetch"), tea.String("virtualBucket"), tea.String("copy"), tea.String("userRegion"), tea.String("partSize"), tea.String("chunkSize"), tea.String("partUploadId"), tea.String("chunkNumber"), tea.String("userRegion"), tea.String("regionList"), tea.String("eventnotification"), tea.String("cacheConfiguration"), tea.String("dfs"), tea.String("dfsadmin"), tea.String("dfssecurity")}
 	client.Except_signed_params = []*string{tea.String("list-type"), tea.String("regions")}
 	return nil
 }
@@ -113,6 +113,8 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 				return _err
 			}
 
+			// for python:
+			// xml_str = OSS_UtilClient.to_xml(req_body_map)
 			xmlStr := xml.ToXML(reqBodyMap)
 			request.Stream = tea.ToReader(xmlStr)
 			request.Headers["content-type"] = tea.String("application/xml")
@@ -276,6 +278,8 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 					return _err
 				}
 
+				// for no util language
+				// var result : any = XML.parseXml(bodyStr, null);
 				tryErr := func() (_e error) {
 					defer func() {
 						if r := tea.Recover(recover()); r != nil {
@@ -349,9 +353,31 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 func (client *Client) GetRegionIdFromEndpoint(endpoint *string) (_result *string, _err error) {
 	if !tea.BoolValue(util.Empty(endpoint)) {
+		idx := tea.Int(-1)
 		if tea.BoolValue(string_.HasPrefix(endpoint, tea.String("oss-"))) && tea.BoolValue(string_.HasSuffix(endpoint, tea.String(".aliyuncs.com"))) {
-			idx := string_.Index(endpoint, tea.String(".aliyuncs.com"))
+			idx = string_.Index(endpoint, tea.String(".aliyuncs.com"))
 			_body := string_.SubString(endpoint, tea.Int(4), idx)
+			_result = _body
+			return _result, _err
+		}
+
+		if tea.BoolValue(string_.HasSuffix(endpoint, tea.String(".mgw.aliyuncs.com"))) {
+			idx = string_.Index(endpoint, tea.String(".mgw.aliyuncs.com"))
+			_body := string_.SubString(endpoint, tea.Int(0), idx)
+			_result = _body
+			return _result, _err
+		}
+
+		if tea.BoolValue(string_.HasSuffix(endpoint, tea.String("-internal.oss-data-acc.aliyuncs.com"))) {
+			idx = string_.Index(endpoint, tea.String("-internal.oss-data-acc.aliyuncs.com"))
+			_body := string_.SubString(endpoint, tea.Int(0), idx)
+			_result = _body
+			return _result, _err
+		}
+
+		if tea.BoolValue(string_.HasSuffix(endpoint, tea.String(".oss-dls.aliyuncs.com"))) {
+			idx = string_.Index(endpoint, tea.String(".oss-dls.aliyuncs.com"))
+			_body := string_.SubString(endpoint, tea.Int(0), idx)
 			_result = _body
 			return _result, _err
 		}

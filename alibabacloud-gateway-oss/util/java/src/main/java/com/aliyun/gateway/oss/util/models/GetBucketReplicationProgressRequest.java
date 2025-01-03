@@ -6,6 +6,10 @@ import com.aliyun.tea.*;
 public class GetBucketReplicationProgressRequest extends TeaModel {
     /**
      * <p>The ID of the data replication rule. You can call the GetBucketReplication operation to query the ID.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>test_replication_1</p>
      */
     @NameInMap("rule-id")
     public String ruleId;

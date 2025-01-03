@@ -11,14 +11,18 @@ public class CompleteMultipartUploadRequest extends TeaModel {
     public CompleteMultipartUpload completeMultipartUpload;
 
     /**
-     * <p>The encodingtype of the object name in the response. Only URL encoding is supported.</p>
-     * <p>The object name can contain characters that are encoded in UTF-8. However, the XML 1.0 standard cannot be used to parse control characters, such as characters with an ASCII value from 0 to 10. You can configure this parameter to encode the object name in the response.</p>
+     * <p>The encodingtype of the object name in the response. Only URL encoding is supported.
+     * The object name can contain characters that are encoded in UTF-8. However, the XML 1.0 standard cannot be used to parse control characters, such as characters with an ASCII value from 0 to 10. You can configure this parameter to encode the object name in the response.</p>
      */
     @NameInMap("encoding-type")
     public String encodingType;
 
     /**
      * <p>The identifier of the multipart upload task.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>0004B9895DBBB6E****</p>
      */
     @NameInMap("uploadId")
     public String uploadId;

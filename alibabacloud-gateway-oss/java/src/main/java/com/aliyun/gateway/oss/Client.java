@@ -99,7 +99,30 @@ public class Client extends com.aliyun.gateway.spi.Client {
             "accessPointPolicyForObjectProcess",
             "bucketArchiveDirectRead",
             "responseHeader",
-            "userDefinedLogFieldsConfig"
+            "userDefinedLogFieldsConfig",
+            "reservedcapacity",
+            "requesterQosInfo",
+            "qosRequester",
+            "resourcePool",
+            "resourcePoolInfo",
+            "resourcePoolBuckets",
+            "processConfiguration",
+            "img",
+            "asyncFetch",
+            "virtualBucket",
+            "copy",
+            "userRegion",
+            "partSize",
+            "chunkSize",
+            "partUploadId",
+            "chunkNumber",
+            "userRegion",
+            "regionList",
+            "eventnotification",
+            "cacheConfiguration",
+            "dfs",
+            "dfsadmin",
+            "dfssecurity"
         );
         this._except_signed_params = java.util.Arrays.asList(
             "list-type",
@@ -154,6 +177,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
             if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "xml")) {
                 java.util.Map<String, Object> reqBodyMap = com.aliyun.teautil.Common.assertAsMap(request.body);
+                // for python:
+                // xml_str = OSS_UtilClient.to_xml(req_body_map)
                 String xmlStr = com.aliyun.teaxml.Client.toXML(reqBodyMap);
                 request.stream = Tea.toReadable(xmlStr);
                 request.headers.put("content-type", "application/xml");
@@ -284,6 +309,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 response.deserializedBody = bodyStr;
                 if (!com.aliyun.teautil.Common.empty(bodyStr)) {
                     Object result = com.aliyun.gateway.oss.util.Client.parseXml(bodyStr, request.action);
+                    // for no util language
+                    // var result : any = XML.parseXml(bodyStr, null);
                     try {
                         response.deserializedBody = com.aliyun.teautil.Common.assertAsMap(result);
                     } catch (TeaException error) {
@@ -317,9 +344,25 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public String getRegionIdFromEndpoint(String endpoint) throws Exception {
         if (!com.aliyun.teautil.Common.empty(endpoint)) {
+            Integer idx = -1;
             if (com.aliyun.darabonbastring.Client.hasPrefix(endpoint, "oss-") && com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".aliyuncs.com")) {
-                Integer idx = com.aliyun.darabonbastring.Client.index(endpoint, ".aliyuncs.com");
+                idx = com.aliyun.darabonbastring.Client.index(endpoint, ".aliyuncs.com");
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 4, idx);
+            }
+
+            if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".mgw.aliyuncs.com")) {
+                idx = com.aliyun.darabonbastring.Client.index(endpoint, ".mgw.aliyuncs.com");
+                return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
+            }
+
+            if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, "-internal.oss-data-acc.aliyuncs.com")) {
+                idx = com.aliyun.darabonbastring.Client.index(endpoint, "-internal.oss-data-acc.aliyuncs.com");
+                return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
+            }
+
+            if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".oss-dls.aliyuncs.com")) {
+                idx = com.aliyun.darabonbastring.Client.index(endpoint, ".oss-dls.aliyuncs.com");
+                return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
             }
 
         }

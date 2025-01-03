@@ -32,8 +32,13 @@ public class GetBucketCorsResponseBody extends TeaModel {
 
         /**
          * <p>Indicates whether the Vary: Origin header was returned. Default value: false.</p>
-         * <p>- true: The Vary: Origin header is returned regardless whether the request is a cross-origin request or whether the cross-origin request succeeds.</p>
-         * <p>- false: The Vary: Origin header is not returned.</p>
+         * <ul>
+         * <li>true: The Vary: Origin header is returned regardless whether the request is a cross-origin request or whether the cross-origin request succeeds.</li>
+         * <li>false: The Vary: Origin header is not returned.</li>
+         * </ul>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
          */
         @NameInMap("ResponseVary")
         public Boolean responseVary;

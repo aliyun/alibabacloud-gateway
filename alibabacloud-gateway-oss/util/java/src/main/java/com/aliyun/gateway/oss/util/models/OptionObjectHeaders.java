@@ -9,18 +9,27 @@ public class OptionObjectHeaders extends TeaModel {
 
     /**
      * <p>The custom headers to be sent in the actual cross-origin request. You can configure multiple custom headers in a cross-origin request. Custom headers are separated by commas (,). By default, this header is left empty.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>x-oss-test1,x-oss-test2</p>
      */
     @NameInMap("Access-Control-Request-Headers")
     public String accessControlRequestHeaders;
 
     /**
      * <p>The method to be used in the actual cross-origin request. You can specify only one Access-Control-Request-Method header in a cross-origin request. By default, this header is left empty.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>PUT</p>
      */
     @NameInMap("Access-Control-Request-Method")
     public String accessControlRequestMethod;
 
     /**
      * <p>The origin of the request. It is used to identify a cross-origin request. You can specify only one Origin header in a cross-origin request. By default, this header is left empty.</p>
+     * 
+     * <strong>example:</strong>
+     * <p><a href="http://www.example.com">http://www.example.com</a></p>
      */
     @NameInMap("Origin")
     public String origin;

@@ -7,6 +7,13 @@ public class DeleteAccessPointForObjectProcessHeaders extends TeaModel {
     @NameInMap("commonHeaders")
     public java.util.Map<String, String> commonHeaders;
 
+    /**
+     * <p>The name of the Object FC Access Point.</p>
+     * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>fc-ap-01</p>
+     */
     @NameInMap("x-oss-access-point-for-object-process-name")
     public String xOssAccessPointForObjectProcessName;
 

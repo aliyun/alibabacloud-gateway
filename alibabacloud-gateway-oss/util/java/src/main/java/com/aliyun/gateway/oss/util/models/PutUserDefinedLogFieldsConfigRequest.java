@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class PutUserDefinedLogFieldsConfigRequest extends TeaModel {
+    /**
+     * <p>The container for the user-defined logging configuration.</p>
+     */
     @NameInMap("UserDefinedLogFieldsConfiguration")
     public UserDefinedLogFieldsConfiguration userDefinedLogFieldsConfiguration;
 

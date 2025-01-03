@@ -6,6 +6,9 @@ import com.aliyun.tea.*;
 public class DeleteObjectTaggingRequest extends TeaModel {
     /**
      * <p>The version ID of the object that you want to delete.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>CAEQExiBgID.jImWlxciIDQ2ZjgwODIyNDk5MTRhNzBiYmQwYTZkMTYzZjM0****</p>
      */
     @NameInMap("versionId")
     public String versionId;

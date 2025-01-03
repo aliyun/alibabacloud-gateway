@@ -4,6 +4,10 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class AccessPointVpcConfiguration extends TeaModel {
+    /**
+     * <strong>example:</strong>
+     * <p>vpc-t4nlw426y44rd3iq4****</p>
+     */
     @NameInMap("VpcId")
     public String vpcId;
 

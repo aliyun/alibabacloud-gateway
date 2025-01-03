@@ -26,34 +26,49 @@ public class CompleteMultipartUploadResponseBody extends TeaModel {
     public static class CompleteMultipartUploadResult extends TeaModel {
         /**
          * <p>The name of the bucket that contains the object you want to restore.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>example-bucket</p>
          */
         @NameInMap("Bucket")
         public String bucket;
 
         /**
          * <p>The ETag that is generated when an object is created. ETags are used to identify the content of objects.</p>
-         * <br>
          * <p>If an object is created by calling the CompleteMultipartUpload operation, the ETag value is not the MD5 hash of the object content but a unique value calculated based on a specific rule.</p>
-         * <br>
-         * <p>> The ETag of an object can be used to check whether the object content is modified. However, we recommend that you use the MD5 hash of an object rather than the ETag value of the object to verify data integrity.</p>
+         * <blockquote>
+         * <p>The ETag of an object can be used to check whether the object content is modified. However, we recommend that you use the MD5 hash of an object rather than the ETag value of the object to verify data integrity.</p>
+         * </blockquote>
+         * 
+         * <strong>example:</strong>
+         * <p>&quot;B864DB6A936D376F9F8D3ED3BBE540****&quot;</p>
          */
         @NameInMap("ETag")
         public String ETag;
 
         /**
          * <p>The encoding type of the object name in the response. If this parameter is specified in the request, the object name is encoded in the response.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>url</p>
          */
         @NameInMap("EncodingType")
         public String encodingType;
 
         /**
          * <p>The name of the uploaded object.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>multipart.data</p>
          */
         @NameInMap("Key")
         public String key;
 
         /**
          * <p>The URL that is used to access the uploaded object.</p>
+         * 
+         * <strong>example:</strong>
+         * <p><a href="http://oss-example.oss-cn-hangzhou.aliyuncs.com/multipart.data">http://oss-example.oss-cn-hangzhou.aliyuncs.com/multipart.data</a></p>
          */
         @NameInMap("Location")
         public String location;

@@ -9,32 +9,40 @@ public class HeadObjectHeaders extends TeaModel {
 
     /**
      * <p>If the ETag value that is specified in the request matches the ETag value of the object, OSS returns 200 OK and the metadata of the object. Otherwise, OSS returns 412 precondition failed. 
-</p>
-     * <p>Default value: null.</p>
+     * Default value: null.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>fba9dede5f27731c9771645a3986****</p>
      */
     @NameInMap("If-Match")
     public String ifMatch;
 
     /**
      * <p>If the time that is specified in the request is earlier than the time when the object is modified, OSS returns 200 OK and the metadata of the object. Otherwise, OSS returns 304 not modified. 
-</p>
-     * <p>Default value: null.</p>
+     * Default value: null.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>Fri, 9 Apr 2021 14:47:53 GMT</p>
      */
     @NameInMap("If-Modified-Since")
     public String ifModifiedSince;
 
     /**
      * <p>If the ETag value that is specified in the request does not match the ETag value of the object, OSS returns 200 OK and the metadata of the object. Otherwise, OSS returns 304 Not Modified. 
-</p>
-     * <p>Default value: null.</p>
+     * Default value: null.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>5B3C1A2E0563E1B002CC607C****</p>
      */
     @NameInMap("If-None-Match")
     public String ifNoneMatch;
 
     /**
      * <p>If the time that is specified in the request is later than or the same as the time when the object is modified, OSS returns 200 OK and the metadata of the object. Otherwise, OSS returns 412 precondition failed. 
-</p>
-     * <p>Default value: null.</p>
+     * Default value: null.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>Fri, 13 Oct 2021 14:47:53 GMT</p>
      */
     @NameInMap("If-Unmodified-Since")
     public String ifUnmodifiedSince;

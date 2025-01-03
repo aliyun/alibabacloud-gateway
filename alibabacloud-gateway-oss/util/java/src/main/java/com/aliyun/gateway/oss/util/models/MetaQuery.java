@@ -16,6 +16,9 @@ public class MetaQuery extends TeaModel {
     @NameInMap("Order")
     public String order;
 
+    /**
+     * <p>This parameter is required.</p>
+     */
     @NameInMap("Query")
     public String query;
 

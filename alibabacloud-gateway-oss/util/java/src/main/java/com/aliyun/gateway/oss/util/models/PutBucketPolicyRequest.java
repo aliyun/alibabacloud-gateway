@@ -6,6 +6,7 @@ import com.aliyun.tea.*;
 public class PutBucketPolicyRequest extends TeaModel {
     /**
      * <p>The request parameters.</p>
+     * <p>This parameter is required.</p>
      */
     @NameInMap("body")
     public String policy;

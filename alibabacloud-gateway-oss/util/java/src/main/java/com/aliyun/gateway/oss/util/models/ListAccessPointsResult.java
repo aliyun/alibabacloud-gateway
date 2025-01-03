@@ -7,15 +7,31 @@ public class ListAccessPointsResult extends TeaModel {
     @NameInMap("AccessPoints")
     public AccessPoints accessPoints;
 
+    /**
+     * <strong>example:</strong>
+     * <p>11489****34218</p>
+     */
     @NameInMap("AccountId")
     public String accountId;
 
+    /**
+     * <strong>example:</strong>
+     * <p>true</p>
+     */
     @NameInMap("IsTruncated")
     public String isTruncated;
 
+    /**
+     * <strong>example:</strong>
+     * <p>10</p>
+     */
     @NameInMap("MaxKeys")
     public Integer maxKeys;
 
+    /**
+     * <strong>example:</strong>
+     * <p>ap-test-01</p>
+     */
     @NameInMap("NextContinuationToken")
     public String nextContinuationToken;
 
