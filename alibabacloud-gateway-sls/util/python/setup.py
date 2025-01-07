@@ -37,7 +37,8 @@ AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
-    "lz4>=4.3.2"
+    "lz4>=4.3.2",
+    "zstd>=1.5.5.1"
 ]
 
 LONG_DESCRIPTION = ''
