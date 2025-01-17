@@ -236,7 +236,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
             return region;
         }
 
-        String preRegion = com.aliyun.darabonbastring.Client.replace(endpoint, ".aliyuncs.com", "", null);
+        java.util.List<String> strs = com.aliyun.darabonbastring.Client.split(endpoint, ":", null);
+        String withoutPort = strs.get(0);
+        String preRegion = com.aliyun.darabonbastring.Client.replace(withoutPort, ".aliyuncs.com", "", null);
         java.util.List<String> nodes = com.aliyun.darabonbastring.Client.split(preRegion, ".", null);
         if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(nodes), 2)) {
             region = nodes.get(1);

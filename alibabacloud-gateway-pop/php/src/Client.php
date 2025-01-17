@@ -311,7 +311,9 @@ class Client extends DarabonbaGatewaySpiClient {
         if (Utils::empty_($product) || Utils::empty_($endpoint)) {
             return $region;
         }
-        $preRegion = StringUtil::replace($endpoint, ".aliyuncs.com", "", null);
+        $strs = StringUtil::split($endpoint, ":", null);
+        $withoutPort = @$strs[0];
+        $preRegion = StringUtil::replace($withoutPort, ".aliyuncs.com", "", null);
         $nodes = StringUtil::split($preRegion, ".", null);
         if (Utils::equalNumber(ArrayUtil::size($nodes), 2)) {
             $region = @$nodes[1];

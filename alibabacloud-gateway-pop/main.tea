@@ -227,7 +227,9 @@ function getRegion(product: string, endpoint: string): string {
   if (Util.empty(product) || Util.empty(endpoint)) {
     return region;
   }
-  var preRegion: string = String.replace(endpoint, '.aliyuncs.com', '', null);
+  var strs : [string] = String.split(endpoint, ':', null);
+  var withoutPort : string = strs[0];
+  var preRegion: string = String.replace(withoutPort, '.aliyuncs.com', '', null);
   var nodes = String.split(preRegion, '.', null);
   if (Util.equalNumber(Array.size(nodes), 2)) {
     region = nodes[1];

@@ -361,7 +361,9 @@ func (client *Client) GetRegion(product *string, endpoint *string) (_result *str
 		return _result
 	}
 
-	preRegion := string_.Replace(endpoint, tea.String(".aliyuncs.com"), tea.String(""), nil)
+	strs := string_.Split(endpoint, tea.String(":"), nil)
+	withoutPort := strs[0]
+	preRegion := string_.Replace(withoutPort, tea.String(".aliyuncs.com"), tea.String(""), nil)
 	nodes := string_.Split(preRegion, tea.String("."), nil)
 	if tea.BoolValue(util.EqualNumber(array.Size(nodes), tea.Int(2))) {
 		region = nodes[1]
