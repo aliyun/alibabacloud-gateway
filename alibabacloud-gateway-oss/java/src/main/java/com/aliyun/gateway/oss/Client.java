@@ -452,15 +452,19 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public String getSignatureV4(String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String onlyDate, String regionId, String secret) throws Exception {
         byte[] signingkey = this.getSignKey(secret, onlyDate, regionId);
-        String objectName = "/";
-        java.util.Map<String, String> queryMap = new java.util.HashMap<>();
+        String canonicalizedUri = pathname;
         if (!com.aliyun.teautil.Common.empty(pathname)) {
-            objectName = pathname;
-        }
+            if (!com.aliyun.teautil.Common.empty(bucketName)) {
+                canonicalizedUri = "/" + bucketName + "" + canonicalizedUri + "";
+            }
 
-        String canonicalizedUri = "/";
-        if (!com.aliyun.teautil.Common.empty(bucketName)) {
-            canonicalizedUri = "/" + bucketName + "" + objectName + "";
+        } else {
+            if (!com.aliyun.teautil.Common.empty(bucketName)) {
+                canonicalizedUri = "/" + bucketName + "/";
+            } else {
+                canonicalizedUri = "/";
+            }
+
         }
 
         // for java:
@@ -468,6 +472,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
         String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
         canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+        java.util.Map<String, String> queryMap = new java.util.HashMap<>();
         for (String queryKey : com.aliyun.darabonba.map.Client.keySet(query)) {
             String queryValue = null;
             if (!com.aliyun.teautil.Common.empty(query.get(queryKey))) {

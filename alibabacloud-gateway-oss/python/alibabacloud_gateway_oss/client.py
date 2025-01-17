@@ -700,17 +700,20 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         signingkey = self.get_sign_key(secret, only_date, region_id)
-        object_name = '/'
-        query_map = {}
+        canonicalized_uri = pathname
         if not UtilClient.empty(pathname):
-            object_name = pathname
-        canonicalized_uri = '/'
-        if not UtilClient.empty(bucket_name):
-            canonicalized_uri = f'/{bucket_name}{object_name}'
+            if not UtilClient.empty(bucket_name):
+                canonicalized_uri = f'/{bucket_name}{canonicalized_uri}'
+        else:
+            if not UtilClient.empty(bucket_name):
+                canonicalized_uri = f'/{bucket_name}/'
+            else:
+                canonicalized_uri = '/'
         # for java:
         # String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
         # canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
         canonicalized_uri = OpenApiUtilClient.get_encode_path(canonicalized_uri)
+        query_map = {}
         for query_key in MapClient.key_set(query):
             query_value = None
             if not UtilClient.empty(query.get(query_key)):
@@ -742,17 +745,20 @@ class Client(SPIClient):
         secret: str,
     ) -> str:
         signingkey = await self.get_sign_key_async(secret, only_date, region_id)
-        object_name = '/'
-        query_map = {}
+        canonicalized_uri = pathname
         if not UtilClient.empty(pathname):
-            object_name = pathname
-        canonicalized_uri = '/'
-        if not UtilClient.empty(bucket_name):
-            canonicalized_uri = f'/{bucket_name}{object_name}'
+            if not UtilClient.empty(bucket_name):
+                canonicalized_uri = f'/{bucket_name}{canonicalized_uri}'
+        else:
+            if not UtilClient.empty(bucket_name):
+                canonicalized_uri = f'/{bucket_name}/'
+            else:
+                canonicalized_uri = '/'
         # for java:
         # String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
         # canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
         canonicalized_uri = OpenApiUtilClient.get_encode_path(canonicalized_uri)
+        query_map = {}
         for query_key in MapClient.key_set(query):
             query_value = None
             if not UtilClient.empty(query.get(query_key)):

@@ -498,21 +498,26 @@ func (client *Client) GetSignatureV4(bucketName *string, pathname *string, metho
 		return _result, _err
 	}
 
-	objectName := tea.String("/")
-	queryMap := make(map[string]*string)
+	canonicalizedUri := pathname
 	if !tea.BoolValue(util.Empty(pathname)) {
-		objectName = pathname
-	}
+		if !tea.BoolValue(util.Empty(bucketName)) {
+			canonicalizedUri = tea.String("/" + tea.StringValue(bucketName) + tea.StringValue(canonicalizedUri))
+		}
 
-	canonicalizedUri := tea.String("/")
-	if !tea.BoolValue(util.Empty(bucketName)) {
-		canonicalizedUri = tea.String("/" + tea.StringValue(bucketName) + tea.StringValue(objectName))
+	} else {
+		if !tea.BoolValue(util.Empty(bucketName)) {
+			canonicalizedUri = tea.String("/" + tea.StringValue(bucketName) + "/")
+		} else {
+			canonicalizedUri = tea.String("/")
+		}
+
 	}
 
 	// for java:
 	// String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
 	// canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
 	canonicalizedUri = openapiutil.GetEncodePath(canonicalizedUri)
+	queryMap := make(map[string]*string)
 	for _, queryKey := range map_.KeySet(query) {
 		var queryValue *string
 		if !tea.BoolValue(util.Empty(query[tea.StringValue(queryKey)])) {
