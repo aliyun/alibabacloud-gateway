@@ -446,7 +446,9 @@ class Client(SPIClient):
         region = 'center'
         if UtilClient.empty(product) or UtilClient.empty(endpoint):
             return region
-        pre_region = StringClient.replace(endpoint, '.aliyuncs.com', '', None)
+        strs = StringClient.split(endpoint, ':', None)
+        without_port = strs[0]
+        pre_region = StringClient.replace(without_port, '.aliyuncs.com', '', None)
         nodes = StringClient.split(pre_region, '.', None)
         if UtilClient.equal_number(ArrayClient.size(nodes), 2):
             region = nodes[1]

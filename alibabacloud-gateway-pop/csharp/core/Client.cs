@@ -525,7 +525,9 @@ namespace AlibabaCloud.GatewayPop
             {
                 return region;
             }
-            string preRegion = AlibabaCloud.DarabonbaString.StringUtil.Replace(endpoint, ".aliyuncs.com", "", null);
+            List<string> strs = AlibabaCloud.DarabonbaString.StringUtil.Split(endpoint, ":", null);
+            string withoutPort = strs[0];
+            string preRegion = AlibabaCloud.DarabonbaString.StringUtil.Replace(withoutPort, ".aliyuncs.com", "", null);
             List<string> nodes = AlibabaCloud.DarabonbaString.StringUtil.Split(preRegion, ".", null);
             if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(nodes), 2))
             {

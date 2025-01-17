@@ -243,7 +243,9 @@ export default class Client extends SPI {
       return region;
     }
 
-    let preRegion : string = String.replace(endpoint, ".aliyuncs.com", "", null);
+    let strs : string[] = String.split(endpoint, ":", null);
+    let withoutPort : string = strs[0];
+    let preRegion : string = String.replace(withoutPort, ".aliyuncs.com", "", null);
     let nodes = String.split(preRegion, ".", null);
     if (Util.equalNumber(Array.size(nodes), 2)) {
       region = nodes[1];
