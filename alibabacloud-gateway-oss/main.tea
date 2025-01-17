@@ -338,15 +338,17 @@ async function getSignKey(secret: string, onlyDate: string, regionId: string): b
 async function getSignatureV4(bucketName: string, pathname: string, method: string, query: map[string]string, headers: map[string]string, onlyDate: string, regionId: string, secret: string): string {
   var signingkey : bytes = getSignKey(secret, onlyDate, regionId);
 
-  var objectName : string = '/';
-  var queryMap : map[string]string = {};
+  var canonicalizedUri : string = pathname;
   if (!Util.empty(pathname)) {
-    objectName = pathname;
-  }
-
-  var canonicalizedUri : string = '/';
-  if (!Util.empty(bucketName)) {
-    canonicalizedUri = `/${bucketName}${objectName}`;
+    if (!Util.empty(bucketName)) {
+       canonicalizedUri = `/${bucketName}${canonicalizedUri}`;
+    }
+  } else {
+    if (!Util.empty(bucketName)) {
+      canonicalizedUri = `/${bucketName}/`;
+    } else {
+      canonicalizedUri = "/";
+    }
   }
 
   // for java:
@@ -354,6 +356,7 @@ async function getSignatureV4(bucketName: string, pathname: string, method: stri
   // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
   canonicalizedUri = OpenApiUtil.getEncodePath(canonicalizedUri);
 
+  var queryMap : map[string]string = {};
   for (var queryKey : Map.keySet(query)) {
     var queryValue : string = null;
     if (!Util.empty(query[queryKey])) {
