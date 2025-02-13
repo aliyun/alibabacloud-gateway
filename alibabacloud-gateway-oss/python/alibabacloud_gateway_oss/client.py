@@ -234,7 +234,7 @@ class Client(SPIClient):
                         query_value = item[1]
                     if UtilClient.empty(origin_query.get(query_key)):
                         request.query[query_key] = query_value
-        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        signature_version = UtilClient.default_string(request.signature_version, 'v4')
         request.headers['authorization'] = self.get_authorization(signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
 
     async def modify_request_async(
@@ -311,7 +311,7 @@ class Client(SPIClient):
                         query_value = item[1]
                     if UtilClient.empty(origin_query.get(query_key)):
                         request.query[query_key] = query_value
-        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        signature_version = UtilClient.default_string(request.signature_version, 'v4')
         request.headers['authorization'] = await self.get_authorization_async(signature_version, bucket_name, request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret, region_id)
 
     def modify_response(

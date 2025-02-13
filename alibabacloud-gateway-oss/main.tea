@@ -139,7 +139,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     }
   }
 
-  var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
+  var signatureVersion = Util.defaultString(request.signatureVersion, 'v4');
   request.headers.authorization = getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId);
 }
 

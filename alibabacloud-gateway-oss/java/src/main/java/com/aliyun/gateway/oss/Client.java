@@ -235,7 +235,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
-        String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
+        String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v4");
         request.headers.put("authorization", this.getAuthorization(signatureVersion, bucketName, request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret, regionId));
     }
 
