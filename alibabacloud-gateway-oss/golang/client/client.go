@@ -176,7 +176,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	}
 
-	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v1"))
+	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v4"))
 	request.Headers["authorization"], _err = client.GetAuthorization(signatureVersion, bucketName, request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret, regionId)
 	if _err != nil {
 		return _err
