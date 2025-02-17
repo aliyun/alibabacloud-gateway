@@ -18,39 +18,56 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        String date = com.aliyun.teautil.Common.getDateUTCString();
         request.headers = TeaConverter.merge(String.class,
             TeaConverter.buildMap(
-                new TeaPair("date", com.aliyun.teautil.Common.getDateUTCString()),
+                new TeaPair("date", date),
                 new TeaPair("host", config.endpoint),
                 new TeaPair("x-acs-version", request.version),
                 new TeaPair("x-acs-action", request.action),
                 new TeaPair("user-agent", request.userAgent),
                 new TeaPair("x-acs-signature-nonce", com.aliyun.teautil.Common.getNonce()),
-                new TeaPair("x-acs-signature-method", "HMAC-SHA1"),
-                new TeaPair("x-acs-signature-version", "1.0"),
                 new TeaPair("accept", "application/json")
             ),
             request.headers
         );
+        String signatureAlgorithm = com.aliyun.teautil.Common.defaultString(request.signatureAlgorithm, "ACS4-HMAC-SHA256");
+        String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
+        String hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(""), signatureAlgorithm));
         if (!com.aliyun.teautil.Common.isUnset(request.stream)) {
             byte[] tmp = com.aliyun.teautil.Common.readAsBytes(request.stream);
+            hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(tmp, signatureAlgorithm));
             request.stream = Tea.toReadable(tmp);
             request.headers.put("content-type", "application/octet-stream");
         } else {
             if (!com.aliyun.teautil.Common.isUnset(request.body)) {
                 if (com.aliyun.teautil.Common.equalString(request.reqBodyType, "json")) {
                     String jsonObj = com.aliyun.teautil.Common.toJSONString(request.body);
+                    hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(jsonObj), signatureAlgorithm));
                     request.stream = Tea.toReadable(jsonObj);
                     request.headers.put("content-type", "application/json; charset=utf-8");
                 } else {
                     java.util.Map<String, Object> m = com.aliyun.teautil.Common.assertAsMap(request.body);
                     String formObj = com.aliyun.openapiutil.Client.toForm(m);
+                    hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(formObj), signatureAlgorithm));
                     request.stream = Tea.toReadable(formObj);
                     request.headers.put("content-type", "application/x-www-form-urlencoded");
                 }
 
             }
 
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
+            if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
+                request.headers.put("x-acs-content-sm3", hashedRequestPayload);
+            } else {
+                request.headers.put("x-acs-content-sha256", hashedRequestPayload);
+            }
+
+        } else {
+            request.headers.put("x-acs-signature-method", "HMAC-SHA1");
+            request.headers.put("x-acs-signature-version", "1.0");
         }
 
         if (!com.aliyun.teautil.Common.equalString(request.authType, "Anonymous") && !com.aliyun.teautil.Common.isUnset(request.credential)) {
@@ -69,12 +86,18 @@ public class Client extends com.aliyun.gateway.spi.Client {
                     request.headers.put("x-acs-security-token", securityToken);
                 }
 
-                request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
+                if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
+                    String dateNew = com.aliyun.darabonbastring.Client.subString(date, 0, 10);
+                    String region = this.getRegion(config.endpoint);
+                    byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
+                    request.headers.put("Authorization", this.getAuthorizationV4(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
+                } else {
+                    request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
+                }
+
             }
 
         }
-
-    }
 
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
@@ -219,5 +242,77 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
         return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
+    }
+
+    public String getRegion(String endpoint) throws Exception {
+        String region = "center";
+        if (com.aliyun.teautil.Common.empty(endpoint)) {
+            return region;
+        }
+
+        if (com.aliyun.darabonbastring.Client.contains(endpoint, ".admin.aliyunpds.com")) {
+            region = com.aliyun.darabonbastring.Client.replace(endpoint, ".admin.aliyunpds.com", "", null);
+        }
+
+        return region;
+    }
+
+    public byte[] getSigningkey(String signatureAlgorithm, String secret, String region, String date) throws Exception {
+        String sc1 = "aliyun_v4" + secret + "";
+        byte[] sc2 = com.aliyun.teautil.Common.toBytes("");
+        if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SHA256")) {
+            sc2 = com.aliyun.darabonba.signature.Signer.HmacSHA256Sign(date, sc1);
+        } else if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
+            sc2 = com.aliyun.darabonba.signature.Signer.HmacSM3Sign(date, sc1);
+        }
+
+        byte[] sc3 = com.aliyun.teautil.Common.toBytes("");
+        if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SHA256")) {
+            sc3 = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes(region, sc2);
+        } else if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
+            sc3 = com.aliyun.darabonba.signature.Signer.HmacSM3SignByBytes(region, sc2);
+        }
+
+        byte[] sc4 = com.aliyun.teautil.Common.toBytes("");
+        if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SHA256")) {
+            sc4 = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes("pds", sc3);
+        } else if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
+            sc4 = com.aliyun.darabonba.signature.Signer.HmacSM3SignByBytes("pds", sc3);
+        }
+
+        byte[] hmac = com.aliyun.teautil.Common.toBytes("");
+        if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SHA256")) {
+            hmac = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes("aliyun_v4_request", sc4);
+        } else if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
+            hmac = com.aliyun.darabonba.signature.Signer.HmacSM3SignByBytes("aliyun_v4_request", sc4);
+        }
+
+        return hmac;
+    }
+
+    public String getAuthorizationV4(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, String ak, byte[] signingkey, String product, String region, String date) throws Exception {
+        String signature = this.getSignatureV4(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
+        java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
+        String signedHeadersStr = com.aliyun.darabonba.array.Client.join(signedHeaders, ";");
+        return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/aliyun_v4_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
+    }
+
+    public String getSignatureV4(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, byte[] signingkey) throws Exception {
+        String stringToSign = "";
+        String canonicalizedResource = this.buildCanonicalizedResource(pathname, query);
+        String canonicalizedHeaders = this.buildCanonicalizedHeaders(headers);
+        java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
+        String signedHeadersStr = com.aliyun.darabonba.array.Client.join(signedHeaders, ";");
+        stringToSign = "" + method + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload + "";
+        String hex = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(stringToSign), signatureAlgorithm));
+        stringToSign = "" + signatureAlgorithm + "\n" + hex + "";
+        byte[] signature = com.aliyun.teautil.Common.toBytes("");
+        if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SHA256")) {
+            signature = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes(stringToSign, signingkey);
+        } else if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
+            signature = com.aliyun.darabonba.signature.Signer.HmacSM3SignByBytes(stringToSign, signingkey);
+        }
+
+        return com.aliyun.darabonba.encode.Encoder.hexEncode(signature);
     }
 }

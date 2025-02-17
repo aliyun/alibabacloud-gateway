@@ -9,8 +9,8 @@ require (
 	github.com/alibabacloud-go/darabonba-map v0.0.2
 	github.com/alibabacloud-go/darabonba-signature-util v0.0.7
 	github.com/alibabacloud-go/darabonba-string v1.0.2
-	github.com/alibabacloud-go/openapi-util v0.1.0
+	github.com/alibabacloud-go/openapi-util v0.1.1
 	github.com/alibabacloud-go/tea v1.1.19
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.5
-	github.com/aliyun/credentials-go v1.3.6
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.6
+	github.com/aliyun/credentials-go v1.3.10
 )
