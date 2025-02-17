@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayPDS",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -21,13 +21,13 @@
     "Array": "darabonba:Array:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-pds:^0.0.9",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pds/client:v0.0.9",
-    "java": "com.aliyun:alibabacloud-gateway-pds:0.0.9",
-    "python": "alibabacloud_gateway_pds:0.0.9",
+    "ts": "@alicloud/gateway-pds:^0.1.0",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pds/client:v0.1.0",
+    "java": "com.aliyun:alibabacloud-gateway-pds:0.1.0",
+    "python": "alibabacloud_gateway_pds:0.1.0",
     "python2": "alibabacloud_gateway_pds_py2:0.0.7",
-    "csharp": "AlibabaCloud.GatewayPds:0.0.10",
-    "php": "alibabacloud/gateway-pds:^0.0.9"
+    "csharp": "AlibabaCloud.GatewayPds:0.1.0",
+    "php": "alibabacloud/gateway-pds:^0.1.0"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayPds",
