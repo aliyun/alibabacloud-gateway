@@ -5,18 +5,35 @@ import com.aliyun.tea.*;
 
 public class Client extends com.aliyun.gateway.spi.Client {
 
+    public String _endpointSuffix;
+    public String _signatureTypePrefix;
+    public String _signPrefix;
     public String _sha256;
     public String _sm3;
     public Client() throws Exception {
         super();
-        this._sha256 = "ACS4-HMAC-SHA256";
-        this._sm3 = "ACS4-HMAC-SM3";
+        // CLOUD4-
+        this._signatureTypePrefix = "ACS4-";
+        // cloud_v4
+        this._signPrefix = "aliyun_v4";
+        this._endpointSuffix = "aliyuncs.com";
+        this._sha256 = "" + _signatureTypePrefix + "HMAC-SHA256";
+        this._sm3 = "" + _signatureTypePrefix + "HMAC-SM3";
     }
 
 
     public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        java.util.Map<String, String> attributes = attributeMap.key;
+        if (!com.aliyun.teautil.Common.isUnset(attributes)) {
+            this._signatureTypePrefix = attributes.get("signatureTypePrefix");
+            this._signPrefix = attributes.get("signPrefix");
+            this._endpointSuffix = attributes.get("endpointSuffix");
+            this._sha256 = "" + _signatureTypePrefix + "HMAC-SHA256";
+            this._sm3 = "" + _signatureTypePrefix + "HMAC-SM3";
+        }
+
         config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
     }
 
@@ -77,15 +94,24 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 ));
             }
 
-            String authType = credential.getType();
+            com.aliyun.credentials.models.CredentialModel credentialModel = credential.getCredential();
+            if (!com.aliyun.teautil.Common.empty(credentialModel.providerName)) {
+                request.headers.put("x-acs-credentials-provider", credentialModel.providerName);
+            }
+
+            String authType = credentialModel.type;
             if (com.aliyun.teautil.Common.equalString(authType, "bearer")) {
                 String bearerToken = credential.getBearerToken();
                 request.headers.put("x-acs-bearer-token", bearerToken);
+                request.headers.put("x-acs-signature-type", "BEARERTOKEN");
                 request.headers.put("Authorization", "Bearer " + bearerToken + "");
+            } else if (com.aliyun.teautil.Common.equalString(authType, "id_token")) {
+                String idToken = credentialModel.securityToken;
+                request.headers.put("x-acs-zero-trust-idtoken", idToken);
             } else {
-                String accessKeyId = credential.getAccessKeyId();
-                String accessKeySecret = credential.getAccessKeySecret();
-                String securityToken = credential.getSecurityToken();
+                String accessKeyId = credentialModel.accessKeyId;
+                String accessKeySecret = credentialModel.accessKeySecret;
+                String securityToken = credentialModel.securityToken;
                 if (!com.aliyun.teautil.Common.empty(securityToken)) {
                     request.headers.put("x-acs-accesskey-id", accessKeyId);
                     request.headers.put("x-acs-security-token", securityToken);
@@ -93,7 +119,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
                 String dateNew = com.aliyun.darabonbastring.Client.subString(date, 0, 10);
                 dateNew = com.aliyun.darabonbastring.Client.replace(dateNew, "-", "", null);
-                String region = this.getRegion(request.productId, config.endpoint);
+                String region = this.getRegion(request.productId, config.endpoint, config.regionId);
                 byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
                 request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
             }
@@ -170,7 +196,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String signature = this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
         java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
         String signedHeadersStr = com.aliyun.darabonba.array.Client.join(signedHeaders, ";");
-        return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/aliyun_v4_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
+        return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/" + _signPrefix + "_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
     }
 
     public String getSignature(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, byte[] signingkey) throws Exception {
@@ -198,7 +224,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public byte[] getSigningkey(String signatureAlgorithm, String secret, String product, String region, String date) throws Exception {
-        String sc1 = "aliyun_v4" + secret + "";
+        String sc1 = "" + _signPrefix + "" + secret + "";
         byte[] sc2 = com.aliyun.teautil.Common.toBytes("");
         if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, _sha256)) {
             sc2 = com.aliyun.darabonba.signature.Signer.HmacSHA256Sign(date, sc1);
@@ -222,15 +248,19 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         byte[] hmac = com.aliyun.teautil.Common.toBytes("");
         if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, _sha256)) {
-            hmac = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes("aliyun_v4_request", sc4);
+            hmac = com.aliyun.darabonba.signature.Signer.HmacSHA256SignByBytes("" + _signPrefix + "_request", sc4);
         } else if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, _sm3)) {
-            hmac = com.aliyun.darabonba.signature.Signer.HmacSM3SignByBytes("aliyun_v4_request", sc4);
+            hmac = com.aliyun.darabonba.signature.Signer.HmacSM3SignByBytes("" + _signPrefix + "_request", sc4);
         }
 
         return hmac;
     }
 
-    public String getRegion(String product, String endpoint) throws Exception {
+    public String getRegion(String product, String endpoint, String regionId) throws Exception {
+        if (!com.aliyun.teautil.Common.empty(regionId)) {
+            return regionId;
+        }
+
         String region = "center";
         if (com.aliyun.teautil.Common.empty(product) || com.aliyun.teautil.Common.empty(endpoint)) {
             return region;
@@ -238,7 +268,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         java.util.List<String> strs = com.aliyun.darabonbastring.Client.split(endpoint, ":", null);
         String withoutPort = strs.get(0);
-        String preRegion = com.aliyun.darabonbastring.Client.replace(withoutPort, ".aliyuncs.com", "", null);
+        String preRegion = com.aliyun.darabonbastring.Client.replace(withoutPort, "." + _endpointSuffix + "", "", null);
         java.util.List<String> nodes = com.aliyun.darabonbastring.Client.split(preRegion, ".", null);
         if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(nodes), 2)) {
             region = nodes.get(1);

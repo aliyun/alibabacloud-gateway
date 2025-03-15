@@ -11,9 +11,9 @@ require (
 	github.com/alibabacloud-go/darabonba-string v1.0.2
 	github.com/alibabacloud-go/endpoint-util v1.1.0
 	github.com/alibabacloud-go/openapi-util v0.1.1
-	github.com/alibabacloud-go/tea v1.1.20
+	github.com/alibabacloud-go/tea v1.2.2
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.6
-	github.com/aliyun/credentials-go v1.3.10 // indirect
+	github.com/aliyun/credentials-go v1.4.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	golang.org/x/net v0.23.0 // indirect

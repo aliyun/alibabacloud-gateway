@@ -16,8 +16,11 @@ import (
 
 type Client struct {
 	spi.Client
-	Sha256 *string
-	Sm3    *string
+	EndpointSuffix      *string
+	SignatureTypePrefix *string
+	SignPrefix          *string
+	Sha256              *string
+	Sm3                 *string
 }
 
 func NewClient() (*Client, error) {
@@ -31,14 +34,28 @@ func (client *Client) Init() (_err error) {
 	if _err != nil {
 		return _err
 	}
-	client.Sha256 = tea.String("ACS4-HMAC-SHA256")
-	client.Sm3 = tea.String("ACS4-HMAC-SM3")
+	// CLOUD4-
+	client.SignatureTypePrefix = tea.String("ACS4-")
+	// cloud_v4
+	client.SignPrefix = tea.String("aliyun_v4")
+	client.EndpointSuffix = tea.String("aliyuncs.com")
+	client.Sha256 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
+	client.Sm3 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
 	return nil
 }
 
 func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
 	request := context.Request
 	config := context.Configuration
+	attributes := attributeMap.Key
+	if !tea.BoolValue(util.IsUnset(attributes)) {
+		client.SignatureTypePrefix = attributes["signatureTypePrefix"]
+		client.SignPrefix = attributes["signPrefix"]
+		client.EndpointSuffix = attributes["endpointSuffix"]
+		client.Sha256 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
+		client.Sm3 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
+	}
+
 	config.Endpoint, _err = client.GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint)
 	if _err != nil {
 		return _err
@@ -110,27 +127,28 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			return _err
 		}
 
-		authType := credential.GetType()
+		credentialModel, _err := credential.GetCredential()
+		if _err != nil {
+			return _err
+		}
+
+		if !tea.BoolValue(util.Empty(credentialModel.ProviderName)) {
+			request.Headers["x-acs-credentials-provider"] = credentialModel.ProviderName
+		}
+
+		authType := credentialModel.Type
 		if tea.BoolValue(util.EqualString(authType, tea.String("bearer"))) {
 			bearerToken := credential.GetBearerToken()
 			request.Headers["x-acs-bearer-token"] = bearerToken
+			request.Headers["x-acs-signature-type"] = tea.String("BEARERTOKEN")
 			request.Headers["Authorization"] = tea.String("Bearer " + tea.StringValue(bearerToken))
+		} else if tea.BoolValue(util.EqualString(authType, tea.String("id_token"))) {
+			idToken := credentialModel.SecurityToken
+			request.Headers["x-acs-zero-trust-idtoken"] = idToken
 		} else {
-			accessKeyId, _err := credential.GetAccessKeyId()
-			if _err != nil {
-				return _err
-			}
-
-			accessKeySecret, _err := credential.GetAccessKeySecret()
-			if _err != nil {
-				return _err
-			}
-
-			securityToken, _err := credential.GetSecurityToken()
-			if _err != nil {
-				return _err
-			}
-
+			accessKeyId := credentialModel.AccessKeyId
+			accessKeySecret := credentialModel.AccessKeySecret
+			securityToken := credentialModel.SecurityToken
 			if !tea.BoolValue(util.Empty(securityToken)) {
 				request.Headers["x-acs-accesskey-id"] = accessKeyId
 				request.Headers["x-acs-security-token"] = securityToken
@@ -138,7 +156,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 			dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
 			dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
-			region := client.GetRegion(request.ProductId, config.Endpoint)
+			region := client.GetRegion(request.ProductId, config.Endpoint, config.RegionId)
 			signingkey, _err := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
 			if _err != nil {
 				return _err
@@ -278,7 +296,7 @@ func (client *Client) GetAuthorization(pathname *string, method *string, query m
 	}
 
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
-	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + "/" + tea.StringValue(date) + "/" + tea.StringValue(region) + "/" + tea.StringValue(product) + "/aliyun_v4_request,SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
+	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + "/" + tea.StringValue(date) + "/" + tea.StringValue(region) + "/" + tea.StringValue(product) + "/" + tea.StringValue(client.SignPrefix) + "_request,SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
 	return _result, _err
 }
 
@@ -321,7 +339,7 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 }
 
 func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte, _err error) {
-	sc1 := tea.String("aliyun_v4" + tea.StringValue(secret))
+	sc1 := tea.String(tea.StringValue(client.SignPrefix) + tea.StringValue(secret))
 	sc2 := util.ToBytes(tea.String(""))
 	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
 		sc2 = signatureutil.HmacSHA256Sign(date, sc1)
@@ -345,16 +363,21 @@ func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, 
 
 	hmac := util.ToBytes(tea.String(""))
 	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
-		hmac = signatureutil.HmacSHA256SignByBytes(tea.String("aliyun_v4_request"), sc4)
+		hmac = signatureutil.HmacSHA256SignByBytes(tea.String(tea.StringValue(client.SignPrefix)+"_request"), sc4)
 	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
-		hmac = signatureutil.HmacSM3SignByBytes(tea.String("aliyun_v4_request"), sc4)
+		hmac = signatureutil.HmacSM3SignByBytes(tea.String(tea.StringValue(client.SignPrefix)+"_request"), sc4)
 	}
 
 	_result = hmac
 	return _result, _err
 }
 
-func (client *Client) GetRegion(product *string, endpoint *string) (_result *string) {
+func (client *Client) GetRegion(product *string, endpoint *string, regionId *string) (_result *string) {
+	if !tea.BoolValue(util.Empty(regionId)) {
+		_result = regionId
+		return _result
+	}
+
 	region := tea.String("center")
 	if tea.BoolValue(util.Empty(product)) || tea.BoolValue(util.Empty(endpoint)) {
 		_result = region
@@ -363,7 +386,7 @@ func (client *Client) GetRegion(product *string, endpoint *string) (_result *str
 
 	strs := string_.Split(endpoint, tea.String(":"), nil)
 	withoutPort := strs[0]
-	preRegion := string_.Replace(withoutPort, tea.String(".aliyuncs.com"), tea.String(""), nil)
+	preRegion := string_.Replace(withoutPort, tea.String("."+tea.StringValue(client.EndpointSuffix)), tea.String(""), nil)
 	nodes := string_.Split(preRegion, tea.String("."), nil)
 	if tea.BoolValue(util.EqualNumber(array.Size(nodes), tea.Int(2))) {
 		region = nodes[1]

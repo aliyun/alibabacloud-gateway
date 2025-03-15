@@ -1,6 +1,6 @@
 // This file is auto-generated, don't edit it
 import SPI, * as $SPI from '@alicloud/gateway-spi';
-import Credential from '@alicloud/credentials';
+import Credential, * as $Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
 import OpenApiUtil from '@alicloud/openapi-util';
 import EndpointUtil from '@alicloud/endpoint-util';
@@ -13,19 +13,36 @@ import * as $tea from '@alicloud/tea-typescript';
 
 
 export default class Client extends SPI {
+  _endpointSuffix: string;
+  _signatureTypePrefix: string;
+  _signPrefix: string;
   _sha256: string;
   _sm3: string;
 
   constructor() {
     super();
-    this._sha256 = "ACS4-HMAC-SHA256";
-    this._sm3 = "ACS4-HMAC-SM3";
+    // CLOUD4-
+    this._signatureTypePrefix = "ACS4-";
+    // cloud_v4
+    this._signPrefix = "aliyun_v4";
+    this._endpointSuffix = "aliyuncs.com";
+    this._sha256 = `${this._signatureTypePrefix}HMAC-SHA256`;
+    this._sm3 = `${this._signatureTypePrefix}HMAC-SM3`;
   }
 
 
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
+    let attributes = attributeMap.key;
+    if (!Util.isUnset(attributes)) {
+      this._signatureTypePrefix = attributes["signatureTypePrefix"];
+      this._signPrefix = attributes["signPrefix"];
+      this._endpointSuffix = attributes["endpointSuffix"];
+      this._sha256 = `${this._signatureTypePrefix}HMAC-SHA256`;
+      this._sm3 = `${this._signatureTypePrefix}HMAC-SM3`;
+    }
+
     config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
   }
 
@@ -84,15 +101,24 @@ export default class Client extends SPI {
         });
       }
 
-      let authType = credential.getType();
+      let credentialModel = await credential.getCredential();
+      if (!Util.empty(credentialModel.providerName)) {
+        request.headers["x-acs-credentials-provider"] = credentialModel.providerName;
+      }
+
+      let authType = credentialModel.type;
       if (Util.equalString(authType, "bearer")) {
         let bearerToken = credential.getBearerToken();
         request.headers["x-acs-bearer-token"] = bearerToken;
+        request.headers["x-acs-signature-type"] = "BEARERTOKEN";
         request.headers["Authorization"] = `Bearer ${bearerToken}`;
+      } else if (Util.equalString(authType, "id_token")) {
+        let idToken = credentialModel.securityToken;
+        request.headers["x-acs-zero-trust-idtoken"] = idToken;
       } else {
-        let accessKeyId = await credential.getAccessKeyId();
-        let accessKeySecret = await credential.getAccessKeySecret();
-        let securityToken = await credential.getSecurityToken();
+        let accessKeyId = credentialModel.accessKeyId;
+        let accessKeySecret = credentialModel.accessKeySecret;
+        let securityToken = credentialModel.securityToken;
         if (!Util.empty(securityToken)) {
           request.headers["x-acs-accesskey-id"] = accessKeyId;
           request.headers["x-acs-security-token"] = securityToken;
@@ -100,7 +126,7 @@ export default class Client extends SPI {
 
         let dateNew = String.subString(date, 0, 10);
         dateNew = String.replace(dateNew, "-", "", null);
-        let region = this.getRegion(request.productId, config.endpoint);
+        let region = this.getRegion(request.productId, config.endpoint, config.regionId);
         let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
         request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
       }
@@ -177,7 +203,7 @@ export default class Client extends SPI {
     let signature = await this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
     let signedHeaders = await this.getSignedHeaders(headers);
     let signedHeadersStr = Array.join(signedHeaders, ";");
-    return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/aliyun_v4_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+    return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${this._signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
   async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer): Promise<string> {
@@ -205,7 +231,7 @@ export default class Client extends SPI {
   }
 
   async getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Promise<Buffer> {
-    let sc1 = `aliyun_v4${secret}`;
+    let sc1 = `${this._signPrefix}${secret}`;
     let sc2 = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
       sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
@@ -229,15 +255,19 @@ export default class Client extends SPI {
 
     let hmac = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
-      hmac = SignatureUtil.HmacSHA256SignByBytes("aliyun_v4_request", sc4);
+      hmac = SignatureUtil.HmacSHA256SignByBytes(`${this._signPrefix}_request`, sc4);
     } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
-      hmac = SignatureUtil.HmacSM3SignByBytes("aliyun_v4_request", sc4);
+      hmac = SignatureUtil.HmacSM3SignByBytes(`${this._signPrefix}_request`, sc4);
     }
 
     return hmac;
   }
 
-  getRegion(product: string, endpoint: string): string {
+  getRegion(product: string, endpoint: string, regionId: string): string {
+    if (!Util.empty(regionId)) {
+      return regionId;
+    }
+
     let region = "center";
     if (Util.empty(product) || Util.empty(endpoint)) {
       return region;
@@ -245,7 +275,7 @@ export default class Client extends SPI {
 
     let strs : string[] = String.split(endpoint, ":", null);
     let withoutPort : string = strs[0];
-    let preRegion : string = String.replace(withoutPort, ".aliyuncs.com", "", null);
+    let preRegion : string = String.replace(withoutPort, `.${this._endpointSuffix}`, "", null);
     let nodes = String.split(preRegion, ".", null);
     if (Util.equalNumber(Array.size(nodes), 2)) {
       region = nodes[1];

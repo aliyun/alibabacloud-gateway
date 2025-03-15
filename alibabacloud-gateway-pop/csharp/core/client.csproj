@@ -41,7 +41,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="AlibabaCloud.GatewaySpi" Version="0.0.3"/>
-    <PackageReference Include="Aliyun.Credentials" Version="1.4.2"/>
+    <PackageReference Include="Aliyun.Credentials" Version="1.5.0"/>
     <PackageReference Include="AlibabaCloud.TeaUtil" Version="0.1.19"/>
     <PackageReference Include="AlibabaCloud.OpenApiUtil" Version="1.1.2"/>
     <PackageReference Include="AlibabaCloud.EndpointUtil" Version="0.1.1"/>
@@ -50,6 +50,6 @@
     <PackageReference Include="AlibabaCloud.DarabonbaString" Version="1.0.3"/>
     <PackageReference Include="AlibabaCloud.DarabonbaMap" Version="0.0.2"/>
     <PackageReference Include="AlibabaCloud.DarabonbaArray" Version="0.1.0"/>
-    <PackageReference Include="Tea" Version="1.0.13"/>
+    <PackageReference Include="Tea" Version="1.1.3"/>
   </ItemGroup>
 </Project>
