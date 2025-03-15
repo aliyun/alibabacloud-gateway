@@ -11,18 +11,34 @@ import Array;
 
 extends SPI;
 
+type @endpointSuffix = string
+type @signatureTypePrefix = string
+type @signPrefix = string
 type @sha256 = string
 type @sm3 = string
 
 init() {
   super();
-  @sha256 = 'ACS4-HMAC-SHA256';
-  @sm3 = 'ACS4-HMAC-SM3';
+  // CLOUD4-
+  @signatureTypePrefix = 'ACS4-';
+  // cloud_v4
+  @signPrefix = 'aliyun_v4';
+  @endpointSuffix = 'aliyuncs.com';
+  @sha256 = `${@signatureTypePrefix}HMAC-SHA256`;
+  @sm3 = `${@signatureTypePrefix}HMAC-SM3`;
 }
 
 async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var config = context.configuration;
+  var attributes = attributeMap.key;
+  if (!Util.isUnset(attributes)) {
+    @signatureTypePrefix = attributes.signatureTypePrefix;
+    @signPrefix = attributes.signPrefix;
+    @endpointSuffix = attributes.endpointSuffix;
+    @sha256 = `${@signatureTypePrefix}HMAC-SHA256`;
+    @sm3 = `${@signatureTypePrefix}HMAC-SM3`;
+  }
   config.endpoint = getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
 
 }
@@ -81,15 +97,24 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
         message = '\'config.credential\' can not be unset'
       };
     }
-    var authType = credential.getType();
+
+    var credentialModel = credential.getCredential();
+    if (!Util.empty(credentialModel.providerName)) {
+      request.headers.x-acs-credentials-provider = credentialModel.providerName;
+    }
+    var authType = credentialModel.type;
     if (Util.equalString(authType, 'bearer')) {
       var bearerToken = credential.getBearerToken();
       request.headers.x-acs-bearer-token = bearerToken;
+      request.headers.x-acs-signature-type = 'BEARERTOKEN';
       request.headers.Authorization = `Bearer ${bearerToken}`;
+    } else if (Util.equalString(authType, 'id_token')) {
+      var idToken = credentialModel.securityToken;
+      request.headers.x-acs-zero-trust-idtoken = idToken;
     } else {
-      var accessKeyId = credential.getAccessKeyId();
-      var accessKeySecret = credential.getAccessKeySecret();
-      var securityToken = credential.getSecurityToken();
+      var accessKeyId = credentialModel.accessKeyId;
+      var accessKeySecret = credentialModel.accessKeySecret;
+      var securityToken = credentialModel.securityToken;
 
       if (!Util.empty(securityToken)) {
         request.headers.x-acs-accesskey-id = accessKeyId;
@@ -97,7 +122,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       }
       var dateNew = String.subString(date, 0, 10);
       dateNew = String.replace(dateNew, '-', '', null);
-      var region = getRegion(request.productId, config.endpoint);
+      var region = getRegion(request.productId, config.endpoint, config.regionId);
       var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
       request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
     }
@@ -168,7 +193,7 @@ async function getAuthorization(pathname: string, method: string, query: map[str
   var signature = getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
   var signedHeaders = getSignedHeaders(headers);
   var signedHeadersStr = Array.join(signedHeaders, ';');
-  return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/aliyun_v4_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+  return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${@signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
 }
 
 async function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, signingkey: bytes): string {
@@ -194,7 +219,7 @@ async function getSignature(pathname: string, method: string, query: map[string]
 }
 
 async function getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): bytes {
-  var sc1 = `aliyun_v4${secret}`;
+  var sc1 = `${@signPrefix}${secret}`;
   var sc2 = Util.toBytes('');
   if (Util.equalString(signatureAlgorithm, @sha256)) {
     sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
@@ -215,21 +240,24 @@ async function getSigningkey(signatureAlgorithm: string, secret: string, product
   }
   var hmac = Util.toBytes('');
   if (Util.equalString(signatureAlgorithm, @sha256)) {
-    hmac = SignatureUtil.HmacSHA256SignByBytes('aliyun_v4_request', sc4);
+    hmac = SignatureUtil.HmacSHA256SignByBytes(`${@signPrefix}_request`, sc4);
   } else if (Util.equalString(signatureAlgorithm, @sm3)) {
-    hmac = SignatureUtil.HmacSM3SignByBytes('aliyun_v4_request', sc4);
+    hmac = SignatureUtil.HmacSM3SignByBytes(`${@signPrefix}_request`, sc4);
   }
   return hmac;
 }
 
-function getRegion(product: string, endpoint: string): string {
+function getRegion(product: string, endpoint: string, regionId: string): string {
+  if (!Util.empty(regionId)) {
+    return regionId;
+  }
   var region = 'center';
   if (Util.empty(product) || Util.empty(endpoint)) {
     return region;
   }
   var strs : [string] = String.split(endpoint, ':', null);
   var withoutPort : string = strs[0];
-  var preRegion: string = String.replace(withoutPort, '.aliyuncs.com', '', null);
+  var preRegion: string = String.replace(withoutPort, `.${@endpointSuffix}`, '', null);
   var nodes = String.split(preRegion, '.', null);
   if (Util.equalNumber(Array.size(nodes), 2)) {
     region = nodes[1];

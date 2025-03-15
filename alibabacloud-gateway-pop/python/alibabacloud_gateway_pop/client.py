@@ -8,8 +8,8 @@ from typing import Dict, Any, List
 
 from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_gateway_spi import models as spi_models
-from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_tea_util.client import Client as UtilClient
+from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_endpoint_util.client import Client as EndpointUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
@@ -17,13 +17,21 @@ from alibabacloud_darabonba_map.client import Client as MapClient
 
 
 class Client(SPIClient):
+    _endpoint_suffix: str = None
+    _signature_type_prefix: str = None
+    _sign_prefix: str = None
     _sha_256: str = None
     _sm_3: str = None
 
     def __init__(self):
         super().__init__()
-        self._sha_256 = 'ACS4-HMAC-SHA256'
-        self._sm_3 = 'ACS4-HMAC-SM3'
+        # CLOUD4-\
+        self._signature_type_prefix = 'ACS4-'
+        # cloud_v4
+        self._sign_prefix = 'aliyun_v4'
+        self._endpoint_suffix = 'aliyuncs.com'
+        self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
+        self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
 
     def modify_configuration(
         self,
@@ -32,6 +40,13 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
+        attributes = attribute_map.key
+        if not UtilClient.is_unset(attributes):
+            self._signature_type_prefix = attributes.get('signatureTypePrefix')
+            self._sign_prefix = attributes.get('signPrefix')
+            self._endpoint_suffix = attributes.get('endpointSuffix')
+            self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
+            self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
         config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
 
     async def modify_configuration_async(
@@ -41,6 +56,13 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
+        attributes = attribute_map.key
+        if not UtilClient.is_unset(attributes):
+            self._signature_type_prefix = attributes.get('signatureTypePrefix')
+            self._sign_prefix = attributes.get('signPrefix')
+            self._endpoint_suffix = attributes.get('endpointSuffix')
+            self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
+            self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
         config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
 
     def modify_request(
@@ -91,21 +113,28 @@ class Client(SPIClient):
                     'code': 'ParameterMissing',
                     'message': "'config.credential' can not be unset"
                 })
-            auth_type = credential.get_type()
+            credential_model = credential.get_credential()
+            if not UtilClient.empty(credential_model.provider_name):
+                request.headers['x-acs-credentials-provider'] = credential_model.provider_name
+            auth_type = credential_model.type
             if UtilClient.equal_string(auth_type, 'bearer'):
                 bearer_token = credential.get_bearer_token()
                 request.headers['x-acs-bearer-token'] = bearer_token
+                request.headers['x-acs-signature-type'] = 'BEARERTOKEN'
                 request.headers['Authorization'] = f'Bearer {bearer_token}'
+            elif UtilClient.equal_string(auth_type, 'id_token'):
+                id_token = credential_model.security_token
+                request.headers['x-acs-zero-trust-idtoken'] = id_token
             else:
-                access_key_id = credential.get_access_key_id()
-                access_key_secret = credential.get_access_key_secret()
-                security_token = credential.get_security_token()
+                access_key_id = credential_model.access_key_id
+                access_key_secret = credential_model.access_key_secret
+                security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-accesskey-id'] = access_key_id
                     request.headers['x-acs-security-token'] = security_token
                 date_new = StringClient.sub_string(date, 0, 10)
                 date_new = StringClient.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint)
+                region = self.get_region(request.product_id, config.endpoint, config.region_id)
                 signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -157,21 +186,28 @@ class Client(SPIClient):
                     'code': 'ParameterMissing',
                     'message': "'config.credential' can not be unset"
                 })
-            auth_type = credential.get_type()
+            credential_model = await credential.get_credential_async()
+            if not UtilClient.empty(credential_model.provider_name):
+                request.headers['x-acs-credentials-provider'] = credential_model.provider_name
+            auth_type = credential_model.type
             if UtilClient.equal_string(auth_type, 'bearer'):
                 bearer_token = credential.get_bearer_token()
                 request.headers['x-acs-bearer-token'] = bearer_token
+                request.headers['x-acs-signature-type'] = 'BEARERTOKEN'
                 request.headers['Authorization'] = f'Bearer {bearer_token}'
+            elif UtilClient.equal_string(auth_type, 'id_token'):
+                id_token = credential_model.security_token
+                request.headers['x-acs-zero-trust-idtoken'] = id_token
             else:
-                access_key_id = await credential.get_access_key_id_async()
-                access_key_secret = await credential.get_access_key_secret_async()
-                security_token = await credential.get_security_token_async()
+                access_key_id = credential_model.access_key_id
+                access_key_secret = credential_model.access_key_secret
+                security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-accesskey-id'] = access_key_id
                     request.headers['x-acs-security-token'] = security_token
                 date_new = StringClient.sub_string(date, 0, 10)
                 date_new = StringClient.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint)
+                region = self.get_region(request.product_id, config.endpoint, config.region_id)
                 signingkey = await self.get_signingkey_async(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -299,7 +335,7 @@ class Client(SPIClient):
         signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, signingkey)
         signed_headers = self.get_signed_headers(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/aliyun_v4_request,SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/{self._sign_prefix}_request,SignedHeaders={signed_headers_str},Signature={signature}'
 
     async def get_authorization_async(
         self,
@@ -318,7 +354,7 @@ class Client(SPIClient):
         signature = await self.get_signature_async(pathname, method, query, headers, signature_algorithm, payload, signingkey)
         signed_headers = await self.get_signed_headers_async(headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/aliyun_v4_request,SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/{self._sign_prefix}_request,SignedHeaders={signed_headers_str},Signature={signature}'
 
     def get_signature(
         self,
@@ -384,7 +420,7 @@ class Client(SPIClient):
         region: str,
         date: str,
     ) -> bytes:
-        sc_1 = f'aliyun_v4{secret}'
+        sc_1 = f'{self._sign_prefix}{secret}'
         sc_2 = UtilClient.to_bytes('')
         if UtilClient.equal_string(signature_algorithm, self._sha_256):
             sc_2 = Signer.hmac_sha256sign(date, sc_1)
@@ -402,9 +438,9 @@ class Client(SPIClient):
             sc_4 = Signer.hmac_sm3sign_by_bytes(product, sc_3)
         hmac = UtilClient.to_bytes('')
         if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            hmac = Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+            hmac = Signer.hmac_sha256sign_by_bytes(f'{self._sign_prefix}_request', sc_4)
         elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            hmac = Signer.hmac_sm3sign_by_bytes('aliyun_v4_request', sc_4)
+            hmac = Signer.hmac_sm3sign_by_bytes(f'{self._sign_prefix}_request', sc_4)
         return hmac
 
     async def get_signingkey_async(
@@ -415,7 +451,7 @@ class Client(SPIClient):
         region: str,
         date: str,
     ) -> bytes:
-        sc_1 = f'aliyun_v4{secret}'
+        sc_1 = f'{self._sign_prefix}{secret}'
         sc_2 = UtilClient.to_bytes('')
         if UtilClient.equal_string(signature_algorithm, self._sha_256):
             sc_2 = Signer.hmac_sha256sign(date, sc_1)
@@ -433,22 +469,25 @@ class Client(SPIClient):
             sc_4 = Signer.hmac_sm3sign_by_bytes(product, sc_3)
         hmac = UtilClient.to_bytes('')
         if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            hmac = Signer.hmac_sha256sign_by_bytes('aliyun_v4_request', sc_4)
+            hmac = Signer.hmac_sha256sign_by_bytes(f'{self._sign_prefix}_request', sc_4)
         elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            hmac = Signer.hmac_sm3sign_by_bytes('aliyun_v4_request', sc_4)
+            hmac = Signer.hmac_sm3sign_by_bytes(f'{self._sign_prefix}_request', sc_4)
         return hmac
 
     def get_region(
         self,
         product: str,
         endpoint: str,
+        region_id: str,
     ) -> str:
+        if not UtilClient.empty(region_id):
+            return region_id
         region = 'center'
         if UtilClient.empty(product) or UtilClient.empty(endpoint):
             return region
         strs = StringClient.split(endpoint, ':', None)
         without_port = strs[0]
-        pre_region = StringClient.replace(without_port, '.aliyuncs.com', '', None)
+        pre_region = StringClient.replace(without_port, f'.{self._endpoint_suffix}', '', None)
         nodes = StringClient.split(pre_region, '.', None)
         if UtilClient.equal_number(ArrayClient.size(nodes), 2):
             region = nodes[1]

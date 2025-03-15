@@ -24,11 +24,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: pip install pytest==6.2.5 coverage==5.5 importlib-metadata==1.7.0 zipp==2.2.1 typing-extensions==3.10.0.2 && python setup.py install
-      if: matrix.python-version == '3.7'
-    - name: Install dependencies
-      run: python -m pip install setuptools && python setup.py install && pip install pytest coverage
-      if: matrix.python-version != '3.7'
+      run: pip install setuptools urllib3==1.26.20 alibabacloud-tea coverage pytest alibabacloud-credentials==0.3.6 && python setup.py install
     - name: Test with unittest
       run: |
         coverage run --source="./alibabacloud_tea_util" -m pytest tests/test_*
