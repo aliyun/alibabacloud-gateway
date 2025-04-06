@@ -355,6 +355,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
             }
 
+            if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".mgw-internal.aliyuncs.com")) {
+                idx = com.aliyun.darabonbastring.Client.index(endpoint, ".mgw-internal.aliyuncs.com");
+                return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
+            }
+
             if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, "-internal.oss-data-acc.aliyuncs.com")) {
                 idx = com.aliyun.darabonbastring.Client.index(endpoint, "-internal.oss-data-acc.aliyuncs.com");
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
@@ -395,6 +400,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public String getHost(String endpointType, String bucketName, String endpoint, com.aliyun.gateway.spi.models.InterceptorContext context) throws Exception {
         if (com.aliyun.darabonbastring.Client.contains(endpoint, ".mgw.aliyuncs.com") && !com.aliyun.teautil.Common.isUnset(context.request.hostMap.get("userid"))) {
+            return "" + context.request.hostMap.get("userid") + "." + endpoint + "";
+        }
+
+        if (com.aliyun.darabonbastring.Client.contains(endpoint, ".mgw-internal.aliyuncs.com") && !com.aliyun.teautil.Common.isUnset(context.request.hostMap.get("userid"))) {
             return "" + context.request.hostMap.get("userid") + "." + endpoint + "";
         }
 

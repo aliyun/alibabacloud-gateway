@@ -368,6 +368,13 @@ func (client *Client) GetRegionIdFromEndpoint(endpoint *string) (_result *string
 			return _result, _err
 		}
 
+		if tea.BoolValue(string_.HasSuffix(endpoint, tea.String(".mgw-internal.aliyuncs.com"))) {
+			idx = string_.Index(endpoint, tea.String(".mgw-internal.aliyuncs.com"))
+			_body := string_.SubString(endpoint, tea.Int(0), idx)
+			_result = _body
+			return _result, _err
+		}
+
 		if tea.BoolValue(string_.HasSuffix(endpoint, tea.String("-internal.oss-data-acc.aliyuncs.com"))) {
 			idx = string_.Index(endpoint, tea.String("-internal.oss-data-acc.aliyuncs.com"))
 			_body := string_.SubString(endpoint, tea.Int(0), idx)
@@ -418,6 +425,11 @@ func (client *Client) GetEndpoint(regionId *string, network *string, endpoint *s
 
 func (client *Client) GetHost(endpointType *string, bucketName *string, endpoint *string, context *spi.InterceptorContext) (_result *string, _err error) {
 	if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw.aliyuncs.com"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
+		_result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
+		return _result, _err
+	}
+
+	if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw-internal.aliyuncs.com"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
 		_result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
 		return _result, _err
 	}
