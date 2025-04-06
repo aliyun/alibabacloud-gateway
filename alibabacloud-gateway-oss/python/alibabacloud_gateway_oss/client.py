@@ -498,6 +498,9 @@ class Client(SPIClient):
             if StringClient.has_suffix(endpoint, '.mgw.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.mgw.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
+            if StringClient.has_suffix(endpoint, '.mgw-internal.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.mgw-internal.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
             if StringClient.has_suffix(endpoint, '-internal.oss-data-acc.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '-internal.oss-data-acc.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
@@ -517,6 +520,9 @@ class Client(SPIClient):
                 return StringClient.sub_string(endpoint, 4, idx)
             if StringClient.has_suffix(endpoint, '.mgw.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.mgw.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
+            if StringClient.has_suffix(endpoint, '.mgw-internal.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.mgw-internal.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
             if StringClient.has_suffix(endpoint, '-internal.oss-data-acc.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '-internal.oss-data-acc.aliyuncs.com')
@@ -573,6 +579,8 @@ class Client(SPIClient):
     ) -> str:
         if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
+        if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+            return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'
@@ -591,6 +599,8 @@ class Client(SPIClient):
         context: spi_models.InterceptorContext,
     ) -> str:
         if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+            return f"{context.request.host_map.get('userid')}.{endpoint}"
+        if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
