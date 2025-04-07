@@ -86,18 +86,32 @@ public class Client extends com.aliyun.gateway.spi.Client {
                     request.headers.put("x-acs-security-token", securityToken);
                 }
 
+                java.util.Map<String, String> headers = new java.util.HashMap<>();
+                if (!com.aliyun.teautil.Common.isUnset(request.headers.get("content-type"))) {
+                    headers = request.headers;
+                } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData") && com.aliyun.darabonbastring.Client.equals(request.action, "DownloadFile") && com.aliyun.darabonbastring.Client.equals(request.pathname, "/v2/file/download")) {
+                    java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(request.headers);
+                    for (String key : headersArray) {
+                        headers.put(key, request.headers.get(key));
+                    }
+                    headers.put("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+                } else {
+                    headers = request.headers;
+                }
+
                 if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
                     String dateNew = com.aliyun.darabonbastring.Client.subString(date, 0, 10);
                     String region = this.getRegion(config.endpoint);
                     byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
-                    request.headers.put("Authorization", this.getAuthorizationV4(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
+                    request.headers.put("Authorization", this.getAuthorizationV4(request.pathname, request.method, request.query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
                 } else {
-                    request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret));
+                    request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, headers, accessKeyId, accessKeySecret));
                 }
 
             }
 
         }
+
     }
 
     public void modifyResponse(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {

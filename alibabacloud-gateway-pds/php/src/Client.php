@@ -9,9 +9,9 @@ use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Darabonba\String\StringUtil;
+use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
-use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
@@ -103,13 +103,25 @@ class Client extends DarabonbaGatewaySpiClient
                 if (!Utils::empty_($securityToken)) {
                     $request->headers["x-acs-security-token"] = $securityToken;
                 }
+                $headers = [];
+                if (!Utils::isUnset(@$request->headers["content-type"])) {
+                    $headers = $request->headers;
+                } else if (StringUtil::equals($request->reqBodyType, "formData") && StringUtil::equals($request->action, "DownloadFile") && StringUtil::equals($request->pathname, "/v2/file/download")) {
+                    $headersArray = MapUtil::keySet($request->headers);
+                    foreach ($headersArray as $key) {
+                        $headers[$key] = @$request->headers[$key];
+                    }
+                    @$headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                } else {
+                    $headers = $request->headers;
+                }
                 if (StringUtil::equals($signatureVersion, "v4")) {
                     $dateNew = StringUtil::subString($date, 0, 10);
                     $region = $this->getRegion($config->endpoint);
                     $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $region, $dateNew);
-                    $request->headers["Authorization"] = $this->getAuthorizationV4($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
+                    $request->headers["Authorization"] = $this->getAuthorizationV4($request->pathname, $request->method, $request->query, $headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
                 } else {
-                    $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $accessKeyId, $accessKeySecret);
+                    $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $headers, $accessKeyId, $accessKeySecret);
                 }
             }
         }

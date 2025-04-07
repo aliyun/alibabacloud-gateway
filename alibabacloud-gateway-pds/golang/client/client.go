@@ -121,6 +121,19 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 				request.Headers["x-acs-security-token"] = securityToken
 			}
 
+			headers := make(map[string]*string)
+			if !tea.BoolValue(util.IsUnset(request.Headers["content-type"])) {
+				headers = request.Headers
+			} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) && tea.BoolValue(string_.Equals(request.Action, tea.String("DownloadFile"))) && tea.BoolValue(string_.Equals(request.Pathname, tea.String("/v2/file/download"))) {
+				headersArray := map_.KeySet(request.Headers)
+				for _, key := range headersArray {
+					headers[tea.StringValue(key)] = request.Headers[tea.StringValue(key)]
+				}
+				headers["content-type"] = tea.String("application/x-www-form-urlencoded; charset=UTF-8")
+			} else {
+				headers = request.Headers
+			}
+
 			if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
 				dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
 				region := client.GetRegion(config.Endpoint)
@@ -129,13 +142,13 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 					return _err
 				}
 
-				request.Headers["Authorization"], _err = client.GetAuthorizationV4(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
+				request.Headers["Authorization"], _err = client.GetAuthorizationV4(request.Pathname, request.Method, request.Query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
 				if _err != nil {
 					return _err
 				}
 
 			} else {
-				request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret)
+				request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, headers, accessKeyId, accessKeySecret)
 				if _err != nil {
 					return _err
 				}
