@@ -92,13 +92,27 @@ export default class Client extends SPI {
           request.headers["x-acs-security-token"] = securityToken;
         }
 
+        let headers: { [key: string]: string } = {};
+        if (!Util.isUnset(request.headers["content-type"])) {
+          headers = request.headers;
+        } else if (String.equals(request.reqBodyType, "formData") && String.equals(request.action, "DownloadFile") && String.equals(request.pathname, "/v2/file/download")) {
+          let headersArray: string[] = Map.keySet(request.headers);
+
+          for (let key of headersArray) {
+            headers[key] = request.headers[key];
+          }
+          headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+        } else {
+          headers = request.headers;
+        }
+
         if (String.equals(signatureVersion, "v4")) {
           let dateNew = String.subString(date, 0, 10);
           let region = this.getRegion(config.endpoint);
           let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
-          request.headers["Authorization"] = await this.getAuthorizationV4(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+          request.headers["Authorization"] = await this.getAuthorizationV4(request.pathname, request.method, request.query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
         } else {
-          request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, accessKeyId, accessKeySecret);
+          request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, headers, accessKeyId, accessKeySecret);
         }
 
       }

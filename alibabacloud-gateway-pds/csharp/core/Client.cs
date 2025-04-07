@@ -118,16 +118,34 @@ namespace AlibabaCloud.GatewayPds
                     {
                         request.Headers["x-acs-security-token"] = securityToken;
                     }
+                    Dictionary<string, string> headers = new Dictionary<string, string>(){};
+                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Headers.Get("content-type")))
+                    {
+                        headers = request.Headers;
+                    }
+                    else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Action, "DownloadFile") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Pathname, "/v2/file/download"))
+                    {
+                        List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(request.Headers);
+
+                        foreach (var key in headersArray) {
+                            headers[key] = request.Headers.Get(key);
+                        }
+                        headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                    }
+                    else
+                    {
+                        headers = request.Headers;
+                    }
                     if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
                     {
                         string dateNew = AlibabaCloud.DarabonbaString.StringUtil.SubString(date, 0, 10);
                         string region = GetRegion(config.Endpoint);
                         byte[] signingkey = GetSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
-                        request.Headers["Authorization"] = GetAuthorizationV4(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
+                        request.Headers["Authorization"] = GetAuthorizationV4(request.Pathname, request.Method, request.Query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
                     }
                     else
                     {
-                        request.Headers["Authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
+                        request.Headers["Authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, headers, accessKeyId, accessKeySecret);
                     }
                 }
             }
@@ -219,16 +237,34 @@ namespace AlibabaCloud.GatewayPds
                     {
                         request.Headers["x-acs-security-token"] = securityToken;
                     }
+                    Dictionary<string, string> headers = new Dictionary<string, string>(){};
+                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Headers.Get("content-type")))
+                    {
+                        headers = request.Headers;
+                    }
+                    else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Action, "DownloadFile") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Pathname, "/v2/file/download"))
+                    {
+                        List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(request.Headers);
+
+                        foreach (var key in headersArray) {
+                            headers[key] = request.Headers.Get(key);
+                        }
+                        headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                    }
+                    else
+                    {
+                        headers = request.Headers;
+                    }
                     if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
                     {
                         string dateNew = AlibabaCloud.DarabonbaString.StringUtil.SubString(date, 0, 10);
                         string region = GetRegion(config.Endpoint);
                         byte[] signingkey = await GetSigningkeyAsync(signatureAlgorithm, accessKeySecret, region, dateNew);
-                        request.Headers["Authorization"] = await GetAuthorizationV4Async(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
+                        request.Headers["Authorization"] = await GetAuthorizationV4Async(request.Pathname, request.Method, request.Query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
                     }
                     else
                     {
-                        request.Headers["Authorization"] = await GetAuthorizationAsync(request.Pathname, request.Method, request.Query, request.Headers, accessKeyId, accessKeySecret);
+                        request.Headers["Authorization"] = await GetAuthorizationAsync(request.Pathname, request.Method, request.Query, headers, accessKeyId, accessKeySecret);
                     }
                 }
             }

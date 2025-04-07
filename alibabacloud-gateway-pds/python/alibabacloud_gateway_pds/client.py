@@ -95,13 +95,23 @@ class Client(SPIClient):
                 security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-security-token'] = security_token
+                headers = {}
+                if not UtilClient.is_unset(request.headers.get('content-type')):
+                    headers = request.headers
+                elif StringClient.equals(request.req_body_type, 'formData') and StringClient.equals(request.action, 'DownloadFile') and StringClient.equals(request.pathname, '/v2/file/download'):
+                    headers_array = MapClient.key_set(request.headers)
+                    for key in headers_array:
+                        headers[key] = request.headers.get(key)
+                    headers['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+                else:
+                    headers = request.headers
                 if StringClient.equals(signature_version, 'v4'):
                     date_new = StringClient.sub_string(date, 0, 10)
                     region = self.get_region(config.endpoint)
                     signingkey = self.get_signingkey(signature_algorithm, access_key_secret, region, date_new)
-                    request.headers['Authorization'] = self.get_authorization_v4(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
+                    request.headers['Authorization'] = self.get_authorization_v4(request.pathname, request.method, request.query, headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
                 else:
-                    request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
+                    request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, headers, access_key_id, access_key_secret)
 
     async def modify_request_async(
         self,
@@ -163,13 +173,23 @@ class Client(SPIClient):
                 security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['x-acs-security-token'] = security_token
+                headers = {}
+                if not UtilClient.is_unset(request.headers.get('content-type')):
+                    headers = request.headers
+                elif StringClient.equals(request.req_body_type, 'formData') and StringClient.equals(request.action, 'DownloadFile') and StringClient.equals(request.pathname, '/v2/file/download'):
+                    headers_array = MapClient.key_set(request.headers)
+                    for key in headers_array:
+                        headers[key] = request.headers.get(key)
+                    headers['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+                else:
+                    headers = request.headers
                 if StringClient.equals(signature_version, 'v4'):
                     date_new = StringClient.sub_string(date, 0, 10)
                     region = self.get_region(config.endpoint)
                     signingkey = await self.get_signingkey_async(signature_algorithm, access_key_secret, region, date_new)
-                    request.headers['Authorization'] = await self.get_authorization_v4_async(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
+                    request.headers['Authorization'] = await self.get_authorization_v4_async(request.pathname, request.method, request.query, headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
                 else:
-                    request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, access_key_id, access_key_secret)
+                    request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, headers, access_key_id, access_key_secret)
 
     def modify_response(
         self,
