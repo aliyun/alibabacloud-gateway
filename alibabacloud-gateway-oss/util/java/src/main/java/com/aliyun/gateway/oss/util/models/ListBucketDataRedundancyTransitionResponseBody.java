@@ -5,7 +5,7 @@ import com.aliyun.tea.*;
 
 public class ListBucketDataRedundancyTransitionResponseBody extends TeaModel {
     /**
-     * <p>The container for listed redundancy type change tasks.</p>
+     * <p>The container for listed redundancy type conversion tasks.</p>
      */
     @NameInMap("ListBucketDataRedundancyTransition")
     public ListBucketDataRedundancyTransition listBucketDataRedundancyTransition;
@@ -24,6 +24,9 @@ public class ListBucketDataRedundancyTransitionResponseBody extends TeaModel {
     }
 
     public static class ListBucketDataRedundancyTransition extends TeaModel {
+        /**
+         * <p>The information about the redundancy type conversion task.</p>
+         */
         @NameInMap("BucketDataRedundancyTransition")
         public BucketDataRedundancyTransition bucketDataRedundancyTransition;
 

@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class PutBucketHashRequest extends TeaModel {
+    /**
+     * <p>Object Hash Algorithm Configuration</p>
+     */
     @NameInMap("ObjectHashConfiguration")
     public ObjectHashConfiguration objectHashConfiguration;
 

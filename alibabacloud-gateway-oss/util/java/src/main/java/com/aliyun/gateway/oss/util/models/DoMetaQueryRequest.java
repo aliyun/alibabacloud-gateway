@@ -10,6 +10,9 @@ public class DoMetaQueryRequest extends TeaModel {
     @NameInMap("MetaQuery")
     public MetaQuery metaQuery;
 
+    @NameInMap("mode")
+    public String mode;
+
     public static DoMetaQueryRequest build(java.util.Map<String, ?> map) throws Exception {
         DoMetaQueryRequest self = new DoMetaQueryRequest();
         return TeaModel.build(map, self);
@@ -21,6 +24,14 @@ public class DoMetaQueryRequest extends TeaModel {
     }
     public MetaQuery getMetaQuery() {
         return this.metaQuery;
+    }
+
+    public DoMetaQueryRequest setMode(String mode) {
+        this.mode = mode;
+        return this;
+    }
+    public String getMode() {
+        return this.mode;
     }
 
 }

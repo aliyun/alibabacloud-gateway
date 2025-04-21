@@ -31,12 +31,30 @@ public class ListBucketsRequest extends TeaModel {
     @NameInMap("prefix")
     public String prefix;
 
+    /**
+     * <p>A tag key of target buckets. The listing results will only include Buckets that have been tagged with this key.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>test-key</p>
+     */
     @NameInMap("tag-key")
     public String tagKey;
 
+    /**
+     * <p>A tag value for the target buckets. If this parameter is specified in the request, the tag-key must also be specified. The listing results will only include Buckets that have been tagged with this key-value pair.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>test-value</p>
+     */
     @NameInMap("tag-value")
     public String tagValue;
 
+    /**
+     * <p>Tag list of target buckets. Only Buckets that match all the key-value pairs in the list will added into the listing results. The tagging parameter cannot be used with the tag-key and tag-value parameters in a request.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>&quot;test-key&quot;:&quot;test-value&quot;</p>
+     */
     @NameInMap("tagging")
     public String tagging;
 

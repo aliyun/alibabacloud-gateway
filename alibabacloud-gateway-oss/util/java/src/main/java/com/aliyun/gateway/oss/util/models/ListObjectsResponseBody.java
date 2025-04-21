@@ -5,7 +5,7 @@ import com.aliyun.tea.*;
 
 public class ListObjectsResponseBody extends TeaModel {
     /**
-     * <p>The container that stores the information about the returned objects.</p>
+     * <p>The container that stores the result of the GetBucket (ListObjects) request.</p>
      */
     @NameInMap("ListBucketResult")
     public ListBucketResult listBucketResult;
@@ -25,19 +25,19 @@ public class ListObjectsResponseBody extends TeaModel {
 
     public static class ListBucketResult extends TeaModel {
         /**
-         * <p>If delimiter is specified in the request, the response contains CommonPrefixes. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
+         * <p>If the delimiter parameter is specified in the request, the response contains CommonPrefixes. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
          */
         @NameInMap("CommonPrefixes")
         public java.util.List<CommonPrefix> commonPrefixes;
 
         /**
-         * <p>The container that stores the metadata of the returned objects.</p>
+         * <p>The container that stores the metadata of each returned object.</p>
          */
         @NameInMap("Contents")
         public java.util.List<ObjectSummary> contents;
 
         /**
-         * <p>The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
+         * <p>The delimiter used to group objects by name. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in the CommonPrefixes parameter.</p>
          * 
          * <strong>example:</strong>
          * <p>/</p>
@@ -46,7 +46,7 @@ public class ListObjectsResponseBody extends TeaModel {
         public String delimiter;
 
         /**
-         * <p>The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, Marker, Prefix, NextMarker, and Key are encoded in the response.</p>
+         * <p>The encoding type of the content in the response. If the encoding-type parameter is specified in the request, the values of Delimiter, Marker, Prefix, NextMarker, and Key in the response are encoded.</p>
          * 
          * <strong>example:</strong>
          * <p>url</p>
@@ -55,10 +55,13 @@ public class ListObjectsResponseBody extends TeaModel {
         public String encodingType;
 
         /**
-         * <p>Indicates whether the returned list in the result is truncated. Valid values:</p>
+         * <p>Indicates whether the returned results are truncated.</p>
+         * <p>Valid values: true and false</p>
+         * <p>true: indicates that not all of the results are returned for the request.</p>
+         * <p>false indicates that all of the results are returned this time.</p>
          * <ul>
-         * <li>true</li>
-         * <li>false</li>
+         * <li></li>
+         * <li></li>
          * </ul>
          * 
          * <strong>example:</strong>
@@ -68,7 +71,7 @@ public class ListObjectsResponseBody extends TeaModel {
         public Boolean isTruncated;
 
         /**
-         * <p>The name of the object after which the GetBucket (ListObjects) operation begins.</p>
+         * <p>The name of the object after which the list operation starts.</p>
          * 
          * <strong>example:</strong>
          * <p>abc</p>
@@ -77,7 +80,7 @@ public class ListObjectsResponseBody extends TeaModel {
         public String marker;
 
         /**
-         * <p>The maximum number of returned objects in the response.</p>
+         * <p>The maximum number of the returned objects in the response.</p>
          * 
          * <strong>example:</strong>
          * <p>20</p>
@@ -95,7 +98,7 @@ public class ListObjectsResponseBody extends TeaModel {
         public String name;
 
         /**
-         * <p>If not all results are returned, NextMarker is included in the response to indicate the value of marker in the next request.</p>
+         * <p>The position from which the next list operation starts.</p>
          * 
          * <strong>example:</strong>
          * <p>def</p>

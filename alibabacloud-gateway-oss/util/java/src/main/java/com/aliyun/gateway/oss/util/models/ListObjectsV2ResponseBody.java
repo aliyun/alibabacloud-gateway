@@ -5,7 +5,7 @@ import com.aliyun.tea.*;
 
 public class ListObjectsV2ResponseBody extends TeaModel {
     /**
-     * <p>The container that stores the metadata of returned objects.</p>
+     * <p>The container that stores the metadata of the returned objects.</p>
      */
     @NameInMap("ListBucketResult")
     public ListBucketResult listBucketResult;
@@ -25,19 +25,19 @@ public class ListObjectsV2ResponseBody extends TeaModel {
 
     public static class ListBucketResult extends TeaModel {
         /**
-         * <p>Objects whose names contain the same string that ranges from the prefix to the next occurrence of the delimiter are grouped as a single result element</p>
+         * <p>If the delimiter parameter is specified in the request, the response contains CommonPrefixes. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
          */
         @NameInMap("CommonPrefixes")
         public java.util.List<CommonPrefix> commonPrefixes;
 
         /**
-         * <p>The container that stores the metadata of the returned objects.</p>
+         * <p>The container that stores the metadata of each returned object.</p>
          */
         @NameInMap("Contents")
         public java.util.List<ObjectSummary> contents;
 
         /**
-         * <p>If continuation-token is specified in the request, the response contains ContinuationToken.</p>
+         * <p>If the continuation-token parameter is specified in the request, the response contains ContinuationToken.</p>
          * 
          * <strong>example:</strong>
          * <p>CgJiYw--</p>
@@ -46,7 +46,7 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public String continuationToken;
 
         /**
-         * <p>The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.</p>
+         * <p>The delimiter used to group objects by name. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in the CommonPrefixes parameter.</p>
          * 
          * <strong>example:</strong>
          * <p>/</p>
@@ -55,7 +55,7 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public String delimiter;
 
         /**
-         * <p>The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, StartAfter, Prefix, NextContinuationToken, and Key are encoded in the response.</p>
+         * <p>The encoding type of the object name in the response. If the encoding-type parameter is specified in the request, the values of Delimiter, StartAfter, Prefix, NextContinuationToken, and Key are encoded in the response.</p>
          * 
          * <strong>example:</strong>
          * <p>url</p>
@@ -64,10 +64,13 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public String encodingType;
 
         /**
-         * <p>Indicates whether the returned results are truncated. Valid values:</p>
+         * <p>Indicates whether the returned results are truncated.</p>
+         * <p>Valid values: true and false</p>
+         * <p>true: indicates that not all of the results are returned for the request.</p>
+         * <p>false indicates that all of the results are returned this time.</p>
          * <ul>
-         * <li>true</li>
-         * <li>false</li>
+         * <li></li>
+         * <li></li>
          * </ul>
          * 
          * <strong>example:</strong>
@@ -77,7 +80,7 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public Boolean isTruncated;
 
         /**
-         * <p>The number of objects returned for this request. If delimiter is specified in the request, the value of KeyCount is the sum of the values of Key and CommonPrefixes.</p>
+         * <p>The number of keys returned for this request. If Delimiter is specified, the KeyCount value is the sum of the Key and CommonPrefixes values.</p>
          * 
          * <strong>example:</strong>
          * <p>6</p>
@@ -86,7 +89,7 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public Integer keyCount;
 
         /**
-         * <p>The maximum number of returned objects in the response.</p>
+         * <p>The maximum number of the returned objects in the response.</p>
          * 
          * <strong>example:</strong>
          * <p>20</p>
@@ -104,7 +107,7 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public String name;
 
         /**
-         * <p>The token from which the next list operation starts. Use the value of NextContinuationToken as the value of continuation-token in the next request.</p>
+         * <p>The token from which the next list operation starts. The NextContinuationToken value is used as the ContinuationToken value to query subsequent results.</p>
          * 
          * <strong>example:</strong>
          * <p>CgJiYw--</p>
@@ -122,7 +125,7 @@ public class ListObjectsV2ResponseBody extends TeaModel {
         public String prefix;
 
         /**
-         * <p>If start-after is specified in the request, the response contains StartAfter.</p>
+         * <p>If the start-after parameter is specified in the request, the response contains StartAfter.</p>
          * 
          * <strong>example:</strong>
          * <p>test.txt</p>

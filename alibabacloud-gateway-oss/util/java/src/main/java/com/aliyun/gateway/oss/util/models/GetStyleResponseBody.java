@@ -5,7 +5,7 @@ import com.aliyun.tea.*;
 
 public class GetStyleResponseBody extends TeaModel {
     /**
-     * <p>The container that stores the information about the image style.</p>
+     * <p>The container in which the queried image styles are stored.</p>
      */
     @NameInMap("Style")
     public StyleInfo style;
