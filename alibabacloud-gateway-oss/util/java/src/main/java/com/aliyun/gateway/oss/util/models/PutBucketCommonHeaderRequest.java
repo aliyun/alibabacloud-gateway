@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class PutBucketCommonHeaderRequest extends TeaModel {
+    /**
+     * <p>User-defined response headers configuration</p>
+     */
     @NameInMap("CommonHeaders")
     public CommonHeaders commonHeaders;
 

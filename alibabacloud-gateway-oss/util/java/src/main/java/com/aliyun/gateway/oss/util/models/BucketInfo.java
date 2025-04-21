@@ -122,6 +122,13 @@ public class BucketInfo extends TeaModel {
         @NameInMap("AccessMonitor")
         public String accessMonitor;
 
+        /**
+         * <strong>example:</strong>
+         * <p>false</p>
+         */
+        @NameInMap("BlockPublicAccess")
+        public Boolean blockPublicAccess;
+
         @NameInMap("BucketPolicy")
         public BucketPolicy bucketPolicy;
 
@@ -212,6 +219,14 @@ public class BucketInfo extends TeaModel {
         }
         public String getAccessMonitor() {
             return this.accessMonitor;
+        }
+
+        public Bucket setBlockPublicAccess(Boolean blockPublicAccess) {
+            this.blockPublicAccess = blockPublicAccess;
+            return this;
+        }
+        public Boolean getBlockPublicAccess() {
+            return this.blockPublicAccess;
         }
 
         public Bucket setBucketPolicy(BucketPolicy bucketPolicy) {

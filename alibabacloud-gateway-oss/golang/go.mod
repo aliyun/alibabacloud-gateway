@@ -3,7 +3,7 @@ module github.com/alibabacloud-go/alibabacloud-gateway-oss
 go 1.14
 
 require (
-	github.com/alibabacloud-go/alibabacloud-gateway-oss-util v0.0.7
+	github.com/alibabacloud-go/alibabacloud-gateway-oss-util v0.0.8
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4
 	github.com/alibabacloud-go/darabonba-array v0.1.0
 	github.com/alibabacloud-go/darabonba-encode-util v0.0.2

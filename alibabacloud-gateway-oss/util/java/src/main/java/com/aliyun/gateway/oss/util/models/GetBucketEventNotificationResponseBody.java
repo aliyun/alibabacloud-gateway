@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class GetBucketEventNotificationResponseBody extends TeaModel {
+    /**
+     * <p>Function Compute service configuration for a bucket.</p>
+     */
     @NameInMap("NotificationConfiguration")
     public EventNotificationConfiguration notificationConfiguration;
 

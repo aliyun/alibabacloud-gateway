@@ -5,6 +5,7 @@ import com.aliyun.tea.*;
 
 public class PutProcessConfigurationRequest extends TeaModel {
     /**
+     * <p>Bucket Image Processing Configuration</p>
      * <p>This parameter is required.</p>
      */
     @NameInMap("BucketProcessConfiguration")

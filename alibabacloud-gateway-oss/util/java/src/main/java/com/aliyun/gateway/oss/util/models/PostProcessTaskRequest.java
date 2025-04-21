@@ -5,18 +5,18 @@ import com.aliyun.tea.*;
 
 public class PostProcessTaskRequest extends TeaModel {
     @NameInMap("body")
-    public java.io.InputStream body;
+    public String body;
 
     public static PostProcessTaskRequest build(java.util.Map<String, ?> map) throws Exception {
         PostProcessTaskRequest self = new PostProcessTaskRequest();
         return TeaModel.build(map, self);
     }
 
-    public PostProcessTaskRequest setBody(java.io.InputStream body) {
+    public PostProcessTaskRequest setBody(String body) {
         this.body = body;
         return this;
     }
-    public java.io.InputStream getBody() {
+    public String getBody() {
         return this.body;
     }
 

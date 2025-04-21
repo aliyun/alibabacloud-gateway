@@ -4,8 +4,10 @@ package client
 import (
 	"io"
 
-	"github.com/alibabacloud-go/tea/tea"
+	"github.com/alibabacloud-go/tea/dara"
 )
+
+// regex: type\s+i[A-Z]\w*\s+interface\s*\{[\s\S]*?\}
 
 type AcceleratePaths struct {
 	// example:
@@ -16,11 +18,19 @@ type AcceleratePaths struct {
 }
 
 func (s AcceleratePaths) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AcceleratePaths) GoString() string {
 	return s.String()
+}
+
+func (s *AcceleratePaths) GetDefaultCachePolicy() *string {
+	return s.DefaultCachePolicy
+}
+
+func (s *AcceleratePaths) GetPath() []*AcceleratePathsPath {
+	return s.Path
 }
 
 func (s *AcceleratePaths) SetDefaultCachePolicy(v string) *AcceleratePaths {
@@ -31,6 +41,10 @@ func (s *AcceleratePaths) SetDefaultCachePolicy(v string) *AcceleratePaths {
 func (s *AcceleratePaths) SetPath(v []*AcceleratePathsPath) *AcceleratePaths {
 	s.Path = v
 	return s
+}
+
+func (s *AcceleratePaths) Validate() error {
+	return dara.Validate(s)
 }
 
 type AcceleratePathsPath struct {
@@ -45,11 +59,19 @@ type AcceleratePathsPath struct {
 }
 
 func (s AcceleratePathsPath) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AcceleratePathsPath) GoString() string {
 	return s.String()
+}
+
+func (s *AcceleratePathsPath) GetCachePolicy() *string {
+	return s.CachePolicy
+}
+
+func (s *AcceleratePathsPath) GetName() *string {
+	return s.Name
 }
 
 func (s *AcceleratePathsPath) SetCachePolicy(v string) *AcceleratePathsPath {
@@ -62,16 +84,25 @@ func (s *AcceleratePathsPath) SetName(v string) *AcceleratePathsPath {
 	return s
 }
 
+func (s *AcceleratePathsPath) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AccessControlList struct {
 	Grant *string `json:"Grant,omitempty" xml:"Grant,omitempty"`
 }
 
 func (s AccessControlList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AccessControlList) GoString() string {
 	return s.String()
+}
+
+func (s *AccessControlList) GetGrant() *string {
+	return s.Grant
 }
 
 func (s *AccessControlList) SetGrant(v string) *AccessControlList {
@@ -79,17 +110,30 @@ func (s *AccessControlList) SetGrant(v string) *AccessControlList {
 	return s
 }
 
+func (s *AccessControlList) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AccessControlPolicy struct {
 	AccessControlList *AccessControlList `json:"AccessControlList,omitempty" xml:"AccessControlList,omitempty"`
 	Owner             *Owner             `json:"Owner,omitempty" xml:"Owner,omitempty"`
 }
 
 func (s AccessControlPolicy) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AccessControlPolicy) GoString() string {
 	return s.String()
+}
+
+func (s *AccessControlPolicy) GetAccessControlList() *AccessControlList {
+	return s.AccessControlList
+}
+
+func (s *AccessControlPolicy) GetOwner() *Owner {
+	return s.Owner
 }
 
 func (s *AccessControlPolicy) SetAccessControlList(v *AccessControlList) *AccessControlPolicy {
@@ -102,22 +146,36 @@ func (s *AccessControlPolicy) SetOwner(v *Owner) *AccessControlPolicy {
 	return s
 }
 
+func (s *AccessControlPolicy) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AccessMonitorConfiguration struct {
 	Status *string `json:"Status,omitempty" xml:"Status,omitempty"`
 }
 
 func (s AccessMonitorConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AccessMonitorConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *AccessMonitorConfiguration) GetStatus() *string {
+	return s.Status
+}
+
 func (s *AccessMonitorConfiguration) SetStatus(v string) *AccessMonitorConfiguration {
 	s.Status = &v
 	return s
 }
+
+func (s *AccessMonitorConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type AccessPoint struct {
 	AccessPointName  *string                      `json:"AccessPointName,omitempty" xml:"AccessPointName,omitempty"`
@@ -129,11 +187,35 @@ type AccessPoint struct {
 }
 
 func (s AccessPoint) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AccessPoint) GoString() string {
 	return s.String()
+}
+
+func (s *AccessPoint) GetAccessPointName() *string {
+	return s.AccessPointName
+}
+
+func (s *AccessPoint) GetAlias() *string {
+	return s.Alias
+}
+
+func (s *AccessPoint) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *AccessPoint) GetNetworkOrigin() *string {
+	return s.NetworkOrigin
+}
+
+func (s *AccessPoint) GetStatus() *string {
+	return s.Status
+}
+
+func (s *AccessPoint) GetVpcConfiguration() *AccessPointVpcConfiguration {
+	return s.VpcConfiguration
 }
 
 func (s *AccessPoint) SetAccessPointName(v string) *AccessPoint {
@@ -166,6 +248,11 @@ func (s *AccessPoint) SetVpcConfiguration(v *AccessPointVpcConfiguration) *Acces
 	return s
 }
 
+func (s *AccessPoint) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AccessPointVpcConfiguration struct {
 	// example:
 	//
@@ -174,17 +261,26 @@ type AccessPointVpcConfiguration struct {
 }
 
 func (s AccessPointVpcConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AccessPointVpcConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *AccessPointVpcConfiguration) GetVpcId() *string {
+	return s.VpcId
+}
+
 func (s *AccessPointVpcConfiguration) SetVpcId(v string) *AccessPointVpcConfiguration {
 	s.VpcId = &v
 	return s
 }
+
+func (s *AccessPointVpcConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ApplyServerSideEncryptionByDefault struct {
 	KMSDataEncryption *string `json:"KMSDataEncryption,omitempty" xml:"KMSDataEncryption,omitempty"`
@@ -193,11 +289,23 @@ type ApplyServerSideEncryptionByDefault struct {
 }
 
 func (s ApplyServerSideEncryptionByDefault) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ApplyServerSideEncryptionByDefault) GoString() string {
 	return s.String()
+}
+
+func (s *ApplyServerSideEncryptionByDefault) GetKMSDataEncryption() *string {
+	return s.KMSDataEncryption
+}
+
+func (s *ApplyServerSideEncryptionByDefault) GetKMSMasterKeyID() *string {
+	return s.KMSMasterKeyID
+}
+
+func (s *ApplyServerSideEncryptionByDefault) GetSSEAlgorithm() *string {
+	return s.SSEAlgorithm
 }
 
 func (s *ApplyServerSideEncryptionByDefault) SetKMSDataEncryption(v string) *ApplyServerSideEncryptionByDefault {
@@ -215,6 +323,11 @@ func (s *ApplyServerSideEncryptionByDefault) SetSSEAlgorithm(v string) *ApplySer
 	return s
 }
 
+func (s *ApplyServerSideEncryptionByDefault) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ArchiveDirectReadConfiguration struct {
 	// example:
 	//
@@ -223,17 +336,26 @@ type ArchiveDirectReadConfiguration struct {
 }
 
 func (s ArchiveDirectReadConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ArchiveDirectReadConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *ArchiveDirectReadConfiguration) GetEnabled() *bool {
+	return s.Enabled
+}
+
 func (s *ArchiveDirectReadConfiguration) SetEnabled(v bool) *ArchiveDirectReadConfiguration {
 	s.Enabled = &v
 	return s
 }
+
+func (s *ArchiveDirectReadConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type AsyncFetchTaskConfiguration struct {
 	// example:
@@ -267,11 +389,39 @@ type AsyncFetchTaskConfiguration struct {
 }
 
 func (s AsyncFetchTaskConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AsyncFetchTaskConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *AsyncFetchTaskConfiguration) GetCallback() *string {
+	return s.Callback
+}
+
+func (s *AsyncFetchTaskConfiguration) GetContentMD5() *string {
+	return s.ContentMD5
+}
+
+func (s *AsyncFetchTaskConfiguration) GetHost() *string {
+	return s.Host
+}
+
+func (s *AsyncFetchTaskConfiguration) GetIgnoreSameKey() *bool {
+	return s.IgnoreSameKey
+}
+
+func (s *AsyncFetchTaskConfiguration) GetObject() *string {
+	return s.Object
+}
+
+func (s *AsyncFetchTaskConfiguration) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *AsyncFetchTaskConfiguration) GetUrl() *string {
+	return s.Url
 }
 
 func (s *AsyncFetchTaskConfiguration) SetCallback(v string) *AsyncFetchTaskConfiguration {
@@ -309,6 +459,11 @@ func (s *AsyncFetchTaskConfiguration) SetUrl(v string) *AsyncFetchTaskConfigurat
 	return s
 }
 
+func (s *AsyncFetchTaskConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AsyncFetchTaskInfo struct {
 	// example:
 	//
@@ -326,11 +481,27 @@ type AsyncFetchTaskInfo struct {
 }
 
 func (s AsyncFetchTaskInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AsyncFetchTaskInfo) GoString() string {
 	return s.String()
+}
+
+func (s *AsyncFetchTaskInfo) GetErrorMsg() *string {
+	return s.ErrorMsg
+}
+
+func (s *AsyncFetchTaskInfo) GetState() *string {
+	return s.State
+}
+
+func (s *AsyncFetchTaskInfo) GetTaskId() *string {
+	return s.TaskId
+}
+
+func (s *AsyncFetchTaskInfo) GetTaskInfo() *AsyncFetchTaskConfiguration {
+	return s.TaskInfo
 }
 
 func (s *AsyncFetchTaskInfo) SetErrorMsg(v string) *AsyncFetchTaskInfo {
@@ -353,6 +524,11 @@ func (s *AsyncFetchTaskInfo) SetTaskInfo(v *AsyncFetchTaskConfiguration) *AsyncF
 	return s
 }
 
+func (s *AsyncFetchTaskInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AsyncFetchTaskResult struct {
 	// example:
 	//
@@ -361,17 +537,26 @@ type AsyncFetchTaskResult struct {
 }
 
 func (s AsyncFetchTaskResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AsyncFetchTaskResult) GoString() string {
 	return s.String()
 }
 
+func (s *AsyncFetchTaskResult) GetTaskId() *string {
+	return s.TaskId
+}
+
 func (s *AsyncFetchTaskResult) SetTaskId(v string) *AsyncFetchTaskResult {
 	s.TaskId = &v
 	return s
 }
+
+func (s *AsyncFetchTaskResult) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type Bucket struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -385,11 +570,39 @@ type Bucket struct {
 }
 
 func (s Bucket) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Bucket) GoString() string {
 	return s.String()
+}
+
+func (s *Bucket) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *Bucket) GetExtranetEndpoint() *string {
+	return s.ExtranetEndpoint
+}
+
+func (s *Bucket) GetIntranetEndpoint() *string {
+	return s.IntranetEndpoint
+}
+
+func (s *Bucket) GetLocation() *string {
+	return s.Location
+}
+
+func (s *Bucket) GetName() *string {
+	return s.Name
+}
+
+func (s *Bucket) GetRegion() *string {
+	return s.Region
+}
+
+func (s *Bucket) GetStorageClass() *string {
+	return s.StorageClass
 }
 
 func (s *Bucket) SetCreationDate(v string) *Bucket {
@@ -427,16 +640,25 @@ func (s *Bucket) SetStorageClass(v string) *Bucket {
 	return s
 }
 
+func (s *Bucket) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type BucketAntiDDOSConfiguration struct {
 	Cnames *BucketAntiDDOSConfigurationCnames `json:"Cnames,omitempty" xml:"Cnames,omitempty" type:"Struct"`
 }
 
 func (s BucketAntiDDOSConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketAntiDDOSConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *BucketAntiDDOSConfiguration) GetCnames() *BucketAntiDDOSConfigurationCnames {
+	return s.Cnames
 }
 
 func (s *BucketAntiDDOSConfiguration) SetCnames(v *BucketAntiDDOSConfigurationCnames) *BucketAntiDDOSConfiguration {
@@ -444,22 +666,35 @@ func (s *BucketAntiDDOSConfiguration) SetCnames(v *BucketAntiDDOSConfigurationCn
 	return s
 }
 
+func (s *BucketAntiDDOSConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type BucketAntiDDOSConfigurationCnames struct {
 	Domain []*string `json:"Domain,omitempty" xml:"Domain,omitempty" type:"Repeated"`
 }
 
 func (s BucketAntiDDOSConfigurationCnames) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketAntiDDOSConfigurationCnames) GoString() string {
 	return s.String()
 }
 
+func (s *BucketAntiDDOSConfigurationCnames) GetDomain() []*string {
+	return s.Domain
+}
+
 func (s *BucketAntiDDOSConfigurationCnames) SetDomain(v []*string) *BucketAntiDDOSConfigurationCnames {
 	s.Domain = v
 	return s
 }
+
+func (s *BucketAntiDDOSConfigurationCnames) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type BucketAntiDDOSInfo struct {
 	ActiveTime *int64                    `json:"ActiveTime,omitempty" xml:"ActiveTime,omitempty"`
@@ -474,11 +709,47 @@ type BucketAntiDDOSInfo struct {
 }
 
 func (s BucketAntiDDOSInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketAntiDDOSInfo) GoString() string {
 	return s.String()
+}
+
+func (s *BucketAntiDDOSInfo) GetActiveTime() *int64 {
+	return s.ActiveTime
+}
+
+func (s *BucketAntiDDOSInfo) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *BucketAntiDDOSInfo) GetCnames() *BucketAntiDDOSInfoCnames {
+	return s.Cnames
+}
+
+func (s *BucketAntiDDOSInfo) GetCtime() *int64 {
+	return s.Ctime
+}
+
+func (s *BucketAntiDDOSInfo) GetInstanceId() *string {
+	return s.InstanceId
+}
+
+func (s *BucketAntiDDOSInfo) GetMtime() *int64 {
+	return s.Mtime
+}
+
+func (s *BucketAntiDDOSInfo) GetOwner() *string {
+	return s.Owner
+}
+
+func (s *BucketAntiDDOSInfo) GetStatus() *string {
+	return s.Status
+}
+
+func (s *BucketAntiDDOSInfo) GetType() *string {
+	return s.Type
 }
 
 func (s *BucketAntiDDOSInfo) SetActiveTime(v int64) *BucketAntiDDOSInfo {
@@ -526,22 +797,35 @@ func (s *BucketAntiDDOSInfo) SetType(v string) *BucketAntiDDOSInfo {
 	return s
 }
 
+func (s *BucketAntiDDOSInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 type BucketAntiDDOSInfoCnames struct {
 	Domain []*string `json:"Domain,omitempty" xml:"Domain,omitempty" type:"Repeated"`
 }
 
 func (s BucketAntiDDOSInfoCnames) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketAntiDDOSInfoCnames) GoString() string {
 	return s.String()
 }
 
+func (s *BucketAntiDDOSInfoCnames) GetDomain() []*string {
+	return s.Domain
+}
+
 func (s *BucketAntiDDOSInfoCnames) SetDomain(v []*string) *BucketAntiDDOSInfoCnames {
 	s.Domain = v
 	return s
 }
+
+func (s *BucketAntiDDOSInfoCnames) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type BucketChannelConfig struct {
 	// example:
@@ -556,11 +840,23 @@ type BucketChannelConfig struct {
 }
 
 func (s BucketChannelConfig) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketChannelConfig) GoString() string {
 	return s.String()
+}
+
+func (s *BucketChannelConfig) GetDebugInfo() *string {
+	return s.DebugInfo
+}
+
+func (s *BucketChannelConfig) GetRuleList() *BucketChannelConfigRuleList {
+	return s.RuleList
+}
+
+func (s *BucketChannelConfig) GetVersion() *int32 {
+	return s.Version
 }
 
 func (s *BucketChannelConfig) SetDebugInfo(v string) *BucketChannelConfig {
@@ -578,21 +874,33 @@ func (s *BucketChannelConfig) SetVersion(v int32) *BucketChannelConfig {
 	return s
 }
 
+func (s *BucketChannelConfig) Validate() error {
+	return dara.Validate(s)
+}
+
 type BucketChannelConfigRuleList struct {
 	Rule []*BucketChannelConfigRuleListRule `json:"Rule,omitempty" xml:"Rule,omitempty" type:"Repeated"`
 }
 
 func (s BucketChannelConfigRuleList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketChannelConfigRuleList) GoString() string {
 	return s.String()
 }
 
+func (s *BucketChannelConfigRuleList) GetRule() []*BucketChannelConfigRuleListRule {
+	return s.Rule
+}
+
 func (s *BucketChannelConfigRuleList) SetRule(v []*BucketChannelConfigRuleListRule) *BucketChannelConfigRuleList {
 	s.Rule = v
 	return s
+}
+
+func (s *BucketChannelConfigRuleList) Validate() error {
+	return dara.Validate(s)
 }
 
 type BucketChannelConfigRuleListRule struct {
@@ -611,11 +919,23 @@ type BucketChannelConfigRuleListRule struct {
 }
 
 func (s BucketChannelConfigRuleListRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketChannelConfigRuleListRule) GoString() string {
 	return s.String()
+}
+
+func (s *BucketChannelConfigRuleListRule) GetFrontContent() *string {
+	return s.FrontContent
+}
+
+func (s *BucketChannelConfigRuleListRule) GetRuleName() *string {
+	return s.RuleName
+}
+
+func (s *BucketChannelConfigRuleListRule) GetRuleRegex() *string {
+	return s.RuleRegex
 }
 
 func (s *BucketChannelConfigRuleListRule) SetFrontContent(v string) *BucketChannelConfigRuleListRule {
@@ -633,21 +953,34 @@ func (s *BucketChannelConfigRuleListRule) SetRuleRegex(v string) *BucketChannelC
 	return s
 }
 
+func (s *BucketChannelConfigRuleListRule) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type BucketCnameConfiguration struct {
 	Cname *BucketCnameConfigurationCname `json:"Cname,omitempty" xml:"Cname,omitempty" type:"Struct"`
 }
 
 func (s BucketCnameConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketCnameConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *BucketCnameConfiguration) GetCname() *BucketCnameConfigurationCname {
+	return s.Cname
+}
+
 func (s *BucketCnameConfiguration) SetCname(v *BucketCnameConfigurationCname) *BucketCnameConfiguration {
 	s.Cname = v
 	return s
+}
+
+func (s *BucketCnameConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type BucketCnameConfigurationCname struct {
@@ -656,11 +989,19 @@ type BucketCnameConfigurationCname struct {
 }
 
 func (s BucketCnameConfigurationCname) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketCnameConfigurationCname) GoString() string {
 	return s.String()
+}
+
+func (s *BucketCnameConfigurationCname) GetCertificateConfiguration() *CertificateConfiguration {
+	return s.CertificateConfiguration
+}
+
+func (s *BucketCnameConfigurationCname) GetDomain() *string {
+	return s.Domain
 }
 
 func (s *BucketCnameConfigurationCname) SetCertificateConfiguration(v *CertificateConfiguration) *BucketCnameConfigurationCname {
@@ -672,6 +1013,11 @@ func (s *BucketCnameConfigurationCname) SetDomain(v string) *BucketCnameConfigur
 	s.Domain = &v
 	return s
 }
+
+func (s *BucketCnameConfigurationCname) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type BucketDataRedundancyTransition struct {
 	// example:
@@ -709,11 +1055,43 @@ type BucketDataRedundancyTransition struct {
 }
 
 func (s BucketDataRedundancyTransition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketDataRedundancyTransition) GoString() string {
 	return s.String()
+}
+
+func (s *BucketDataRedundancyTransition) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *BucketDataRedundancyTransition) GetCreateTime() *string {
+	return s.CreateTime
+}
+
+func (s *BucketDataRedundancyTransition) GetEndTime() *string {
+	return s.EndTime
+}
+
+func (s *BucketDataRedundancyTransition) GetEstimatedRemainingTime() *string {
+	return s.EstimatedRemainingTime
+}
+
+func (s *BucketDataRedundancyTransition) GetProcessPercentage() *int32 {
+	return s.ProcessPercentage
+}
+
+func (s *BucketDataRedundancyTransition) GetStartTime() *string {
+	return s.StartTime
+}
+
+func (s *BucketDataRedundancyTransition) GetStatus() *string {
+	return s.Status
+}
+
+func (s *BucketDataRedundancyTransition) GetTaskId() *string {
+	return s.TaskId
 }
 
 func (s *BucketDataRedundancyTransition) SetBucket(v string) *BucketDataRedundancyTransition {
@@ -756,16 +1134,25 @@ func (s *BucketDataRedundancyTransition) SetTaskId(v string) *BucketDataRedundan
 	return s
 }
 
+func (s *BucketDataRedundancyTransition) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type BucketInfo struct {
 	Bucket *BucketInfoBucket `json:"Bucket,omitempty" xml:"Bucket,omitempty" type:"Struct"`
 }
 
 func (s BucketInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketInfo) GoString() string {
 	return s.String()
+}
+
+func (s *BucketInfo) GetBucket() *BucketInfoBucket {
+	return s.Bucket
 }
 
 func (s *BucketInfo) SetBucket(v *BucketInfoBucket) *BucketInfo {
@@ -773,13 +1160,21 @@ func (s *BucketInfo) SetBucket(v *BucketInfoBucket) *BucketInfo {
 	return s
 }
 
+func (s *BucketInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 type BucketInfoBucket struct {
 	AccessControlList *AccessControlList `json:"AccessControlList,omitempty" xml:"AccessControlList,omitempty"`
 	// example:
 	//
 	// Disabled
-	AccessMonitor *string                       `json:"AccessMonitor,omitempty" xml:"AccessMonitor,omitempty"`
-	BucketPolicy  *BucketInfoBucketBucketPolicy `json:"BucketPolicy,omitempty" xml:"BucketPolicy,omitempty" type:"Struct"`
+	AccessMonitor *string `json:"AccessMonitor,omitempty" xml:"AccessMonitor,omitempty"`
+	// example:
+	//
+	// false
+	BlockPublicAccess *bool                         `json:"BlockPublicAccess,omitempty" xml:"BlockPublicAccess,omitempty"`
+	BucketPolicy      *BucketInfoBucketBucketPolicy `json:"BucketPolicy,omitempty" xml:"BucketPolicy,omitempty" type:"Struct"`
 	// example:
 	//
 	// An example bucket.
@@ -817,11 +1212,83 @@ type BucketInfoBucket struct {
 }
 
 func (s BucketInfoBucket) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketInfoBucket) GoString() string {
 	return s.String()
+}
+
+func (s *BucketInfoBucket) GetAccessControlList() *AccessControlList {
+	return s.AccessControlList
+}
+
+func (s *BucketInfoBucket) GetAccessMonitor() *string {
+	return s.AccessMonitor
+}
+
+func (s *BucketInfoBucket) GetBlockPublicAccess() *bool {
+	return s.BlockPublicAccess
+}
+
+func (s *BucketInfoBucket) GetBucketPolicy() *BucketInfoBucketBucketPolicy {
+	return s.BucketPolicy
+}
+
+func (s *BucketInfoBucket) GetComment() *string {
+	return s.Comment
+}
+
+func (s *BucketInfoBucket) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *BucketInfoBucket) GetCrossRegionReplication() *string {
+	return s.CrossRegionReplication
+}
+
+func (s *BucketInfoBucket) GetDataRedundancyType() *string {
+	return s.DataRedundancyType
+}
+
+func (s *BucketInfoBucket) GetExtranetEndpoint() *string {
+	return s.ExtranetEndpoint
+}
+
+func (s *BucketInfoBucket) GetIntranetEndpoint() *string {
+	return s.IntranetEndpoint
+}
+
+func (s *BucketInfoBucket) GetLocation() *string {
+	return s.Location
+}
+
+func (s *BucketInfoBucket) GetName() *string {
+	return s.Name
+}
+
+func (s *BucketInfoBucket) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *BucketInfoBucket) GetResourceGroupId() *string {
+	return s.ResourceGroupId
+}
+
+func (s *BucketInfoBucket) GetServerSideEncryptionRule() *BucketInfoBucketServerSideEncryptionRule {
+	return s.ServerSideEncryptionRule
+}
+
+func (s *BucketInfoBucket) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *BucketInfoBucket) GetTransferAcceleration() *string {
+	return s.TransferAcceleration
+}
+
+func (s *BucketInfoBucket) GetVersioning() *string {
+	return s.Versioning
 }
 
 func (s *BucketInfoBucket) SetAccessControlList(v *AccessControlList) *BucketInfoBucket {
@@ -831,6 +1298,11 @@ func (s *BucketInfoBucket) SetAccessControlList(v *AccessControlList) *BucketInf
 
 func (s *BucketInfoBucket) SetAccessMonitor(v string) *BucketInfoBucket {
 	s.AccessMonitor = &v
+	return s
+}
+
+func (s *BucketInfoBucket) SetBlockPublicAccess(v bool) *BucketInfoBucket {
+	s.BlockPublicAccess = &v
 	return s
 }
 
@@ -909,6 +1381,10 @@ func (s *BucketInfoBucket) SetVersioning(v string) *BucketInfoBucket {
 	return s
 }
 
+func (s *BucketInfoBucket) Validate() error {
+	return dara.Validate(s)
+}
+
 type BucketInfoBucketBucketPolicy struct {
 	// example:
 	//
@@ -921,11 +1397,19 @@ type BucketInfoBucketBucketPolicy struct {
 }
 
 func (s BucketInfoBucketBucketPolicy) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketInfoBucketBucketPolicy) GoString() string {
 	return s.String()
+}
+
+func (s *BucketInfoBucketBucketPolicy) GetLogBucket() *string {
+	return s.LogBucket
+}
+
+func (s *BucketInfoBucketBucketPolicy) GetLogPrefix() *string {
+	return s.LogPrefix
 }
 
 func (s *BucketInfoBucketBucketPolicy) SetLogBucket(v string) *BucketInfoBucketBucketPolicy {
@@ -936,6 +1420,10 @@ func (s *BucketInfoBucketBucketPolicy) SetLogBucket(v string) *BucketInfoBucketB
 func (s *BucketInfoBucketBucketPolicy) SetLogPrefix(v string) *BucketInfoBucketBucketPolicy {
 	s.LogPrefix = &v
 	return s
+}
+
+func (s *BucketInfoBucketBucketPolicy) Validate() error {
+	return dara.Validate(s)
 }
 
 type BucketInfoBucketServerSideEncryptionRule struct {
@@ -954,11 +1442,23 @@ type BucketInfoBucketServerSideEncryptionRule struct {
 }
 
 func (s BucketInfoBucketServerSideEncryptionRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketInfoBucketServerSideEncryptionRule) GoString() string {
 	return s.String()
+}
+
+func (s *BucketInfoBucketServerSideEncryptionRule) GetKMSDataEncryption() *string {
+	return s.KMSDataEncryption
+}
+
+func (s *BucketInfoBucketServerSideEncryptionRule) GetKMSMasterKeyID() *string {
+	return s.KMSMasterKeyID
+}
+
+func (s *BucketInfoBucketServerSideEncryptionRule) GetSSEAlgorithm() *string {
+	return s.SSEAlgorithm
 }
 
 func (s *BucketInfoBucketServerSideEncryptionRule) SetKMSDataEncryption(v string) *BucketInfoBucketServerSideEncryptionRule {
@@ -976,23 +1476,37 @@ func (s *BucketInfoBucketServerSideEncryptionRule) SetSSEAlgorithm(v string) *Bu
 	return s
 }
 
+func (s *BucketInfoBucketServerSideEncryptionRule) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type BucketLoggingStatus struct {
 	// This parameter is required.
 	LoggingEnabled *LoggingEnabled `json:"LoggingEnabled,omitempty" xml:"LoggingEnabled,omitempty"`
 }
 
 func (s BucketLoggingStatus) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketLoggingStatus) GoString() string {
 	return s.String()
 }
 
+func (s *BucketLoggingStatus) GetLoggingEnabled() *LoggingEnabled {
+	return s.LoggingEnabled
+}
+
 func (s *BucketLoggingStatus) SetLoggingEnabled(v *LoggingEnabled) *BucketLoggingStatus {
 	s.LoggingEnabled = v
 	return s
 }
+
+func (s *BucketLoggingStatus) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type BucketProcessConfiguration struct {
 	BucketChannelConfig *BucketChannelConfig `json:"BucketChannelConfig,omitempty" xml:"BucketChannelConfig,omitempty"`
@@ -1019,11 +1533,35 @@ type BucketProcessConfiguration struct {
 }
 
 func (s BucketProcessConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketProcessConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *BucketProcessConfiguration) GetBucketChannelConfig() *BucketChannelConfig {
+	return s.BucketChannelConfig
+}
+
+func (s *BucketProcessConfiguration) GetCompliedHost() *string {
+	return s.CompliedHost
+}
+
+func (s *BucketProcessConfiguration) GetOssDomainSupportAtProcess() *string {
+	return s.OssDomainSupportAtProcess
+}
+
+func (s *BucketProcessConfiguration) GetSourceFileProtect() *string {
+	return s.SourceFileProtect
+}
+
+func (s *BucketProcessConfiguration) GetSourceFileProtectSuffix() *string {
+	return s.SourceFileProtectSuffix
+}
+
+func (s *BucketProcessConfiguration) GetStyleDelimiters() *string {
+	return s.StyleDelimiters
 }
 
 func (s *BucketProcessConfiguration) SetBucketChannelConfig(v *BucketChannelConfig) *BucketProcessConfiguration {
@@ -1055,6 +1593,11 @@ func (s *BucketProcessConfiguration) SetStyleDelimiters(v string) *BucketProcess
 	s.StyleDelimiters = &v
 	return s
 }
+
+func (s *BucketProcessConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type BucketQoSConfiguration struct {
 	// example:
@@ -1100,11 +1643,51 @@ type BucketQoSConfiguration struct {
 }
 
 func (s BucketQoSConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketQoSConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *BucketQoSConfiguration) GetExclusive() *bool {
+	return s.Exclusive
+}
+
+func (s *BucketQoSConfiguration) GetExtranetDownloadBandwidth() *int64 {
+	return s.ExtranetDownloadBandwidth
+}
+
+func (s *BucketQoSConfiguration) GetExtranetQps() *int64 {
+	return s.ExtranetQps
+}
+
+func (s *BucketQoSConfiguration) GetExtranetUploadBandwidth() *int64 {
+	return s.ExtranetUploadBandwidth
+}
+
+func (s *BucketQoSConfiguration) GetIntranetDownloadBandwidth() *int64 {
+	return s.IntranetDownloadBandwidth
+}
+
+func (s *BucketQoSConfiguration) GetIntranetQps() *int64 {
+	return s.IntranetQps
+}
+
+func (s *BucketQoSConfiguration) GetIntranetUploadBandwidth() *int64 {
+	return s.IntranetUploadBandwidth
+}
+
+func (s *BucketQoSConfiguration) GetTotalDownloadBandwidth() *int64 {
+	return s.TotalDownloadBandwidth
+}
+
+func (s *BucketQoSConfiguration) GetTotalQps() *int64 {
+	return s.TotalQps
+}
+
+func (s *BucketQoSConfiguration) GetTotalUploadBandwidth() *int64 {
+	return s.TotalUploadBandwidth
 }
 
 func (s *BucketQoSConfiguration) SetExclusive(v bool) *BucketQoSConfiguration {
@@ -1157,22 +1740,36 @@ func (s *BucketQoSConfiguration) SetTotalUploadBandwidth(v int64) *BucketQoSConf
 	return s
 }
 
+func (s *BucketQoSConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type BucketResourceGroupConfiguration struct {
 	ResourceGroupId *string `json:"ResourceGroupId,omitempty" xml:"ResourceGroupId,omitempty"`
 }
 
 func (s BucketResourceGroupConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketResourceGroupConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *BucketResourceGroupConfiguration) GetResourceGroupId() *string {
+	return s.ResourceGroupId
+}
+
 func (s *BucketResourceGroupConfiguration) SetResourceGroupId(v string) *BucketResourceGroupConfiguration {
 	s.ResourceGroupId = &v
 	return s
 }
+
+func (s *BucketResourceGroupConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type BucketStat struct {
 	// example:
@@ -1262,11 +1859,95 @@ type BucketStat struct {
 }
 
 func (s BucketStat) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s BucketStat) GoString() string {
 	return s.String()
+}
+
+func (s *BucketStat) GetArchiveObjectCount() *int64 {
+	return s.ArchiveObjectCount
+}
+
+func (s *BucketStat) GetArchiveRealStorage() *int64 {
+	return s.ArchiveRealStorage
+}
+
+func (s *BucketStat) GetArchiveStorage() *int64 {
+	return s.ArchiveStorage
+}
+
+func (s *BucketStat) GetColdArchiveObjectCount() *int64 {
+	return s.ColdArchiveObjectCount
+}
+
+func (s *BucketStat) GetColdArchiveRealStorage() *int64 {
+	return s.ColdArchiveRealStorage
+}
+
+func (s *BucketStat) GetColdArchiveStorage() *int64 {
+	return s.ColdArchiveStorage
+}
+
+func (s *BucketStat) GetDeepColdArchiveObjectCount() *int64 {
+	return s.DeepColdArchiveObjectCount
+}
+
+func (s *BucketStat) GetDeepColdArchiveRealStorage() *int64 {
+	return s.DeepColdArchiveRealStorage
+}
+
+func (s *BucketStat) GetDeepColdArchiveStorage() *int64 {
+	return s.DeepColdArchiveStorage
+}
+
+func (s *BucketStat) GetDeleteMarkerCount() *int64 {
+	return s.DeleteMarkerCount
+}
+
+func (s *BucketStat) GetInfrequentAccessObjectCount() *int64 {
+	return s.InfrequentAccessObjectCount
+}
+
+func (s *BucketStat) GetInfrequentAccessRealStorage() *int64 {
+	return s.InfrequentAccessRealStorage
+}
+
+func (s *BucketStat) GetInfrequentAccessStorage() *int64 {
+	return s.InfrequentAccessStorage
+}
+
+func (s *BucketStat) GetLastModifiedTime() *int64 {
+	return s.LastModifiedTime
+}
+
+func (s *BucketStat) GetLiveChannelCount() *int64 {
+	return s.LiveChannelCount
+}
+
+func (s *BucketStat) GetMultipartPartCount() *int64 {
+	return s.MultipartPartCount
+}
+
+func (s *BucketStat) GetMultipartUploadCount() *int64 {
+	return s.MultipartUploadCount
+}
+
+func (s *BucketStat) GetObjectCount() *int64 {
+	return s.ObjectCount
+}
+
+func (s *BucketStat) GetStandardObjectCount() *int64 {
+	return s.StandardObjectCount
+}
+
+func (s *BucketStat) GetStandardStorage() *int64 {
+	return s.StandardStorage
+}
+
+func (s *BucketStat) GetStorage() *int64 {
+	return s.Storage
 }
 
 func (s *BucketStat) SetArchiveObjectCount(v int64) *BucketStat {
@@ -1374,17 +2055,30 @@ func (s *BucketStat) SetStorage(v int64) *BucketStat {
 	return s
 }
 
+func (s *BucketStat) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CORSConfiguration struct {
 	CORSRule     []*CORSRule `json:"CORSRule,omitempty" xml:"CORSRule,omitempty" type:"Repeated"`
 	ResponseVary *bool       `json:"ResponseVary,omitempty" xml:"ResponseVary,omitempty"`
 }
 
 func (s CORSConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CORSConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CORSConfiguration) GetCORSRule() []*CORSRule {
+	return s.CORSRule
+}
+
+func (s *CORSConfiguration) GetResponseVary() *bool {
+	return s.ResponseVary
 }
 
 func (s *CORSConfiguration) SetCORSRule(v []*CORSRule) *CORSConfiguration {
@@ -1396,6 +2090,11 @@ func (s *CORSConfiguration) SetResponseVary(v bool) *CORSConfiguration {
 	s.ResponseVary = &v
 	return s
 }
+
+func (s *CORSConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CORSRule struct {
 	AllowedHeader []*string `json:"AllowedHeader,omitempty" xml:"AllowedHeader,omitempty" type:"Repeated"`
@@ -1409,11 +2108,31 @@ type CORSRule struct {
 }
 
 func (s CORSRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CORSRule) GoString() string {
 	return s.String()
+}
+
+func (s *CORSRule) GetAllowedHeader() []*string {
+	return s.AllowedHeader
+}
+
+func (s *CORSRule) GetAllowedMethod() []*string {
+	return s.AllowedMethod
+}
+
+func (s *CORSRule) GetAllowedOrigin() []*string {
+	return s.AllowedOrigin
+}
+
+func (s *CORSRule) GetExposeHeader() []*string {
+	return s.ExposeHeader
+}
+
+func (s *CORSRule) GetMaxAgeSeconds() *int64 {
+	return s.MaxAgeSeconds
 }
 
 func (s *CORSRule) SetAllowedHeader(v []*string) *CORSRule {
@@ -1441,6 +2160,11 @@ func (s *CORSRule) SetMaxAgeSeconds(v int64) *CORSRule {
 	return s
 }
 
+func (s *CORSRule) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CSVInput struct {
 	AllowQuotedRecordDelimiter *bool   `json:"AllowQuotedRecordDelimiter,omitempty" xml:"AllowQuotedRecordDelimiter,omitempty"`
 	CommentCharacter           *string `json:"CommentCharacter,omitempty" xml:"CommentCharacter,omitempty"`
@@ -1452,11 +2176,39 @@ type CSVInput struct {
 }
 
 func (s CSVInput) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CSVInput) GoString() string {
 	return s.String()
+}
+
+func (s *CSVInput) GetAllowQuotedRecordDelimiter() *bool {
+	return s.AllowQuotedRecordDelimiter
+}
+
+func (s *CSVInput) GetCommentCharacter() *string {
+	return s.CommentCharacter
+}
+
+func (s *CSVInput) GetFieldDelimiter() *string {
+	return s.FieldDelimiter
+}
+
+func (s *CSVInput) GetFileHeaderInfo() *string {
+	return s.FileHeaderInfo
+}
+
+func (s *CSVInput) GetQuoteCharacter() *string {
+	return s.QuoteCharacter
+}
+
+func (s *CSVInput) GetRange() *string {
+	return s.Range
+}
+
+func (s *CSVInput) GetRecordDelimiter() *string {
+	return s.RecordDelimiter
 }
 
 func (s *CSVInput) SetAllowQuotedRecordDelimiter(v bool) *CSVInput {
@@ -1494,17 +2246,30 @@ func (s *CSVInput) SetRecordDelimiter(v string) *CSVInput {
 	return s
 }
 
+func (s *CSVInput) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CSVOutput struct {
 	FieldDelimiter  *string `json:"FieldDelimiter,omitempty" xml:"FieldDelimiter,omitempty"`
 	RecordDelimiter *string `json:"RecordDelimiter,omitempty" xml:"RecordDelimiter,omitempty"`
 }
 
 func (s CSVOutput) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CSVOutput) GoString() string {
 	return s.String()
+}
+
+func (s *CSVOutput) GetFieldDelimiter() *string {
+	return s.FieldDelimiter
+}
+
+func (s *CSVOutput) GetRecordDelimiter() *string {
+	return s.RecordDelimiter
 }
 
 func (s *CSVOutput) SetFieldDelimiter(v string) *CSVOutput {
@@ -1516,6 +2281,11 @@ func (s *CSVOutput) SetRecordDelimiter(v string) *CSVOutput {
 	s.RecordDelimiter = &v
 	return s
 }
+
+func (s *CSVOutput) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CacheBaseInfo struct {
 	// example:
@@ -1534,11 +2304,27 @@ type CacheBaseInfo struct {
 }
 
 func (s CacheBaseInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheBaseInfo) GoString() string {
 	return s.String()
+}
+
+func (s *CacheBaseInfo) GetAvailableZone() *string {
+	return s.AvailableZone
+}
+
+func (s *CacheBaseInfo) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *CacheBaseInfo) GetName() *string {
+	return s.Name
+}
+
+func (s *CacheBaseInfo) GetQuotaConfiguration() *CacheQuotaConfiguration {
+	return s.QuotaConfiguration
 }
 
 func (s *CacheBaseInfo) SetAvailableZone(v string) *CacheBaseInfo {
@@ -1561,6 +2347,11 @@ func (s *CacheBaseInfo) SetQuotaConfiguration(v *CacheQuotaConfiguration) *Cache
 	return s
 }
 
+func (s *CacheBaseInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CacheBucketInfo struct {
 	AcceleratePaths *AcceleratePaths `json:"AcceleratePaths,omitempty" xml:"AcceleratePaths,omitempty"`
 	// example:
@@ -1574,11 +2365,23 @@ type CacheBucketInfo struct {
 }
 
 func (s CacheBucketInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheBucketInfo) GoString() string {
 	return s.String()
+}
+
+func (s *CacheBucketInfo) GetAcceleratePaths() *AcceleratePaths {
+	return s.AcceleratePaths
+}
+
+func (s *CacheBucketInfo) GetCachePolicy() *string {
+	return s.CachePolicy
+}
+
+func (s *CacheBucketInfo) GetName() *string {
+	return s.Name
 }
 
 func (s *CacheBucketInfo) SetAcceleratePaths(v *AcceleratePaths) *CacheBucketInfo {
@@ -1596,16 +2399,25 @@ func (s *CacheBucketInfo) SetName(v string) *CacheBucketInfo {
 	return s
 }
 
+func (s *CacheBucketInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CacheConfiguration struct {
 	Caches *CacheConfigurationCaches `json:"Caches,omitempty" xml:"Caches,omitempty" type:"Struct"`
 }
 
 func (s CacheConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CacheConfiguration) GetCaches() *CacheConfigurationCaches {
+	return s.Caches
 }
 
 func (s *CacheConfiguration) SetCaches(v *CacheConfigurationCaches) *CacheConfiguration {
@@ -1613,21 +2425,33 @@ func (s *CacheConfiguration) SetCaches(v *CacheConfigurationCaches) *CacheConfig
 	return s
 }
 
+func (s *CacheConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type CacheConfigurationCaches struct {
 	Cache *CacheConfigurationCachesCache `json:"Cache,omitempty" xml:"Cache,omitempty" type:"Struct"`
 }
 
 func (s CacheConfigurationCaches) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheConfigurationCaches) GoString() string {
 	return s.String()
 }
 
+func (s *CacheConfigurationCaches) GetCache() *CacheConfigurationCachesCache {
+	return s.Cache
+}
+
 func (s *CacheConfigurationCaches) SetCache(v *CacheConfigurationCachesCache) *CacheConfigurationCaches {
 	s.Cache = v
 	return s
+}
+
+func (s *CacheConfigurationCaches) Validate() error {
+	return dara.Validate(s)
 }
 
 type CacheConfigurationCachesCache struct {
@@ -1647,11 +2471,27 @@ type CacheConfigurationCachesCache struct {
 }
 
 func (s CacheConfigurationCachesCache) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheConfigurationCachesCache) GoString() string {
 	return s.String()
+}
+
+func (s *CacheConfigurationCachesCache) GetAcceleratePaths() *AcceleratePaths {
+	return s.AcceleratePaths
+}
+
+func (s *CacheConfigurationCachesCache) GetAvailableZone() *string {
+	return s.AvailableZone
+}
+
+func (s *CacheConfigurationCachesCache) GetCacheName() *string {
+	return s.CacheName
+}
+
+func (s *CacheConfigurationCachesCache) GetCachePolicy() *string {
+	return s.CachePolicy
 }
 
 func (s *CacheConfigurationCachesCache) SetAcceleratePaths(v *AcceleratePaths) *CacheConfigurationCachesCache {
@@ -1674,6 +2514,11 @@ func (s *CacheConfigurationCachesCache) SetCachePolicy(v string) *CacheConfigura
 	return s
 }
 
+func (s *CacheConfigurationCachesCache) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CacheDetailInfo struct {
 	// example:
 	//
@@ -1692,11 +2537,31 @@ type CacheDetailInfo struct {
 }
 
 func (s CacheDetailInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheDetailInfo) GoString() string {
 	return s.String()
+}
+
+func (s *CacheDetailInfo) GetAvailableZone() *string {
+	return s.AvailableZone
+}
+
+func (s *CacheDetailInfo) GetBuckets() *CacheDetailInfoBuckets {
+	return s.Buckets
+}
+
+func (s *CacheDetailInfo) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *CacheDetailInfo) GetName() *string {
+	return s.Name
+}
+
+func (s *CacheDetailInfo) GetQuotaConfiguration() *CacheQuotaConfiguration {
+	return s.QuotaConfiguration
 }
 
 func (s *CacheDetailInfo) SetAvailableZone(v string) *CacheDetailInfo {
@@ -1724,16 +2589,24 @@ func (s *CacheDetailInfo) SetQuotaConfiguration(v *CacheQuotaConfiguration) *Cac
 	return s
 }
 
+func (s *CacheDetailInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 type CacheDetailInfoBuckets struct {
 	Bucket []*CacheBucketInfo `json:"Bucket,omitempty" xml:"Bucket,omitempty" type:"Repeated"`
 }
 
 func (s CacheDetailInfoBuckets) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheDetailInfoBuckets) GoString() string {
 	return s.String()
+}
+
+func (s *CacheDetailInfoBuckets) GetBucket() []*CacheBucketInfo {
+	return s.Bucket
 }
 
 func (s *CacheDetailInfoBuckets) SetBucket(v []*CacheBucketInfo) *CacheDetailInfoBuckets {
@@ -1741,21 +2614,34 @@ func (s *CacheDetailInfoBuckets) SetBucket(v []*CacheBucketInfo) *CacheDetailInf
 	return s
 }
 
+func (s *CacheDetailInfoBuckets) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CacheQuotaConfiguration struct {
 	QuotaDesc *CacheQuotaConfigurationQuotaDesc `json:"QuotaDesc,omitempty" xml:"QuotaDesc,omitempty" type:"Struct"`
 }
 
 func (s CacheQuotaConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheQuotaConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *CacheQuotaConfiguration) GetQuotaDesc() *CacheQuotaConfigurationQuotaDesc {
+	return s.QuotaDesc
+}
+
 func (s *CacheQuotaConfiguration) SetQuotaDesc(v *CacheQuotaConfigurationQuotaDesc) *CacheQuotaConfiguration {
 	s.QuotaDesc = v
 	return s
+}
+
+func (s *CacheQuotaConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type CacheQuotaConfigurationQuotaDesc struct {
@@ -1766,11 +2652,15 @@ type CacheQuotaConfigurationQuotaDesc struct {
 }
 
 func (s CacheQuotaConfigurationQuotaDesc) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CacheQuotaConfigurationQuotaDesc) GoString() string {
 	return s.String()
+}
+
+func (s *CacheQuotaConfigurationQuotaDesc) GetQuota() *int64 {
+	return s.Quota
 }
 
 func (s *CacheQuotaConfigurationQuotaDesc) SetQuota(v int64) *CacheQuotaConfigurationQuotaDesc {
@@ -1778,21 +2668,34 @@ func (s *CacheQuotaConfigurationQuotaDesc) SetQuota(v int64) *CacheQuotaConfigur
 	return s
 }
 
+func (s *CacheQuotaConfigurationQuotaDesc) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CallbackPolicy struct {
 	PolicyItem []*CallbackPolicyPolicyItem `json:"PolicyItem,omitempty" xml:"PolicyItem,omitempty" type:"Repeated"`
 }
 
 func (s CallbackPolicy) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CallbackPolicy) GoString() string {
 	return s.String()
 }
 
+func (s *CallbackPolicy) GetPolicyItem() []*CallbackPolicyPolicyItem {
+	return s.PolicyItem
+}
+
 func (s *CallbackPolicy) SetPolicyItem(v []*CallbackPolicyPolicyItem) *CallbackPolicy {
 	s.PolicyItem = v
 	return s
+}
+
+func (s *CallbackPolicy) Validate() error {
+	return dara.Validate(s)
 }
 
 type CallbackPolicyPolicyItem struct {
@@ -1811,11 +2714,23 @@ type CallbackPolicyPolicyItem struct {
 }
 
 func (s CallbackPolicyPolicyItem) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CallbackPolicyPolicyItem) GoString() string {
 	return s.String()
+}
+
+func (s *CallbackPolicyPolicyItem) GetCallback() *string {
+	return s.Callback
+}
+
+func (s *CallbackPolicyPolicyItem) GetCallbackVar() *string {
+	return s.CallbackVar
+}
+
+func (s *CallbackPolicyPolicyItem) GetPolicyName() *string {
+	return s.PolicyName
 }
 
 func (s *CallbackPolicyPolicyItem) SetCallback(v string) *CallbackPolicyPolicyItem {
@@ -1832,6 +2747,11 @@ func (s *CallbackPolicyPolicyItem) SetPolicyName(v string) *CallbackPolicyPolicy
 	s.PolicyName = &v
 	return s
 }
+
+func (s *CallbackPolicyPolicyItem) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CertificateConfiguration struct {
 	// example:
@@ -1861,11 +2781,35 @@ type CertificateConfiguration struct {
 }
 
 func (s CertificateConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CertificateConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CertificateConfiguration) GetCertId() *string {
+	return s.CertId
+}
+
+func (s *CertificateConfiguration) GetCertificate() *string {
+	return s.Certificate
+}
+
+func (s *CertificateConfiguration) GetDeleteCertificate() *bool {
+	return s.DeleteCertificate
+}
+
+func (s *CertificateConfiguration) GetForce() *bool {
+	return s.Force
+}
+
+func (s *CertificateConfiguration) GetPreviousCertId() *string {
+	return s.PreviousCertId
+}
+
+func (s *CertificateConfiguration) GetPrivateKey() *string {
+	return s.PrivateKey
 }
 
 func (s *CertificateConfiguration) SetCertId(v string) *CertificateConfiguration {
@@ -1897,6 +2841,11 @@ func (s *CertificateConfiguration) SetPrivateKey(v string) *CertificateConfigura
 	s.PrivateKey = &v
 	return s
 }
+
+func (s *CertificateConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type Channel struct {
 	// example:
@@ -1934,11 +2883,43 @@ type Channel struct {
 }
 
 func (s Channel) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Channel) GoString() string {
 	return s.String()
+}
+
+func (s *Channel) GetAutoSetContentType() *bool {
+	return s.AutoSetContentType
+}
+
+func (s *Channel) GetDefault404Pic() *string {
+	return s.Default404Pic
+}
+
+func (s *Channel) GetOrigPicForbidden() *bool {
+	return s.OrigPicForbidden
+}
+
+func (s *Channel) GetSetAttachName() *bool {
+	return s.SetAttachName
+}
+
+func (s *Channel) GetStatus() *string {
+	return s.Status
+}
+
+func (s *Channel) GetStyleDelimiters() *string {
+	return s.StyleDelimiters
+}
+
+func (s *Channel) GetUseSrcFormat() *bool {
+	return s.UseSrcFormat
+}
+
+func (s *Channel) GetUseStyleOnly() *bool {
+	return s.UseStyleOnly
 }
 
 func (s *Channel) SetAutoSetContentType(v bool) *Channel {
@@ -1981,6 +2962,11 @@ func (s *Channel) SetUseStyleOnly(v bool) *Channel {
 	return s
 }
 
+func (s *Channel) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ChannelInfo struct {
 	// example:
 	//
@@ -2017,11 +3003,43 @@ type ChannelInfo struct {
 }
 
 func (s ChannelInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ChannelInfo) GoString() string {
 	return s.String()
+}
+
+func (s *ChannelInfo) GetAutoSetContentType() *bool {
+	return s.AutoSetContentType
+}
+
+func (s *ChannelInfo) GetName() *string {
+	return s.Name
+}
+
+func (s *ChannelInfo) GetOrigPicForbidden() *bool {
+	return s.OrigPicForbidden
+}
+
+func (s *ChannelInfo) GetSetAttachName() *bool {
+	return s.SetAttachName
+}
+
+func (s *ChannelInfo) GetStatus() *string {
+	return s.Status
+}
+
+func (s *ChannelInfo) GetStyleDelimiters() *string {
+	return s.StyleDelimiters
+}
+
+func (s *ChannelInfo) GetUseSrcFormat() *bool {
+	return s.UseSrcFormat
+}
+
+func (s *ChannelInfo) GetUseStyleOnly() *bool {
+	return s.UseStyleOnly
 }
 
 func (s *ChannelInfo) SetAutoSetContentType(v bool) *ChannelInfo {
@@ -2064,6 +3082,11 @@ func (s *ChannelInfo) SetUseStyleOnly(v bool) *ChannelInfo {
 	return s
 }
 
+func (s *ChannelInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CnameCertificate struct {
 	CertId         *string `json:"CertId,omitempty" xml:"CertId,omitempty"`
 	CreationDate   *string `json:"CreationDate,omitempty" xml:"CreationDate,omitempty"`
@@ -2075,11 +3098,39 @@ type CnameCertificate struct {
 }
 
 func (s CnameCertificate) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CnameCertificate) GoString() string {
 	return s.String()
+}
+
+func (s *CnameCertificate) GetCertId() *string {
+	return s.CertId
+}
+
+func (s *CnameCertificate) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *CnameCertificate) GetFingerprint() *string {
+	return s.Fingerprint
+}
+
+func (s *CnameCertificate) GetStatus() *string {
+	return s.Status
+}
+
+func (s *CnameCertificate) GetType() *string {
+	return s.Type
+}
+
+func (s *CnameCertificate) GetValidEndDate() *string {
+	return s.ValidEndDate
+}
+
+func (s *CnameCertificate) GetValidStartDate() *string {
+	return s.ValidStartDate
 }
 
 func (s *CnameCertificate) SetCertId(v string) *CnameCertificate {
@@ -2117,6 +3168,11 @@ func (s *CnameCertificate) SetValidStartDate(v string) *CnameCertificate {
 	return s
 }
 
+func (s *CnameCertificate) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CnameInfo struct {
 	Certificate  *CnameCertificate `json:"Certificate,omitempty" xml:"Certificate,omitempty"`
 	Domain       *string           `json:"Domain,omitempty" xml:"Domain,omitempty"`
@@ -2125,11 +3181,27 @@ type CnameInfo struct {
 }
 
 func (s CnameInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CnameInfo) GoString() string {
 	return s.String()
+}
+
+func (s *CnameInfo) GetCertificate() *CnameCertificate {
+	return s.Certificate
+}
+
+func (s *CnameInfo) GetDomain() *string {
+	return s.Domain
+}
+
+func (s *CnameInfo) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *CnameInfo) GetStatus() *string {
+	return s.Status
 }
 
 func (s *CnameInfo) SetCertificate(v *CnameCertificate) *CnameInfo {
@@ -2152,6 +3224,11 @@ func (s *CnameInfo) SetStatus(v string) *CnameInfo {
 	return s
 }
 
+func (s *CnameInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CnameSummary struct {
 	Certificate  *CnameCertificate `json:"Certificate,omitempty" xml:"Certificate,omitempty"`
 	Domain       *string           `json:"Domain,omitempty" xml:"Domain,omitempty"`
@@ -2160,11 +3237,27 @@ type CnameSummary struct {
 }
 
 func (s CnameSummary) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CnameSummary) GoString() string {
 	return s.String()
+}
+
+func (s *CnameSummary) GetCertificate() *CnameCertificate {
+	return s.Certificate
+}
+
+func (s *CnameSummary) GetDomain() *string {
+	return s.Domain
+}
+
+func (s *CnameSummary) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *CnameSummary) GetStatus() *string {
+	return s.Status
 }
 
 func (s *CnameSummary) SetCertificate(v *CnameCertificate) *CnameSummary {
@@ -2187,6 +3280,11 @@ func (s *CnameSummary) SetStatus(v string) *CnameSummary {
 	return s
 }
 
+func (s *CnameSummary) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CnameToken struct {
 	Bucket     *string `json:"Bucket,omitempty" xml:"Bucket,omitempty"`
 	Cname      *string `json:"Cname,omitempty" xml:"Cname,omitempty"`
@@ -2195,11 +3293,27 @@ type CnameToken struct {
 }
 
 func (s CnameToken) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CnameToken) GoString() string {
 	return s.String()
+}
+
+func (s *CnameToken) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *CnameToken) GetCname() *string {
+	return s.Cname
+}
+
+func (s *CnameToken) GetExpireTime() *string {
+	return s.ExpireTime
+}
+
+func (s *CnameToken) GetToken() *string {
+	return s.Token
 }
 
 func (s *CnameToken) SetBucket(v string) *CnameToken {
@@ -2222,6 +3336,11 @@ func (s *CnameToken) SetToken(v string) *CnameToken {
 	return s
 }
 
+func (s *CnameToken) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CommentConfiguration struct {
 	// example:
 	//
@@ -2230,11 +3349,15 @@ type CommentConfiguration struct {
 }
 
 func (s CommentConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CommentConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CommentConfiguration) GetComment() *string {
+	return s.Comment
 }
 
 func (s *CommentConfiguration) SetComment(v string) *CommentConfiguration {
@@ -2242,21 +3365,34 @@ func (s *CommentConfiguration) SetComment(v string) *CommentConfiguration {
 	return s
 }
 
+func (s *CommentConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CommonHeaders struct {
 	Header []*CommonHeadersHeader `json:"Header,omitempty" xml:"Header,omitempty" type:"Repeated"`
 }
 
 func (s CommonHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CommonHeaders) GoString() string {
 	return s.String()
 }
 
+func (s *CommonHeaders) GetHeader() []*CommonHeadersHeader {
+	return s.Header
+}
+
 func (s *CommonHeaders) SetHeader(v []*CommonHeadersHeader) *CommonHeaders {
 	s.Header = v
 	return s
+}
+
+func (s *CommonHeaders) Validate() error {
+	return dara.Validate(s)
 }
 
 type CommonHeadersHeader struct {
@@ -2271,11 +3407,19 @@ type CommonHeadersHeader struct {
 }
 
 func (s CommonHeadersHeader) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CommonHeadersHeader) GoString() string {
 	return s.String()
+}
+
+func (s *CommonHeadersHeader) GetKey() *string {
+	return s.Key
+}
+
+func (s *CommonHeadersHeader) GetValue() *string {
+	return s.Value
 }
 
 func (s *CommonHeadersHeader) SetKey(v string) *CommonHeadersHeader {
@@ -2288,16 +3432,25 @@ func (s *CommonHeadersHeader) SetValue(v string) *CommonHeadersHeader {
 	return s
 }
 
+func (s *CommonHeadersHeader) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CommonPrefix struct {
 	Prefix *string `json:"Prefix,omitempty" xml:"Prefix,omitempty"`
 }
 
 func (s CommonPrefix) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CommonPrefix) GoString() string {
 	return s.String()
+}
+
+func (s *CommonPrefix) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *CommonPrefix) SetPrefix(v string) *CommonPrefix {
@@ -2305,21 +3458,34 @@ func (s *CommonPrefix) SetPrefix(v string) *CommonPrefix {
 	return s
 }
 
+func (s *CommonPrefix) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CompleteMultipartUpload struct {
 	Part []*CompleteMultipartUploadPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
 }
 
 func (s CompleteMultipartUpload) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUpload) GoString() string {
 	return s.String()
 }
 
+func (s *CompleteMultipartUpload) GetPart() []*CompleteMultipartUploadPart {
+	return s.Part
+}
+
 func (s *CompleteMultipartUpload) SetPart(v []*CompleteMultipartUploadPart) *CompleteMultipartUpload {
 	s.Part = v
 	return s
+}
+
+func (s *CompleteMultipartUpload) Validate() error {
+	return dara.Validate(s)
 }
 
 type CompleteMultipartUploadPart struct {
@@ -2328,11 +3494,19 @@ type CompleteMultipartUploadPart struct {
 }
 
 func (s CompleteMultipartUploadPart) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUploadPart) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteMultipartUploadPart) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CompleteMultipartUploadPart) GetPartNumber() *int64 {
+	return s.PartNumber
 }
 
 func (s *CompleteMultipartUploadPart) SetETag(v string) *CompleteMultipartUploadPart {
@@ -2345,17 +3519,30 @@ func (s *CompleteMultipartUploadPart) SetPartNumber(v int64) *CompleteMultipartU
 	return s
 }
 
+func (s *CompleteMultipartUploadPart) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectResult struct {
 	ETag         *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
 	LastModified *string `json:"LastModified,omitempty" xml:"LastModified,omitempty"`
 }
 
 func (s CopyObjectResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectResult) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CopyObjectResult) GetLastModified() *string {
+	return s.LastModified
 }
 
 func (s *CopyObjectResult) SetETag(v string) *CopyObjectResult {
@@ -2368,21 +3555,34 @@ func (s *CopyObjectResult) SetLastModified(v string) *CopyObjectResult {
 	return s
 }
 
+func (s *CopyObjectResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectsCopy struct {
 	Object []*CopyObjectsCopyObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 }
 
 func (s CopyObjectsCopy) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsCopy) GoString() string {
 	return s.String()
 }
 
+func (s *CopyObjectsCopy) GetObject() []*CopyObjectsCopyObject {
+	return s.Object
+}
+
 func (s *CopyObjectsCopy) SetObject(v []*CopyObjectsCopyObject) *CopyObjectsCopy {
 	s.Object = v
 	return s
+}
+
+func (s *CopyObjectsCopy) Validate() error {
+	return dara.Validate(s)
 }
 
 type CopyObjectsCopyObject struct {
@@ -2397,11 +3597,19 @@ type CopyObjectsCopyObject struct {
 }
 
 func (s CopyObjectsCopyObject) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsCopyObject) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsCopyObject) GetSourceKey() *string {
+	return s.SourceKey
+}
+
+func (s *CopyObjectsCopyObject) GetTargetKey() *string {
+	return s.TargetKey
 }
 
 func (s *CopyObjectsCopyObject) SetSourceKey(v string) *CopyObjectsCopyObject {
@@ -2414,17 +3622,30 @@ func (s *CopyObjectsCopyObject) SetTargetKey(v string) *CopyObjectsCopyObject {
 	return s
 }
 
+func (s *CopyObjectsCopyObject) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectsResult struct {
 	Failed  *CopyObjectsResultFailed  `json:"Failed,omitempty" xml:"Failed,omitempty" type:"Struct"`
 	Success *CopyObjectsResultSuccess `json:"Success,omitempty" xml:"Success,omitempty" type:"Struct"`
 }
 
 func (s CopyObjectsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResult) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsResult) GetFailed() *CopyObjectsResultFailed {
+	return s.Failed
+}
+
+func (s *CopyObjectsResult) GetSuccess() *CopyObjectsResultSuccess {
+	return s.Success
 }
 
 func (s *CopyObjectsResult) SetFailed(v *CopyObjectsResultFailed) *CopyObjectsResult {
@@ -2437,16 +3658,24 @@ func (s *CopyObjectsResult) SetSuccess(v *CopyObjectsResultSuccess) *CopyObjects
 	return s
 }
 
+func (s *CopyObjectsResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type CopyObjectsResultFailed struct {
 	Object []*CopyObjectsResultFailedObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 }
 
 func (s CopyObjectsResultFailed) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResultFailed) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsResultFailed) GetObject() []*CopyObjectsResultFailedObject {
+	return s.Object
 }
 
 func (s *CopyObjectsResultFailed) SetObject(v []*CopyObjectsResultFailedObject) *CopyObjectsResultFailed {
@@ -2454,22 +3683,35 @@ func (s *CopyObjectsResultFailed) SetObject(v []*CopyObjectsResultFailedObject) 
 	return s
 }
 
+func (s *CopyObjectsResultFailed) Validate() error {
+	return dara.Validate(s)
+}
+
 type CopyObjectsResultSuccess struct {
 	Object []*CopyObjectsResultSuccessObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 }
 
 func (s CopyObjectsResultSuccess) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResultSuccess) GoString() string {
 	return s.String()
 }
 
+func (s *CopyObjectsResultSuccess) GetObject() []*CopyObjectsResultSuccessObject {
+	return s.Object
+}
+
 func (s *CopyObjectsResultSuccess) SetObject(v []*CopyObjectsResultSuccessObject) *CopyObjectsResultSuccess {
 	s.Object = v
 	return s
 }
+
+func (s *CopyObjectsResultSuccess) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CopyObjectsResultFailedObject struct {
 	// example:
@@ -2487,11 +3729,23 @@ type CopyObjectsResultFailedObject struct {
 }
 
 func (s CopyObjectsResultFailedObject) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResultFailedObject) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsResultFailedObject) GetErrorStatus() *string {
+	return s.ErrorStatus
+}
+
+func (s *CopyObjectsResultFailedObject) GetSourceKey() *string {
+	return s.SourceKey
+}
+
+func (s *CopyObjectsResultFailedObject) GetTargetKey() *string {
+	return s.TargetKey
 }
 
 func (s *CopyObjectsResultFailedObject) SetErrorStatus(v string) *CopyObjectsResultFailedObject {
@@ -2509,6 +3763,11 @@ func (s *CopyObjectsResultFailedObject) SetTargetKey(v string) *CopyObjectsResul
 	return s
 }
 
+func (s *CopyObjectsResultFailedObject) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectsResultSuccessObject struct {
 	// example:
 	//
@@ -2525,11 +3784,23 @@ type CopyObjectsResultSuccessObject struct {
 }
 
 func (s CopyObjectsResultSuccessObject) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResultSuccessObject) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsResultSuccessObject) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CopyObjectsResultSuccessObject) GetSourceKey() *string {
+	return s.SourceKey
+}
+
+func (s *CopyObjectsResultSuccessObject) GetTargetKey() *string {
+	return s.TargetKey
 }
 
 func (s *CopyObjectsResultSuccessObject) SetETag(v string) *CopyObjectsResultSuccessObject {
@@ -2547,6 +3818,11 @@ func (s *CopyObjectsResultSuccessObject) SetTargetKey(v string) *CopyObjectsResu
 	return s
 }
 
+func (s *CopyObjectsResultSuccessObject) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyPartResult struct {
 	ETag *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -2554,11 +3830,19 @@ type CopyPartResult struct {
 }
 
 func (s CopyPartResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyPartResult) GoString() string {
 	return s.String()
+}
+
+func (s *CopyPartResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CopyPartResult) GetLastModified() *string {
+	return s.LastModified
 }
 
 func (s *CopyPartResult) SetETag(v string) *CopyPartResult {
@@ -2571,6 +3855,11 @@ func (s *CopyPartResult) SetLastModified(v string) *CopyPartResult {
 	return s
 }
 
+func (s *CopyPartResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointConfiguration struct {
 	AccessPointName  *string                      `json:"AccessPointName,omitempty" xml:"AccessPointName,omitempty"`
 	NetworkOrigin    *string                      `json:"NetworkOrigin,omitempty" xml:"NetworkOrigin,omitempty"`
@@ -2578,11 +3867,23 @@ type CreateAccessPointConfiguration struct {
 }
 
 func (s CreateAccessPointConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointConfiguration) GetAccessPointName() *string {
+	return s.AccessPointName
+}
+
+func (s *CreateAccessPointConfiguration) GetNetworkOrigin() *string {
+	return s.NetworkOrigin
+}
+
+func (s *CreateAccessPointConfiguration) GetVpcConfiguration() *AccessPointVpcConfiguration {
+	return s.VpcConfiguration
 }
 
 func (s *CreateAccessPointConfiguration) SetAccessPointName(v string) *CreateAccessPointConfiguration {
@@ -2600,17 +3901,30 @@ func (s *CreateAccessPointConfiguration) SetVpcConfiguration(v *AccessPointVpcCo
 	return s
 }
 
+func (s *CreateAccessPointConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointResult struct {
 	AccessPointArn *string `json:"AccessPointArn,omitempty" xml:"AccessPointArn,omitempty"`
 	Alias          *string `json:"Alias,omitempty" xml:"Alias,omitempty"`
 }
 
 func (s CreateAccessPointResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointResult) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointResult) GetAccessPointArn() *string {
+	return s.AccessPointArn
+}
+
+func (s *CreateAccessPointResult) GetAlias() *string {
+	return s.Alias
 }
 
 func (s *CreateAccessPointResult) SetAccessPointArn(v string) *CreateAccessPointResult {
@@ -2623,17 +3937,30 @@ func (s *CreateAccessPointResult) SetAlias(v string) *CreateAccessPointResult {
 	return s
 }
 
+func (s *CreateAccessPointResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateBucketConfiguration struct {
 	DataRedundancyType *string `json:"DataRedundancyType,omitempty" xml:"DataRedundancyType,omitempty"`
 	StorageClass       *string `json:"StorageClass,omitempty" xml:"StorageClass,omitempty"`
 }
 
 func (s CreateBucketConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateBucketConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CreateBucketConfiguration) GetDataRedundancyType() *string {
+	return s.DataRedundancyType
+}
+
+func (s *CreateBucketConfiguration) GetStorageClass() *string {
+	return s.StorageClass
 }
 
 func (s *CreateBucketConfiguration) SetDataRedundancyType(v string) *CreateBucketConfiguration {
@@ -2645,6 +3972,11 @@ func (s *CreateBucketConfiguration) SetStorageClass(v string) *CreateBucketConfi
 	s.StorageClass = &v
 	return s
 }
+
+func (s *CreateBucketConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateCacheConfiguration struct {
 	// example:
@@ -2659,11 +3991,23 @@ type CreateCacheConfiguration struct {
 }
 
 func (s CreateCacheConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateCacheConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CreateCacheConfiguration) GetAvailableZone() *string {
+	return s.AvailableZone
+}
+
+func (s *CreateCacheConfiguration) GetName() *string {
+	return s.Name
+}
+
+func (s *CreateCacheConfiguration) GetQuotaConfiguration() *CacheQuotaConfiguration {
+	return s.QuotaConfiguration
 }
 
 func (s *CreateCacheConfiguration) SetAvailableZone(v string) *CreateCacheConfiguration {
@@ -2681,6 +4025,11 @@ func (s *CreateCacheConfiguration) SetQuotaConfiguration(v *CacheQuotaConfigurat
 	return s
 }
 
+func (s *CreateCacheConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateDataLakeCachePrefetchJob struct {
 	Excludes []*string `json:"Excludes,omitempty" xml:"Excludes,omitempty" type:"Repeated"`
 	Includes []*string `json:"Includes,omitempty" xml:"Includes,omitempty" type:"Repeated"`
@@ -2691,11 +4040,23 @@ type CreateDataLakeCachePrefetchJob struct {
 }
 
 func (s CreateDataLakeCachePrefetchJob) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateDataLakeCachePrefetchJob) GoString() string {
 	return s.String()
+}
+
+func (s *CreateDataLakeCachePrefetchJob) GetExcludes() []*string {
+	return s.Excludes
+}
+
+func (s *CreateDataLakeCachePrefetchJob) GetIncludes() []*string {
+	return s.Includes
+}
+
+func (s *CreateDataLakeCachePrefetchJob) GetTag() *string {
+	return s.Tag
 }
 
 func (s *CreateDataLakeCachePrefetchJob) SetExcludes(v []*string) *CreateDataLakeCachePrefetchJob {
@@ -2712,6 +4073,11 @@ func (s *CreateDataLakeCachePrefetchJob) SetTag(v string) *CreateDataLakeCachePr
 	s.Tag = &v
 	return s
 }
+
+func (s *CreateDataLakeCachePrefetchJob) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateDataLakeStorageTransferJob struct {
 	// example:
@@ -2734,11 +4100,31 @@ type CreateDataLakeStorageTransferJob struct {
 }
 
 func (s CreateDataLakeStorageTransferJob) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateDataLakeStorageTransferJob) GoString() string {
 	return s.String()
+}
+
+func (s *CreateDataLakeStorageTransferJob) GetExecutorRoleId() *string {
+	return s.ExecutorRoleId
+}
+
+func (s *CreateDataLakeStorageTransferJob) GetIncludes() []*string {
+	return s.Includes
+}
+
+func (s *CreateDataLakeStorageTransferJob) GetLogBaseDir() *string {
+	return s.LogBaseDir
+}
+
+func (s *CreateDataLakeStorageTransferJob) GetNeedVerify() *bool {
+	return s.NeedVerify
+}
+
+func (s *CreateDataLakeStorageTransferJob) GetTag() *string {
+	return s.Tag
 }
 
 func (s *CreateDataLakeStorageTransferJob) SetExecutorRoleId(v string) *CreateDataLakeStorageTransferJob {
@@ -2766,21 +4152,34 @@ func (s *CreateDataLakeStorageTransferJob) SetTag(v string) *CreateDataLakeStora
 	return s
 }
 
+func (s *CreateDataLakeStorageTransferJob) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateFileGroup struct {
 	Part []*CreateFileGroupPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
 }
 
 func (s CreateFileGroup) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateFileGroup) GoString() string {
 	return s.String()
 }
 
+func (s *CreateFileGroup) GetPart() []*CreateFileGroupPart {
+	return s.Part
+}
+
 func (s *CreateFileGroup) SetPart(v []*CreateFileGroupPart) *CreateFileGroup {
 	s.Part = v
 	return s
+}
+
+func (s *CreateFileGroup) Validate() error {
+	return dara.Validate(s)
 }
 
 type CreateFileGroupPart struct {
@@ -2799,11 +4198,23 @@ type CreateFileGroupPart struct {
 }
 
 func (s CreateFileGroupPart) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateFileGroupPart) GoString() string {
 	return s.String()
+}
+
+func (s *CreateFileGroupPart) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CreateFileGroupPart) GetPartName() *string {
+	return s.PartName
+}
+
+func (s *CreateFileGroupPart) GetPartNumber() *int64 {
+	return s.PartNumber
 }
 
 func (s *CreateFileGroupPart) SetETag(v string) *CreateFileGroupPart {
@@ -2820,6 +4231,11 @@ func (s *CreateFileGroupPart) SetPartNumber(v int64) *CreateFileGroupPart {
 	s.PartNumber = &v
 	return s
 }
+
+func (s *CreateFileGroupPart) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateFileGroupResult struct {
 	// example:
@@ -2841,11 +4257,27 @@ type CreateFileGroupResult struct {
 }
 
 func (s CreateFileGroupResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateFileGroupResult) GoString() string {
 	return s.String()
+}
+
+func (s *CreateFileGroupResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *CreateFileGroupResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CreateFileGroupResult) GetKey() *string {
+	return s.Key
+}
+
+func (s *CreateFileGroupResult) GetSize() *int64 {
+	return s.Size
 }
 
 func (s *CreateFileGroupResult) SetBucket(v string) *CreateFileGroupResult {
@@ -2868,6 +4300,11 @@ func (s *CreateFileGroupResult) SetSize(v int64) *CreateFileGroupResult {
 	return s
 }
 
+func (s *CreateFileGroupResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateLargeReservedCapacityResult struct {
 	// example:
 	//
@@ -2885,11 +4322,27 @@ type CreateLargeReservedCapacityResult struct {
 }
 
 func (s CreateLargeReservedCapacityResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateLargeReservedCapacityResult) GoString() string {
 	return s.String()
+}
+
+func (s *CreateLargeReservedCapacityResult) GetID() *string {
+	return s.ID
+}
+
+func (s *CreateLargeReservedCapacityResult) GetName() *string {
+	return s.Name
+}
+
+func (s *CreateLargeReservedCapacityResult) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *CreateLargeReservedCapacityResult) GetRegion() *string {
+	return s.Region
 }
 
 func (s *CreateLargeReservedCapacityResult) SetID(v string) *CreateLargeReservedCapacityResult {
@@ -2912,6 +4365,11 @@ func (s *CreateLargeReservedCapacityResult) SetRegion(v string) *CreateLargeRese
 	return s
 }
 
+func (s *CreateLargeReservedCapacityResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateObjectLinkResult struct {
 	// example:
 	//
@@ -2928,11 +4386,23 @@ type CreateObjectLinkResult struct {
 }
 
 func (s CreateObjectLinkResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateObjectLinkResult) GoString() string {
 	return s.String()
+}
+
+func (s *CreateObjectLinkResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *CreateObjectLinkResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CreateObjectLinkResult) GetKey() *string {
+	return s.Key
 }
 
 func (s *CreateObjectLinkResult) SetBucket(v string) *CreateObjectLinkResult {
@@ -2950,6 +4420,11 @@ func (s *CreateObjectLinkResult) SetKey(v string) *CreateObjectLinkResult {
 	return s
 }
 
+func (s *CreateObjectLinkResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DataAccelerator struct {
 	BasicInfomation *DataAcceleratorBasicInfomation `json:"BasicInfomation,omitempty" xml:"BasicInfomation,omitempty" type:"Struct"`
 	// example:
@@ -2963,11 +4438,23 @@ type DataAccelerator struct {
 }
 
 func (s DataAccelerator) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataAccelerator) GoString() string {
 	return s.String()
+}
+
+func (s *DataAccelerator) GetBasicInfomation() *DataAcceleratorBasicInfomation {
+	return s.BasicInfomation
+}
+
+func (s *DataAccelerator) GetBucketName() *string {
+	return s.BucketName
+}
+
+func (s *DataAccelerator) GetName() *string {
+	return s.Name
 }
 
 func (s *DataAccelerator) SetBasicInfomation(v *DataAcceleratorBasicInfomation) *DataAccelerator {
@@ -2983,6 +4470,10 @@ func (s *DataAccelerator) SetBucketName(v string) *DataAccelerator {
 func (s *DataAccelerator) SetName(v string) *DataAccelerator {
 	s.Name = &v
 	return s
+}
+
+func (s *DataAccelerator) Validate() error {
+	return dara.Validate(s)
 }
 
 type DataAcceleratorBasicInfomation struct {
@@ -3010,11 +4501,35 @@ type DataAcceleratorBasicInfomation struct {
 }
 
 func (s DataAcceleratorBasicInfomation) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataAcceleratorBasicInfomation) GoString() string {
 	return s.String()
+}
+
+func (s *DataAcceleratorBasicInfomation) GetAcceleratePaths() *AcceleratePaths {
+	return s.AcceleratePaths
+}
+
+func (s *DataAcceleratorBasicInfomation) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *DataAcceleratorBasicInfomation) GetFlowCap() *string {
+	return s.FlowCap
+}
+
+func (s *DataAcceleratorBasicInfomation) GetFlowCapFlag() *bool {
+	return s.FlowCapFlag
+}
+
+func (s *DataAcceleratorBasicInfomation) GetQuota() *string {
+	return s.Quota
+}
+
+func (s *DataAcceleratorBasicInfomation) GetVersion() *string {
+	return s.Version
 }
 
 func (s *DataAcceleratorBasicInfomation) SetAcceleratePaths(v *AcceleratePaths) *DataAcceleratorBasicInfomation {
@@ -3047,6 +4562,11 @@ func (s *DataAcceleratorBasicInfomation) SetVersion(v string) *DataAcceleratorBa
 	return s
 }
 
+func (s *DataAcceleratorBasicInfomation) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DataAcceleratorConfiguration struct {
 	AcceleratePaths *AcceleratePaths `json:"AcceleratePaths,omitempty" xml:"AcceleratePaths,omitempty"`
 	// example:
@@ -3056,11 +4576,19 @@ type DataAcceleratorConfiguration struct {
 }
 
 func (s DataAcceleratorConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataAcceleratorConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *DataAcceleratorConfiguration) GetAcceleratePaths() *AcceleratePaths {
+	return s.AcceleratePaths
+}
+
+func (s *DataAcceleratorConfiguration) GetQuota() *string {
+	return s.Quota
 }
 
 func (s *DataAcceleratorConfiguration) SetAcceleratePaths(v *AcceleratePaths) *DataAcceleratorConfiguration {
@@ -3072,6 +4600,11 @@ func (s *DataAcceleratorConfiguration) SetQuota(v string) *DataAcceleratorConfig
 	s.Quota = &v
 	return s
 }
+
+func (s *DataAcceleratorConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DataLakeCachePrefetchJob struct {
 	// example:
@@ -3106,11 +4639,43 @@ type DataLakeCachePrefetchJob struct {
 }
 
 func (s DataLakeCachePrefetchJob) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeCachePrefetchJob) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeCachePrefetchJob) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *DataLakeCachePrefetchJob) GetCreateTime() *int64 {
+	return s.CreateTime
+}
+
+func (s *DataLakeCachePrefetchJob) GetHistoryId() *string {
+	return s.HistoryId
+}
+
+func (s *DataLakeCachePrefetchJob) GetId() *string {
+	return s.Id
+}
+
+func (s *DataLakeCachePrefetchJob) GetLastModifyTime() *int64 {
+	return s.LastModifyTime
+}
+
+func (s *DataLakeCachePrefetchJob) GetRule() *DataLakeCachePrefetchJobRule {
+	return s.Rule
+}
+
+func (s *DataLakeCachePrefetchJob) GetStatus() *string {
+	return s.Status
+}
+
+func (s *DataLakeCachePrefetchJob) GetType() *int32 {
+	return s.Type
 }
 
 func (s *DataLakeCachePrefetchJob) SetBucket(v string) *DataLakeCachePrefetchJob {
@@ -3153,6 +4718,11 @@ func (s *DataLakeCachePrefetchJob) SetType(v int32) *DataLakeCachePrefetchJob {
 	return s
 }
 
+func (s *DataLakeCachePrefetchJob) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DataLakeCachePrefetchJobHistory struct {
 	// example:
 	//
@@ -3185,11 +4755,39 @@ type DataLakeCachePrefetchJobHistory struct {
 }
 
 func (s DataLakeCachePrefetchJobHistory) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeCachePrefetchJobHistory) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetEndTime() *int64 {
+	return s.EndTime
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetId() *string {
+	return s.Id
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetJobId() *string {
+	return s.JobId
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetStartTime() *int64 {
+	return s.StartTime
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetStatus() *string {
+	return s.Status
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetSucceedCount() *int64 {
+	return s.SucceedCount
+}
+
+func (s *DataLakeCachePrefetchJobHistory) GetTotalCount() *int64 {
+	return s.TotalCount
 }
 
 func (s *DataLakeCachePrefetchJobHistory) SetEndTime(v int64) *DataLakeCachePrefetchJobHistory {
@@ -3227,17 +4825,30 @@ func (s *DataLakeCachePrefetchJobHistory) SetTotalCount(v int64) *DataLakeCacheP
 	return s
 }
 
+func (s *DataLakeCachePrefetchJobHistory) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DataLakeCachePrefetchJobRule struct {
 	PrefixFilter *DataLakeCachePrefetchJobRulePrefixFilter `json:"PrefixFilter,omitempty" xml:"PrefixFilter,omitempty" type:"Struct"`
 	Tag          *string                                   `json:"Tag,omitempty" xml:"Tag,omitempty"`
 }
 
 func (s DataLakeCachePrefetchJobRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeCachePrefetchJobRule) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeCachePrefetchJobRule) GetPrefixFilter() *DataLakeCachePrefetchJobRulePrefixFilter {
+	return s.PrefixFilter
+}
+
+func (s *DataLakeCachePrefetchJobRule) GetTag() *string {
+	return s.Tag
 }
 
 func (s *DataLakeCachePrefetchJobRule) SetPrefixFilter(v *DataLakeCachePrefetchJobRulePrefixFilter) *DataLakeCachePrefetchJobRule {
@@ -3250,17 +4861,29 @@ func (s *DataLakeCachePrefetchJobRule) SetTag(v string) *DataLakeCachePrefetchJo
 	return s
 }
 
+func (s *DataLakeCachePrefetchJobRule) Validate() error {
+	return dara.Validate(s)
+}
+
 type DataLakeCachePrefetchJobRulePrefixFilter struct {
 	Excludes *DataLakeCachePrefetchJobRulePrefixFilterExcludes `json:"Excludes,omitempty" xml:"Excludes,omitempty" type:"Struct"`
 	Includes *DataLakeCachePrefetchJobRulePrefixFilterIncludes `json:"Includes,omitempty" xml:"Includes,omitempty" type:"Struct"`
 }
 
 func (s DataLakeCachePrefetchJobRulePrefixFilter) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeCachePrefetchJobRulePrefixFilter) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeCachePrefetchJobRulePrefixFilter) GetExcludes() *DataLakeCachePrefetchJobRulePrefixFilterExcludes {
+	return s.Excludes
+}
+
+func (s *DataLakeCachePrefetchJobRulePrefixFilter) GetIncludes() *DataLakeCachePrefetchJobRulePrefixFilterIncludes {
+	return s.Includes
 }
 
 func (s *DataLakeCachePrefetchJobRulePrefixFilter) SetExcludes(v *DataLakeCachePrefetchJobRulePrefixFilterExcludes) *DataLakeCachePrefetchJobRulePrefixFilter {
@@ -3273,16 +4896,24 @@ func (s *DataLakeCachePrefetchJobRulePrefixFilter) SetIncludes(v *DataLakeCacheP
 	return s
 }
 
+func (s *DataLakeCachePrefetchJobRulePrefixFilter) Validate() error {
+	return dara.Validate(s)
+}
+
 type DataLakeCachePrefetchJobRulePrefixFilterExcludes struct {
 	Exclude []*string `json:"Exclude,omitempty" xml:"Exclude,omitempty" type:"Repeated"`
 }
 
 func (s DataLakeCachePrefetchJobRulePrefixFilterExcludes) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeCachePrefetchJobRulePrefixFilterExcludes) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeCachePrefetchJobRulePrefixFilterExcludes) GetExclude() []*string {
+	return s.Exclude
 }
 
 func (s *DataLakeCachePrefetchJobRulePrefixFilterExcludes) SetExclude(v []*string) *DataLakeCachePrefetchJobRulePrefixFilterExcludes {
@@ -3290,22 +4921,35 @@ func (s *DataLakeCachePrefetchJobRulePrefixFilterExcludes) SetExclude(v []*strin
 	return s
 }
 
+func (s *DataLakeCachePrefetchJobRulePrefixFilterExcludes) Validate() error {
+	return dara.Validate(s)
+}
+
 type DataLakeCachePrefetchJobRulePrefixFilterIncludes struct {
 	Include []*string `json:"Include,omitempty" xml:"Include,omitempty" type:"Repeated"`
 }
 
 func (s DataLakeCachePrefetchJobRulePrefixFilterIncludes) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeCachePrefetchJobRulePrefixFilterIncludes) GoString() string {
 	return s.String()
 }
 
+func (s *DataLakeCachePrefetchJobRulePrefixFilterIncludes) GetInclude() []*string {
+	return s.Include
+}
+
 func (s *DataLakeCachePrefetchJobRulePrefixFilterIncludes) SetInclude(v []*string) *DataLakeCachePrefetchJobRulePrefixFilterIncludes {
 	s.Include = v
 	return s
 }
+
+func (s *DataLakeCachePrefetchJobRulePrefixFilterIncludes) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DataLakeStorageTransferJob struct {
 	// example:
@@ -3341,11 +4985,47 @@ type DataLakeStorageTransferJob struct {
 }
 
 func (s DataLakeStorageTransferJob) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJob) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeStorageTransferJob) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *DataLakeStorageTransferJob) GetCreateTime() *int64 {
+	return s.CreateTime
+}
+
+func (s *DataLakeStorageTransferJob) GetHistoryId() *string {
+	return s.HistoryId
+}
+
+func (s *DataLakeStorageTransferJob) GetId() *string {
+	return s.Id
+}
+
+func (s *DataLakeStorageTransferJob) GetLastModifyTime() *int64 {
+	return s.LastModifyTime
+}
+
+func (s *DataLakeStorageTransferJob) GetProgressInfo() *DataLakeStorageTransferJobProgressInfo {
+	return s.ProgressInfo
+}
+
+func (s *DataLakeStorageTransferJob) GetRule() *DataLakeStorageTransferJobRule {
+	return s.Rule
+}
+
+func (s *DataLakeStorageTransferJob) GetStatus() *string {
+	return s.Status
+}
+
+func (s *DataLakeStorageTransferJob) GetType() *int32 {
+	return s.Type
 }
 
 func (s *DataLakeStorageTransferJob) SetBucket(v string) *DataLakeStorageTransferJob {
@@ -3393,6 +5073,10 @@ func (s *DataLakeStorageTransferJob) SetType(v int32) *DataLakeStorageTransferJo
 	return s
 }
 
+func (s *DataLakeStorageTransferJob) Validate() error {
+	return dara.Validate(s)
+}
+
 type DataLakeStorageTransferJobProgressInfo struct {
 	// example:
 	//
@@ -3401,17 +5085,26 @@ type DataLakeStorageTransferJobProgressInfo struct {
 }
 
 func (s DataLakeStorageTransferJobProgressInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobProgressInfo) GoString() string {
 	return s.String()
 }
 
+func (s *DataLakeStorageTransferJobProgressInfo) GetPercent() *int64 {
+	return s.Percent
+}
+
 func (s *DataLakeStorageTransferJobProgressInfo) SetPercent(v int64) *DataLakeStorageTransferJobProgressInfo {
 	s.Percent = &v
 	return s
 }
+
+func (s *DataLakeStorageTransferJobProgressInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DataLakeStorageTransferJobHistory struct {
 	DetailInfo *DataLakeStorageTransferJobHistoryDetailInfo `json:"DetailInfo,omitempty" xml:"DetailInfo,omitempty" type:"Struct"`
@@ -3446,11 +5139,43 @@ type DataLakeStorageTransferJobHistory struct {
 }
 
 func (s DataLakeStorageTransferJobHistory) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobHistory) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetDetailInfo() *DataLakeStorageTransferJobHistoryDetailInfo {
+	return s.DetailInfo
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetEndTime() *int64 {
+	return s.EndTime
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetId() *string {
+	return s.Id
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetJobId() *string {
+	return s.JobId
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetStartTime() *int64 {
+	return s.StartTime
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetStatus() *string {
+	return s.Status
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetSucceedCount() *int64 {
+	return s.SucceedCount
+}
+
+func (s *DataLakeStorageTransferJobHistory) GetTotalCount() *int64 {
+	return s.TotalCount
 }
 
 func (s *DataLakeStorageTransferJobHistory) SetDetailInfo(v *DataLakeStorageTransferJobHistoryDetailInfo) *DataLakeStorageTransferJobHistory {
@@ -3491,6 +5216,10 @@ func (s *DataLakeStorageTransferJobHistory) SetSucceedCount(v int64) *DataLakeSt
 func (s *DataLakeStorageTransferJobHistory) SetTotalCount(v int64) *DataLakeStorageTransferJobHistory {
 	s.TotalCount = &v
 	return s
+}
+
+func (s *DataLakeStorageTransferJobHistory) Validate() error {
+	return dara.Validate(s)
 }
 
 type DataLakeStorageTransferJobHistoryDetailInfo struct {
@@ -3537,11 +5266,51 @@ type DataLakeStorageTransferJobHistoryDetailInfo struct {
 }
 
 func (s DataLakeStorageTransferJobHistoryDetailInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobHistoryDetailInfo) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetErrorMsg() *string {
+	return s.ErrorMsg
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetHDFSFailedCount() *int64 {
+	return s.HDFSFailedCount
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetHDFSTransferDataDir() *string {
+	return s.HDFSTransferDataDir
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetHDFSTransferErrInfoDir() *string {
+	return s.HDFSTransferErrInfoDir
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetHDFSTransferImportMetaDir() *string {
+	return s.HDFSTransferImportMetaDir
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetHDFSTransferJobId() *string {
+	return s.HDFSTransferJobId
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetLogBaseDir() *string {
+	return s.LogBaseDir
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetVerifyErrInfoDir() *string {
+	return s.VerifyErrInfoDir
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetVerifyStatus() *string {
+	return s.VerifyStatus
+}
+
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) GetVerifyTotalCount() *int64 {
+	return s.VerifyTotalCount
 }
 
 func (s *DataLakeStorageTransferJobHistoryDetailInfo) SetErrorMsg(v string) *DataLakeStorageTransferJobHistoryDetailInfo {
@@ -3594,6 +5363,11 @@ func (s *DataLakeStorageTransferJobHistoryDetailInfo) SetVerifyTotalCount(v int6
 	return s
 }
 
+func (s *DataLakeStorageTransferJobHistoryDetailInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DataLakeStorageTransferJobHistoryId struct {
 	// example:
 	//
@@ -3602,17 +5376,26 @@ type DataLakeStorageTransferJobHistoryId struct {
 }
 
 func (s DataLakeStorageTransferJobHistoryId) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobHistoryId) GoString() string {
 	return s.String()
 }
 
+func (s *DataLakeStorageTransferJobHistoryId) GetHistoryId() *string {
+	return s.HistoryId
+}
+
 func (s *DataLakeStorageTransferJobHistoryId) SetHistoryId(v string) *DataLakeStorageTransferJobHistoryId {
 	s.HistoryId = &v
 	return s
 }
+
+func (s *DataLakeStorageTransferJobHistoryId) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DataLakeStorageTransferJobId struct {
 	// example:
@@ -3622,17 +5405,26 @@ type DataLakeStorageTransferJobId struct {
 }
 
 func (s DataLakeStorageTransferJobId) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobId) GoString() string {
 	return s.String()
 }
 
+func (s *DataLakeStorageTransferJobId) GetId() *string {
+	return s.Id
+}
+
 func (s *DataLakeStorageTransferJobId) SetId(v string) *DataLakeStorageTransferJobId {
 	s.Id = &v
 	return s
 }
+
+func (s *DataLakeStorageTransferJobId) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DataLakeStorageTransferJobRule struct {
 	// example:
@@ -3655,11 +5447,31 @@ type DataLakeStorageTransferJobRule struct {
 }
 
 func (s DataLakeStorageTransferJobRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobRule) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeStorageTransferJobRule) GetExecutorRoleId() *string {
+	return s.ExecutorRoleId
+}
+
+func (s *DataLakeStorageTransferJobRule) GetLogBaseDir() *string {
+	return s.LogBaseDir
+}
+
+func (s *DataLakeStorageTransferJobRule) GetNeedVerify() *bool {
+	return s.NeedVerify
+}
+
+func (s *DataLakeStorageTransferJobRule) GetPrefixFilter() *DataLakeStorageTransferJobRulePrefixFilter {
+	return s.PrefixFilter
+}
+
+func (s *DataLakeStorageTransferJobRule) GetTag() *string {
+	return s.Tag
 }
 
 func (s *DataLakeStorageTransferJobRule) SetExecutorRoleId(v string) *DataLakeStorageTransferJobRule {
@@ -3687,16 +5499,24 @@ func (s *DataLakeStorageTransferJobRule) SetTag(v string) *DataLakeStorageTransf
 	return s
 }
 
+func (s *DataLakeStorageTransferJobRule) Validate() error {
+	return dara.Validate(s)
+}
+
 type DataLakeStorageTransferJobRulePrefixFilter struct {
 	Includes *DataLakeStorageTransferJobRulePrefixFilterIncludes `json:"Includes,omitempty" xml:"Includes,omitempty" type:"Struct"`
 }
 
 func (s DataLakeStorageTransferJobRulePrefixFilter) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobRulePrefixFilter) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeStorageTransferJobRulePrefixFilter) GetIncludes() *DataLakeStorageTransferJobRulePrefixFilterIncludes {
+	return s.Includes
 }
 
 func (s *DataLakeStorageTransferJobRulePrefixFilter) SetIncludes(v *DataLakeStorageTransferJobRulePrefixFilterIncludes) *DataLakeStorageTransferJobRulePrefixFilter {
@@ -3704,22 +5524,35 @@ func (s *DataLakeStorageTransferJobRulePrefixFilter) SetIncludes(v *DataLakeStor
 	return s
 }
 
+func (s *DataLakeStorageTransferJobRulePrefixFilter) Validate() error {
+	return dara.Validate(s)
+}
+
 type DataLakeStorageTransferJobRulePrefixFilterIncludes struct {
 	Include []*string `json:"Include,omitempty" xml:"Include,omitempty" type:"Repeated"`
 }
 
 func (s DataLakeStorageTransferJobRulePrefixFilterIncludes) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobRulePrefixFilterIncludes) GoString() string {
 	return s.String()
 }
 
+func (s *DataLakeStorageTransferJobRulePrefixFilterIncludes) GetInclude() []*string {
+	return s.Include
+}
+
 func (s *DataLakeStorageTransferJobRulePrefixFilterIncludes) SetInclude(v []*string) *DataLakeStorageTransferJobRulePrefixFilterIncludes {
 	s.Include = v
 	return s
 }
+
+func (s *DataLakeStorageTransferJobRulePrefixFilterIncludes) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DataLakeStorageTransferJobs struct {
 	DataLakeStorageTransferJob []*DataLakeStorageTransferJob `json:"DataLakeStorageTransferJob,omitempty" xml:"DataLakeStorageTransferJob,omitempty" type:"Repeated"`
@@ -3738,11 +5571,27 @@ type DataLakeStorageTransferJobs struct {
 }
 
 func (s DataLakeStorageTransferJobs) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DataLakeStorageTransferJobs) GoString() string {
 	return s.String()
+}
+
+func (s *DataLakeStorageTransferJobs) GetDataLakeStorageTransferJob() []*DataLakeStorageTransferJob {
+	return s.DataLakeStorageTransferJob
+}
+
+func (s *DataLakeStorageTransferJobs) GetNextMarkerBucket() *string {
+	return s.NextMarkerBucket
+}
+
+func (s *DataLakeStorageTransferJobs) GetNextMarkerJobId() *string {
+	return s.NextMarkerJobId
+}
+
+func (s *DataLakeStorageTransferJobs) GetTruncated() *string {
+	return s.Truncated
 }
 
 func (s *DataLakeStorageTransferJobs) SetDataLakeStorageTransferJob(v []*DataLakeStorageTransferJob) *DataLakeStorageTransferJobs {
@@ -3765,17 +5614,30 @@ func (s *DataLakeStorageTransferJobs) SetTruncated(v string) *DataLakeStorageTra
 	return s
 }
 
+func (s *DataLakeStorageTransferJobs) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Delete struct {
 	Objects []*ObjectIdentifier `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 	Quiet   *bool               `json:"Quiet,omitempty" xml:"Quiet,omitempty"`
 }
 
 func (s Delete) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Delete) GoString() string {
 	return s.String()
+}
+
+func (s *Delete) GetObjects() []*ObjectIdentifier {
+	return s.Objects
+}
+
+func (s *Delete) GetQuiet() *bool {
+	return s.Quiet
 }
 
 func (s *Delete) SetObjects(v []*ObjectIdentifier) *Delete {
@@ -3788,6 +5650,11 @@ func (s *Delete) SetQuiet(v bool) *Delete {
 	return s
 }
 
+func (s *Delete) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteMarkerEntry struct {
 	IsLatest *bool   `json:"IsLatest,omitempty" xml:"IsLatest,omitempty"`
 	Key      *string `json:"Key,omitempty" xml:"Key,omitempty"`
@@ -3798,11 +5665,31 @@ type DeleteMarkerEntry struct {
 }
 
 func (s DeleteMarkerEntry) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteMarkerEntry) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteMarkerEntry) GetIsLatest() *bool {
+	return s.IsLatest
+}
+
+func (s *DeleteMarkerEntry) GetKey() *string {
+	return s.Key
+}
+
+func (s *DeleteMarkerEntry) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *DeleteMarkerEntry) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *DeleteMarkerEntry) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *DeleteMarkerEntry) SetIsLatest(v bool) *DeleteMarkerEntry {
@@ -3830,6 +5717,11 @@ func (s *DeleteMarkerEntry) SetVersionId(v string) *DeleteMarkerEntry {
 	return s
 }
 
+func (s *DeleteMarkerEntry) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeletedObject struct {
 	DeleteMarker          *bool   `json:"DeleteMarker,omitempty" xml:"DeleteMarker,omitempty"`
 	DeleteMarkerVersionId *string `json:"DeleteMarkerVersionId,omitempty" xml:"DeleteMarkerVersionId,omitempty"`
@@ -3838,11 +5730,27 @@ type DeletedObject struct {
 }
 
 func (s DeletedObject) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeletedObject) GoString() string {
 	return s.String()
+}
+
+func (s *DeletedObject) GetDeleteMarker() *bool {
+	return s.DeleteMarker
+}
+
+func (s *DeletedObject) GetDeleteMarkerVersionId() *string {
+	return s.DeleteMarkerVersionId
+}
+
+func (s *DeletedObject) GetKey() *string {
+	return s.Key
+}
+
+func (s *DeletedObject) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *DeletedObject) SetDeleteMarker(v bool) *DeletedObject {
@@ -3865,6 +5773,11 @@ func (s *DeletedObject) SetVersionId(v string) *DeletedObject {
 	return s
 }
 
+func (s *DeletedObject) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Error struct {
 	Code      *string `json:"Code,omitempty" xml:"Code,omitempty"`
 	HostId    *string `json:"HostId,omitempty" xml:"HostId,omitempty"`
@@ -3873,11 +5786,27 @@ type Error struct {
 }
 
 func (s Error) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Error) GoString() string {
 	return s.String()
+}
+
+func (s *Error) GetCode() *string {
+	return s.Code
+}
+
+func (s *Error) GetHostId() *string {
+	return s.HostId
+}
+
+func (s *Error) GetMessage() *string {
+	return s.Message
+}
+
+func (s *Error) GetRequestId() *string {
+	return s.RequestId
 }
 
 func (s *Error) SetCode(v string) *Error {
@@ -3900,6 +5829,11 @@ func (s *Error) SetRequestId(v string) *Error {
 	return s
 }
 
+func (s *Error) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ErrorDocument struct {
 	// example:
 	//
@@ -3912,11 +5846,19 @@ type ErrorDocument struct {
 }
 
 func (s ErrorDocument) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ErrorDocument) GoString() string {
 	return s.String()
+}
+
+func (s *ErrorDocument) GetHttpStatus() *int64 {
+	return s.HttpStatus
+}
+
+func (s *ErrorDocument) GetKey() *string {
+	return s.Key
 }
 
 func (s *ErrorDocument) SetHttpStatus(v int64) *ErrorDocument {
@@ -3929,16 +5871,25 @@ func (s *ErrorDocument) SetKey(v string) *ErrorDocument {
 	return s
 }
 
+func (s *ErrorDocument) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type EventNotificationConfiguration struct {
 	FunctionComputeConfiguration []*FunctionComputeConfiguration `json:"FunctionComputeConfiguration,omitempty" xml:"FunctionComputeConfiguration,omitempty" type:"Repeated"`
 }
 
 func (s EventNotificationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s EventNotificationConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *EventNotificationConfiguration) GetFunctionComputeConfiguration() []*FunctionComputeConfiguration {
+	return s.FunctionComputeConfiguration
 }
 
 func (s *EventNotificationConfiguration) SetFunctionComputeConfiguration(v []*FunctionComputeConfiguration) *EventNotificationConfiguration {
@@ -3946,22 +5897,36 @@ func (s *EventNotificationConfiguration) SetFunctionComputeConfiguration(v []*Fu
 	return s
 }
 
+func (s *EventNotificationConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ExtendWormConfiguration struct {
 	RetentionPeriodInDays *int32 `json:"RetentionPeriodInDays,omitempty" xml:"RetentionPeriodInDays,omitempty"`
 }
 
 func (s ExtendWormConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ExtendWormConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *ExtendWormConfiguration) GetRetentionPeriodInDays() *int32 {
+	return s.RetentionPeriodInDays
+}
+
 func (s *ExtendWormConfiguration) SetRetentionPeriodInDays(v int32) *ExtendWormConfiguration {
 	s.RetentionPeriodInDays = &v
 	return s
 }
+
+func (s *ExtendWormConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type FileGroupInfo struct {
 	// example:
@@ -3985,11 +5950,31 @@ type FileGroupInfo struct {
 }
 
 func (s FileGroupInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FileGroupInfo) GoString() string {
 	return s.String()
+}
+
+func (s *FileGroupInfo) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *FileGroupInfo) GetETag() *string {
+	return s.ETag
+}
+
+func (s *FileGroupInfo) GetFileLength() *int64 {
+	return s.FileLength
+}
+
+func (s *FileGroupInfo) GetFilePart() *FileGroupInfoFilePart {
+	return s.FilePart
+}
+
+func (s *FileGroupInfo) GetKey() *string {
+	return s.Key
 }
 
 func (s *FileGroupInfo) SetBucket(v string) *FileGroupInfo {
@@ -4017,21 +6002,33 @@ func (s *FileGroupInfo) SetKey(v string) *FileGroupInfo {
 	return s
 }
 
+func (s *FileGroupInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 type FileGroupInfoFilePart struct {
 	Part []*FileGroupInfoFilePartPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
 }
 
 func (s FileGroupInfoFilePart) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FileGroupInfoFilePart) GoString() string {
 	return s.String()
 }
 
+func (s *FileGroupInfoFilePart) GetPart() []*FileGroupInfoFilePartPart {
+	return s.Part
+}
+
 func (s *FileGroupInfoFilePart) SetPart(v []*FileGroupInfoFilePartPart) *FileGroupInfoFilePart {
 	s.Part = v
 	return s
+}
+
+func (s *FileGroupInfoFilePart) Validate() error {
+	return dara.Validate(s)
 }
 
 type FileGroupInfoFilePartPart struct {
@@ -4054,11 +6051,27 @@ type FileGroupInfoFilePartPart struct {
 }
 
 func (s FileGroupInfoFilePartPart) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FileGroupInfoFilePartPart) GoString() string {
 	return s.String()
+}
+
+func (s *FileGroupInfoFilePartPart) GetETag() *string {
+	return s.ETag
+}
+
+func (s *FileGroupInfoFilePartPart) GetPartName() *string {
+	return s.PartName
+}
+
+func (s *FileGroupInfoFilePartPart) GetPartNumber() *int64 {
+	return s.PartNumber
+}
+
+func (s *FileGroupInfoFilePartPart) GetPartSize() *int64 {
+	return s.PartSize
 }
 
 func (s *FileGroupInfoFilePartPart) SetETag(v string) *FileGroupInfoFilePartPart {
@@ -4081,6 +6094,11 @@ func (s *FileGroupInfoFilePartPart) SetPartSize(v int64) *FileGroupInfoFilePartP
 	return s
 }
 
+func (s *FileGroupInfoFilePartPart) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type FunctionComputeConfiguration struct {
 	Event    []*string                             `json:"Event,omitempty" xml:"Event,omitempty" type:"Repeated"`
 	Filter   *FunctionComputeConfigurationFilter   `json:"Filter,omitempty" xml:"Filter,omitempty" type:"Struct"`
@@ -4092,11 +6110,27 @@ type FunctionComputeConfiguration struct {
 }
 
 func (s FunctionComputeConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FunctionComputeConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *FunctionComputeConfiguration) GetEvent() []*string {
+	return s.Event
+}
+
+func (s *FunctionComputeConfiguration) GetFilter() *FunctionComputeConfigurationFilter {
+	return s.Filter
+}
+
+func (s *FunctionComputeConfiguration) GetFunction() *FunctionComputeConfigurationFunction {
+	return s.Function
+}
+
+func (s *FunctionComputeConfiguration) GetID() *string {
+	return s.ID
 }
 
 func (s *FunctionComputeConfiguration) SetEvent(v []*string) *FunctionComputeConfiguration {
@@ -4119,21 +6153,33 @@ func (s *FunctionComputeConfiguration) SetID(v string) *FunctionComputeConfigura
 	return s
 }
 
+func (s *FunctionComputeConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type FunctionComputeConfigurationFilter struct {
 	Key *FunctionComputeConfigurationFilterKey `json:"Key,omitempty" xml:"Key,omitempty" type:"Struct"`
 }
 
 func (s FunctionComputeConfigurationFilter) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FunctionComputeConfigurationFilter) GoString() string {
 	return s.String()
 }
 
+func (s *FunctionComputeConfigurationFilter) GetKey() *FunctionComputeConfigurationFilterKey {
+	return s.Key
+}
+
 func (s *FunctionComputeConfigurationFilter) SetKey(v *FunctionComputeConfigurationFilterKey) *FunctionComputeConfigurationFilter {
 	s.Key = v
 	return s
+}
+
+func (s *FunctionComputeConfigurationFilter) Validate() error {
+	return dara.Validate(s)
 }
 
 type FunctionComputeConfigurationFilterKey struct {
@@ -4142,11 +6188,19 @@ type FunctionComputeConfigurationFilterKey struct {
 }
 
 func (s FunctionComputeConfigurationFilterKey) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FunctionComputeConfigurationFilterKey) GoString() string {
 	return s.String()
+}
+
+func (s *FunctionComputeConfigurationFilterKey) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *FunctionComputeConfigurationFilterKey) GetSuffix() *string {
+	return s.Suffix
 }
 
 func (s *FunctionComputeConfigurationFilterKey) SetPrefix(v string) *FunctionComputeConfigurationFilterKey {
@@ -4159,17 +6213,29 @@ func (s *FunctionComputeConfigurationFilterKey) SetSuffix(v string) *FunctionCom
 	return s
 }
 
+func (s *FunctionComputeConfigurationFilterKey) Validate() error {
+	return dara.Validate(s)
+}
+
 type FunctionComputeConfigurationFunction struct {
 	Arn        *string `json:"Arn,omitempty" xml:"Arn,omitempty"`
 	AssumeRole *string `json:"AssumeRole,omitempty" xml:"AssumeRole,omitempty"`
 }
 
 func (s FunctionComputeConfigurationFunction) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FunctionComputeConfigurationFunction) GoString() string {
 	return s.String()
+}
+
+func (s *FunctionComputeConfigurationFunction) GetArn() *string {
+	return s.Arn
+}
+
+func (s *FunctionComputeConfigurationFunction) GetAssumeRole() *string {
+	return s.AssumeRole
 }
 
 func (s *FunctionComputeConfigurationFunction) SetArn(v string) *FunctionComputeConfigurationFunction {
@@ -4181,6 +6247,11 @@ func (s *FunctionComputeConfigurationFunction) SetAssumeRole(v string) *Function
 	s.AssumeRole = &v
 	return s
 }
+
+func (s *FunctionComputeConfigurationFunction) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetAccessPointResult struct {
 	AccessPointArn  *string `json:"AccessPointArn,omitempty" xml:"AccessPointArn,omitempty"`
@@ -4206,11 +6277,55 @@ type GetAccessPointResult struct {
 }
 
 func (s GetAccessPointResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointResult) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointResult) GetAccessPointArn() *string {
+	return s.AccessPointArn
+}
+
+func (s *GetAccessPointResult) GetAccessPointName() *string {
+	return s.AccessPointName
+}
+
+func (s *GetAccessPointResult) GetAccountId() *string {
+	return s.AccountId
+}
+
+func (s *GetAccessPointResult) GetAlias() *string {
+	return s.Alias
+}
+
+func (s *GetAccessPointResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *GetAccessPointResult) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *GetAccessPointResult) GetEndpoints() *GetAccessPointResultEndpoints {
+	return s.Endpoints
+}
+
+func (s *GetAccessPointResult) GetNetworkOrigin() *string {
+	return s.NetworkOrigin
+}
+
+func (s *GetAccessPointResult) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
+}
+
+func (s *GetAccessPointResult) GetStatus() *string {
+	return s.Status
+}
+
+func (s *GetAccessPointResult) GetVpcConfiguration() *AccessPointVpcConfiguration {
+	return s.VpcConfiguration
 }
 
 func (s *GetAccessPointResult) SetAccessPointArn(v string) *GetAccessPointResult {
@@ -4268,17 +6383,29 @@ func (s *GetAccessPointResult) SetVpcConfiguration(v *AccessPointVpcConfiguratio
 	return s
 }
 
+func (s *GetAccessPointResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type GetAccessPointResultEndpoints struct {
 	InternalEndpoint *string `json:"InternalEndpoint,omitempty" xml:"InternalEndpoint,omitempty"`
 	PublicEndpoint   *string `json:"PublicEndpoint,omitempty" xml:"PublicEndpoint,omitempty"`
 }
 
 func (s GetAccessPointResultEndpoints) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointResultEndpoints) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointResultEndpoints) GetInternalEndpoint() *string {
+	return s.InternalEndpoint
+}
+
+func (s *GetAccessPointResultEndpoints) GetPublicEndpoint() *string {
+	return s.PublicEndpoint
 }
 
 func (s *GetAccessPointResultEndpoints) SetInternalEndpoint(v string) *GetAccessPointResultEndpoints {
@@ -4290,6 +6417,11 @@ func (s *GetAccessPointResultEndpoints) SetPublicEndpoint(v string) *GetAccessPo
 	s.PublicEndpoint = &v
 	return s
 }
+
+func (s *GetAccessPointResultEndpoints) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketProcessConfiguration struct {
 	BucketChannelConfig *BucketChannelConfig `json:"BucketChannelConfig,omitempty" xml:"BucketChannelConfig,omitempty"`
@@ -4320,11 +6452,39 @@ type GetBucketProcessConfiguration struct {
 }
 
 func (s GetBucketProcessConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketProcessConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketProcessConfiguration) GetBucketChannelConfig() *BucketChannelConfig {
+	return s.BucketChannelConfig
+}
+
+func (s *GetBucketProcessConfiguration) GetCompliedHost() *string {
+	return s.CompliedHost
+}
+
+func (s *GetBucketProcessConfiguration) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *GetBucketProcessConfiguration) GetSourceFileProtect() *string {
+	return s.SourceFileProtect
+}
+
+func (s *GetBucketProcessConfiguration) GetSourceFileProtectSuffix() *string {
+	return s.SourceFileProtectSuffix
+}
+
+func (s *GetBucketProcessConfiguration) GetStyleDelimiters() *string {
+	return s.StyleDelimiters
+}
+
+func (s *GetBucketProcessConfiguration) GetVersion() *int32 {
+	return s.Version
 }
 
 func (s *GetBucketProcessConfiguration) SetBucketChannelConfig(v *BucketChannelConfig) *GetBucketProcessConfiguration {
@@ -4361,6 +6521,11 @@ func (s *GetBucketProcessConfiguration) SetVersion(v int32) *GetBucketProcessCon
 	s.Version = &v
 	return s
 }
+
+func (s *GetBucketProcessConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetChannelResult struct {
 	// example:
@@ -4410,11 +6575,55 @@ type GetChannelResult struct {
 }
 
 func (s GetChannelResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetChannelResult) GoString() string {
 	return s.String()
+}
+
+func (s *GetChannelResult) GetAutoSetContentType() *bool {
+	return s.AutoSetContentType
+}
+
+func (s *GetChannelResult) GetCreateTime() *string {
+	return s.CreateTime
+}
+
+func (s *GetChannelResult) GetDefault404Pic() *string {
+	return s.Default404Pic
+}
+
+func (s *GetChannelResult) GetLastModifyTime() *string {
+	return s.LastModifyTime
+}
+
+func (s *GetChannelResult) GetName() *string {
+	return s.Name
+}
+
+func (s *GetChannelResult) GetOrigPicForbidden() *bool {
+	return s.OrigPicForbidden
+}
+
+func (s *GetChannelResult) GetSetAttachName() *bool {
+	return s.SetAttachName
+}
+
+func (s *GetChannelResult) GetStatus() *string {
+	return s.Status
+}
+
+func (s *GetChannelResult) GetStyleDelimiters() *string {
+	return s.StyleDelimiters
+}
+
+func (s *GetChannelResult) GetUseSrcFormat() *bool {
+	return s.UseSrcFormat
+}
+
+func (s *GetChannelResult) GetUseStyleOnly() *bool {
+	return s.UseStyleOnly
 }
 
 func (s *GetChannelResult) SetAutoSetContentType(v bool) *GetChannelResult {
@@ -4472,6 +6681,11 @@ func (s *GetChannelResult) SetUseStyleOnly(v bool) *GetChannelResult {
 	return s
 }
 
+func (s *GetChannelResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectInfoResult struct {
 	// example:
 	//
@@ -4522,11 +6736,55 @@ type GetObjectInfoResult struct {
 }
 
 func (s GetObjectInfoResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectInfoResult) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectInfoResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *GetObjectInfoResult) GetContentType() *string {
+	return s.ContentType
+}
+
+func (s *GetObjectInfoResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *GetObjectInfoResult) GetEncryptFlag() *int64 {
+	return s.EncryptFlag
+}
+
+func (s *GetObjectInfoResult) GetHashCrc64ecma() *string {
+	return s.HashCrc64ecma
+}
+
+func (s *GetObjectInfoResult) GetKey() *string {
+	return s.Key
+}
+
+func (s *GetObjectInfoResult) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *GetObjectInfoResult) GetSize() *string {
+	return s.Size
+}
+
+func (s *GetObjectInfoResult) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *GetObjectInfoResult) GetType() *string {
+	return s.Type
+}
+
+func (s *GetObjectInfoResult) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *GetObjectInfoResult) SetBucket(v string) *GetObjectInfoResult {
@@ -4584,21 +6842,34 @@ func (s *GetObjectInfoResult) SetUploadId(v string) *GetObjectInfoResult {
 	return s
 }
 
+func (s *GetObjectInfoResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectsReq struct {
 	Object []*GetObjectsReqObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 }
 
 func (s GetObjectsReq) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectsReq) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectsReq) GetObject() []*GetObjectsReqObject {
+	return s.Object
+}
+
 func (s *GetObjectsReq) SetObject(v []*GetObjectsReqObject) *GetObjectsReq {
 	s.Object = v
 	return s
+}
+
+func (s *GetObjectsReq) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetObjectsReqObject struct {
@@ -4617,11 +6888,23 @@ type GetObjectsReqObject struct {
 }
 
 func (s GetObjectsReqObject) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectsReqObject) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectsReqObject) GetObjectName() *string {
+	return s.ObjectName
+}
+
+func (s *GetObjectsReqObject) GetRange() *string {
+	return s.Range
+}
+
+func (s *GetObjectsReqObject) GetRefId() *int32 {
+	return s.RefId
 }
 
 func (s *GetObjectsReqObject) SetObjectName(v string) *GetObjectsReqObject {
@@ -4638,6 +6921,11 @@ func (s *GetObjectsReqObject) SetRefId(v int32) *GetObjectsReqObject {
 	s.RefId = &v
 	return s
 }
+
+func (s *GetObjectsReqObject) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetResourcePoolInfoResp struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -4662,11 +6950,31 @@ type GetResourcePoolInfoResp struct {
 }
 
 func (s GetResourcePoolInfoResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolInfoResp) GoString() string {
 	return s.String()
+}
+
+func (s *GetResourcePoolInfoResp) GetCreateTime() *string {
+	return s.CreateTime
+}
+
+func (s *GetResourcePoolInfoResp) GetName() *string {
+	return s.Name
+}
+
+func (s *GetResourcePoolInfoResp) GetOwner() *string {
+	return s.Owner
+}
+
+func (s *GetResourcePoolInfoResp) GetQosConfiguration() *QoSConfiguration {
+	return s.QosConfiguration
+}
+
+func (s *GetResourcePoolInfoResp) GetRegion() *string {
+	return s.Region
 }
 
 func (s *GetResourcePoolInfoResp) SetCreateTime(v string) *GetResourcePoolInfoResp {
@@ -4694,21 +7002,63 @@ func (s *GetResourcePoolInfoResp) SetRegion(v string) *GetResourcePoolInfoResp {
 	return s
 }
 
+func (s *GetResourcePoolInfoResp) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type GroupBucketInfo struct {
+	// example:
+	//
+	// test-bucket
+	BucketName *string `json:"BucketName,omitempty" xml:"BucketName,omitempty"`
+}
+
+func (s GroupBucketInfo) String() string {
+	return dara.Prettify(s)
+}
+
+func (s GroupBucketInfo) GoString() string {
+	return s.String()
+}
+
+func (s *GroupBucketInfo) GetBucketName() *string {
+	return s.BucketName
+}
+
+func (s *GroupBucketInfo) SetBucketName(v string) *GroupBucketInfo {
+	s.BucketName = &v
+	return s
+}
+
+func (s *GroupBucketInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type HttpsConfiguration struct {
 	TLS *HttpsConfigurationTLS `json:"TLS,omitempty" xml:"TLS,omitempty" type:"Struct"`
 }
 
 func (s HttpsConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s HttpsConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *HttpsConfiguration) GetTLS() *HttpsConfigurationTLS {
+	return s.TLS
+}
+
 func (s *HttpsConfiguration) SetTLS(v *HttpsConfigurationTLS) *HttpsConfiguration {
 	s.TLS = v
 	return s
+}
+
+func (s *HttpsConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type HttpsConfigurationTLS struct {
@@ -4722,11 +7072,19 @@ type HttpsConfigurationTLS struct {
 }
 
 func (s HttpsConfigurationTLS) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s HttpsConfigurationTLS) GoString() string {
 	return s.String()
+}
+
+func (s *HttpsConfigurationTLS) GetEnable() *bool {
+	return s.Enable
+}
+
+func (s *HttpsConfigurationTLS) GetTLSVersion() []*string {
+	return s.TLSVersion
 }
 
 func (s *HttpsConfigurationTLS) SetEnable(v bool) *HttpsConfigurationTLS {
@@ -4738,6 +7096,11 @@ func (s *HttpsConfigurationTLS) SetTLSVersion(v []*string) *HttpsConfigurationTL
 	s.TLSVersion = v
 	return s
 }
+
+func (s *HttpsConfigurationTLS) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type IndexDocument struct {
 	// example:
@@ -4755,11 +7118,23 @@ type IndexDocument struct {
 }
 
 func (s IndexDocument) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s IndexDocument) GoString() string {
 	return s.String()
+}
+
+func (s *IndexDocument) GetSuffix() *string {
+	return s.Suffix
+}
+
+func (s *IndexDocument) GetSupportSubDir() *bool {
+	return s.SupportSubDir
+}
+
+func (s *IndexDocument) GetType() *int64 {
+	return s.Type
 }
 
 func (s *IndexDocument) SetSuffix(v string) *IndexDocument {
@@ -4777,23 +7152,37 @@ func (s *IndexDocument) SetType(v int64) *IndexDocument {
 	return s
 }
 
+func (s *IndexDocument) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitiateWormConfiguration struct {
 	// This parameter is required.
 	RetentionPeriodInDays *int32 `json:"RetentionPeriodInDays,omitempty" xml:"RetentionPeriodInDays,omitempty"`
 }
 
 func (s InitiateWormConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateWormConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *InitiateWormConfiguration) GetRetentionPeriodInDays() *int32 {
+	return s.RetentionPeriodInDays
+}
+
 func (s *InitiateWormConfiguration) SetRetentionPeriodInDays(v int32) *InitiateWormConfiguration {
 	s.RetentionPeriodInDays = &v
 	return s
 }
+
+func (s *InitiateWormConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type InputSerialization struct {
 	Csv             *CSVInput  `json:"CSV,omitempty" xml:"CSV,omitempty"`
@@ -4802,11 +7191,23 @@ type InputSerialization struct {
 }
 
 func (s InputSerialization) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InputSerialization) GoString() string {
 	return s.String()
+}
+
+func (s *InputSerialization) GetCsv() *CSVInput {
+	return s.Csv
+}
+
+func (s *InputSerialization) GetCompressionType() *string {
+	return s.CompressionType
+}
+
+func (s *InputSerialization) GetJson() *JSONInput {
+	return s.Json
 }
 
 func (s *InputSerialization) SetCsv(v *CSVInput) *InputSerialization {
@@ -4823,6 +7224,11 @@ func (s *InputSerialization) SetJson(v *JSONInput) *InputSerialization {
 	s.Json = v
 	return s
 }
+
+func (s *InputSerialization) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type InventoryConfiguration struct {
 	Destination *InventoryDestination `json:"Destination,omitempty" xml:"Destination,omitempty"`
@@ -4844,11 +7250,39 @@ type InventoryConfiguration struct {
 }
 
 func (s InventoryConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventoryConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *InventoryConfiguration) GetDestination() *InventoryDestination {
+	return s.Destination
+}
+
+func (s *InventoryConfiguration) GetFilter() *InventoryFilter {
+	return s.Filter
+}
+
+func (s *InventoryConfiguration) GetId() *string {
+	return s.Id
+}
+
+func (s *InventoryConfiguration) GetIncludedObjectVersions() *string {
+	return s.IncludedObjectVersions
+}
+
+func (s *InventoryConfiguration) GetIsEnabled() *bool {
+	return s.IsEnabled
+}
+
+func (s *InventoryConfiguration) GetOptionalFields() *InventoryConfigurationOptionalFields {
+	return s.OptionalFields
+}
+
+func (s *InventoryConfiguration) GetSchedule() *InventorySchedule {
+	return s.Schedule
 }
 
 func (s *InventoryConfiguration) SetDestination(v *InventoryDestination) *InventoryConfiguration {
@@ -4886,16 +7320,24 @@ func (s *InventoryConfiguration) SetSchedule(v *InventorySchedule) *InventoryCon
 	return s
 }
 
+func (s *InventoryConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type InventoryConfigurationOptionalFields struct {
 	Fields []*string `json:"Field,omitempty" xml:"Field,omitempty" type:"Repeated"`
 }
 
 func (s InventoryConfigurationOptionalFields) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventoryConfigurationOptionalFields) GoString() string {
 	return s.String()
+}
+
+func (s *InventoryConfigurationOptionalFields) GetFields() []*string {
+	return s.Fields
 }
 
 func (s *InventoryConfigurationOptionalFields) SetFields(v []*string) *InventoryConfigurationOptionalFields {
@@ -4903,16 +7345,25 @@ func (s *InventoryConfigurationOptionalFields) SetFields(v []*string) *Inventory
 	return s
 }
 
+func (s *InventoryConfigurationOptionalFields) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InventoryDestination struct {
 	OSSBucketDestination *InventoryOSSBucketDestination `json:"OSSBucketDestination,omitempty" xml:"OSSBucketDestination,omitempty"`
 }
 
 func (s InventoryDestination) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventoryDestination) GoString() string {
 	return s.String()
+}
+
+func (s *InventoryDestination) GetOSSBucketDestination() *InventoryOSSBucketDestination {
+	return s.OSSBucketDestination
 }
 
 func (s *InventoryDestination) SetOSSBucketDestination(v *InventoryOSSBucketDestination) *InventoryDestination {
@@ -4920,17 +7371,30 @@ func (s *InventoryDestination) SetOSSBucketDestination(v *InventoryOSSBucketDest
 	return s
 }
 
+func (s *InventoryDestination) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InventoryEncryption struct {
 	SSEKMS *SSEKMS `json:"SSE-KMS,omitempty" xml:"SSE-KMS,omitempty"`
 	SSEOSS *string `json:"SSE-OSS,omitempty" xml:"SSE-OSS,omitempty"`
 }
 
 func (s InventoryEncryption) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventoryEncryption) GoString() string {
 	return s.String()
+}
+
+func (s *InventoryEncryption) GetSSEKMS() *SSEKMS {
+	return s.SSEKMS
+}
+
+func (s *InventoryEncryption) GetSSEOSS() *string {
+	return s.SSEOSS
 }
 
 func (s *InventoryEncryption) SetSSEKMS(v *SSEKMS) *InventoryEncryption {
@@ -4942,6 +7406,11 @@ func (s *InventoryEncryption) SetSSEOSS(v string) *InventoryEncryption {
 	s.SSEOSS = &v
 	return s
 }
+
+func (s *InventoryEncryption) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type InventoryFilter struct {
 	// example:
@@ -4979,11 +7448,43 @@ type InventoryFilter struct {
 }
 
 func (s InventoryFilter) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventoryFilter) GoString() string {
 	return s.String()
+}
+
+func (s *InventoryFilter) GetLastModifyBeginTimeStamp() *int64 {
+	return s.LastModifyBeginTimeStamp
+}
+
+func (s *InventoryFilter) GetLastModifyEndTimeStamp() *int64 {
+	return s.LastModifyEndTimeStamp
+}
+
+func (s *InventoryFilter) GetLowerSizeBound() *int64 {
+	return s.LowerSizeBound
+}
+
+func (s *InventoryFilter) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *InventoryFilter) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *InventoryFilter) GetTags() *string {
+	return s.Tags
+}
+
+func (s *InventoryFilter) GetTagsCondition() *string {
+	return s.TagsCondition
+}
+
+func (s *InventoryFilter) GetUpperSizeBound() *int64 {
+	return s.UpperSizeBound
 }
 
 func (s *InventoryFilter) SetLastModifyBeginTimeStamp(v int64) *InventoryFilter {
@@ -5026,6 +7527,11 @@ func (s *InventoryFilter) SetUpperSizeBound(v int64) *InventoryFilter {
 	return s
 }
 
+func (s *InventoryFilter) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InventoryOSSBucketDestination struct {
 	// example:
 	//
@@ -5048,11 +7554,35 @@ type InventoryOSSBucketDestination struct {
 }
 
 func (s InventoryOSSBucketDestination) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventoryOSSBucketDestination) GoString() string {
 	return s.String()
+}
+
+func (s *InventoryOSSBucketDestination) GetAccountId() *string {
+	return s.AccountId
+}
+
+func (s *InventoryOSSBucketDestination) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *InventoryOSSBucketDestination) GetEncryption() *InventoryEncryption {
+	return s.Encryption
+}
+
+func (s *InventoryOSSBucketDestination) GetFormat() *string {
+	return s.Format
+}
+
+func (s *InventoryOSSBucketDestination) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *InventoryOSSBucketDestination) GetRoleArn() *string {
+	return s.RoleArn
 }
 
 func (s *InventoryOSSBucketDestination) SetAccountId(v string) *InventoryOSSBucketDestination {
@@ -5085,22 +7615,36 @@ func (s *InventoryOSSBucketDestination) SetRoleArn(v string) *InventoryOSSBucket
 	return s
 }
 
+func (s *InventoryOSSBucketDestination) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InventorySchedule struct {
 	Frequency *string `json:"Frequency,omitempty" xml:"Frequency,omitempty"`
 }
 
 func (s InventorySchedule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InventorySchedule) GoString() string {
 	return s.String()
 }
 
+func (s *InventorySchedule) GetFrequency() *string {
+	return s.Frequency
+}
+
 func (s *InventorySchedule) SetFrequency(v string) *InventorySchedule {
 	s.Frequency = &v
 	return s
 }
+
+func (s *InventorySchedule) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type JSONInput struct {
 	ParseJsonNumberAsString *bool   `json:"ParseJsonNumberAsString,omitempty" xml:"ParseJsonNumberAsString,omitempty"`
@@ -5109,11 +7653,23 @@ type JSONInput struct {
 }
 
 func (s JSONInput) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s JSONInput) GoString() string {
 	return s.String()
+}
+
+func (s *JSONInput) GetParseJsonNumberAsString() *bool {
+	return s.ParseJsonNumberAsString
+}
+
+func (s *JSONInput) GetRange() *string {
+	return s.Range
+}
+
+func (s *JSONInput) GetType() *string {
+	return s.Type
 }
 
 func (s *JSONInput) SetParseJsonNumberAsString(v bool) *JSONInput {
@@ -5131,16 +7687,25 @@ func (s *JSONInput) SetType(v string) *JSONInput {
 	return s
 }
 
+func (s *JSONInput) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type JSONOutput struct {
 	RecordDelimiter *string `json:"RecordDelimiter,omitempty" xml:"RecordDelimiter,omitempty"`
 }
 
 func (s JSONOutput) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s JSONOutput) GoString() string {
 	return s.String()
+}
+
+func (s *JSONOutput) GetRecordDelimiter() *string {
+	return s.RecordDelimiter
 }
 
 func (s *JSONOutput) SetRecordDelimiter(v string) *JSONOutput {
@@ -5148,22 +7713,36 @@ func (s *JSONOutput) SetRecordDelimiter(v string) *JSONOutput {
 	return s
 }
 
+func (s *JSONOutput) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LifecycleConfiguration struct {
 	Rule []*LifecycleRule `json:"Rule,omitempty" xml:"Rule,omitempty" type:"Repeated"`
 }
 
 func (s LifecycleConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *LifecycleConfiguration) GetRule() []*LifecycleRule {
+	return s.Rule
+}
+
 func (s *LifecycleConfiguration) SetRule(v []*LifecycleRule) *LifecycleConfiguration {
 	s.Rule = v
 	return s
 }
+
+func (s *LifecycleConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type LifecycleRule struct {
 	LifecycleAbortMultipartUpload *LifecycleRuleLifecycleAbortMultipartUpload `json:"AbortMultipartUpload,omitempty" xml:"AbortMultipartUpload,omitempty" type:"Struct"`
@@ -5196,11 +7775,55 @@ type LifecycleRule struct {
 }
 
 func (s LifecycleRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRule) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRule) GetLifecycleAbortMultipartUpload() *LifecycleRuleLifecycleAbortMultipartUpload {
+	return s.LifecycleAbortMultipartUpload
+}
+
+func (s *LifecycleRule) GetAtimeBase() *int64 {
+	return s.AtimeBase
+}
+
+func (s *LifecycleRule) GetLifecycleExpiration() *LifecycleRuleLifecycleExpiration {
+	return s.LifecycleExpiration
+}
+
+func (s *LifecycleRule) GetFilter() *LifecycleRuleFilter {
+	return s.Filter
+}
+
+func (s *LifecycleRule) GetID() *string {
+	return s.ID
+}
+
+func (s *LifecycleRule) GetNoncurrentVersionExpiration() *LifecycleRuleNoncurrentVersionExpiration {
+	return s.NoncurrentVersionExpiration
+}
+
+func (s *LifecycleRule) GetNoncurrentVersionTransition() []*LifecycleRuleNoncurrentVersionTransition {
+	return s.NoncurrentVersionTransition
+}
+
+func (s *LifecycleRule) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *LifecycleRule) GetStatus() *string {
+	return s.Status
+}
+
+func (s *LifecycleRule) GetTag() []*Tag {
+	return s.Tag
+}
+
+func (s *LifecycleRule) GetLifecycleTransition() []*LifecycleRuleLifecycleTransition {
+	return s.LifecycleTransition
 }
 
 func (s *LifecycleRule) SetLifecycleAbortMultipartUpload(v *LifecycleRuleLifecycleAbortMultipartUpload) *LifecycleRule {
@@ -5258,6 +7881,10 @@ func (s *LifecycleRule) SetLifecycleTransition(v []*LifecycleRuleLifecycleTransi
 	return s
 }
 
+func (s *LifecycleRule) Validate() error {
+	return dara.Validate(s)
+}
+
 type LifecycleRuleLifecycleAbortMultipartUpload struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
 	//
@@ -5272,11 +7899,19 @@ type LifecycleRuleLifecycleAbortMultipartUpload struct {
 }
 
 func (s LifecycleRuleLifecycleAbortMultipartUpload) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleLifecycleAbortMultipartUpload) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRuleLifecycleAbortMultipartUpload) GetCreatedBeforeDate() *string {
+	return s.CreatedBeforeDate
+}
+
+func (s *LifecycleRuleLifecycleAbortMultipartUpload) GetDays() *int32 {
+	return s.Days
 }
 
 func (s *LifecycleRuleLifecycleAbortMultipartUpload) SetCreatedBeforeDate(v string) *LifecycleRuleLifecycleAbortMultipartUpload {
@@ -5287,6 +7922,10 @@ func (s *LifecycleRuleLifecycleAbortMultipartUpload) SetCreatedBeforeDate(v stri
 func (s *LifecycleRuleLifecycleAbortMultipartUpload) SetDays(v int32) *LifecycleRuleLifecycleAbortMultipartUpload {
 	s.Days = &v
 	return s
+}
+
+func (s *LifecycleRuleLifecycleAbortMultipartUpload) Validate() error {
+	return dara.Validate(s)
 }
 
 type LifecycleRuleLifecycleExpiration struct {
@@ -5313,11 +7952,27 @@ type LifecycleRuleLifecycleExpiration struct {
 }
 
 func (s LifecycleRuleLifecycleExpiration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleLifecycleExpiration) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRuleLifecycleExpiration) GetCreatedBeforeDate() *string {
+	return s.CreatedBeforeDate
+}
+
+func (s *LifecycleRuleLifecycleExpiration) GetDate() *string {
+	return s.Date
+}
+
+func (s *LifecycleRuleLifecycleExpiration) GetDays() *int32 {
+	return s.Days
+}
+
+func (s *LifecycleRuleLifecycleExpiration) GetExpiredObjectDeleteMarker() *bool {
+	return s.ExpiredObjectDeleteMarker
 }
 
 func (s *LifecycleRuleLifecycleExpiration) SetCreatedBeforeDate(v string) *LifecycleRuleLifecycleExpiration {
@@ -5340,6 +7995,10 @@ func (s *LifecycleRuleLifecycleExpiration) SetExpiredObjectDeleteMarker(v bool) 
 	return s
 }
 
+func (s *LifecycleRuleLifecycleExpiration) Validate() error {
+	return dara.Validate(s)
+}
+
 type LifecycleRuleFilter struct {
 	Not *LifecycleRuleFilterNot `json:"Not,omitempty" xml:"Not,omitempty" type:"Struct"`
 	// example:
@@ -5353,11 +8012,23 @@ type LifecycleRuleFilter struct {
 }
 
 func (s LifecycleRuleFilter) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleFilter) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRuleFilter) GetNot() *LifecycleRuleFilterNot {
+	return s.Not
+}
+
+func (s *LifecycleRuleFilter) GetObjectSizeGreaterThan() *int64 {
+	return s.ObjectSizeGreaterThan
+}
+
+func (s *LifecycleRuleFilter) GetObjectSizeLessThan() *int64 {
+	return s.ObjectSizeLessThan
 }
 
 func (s *LifecycleRuleFilter) SetNot(v *LifecycleRuleFilterNot) *LifecycleRuleFilter {
@@ -5375,6 +8046,10 @@ func (s *LifecycleRuleFilter) SetObjectSizeLessThan(v int64) *LifecycleRuleFilte
 	return s
 }
 
+func (s *LifecycleRuleFilter) Validate() error {
+	return dara.Validate(s)
+}
+
 type LifecycleRuleFilterNot struct {
 	// example:
 	//
@@ -5384,11 +8059,19 @@ type LifecycleRuleFilterNot struct {
 }
 
 func (s LifecycleRuleFilterNot) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleFilterNot) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRuleFilterNot) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *LifecycleRuleFilterNot) GetTag() *Tag {
+	return s.Tag
 }
 
 func (s *LifecycleRuleFilterNot) SetPrefix(v string) *LifecycleRuleFilterNot {
@@ -5401,6 +8084,10 @@ func (s *LifecycleRuleFilterNot) SetTag(v *Tag) *LifecycleRuleFilterNot {
 	return s
 }
 
+func (s *LifecycleRuleFilterNot) Validate() error {
+	return dara.Validate(s)
+}
+
 type LifecycleRuleNoncurrentVersionExpiration struct {
 	// example:
 	//
@@ -5409,16 +8096,24 @@ type LifecycleRuleNoncurrentVersionExpiration struct {
 }
 
 func (s LifecycleRuleNoncurrentVersionExpiration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleNoncurrentVersionExpiration) GoString() string {
 	return s.String()
 }
 
+func (s *LifecycleRuleNoncurrentVersionExpiration) GetNoncurrentDays() *int32 {
+	return s.NoncurrentDays
+}
+
 func (s *LifecycleRuleNoncurrentVersionExpiration) SetNoncurrentDays(v int32) *LifecycleRuleNoncurrentVersionExpiration {
 	s.NoncurrentDays = &v
 	return s
+}
+
+func (s *LifecycleRuleNoncurrentVersionExpiration) Validate() error {
+	return dara.Validate(s)
 }
 
 type LifecycleRuleNoncurrentVersionTransition struct {
@@ -5442,11 +8137,31 @@ type LifecycleRuleNoncurrentVersionTransition struct {
 }
 
 func (s LifecycleRuleNoncurrentVersionTransition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleNoncurrentVersionTransition) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRuleNoncurrentVersionTransition) GetAllowSmallFile() *bool {
+	return s.AllowSmallFile
+}
+
+func (s *LifecycleRuleNoncurrentVersionTransition) GetIsAccessTime() *bool {
+	return s.IsAccessTime
+}
+
+func (s *LifecycleRuleNoncurrentVersionTransition) GetNoncurrentDays() *int32 {
+	return s.NoncurrentDays
+}
+
+func (s *LifecycleRuleNoncurrentVersionTransition) GetReturnToStdWhenVisit() *bool {
+	return s.ReturnToStdWhenVisit
+}
+
+func (s *LifecycleRuleNoncurrentVersionTransition) GetStorageClass() *string {
+	return s.StorageClass
 }
 
 func (s *LifecycleRuleNoncurrentVersionTransition) SetAllowSmallFile(v bool) *LifecycleRuleNoncurrentVersionTransition {
@@ -5472,6 +8187,10 @@ func (s *LifecycleRuleNoncurrentVersionTransition) SetReturnToStdWhenVisit(v boo
 func (s *LifecycleRuleNoncurrentVersionTransition) SetStorageClass(v string) *LifecycleRuleNoncurrentVersionTransition {
 	s.StorageClass = &v
 	return s
+}
+
+func (s *LifecycleRuleNoncurrentVersionTransition) Validate() error {
+	return dara.Validate(s)
 }
 
 type LifecycleRuleLifecycleTransition struct {
@@ -5501,11 +8220,35 @@ type LifecycleRuleLifecycleTransition struct {
 }
 
 func (s LifecycleRuleLifecycleTransition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LifecycleRuleLifecycleTransition) GoString() string {
 	return s.String()
+}
+
+func (s *LifecycleRuleLifecycleTransition) GetAllowSmallFile() *bool {
+	return s.AllowSmallFile
+}
+
+func (s *LifecycleRuleLifecycleTransition) GetCreatedBeforeDate() *string {
+	return s.CreatedBeforeDate
+}
+
+func (s *LifecycleRuleLifecycleTransition) GetDays() *int32 {
+	return s.Days
+}
+
+func (s *LifecycleRuleLifecycleTransition) GetIsAccessTime() *bool {
+	return s.IsAccessTime
+}
+
+func (s *LifecycleRuleLifecycleTransition) GetReturnToStdWhenVisit() *bool {
+	return s.ReturnToStdWhenVisit
+}
+
+func (s *LifecycleRuleLifecycleTransition) GetStorageClass() *string {
+	return s.StorageClass
 }
 
 func (s *LifecycleRuleLifecycleTransition) SetAllowSmallFile(v bool) *LifecycleRuleLifecycleTransition {
@@ -5538,6 +8281,11 @@ func (s *LifecycleRuleLifecycleTransition) SetStorageClass(v string) *LifecycleR
 	return s
 }
 
+func (s *LifecycleRuleLifecycleTransition) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListAccessPointsResult struct {
 	AccessPoints *ListAccessPointsResultAccessPoints `json:"AccessPoints,omitempty" xml:"AccessPoints,omitempty" type:"Struct"`
 	// example:
@@ -5559,11 +8307,31 @@ type ListAccessPointsResult struct {
 }
 
 func (s ListAccessPointsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsResult) GetAccessPoints() *ListAccessPointsResultAccessPoints {
+	return s.AccessPoints
+}
+
+func (s *ListAccessPointsResult) GetAccountId() *string {
+	return s.AccountId
+}
+
+func (s *ListAccessPointsResult) GetIsTruncated() *string {
+	return s.IsTruncated
+}
+
+func (s *ListAccessPointsResult) GetMaxKeys() *int32 {
+	return s.MaxKeys
+}
+
+func (s *ListAccessPointsResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
 }
 
 func (s *ListAccessPointsResult) SetAccessPoints(v *ListAccessPointsResultAccessPoints) *ListAccessPointsResult {
@@ -5591,22 +8359,35 @@ func (s *ListAccessPointsResult) SetNextContinuationToken(v string) *ListAccessP
 	return s
 }
 
+func (s *ListAccessPointsResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListAccessPointsResultAccessPoints struct {
 	AccessPoint []*AccessPoint `json:"AccessPoint,omitempty" xml:"AccessPoint,omitempty" type:"Repeated"`
 }
 
 func (s ListAccessPointsResultAccessPoints) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsResultAccessPoints) GoString() string {
 	return s.String()
 }
 
+func (s *ListAccessPointsResultAccessPoints) GetAccessPoint() []*AccessPoint {
+	return s.AccessPoint
+}
+
 func (s *ListAccessPointsResultAccessPoints) SetAccessPoint(v []*AccessPoint) *ListAccessPointsResultAccessPoints {
 	s.AccessPoint = v
 	return s
 }
+
+func (s *ListAccessPointsResultAccessPoints) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListAllMyCacheResult struct {
 	Caches *ListAllMyCacheResultCaches `json:"Caches,omitempty" xml:"Caches,omitempty" type:"Struct"`
@@ -5634,11 +8415,39 @@ type ListAllMyCacheResult struct {
 }
 
 func (s ListAllMyCacheResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAllMyCacheResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListAllMyCacheResult) GetCaches() *ListAllMyCacheResultCaches {
+	return s.Caches
+}
+
+func (s *ListAllMyCacheResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListAllMyCacheResult) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListAllMyCacheResult) GetMaxKeys() *string {
+	return s.MaxKeys
+}
+
+func (s *ListAllMyCacheResult) GetNextMarker() *string {
+	return s.NextMarker
+}
+
+func (s *ListAllMyCacheResult) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *ListAllMyCacheResult) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListAllMyCacheResult) SetCaches(v *ListAllMyCacheResultCaches) *ListAllMyCacheResult {
@@ -5676,22 +8485,35 @@ func (s *ListAllMyCacheResult) SetPrefix(v string) *ListAllMyCacheResult {
 	return s
 }
 
+func (s *ListAllMyCacheResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListAllMyCacheResultCaches struct {
 	Cache []*CacheBaseInfo `json:"Cache,omitempty" xml:"Cache,omitempty" type:"Repeated"`
 }
 
 func (s ListAllMyCacheResultCaches) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAllMyCacheResultCaches) GoString() string {
 	return s.String()
 }
 
+func (s *ListAllMyCacheResultCaches) GetCache() []*CacheBaseInfo {
+	return s.Cache
+}
+
 func (s *ListAllMyCacheResultCaches) SetCache(v []*CacheBaseInfo) *ListAllMyCacheResultCaches {
 	s.Cache = v
 	return s
 }
+
+func (s *ListAllMyCacheResultCaches) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListBucketRequesterQoSInfosResult struct {
 	// example:
@@ -5714,11 +8536,31 @@ type ListBucketRequesterQoSInfosResult struct {
 }
 
 func (s ListBucketRequesterQoSInfosResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketRequesterQoSInfosResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketRequesterQoSInfosResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *ListBucketRequesterQoSInfosResult) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListBucketRequesterQoSInfosResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListBucketRequesterQoSInfosResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
+}
+
+func (s *ListBucketRequesterQoSInfosResult) GetRequesterQoSInfo() []*RequesterQoSInfo {
+	return s.RequesterQoSInfo
 }
 
 func (s *ListBucketRequesterQoSInfosResult) SetBucket(v string) *ListBucketRequesterQoSInfosResult {
@@ -5746,16 +8588,25 @@ func (s *ListBucketRequesterQoSInfosResult) SetRequesterQoSInfo(v []*RequesterQo
 	return s
 }
 
+func (s *ListBucketRequesterQoSInfosResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeCachePrefetchJobHistory struct {
 	DataLakeCachePrefetchJobHistory []*DataLakeCachePrefetchJobHistory `json:"DataLakeCachePrefetchJobHistory,omitempty" xml:"DataLakeCachePrefetchJobHistory,omitempty" type:"Repeated"`
 }
 
 func (s ListDataLakeCachePrefetchJobHistory) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobHistory) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeCachePrefetchJobHistory) GetDataLakeCachePrefetchJobHistory() []*DataLakeCachePrefetchJobHistory {
+	return s.DataLakeCachePrefetchJobHistory
 }
 
 func (s *ListDataLakeCachePrefetchJobHistory) SetDataLakeCachePrefetchJobHistory(v []*DataLakeCachePrefetchJobHistory) *ListDataLakeCachePrefetchJobHistory {
@@ -5763,22 +8614,192 @@ func (s *ListDataLakeCachePrefetchJobHistory) SetDataLakeCachePrefetchJobHistory
 	return s
 }
 
+func (s *ListDataLakeCachePrefetchJobHistory) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeStorageTransferJobHistory struct {
 	DataLakeStorageTransferJobHistory []*DataLakeStorageTransferJobHistory `json:"DataLakeStorageTransferJobHistory,omitempty" xml:"DataLakeStorageTransferJobHistory,omitempty" type:"Repeated"`
 }
 
 func (s ListDataLakeStorageTransferJobHistory) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeStorageTransferJobHistory) GoString() string {
 	return s.String()
 }
 
+func (s *ListDataLakeStorageTransferJobHistory) GetDataLakeStorageTransferJobHistory() []*DataLakeStorageTransferJobHistory {
+	return s.DataLakeStorageTransferJobHistory
+}
+
 func (s *ListDataLakeStorageTransferJobHistory) SetDataLakeStorageTransferJobHistory(v []*DataLakeStorageTransferJobHistory) *ListDataLakeStorageTransferJobHistory {
 	s.DataLakeStorageTransferJobHistory = v
 	return s
 }
+
+func (s *ListDataLakeStorageTransferJobHistory) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupQoSInfosResult struct {
+	// example:
+	//
+	// abc-
+	ContinuationToken *string `json:"ContinuationToken,omitempty" xml:"ContinuationToken,omitempty"`
+	// example:
+	//
+	// true
+	IsTruncated *bool `json:"IsTruncated,omitempty" xml:"IsTruncated,omitempty"`
+	// example:
+	//
+	// xyz-
+	NextContinuationToken *string `json:"NextContinuationToken,omitempty" xml:"NextContinuationToken,omitempty"`
+	// example:
+	//
+	// rp-for-ai
+	ResourcePool                   *string                           `json:"ResourcePool,omitempty" xml:"ResourcePool,omitempty"`
+	ResourcePoolBucketGroupQoSInfo []*ResourcePoolBucketGroupQoSInfo `json:"ResourcePoolBucketGroupQoSInfo,omitempty" xml:"ResourcePoolBucketGroupQoSInfo,omitempty" type:"Repeated"`
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosResult) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosResult) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) GetResourcePoolBucketGroupQoSInfo() []*ResourcePoolBucketGroupQoSInfo {
+	return s.ResourcePoolBucketGroupQoSInfo
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) SetContinuationToken(v string) *ListResourcePoolBucketGroupQoSInfosResult {
+	s.ContinuationToken = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) SetIsTruncated(v bool) *ListResourcePoolBucketGroupQoSInfosResult {
+	s.IsTruncated = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) SetNextContinuationToken(v string) *ListResourcePoolBucketGroupQoSInfosResult {
+	s.NextContinuationToken = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) SetResourcePool(v string) *ListResourcePoolBucketGroupQoSInfosResult {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) SetResourcePoolBucketGroupQoSInfo(v []*ResourcePoolBucketGroupQoSInfo) *ListResourcePoolBucketGroupQoSInfosResult {
+	s.ResourcePoolBucketGroupQoSInfo = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupsResult struct {
+	// example:
+	//
+	// test-
+	ContinuationToken *string `json:"ContinuationToken,omitempty" xml:"ContinuationToken,omitempty"`
+	// example:
+	//
+	// true
+	IsTruncated *bool `json:"IsTruncated,omitempty" xml:"IsTruncated,omitempty"`
+	// example:
+	//
+	// xyz-
+	NextContinuationToken *string `json:"NextContinuationToken,omitempty" xml:"NextContinuationToken,omitempty"`
+	// example:
+	//
+	// test-resource-pool
+	ResourcePool            *string                    `json:"ResourcePool,omitempty" xml:"ResourcePool,omitempty"`
+	ResourcePoolBucketGroup []*ResourcePoolBucketGroup `json:"ResourcePoolBucketGroup,omitempty" xml:"ResourcePoolBucketGroup,omitempty" type:"Repeated"`
+}
+
+func (s ListResourcePoolBucketGroupsResult) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupsResult) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupsResult) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolBucketGroupsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListResourcePoolBucketGroupsResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
+}
+
+func (s *ListResourcePoolBucketGroupsResult) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *ListResourcePoolBucketGroupsResult) GetResourcePoolBucketGroup() []*ResourcePoolBucketGroup {
+	return s.ResourcePoolBucketGroup
+}
+
+func (s *ListResourcePoolBucketGroupsResult) SetContinuationToken(v string) *ListResourcePoolBucketGroupsResult {
+	s.ContinuationToken = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResult) SetIsTruncated(v bool) *ListResourcePoolBucketGroupsResult {
+	s.IsTruncated = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResult) SetNextContinuationToken(v string) *ListResourcePoolBucketGroupsResult {
+	s.NextContinuationToken = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResult) SetResourcePool(v string) *ListResourcePoolBucketGroupsResult {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResult) SetResourcePoolBucketGroup(v []*ResourcePoolBucketGroup) *ListResourcePoolBucketGroupsResult {
+	s.ResourcePoolBucketGroup = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResult) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListResourcePoolBucketsResult struct {
 	// example:
@@ -5801,11 +8822,31 @@ type ListResourcePoolBucketsResult struct {
 }
 
 func (s ListResourcePoolBucketsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolBucketsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolBucketsResult) GetContionuationToken() *string {
+	return s.ContionuationToken
+}
+
+func (s *ListResourcePoolBucketsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListResourcePoolBucketsResult) GetNextContionuationToken() *string {
+	return s.NextContionuationToken
+}
+
+func (s *ListResourcePoolBucketsResult) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *ListResourcePoolBucketsResult) GetResourcePoolBucket() []*ResourcePoolBucket {
+	return s.ResourcePoolBucket
 }
 
 func (s *ListResourcePoolBucketsResult) SetContionuationToken(v string) *ListResourcePoolBucketsResult {
@@ -5833,6 +8874,11 @@ func (s *ListResourcePoolBucketsResult) SetResourcePoolBucket(v []*ResourcePoolB
 	return s
 }
 
+func (s *ListResourcePoolBucketsResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListResourcePoolRequesterQoSInfosResult struct {
 	// example:
 	//
@@ -5854,11 +8900,31 @@ type ListResourcePoolRequesterQoSInfosResult struct {
 }
 
 func (s ListResourcePoolRequesterQoSInfosResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolRequesterQoSInfosResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResult) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResult) GetRequesterQoSInfo() []*RequesterQoSInfo {
+	return s.RequesterQoSInfo
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResult) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *ListResourcePoolRequesterQoSInfosResult) SetContinuationToken(v string) *ListResourcePoolRequesterQoSInfosResult {
@@ -5886,6 +8952,11 @@ func (s *ListResourcePoolRequesterQoSInfosResult) SetResourcePool(v string) *Lis
 	return s
 }
 
+func (s *ListResourcePoolRequesterQoSInfosResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListResourcePoolsResult struct {
 	// example:
 	//
@@ -5911,11 +8982,35 @@ type ListResourcePoolsResult struct {
 }
 
 func (s ListResourcePoolsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolsResult) GetContionuationToken() *string {
+	return s.ContionuationToken
+}
+
+func (s *ListResourcePoolsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListResourcePoolsResult) GetNextContionuationToken() *string {
+	return s.NextContionuationToken
+}
+
+func (s *ListResourcePoolsResult) GetOwner() *string {
+	return s.Owner
+}
+
+func (s *ListResourcePoolsResult) GetRegion() *string {
+	return s.Region
+}
+
+func (s *ListResourcePoolsResult) GetResourcePool() []*ResourcePoolSimpleInfo {
+	return s.ResourcePool
 }
 
 func (s *ListResourcePoolsResult) SetContionuationToken(v string) *ListResourcePoolsResult {
@@ -5948,16 +9043,25 @@ func (s *ListResourcePoolsResult) SetResourcePool(v []*ResourcePoolSimpleInfo) *
 	return s
 }
 
+func (s *ListResourcePoolsResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListUserRegionsResult struct {
 	Regions *ListUserRegionsResultRegions `json:"Regions,omitempty" xml:"Regions,omitempty" type:"Struct"`
 }
 
 func (s ListUserRegionsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserRegionsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListUserRegionsResult) GetRegions() *ListUserRegionsResultRegions {
+	return s.Regions
 }
 
 func (s *ListUserRegionsResult) SetRegions(v *ListUserRegionsResultRegions) *ListUserRegionsResult {
@@ -5965,16 +9069,24 @@ func (s *ListUserRegionsResult) SetRegions(v *ListUserRegionsResultRegions) *Lis
 	return s
 }
 
+func (s *ListUserRegionsResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListUserRegionsResultRegions struct {
 	Region []*string `json:"Region,omitempty" xml:"Region,omitempty" type:"Repeated"`
 }
 
 func (s ListUserRegionsResultRegions) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserRegionsResultRegions) GoString() string {
 	return s.String()
+}
+
+func (s *ListUserRegionsResultRegions) GetRegion() []*string {
+	return s.Region
 }
 
 func (s *ListUserRegionsResultRegions) SetRegion(v []*string) *ListUserRegionsResultRegions {
@@ -5982,22 +9094,36 @@ func (s *ListUserRegionsResultRegions) SetRegion(v []*string) *ListUserRegionsRe
 	return s
 }
 
+func (s *ListUserRegionsResultRegions) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListVirtualBucketResult struct {
 	VirtualBucket []*VirtualBucket `json:"VirtualBucket,omitempty" xml:"VirtualBucket,omitempty" type:"Repeated"`
 }
 
 func (s ListVirtualBucketResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListVirtualBucketResult) GoString() string {
 	return s.String()
 }
 
+func (s *ListVirtualBucketResult) GetVirtualBucket() []*VirtualBucket {
+	return s.VirtualBucket
+}
+
 func (s *ListVirtualBucketResult) SetVirtualBucket(v []*VirtualBucket) *ListVirtualBucketResult {
 	s.VirtualBucket = v
 	return s
 }
+
+func (s *ListVirtualBucketResult) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type LiveChannel struct {
 	Description *string `json:"Description,omitempty" xml:"Description,omitempty"`
@@ -6010,11 +9136,35 @@ type LiveChannel struct {
 }
 
 func (s LiveChannel) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannel) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannel) GetDescription() *string {
+	return s.Description
+}
+
+func (s *LiveChannel) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *LiveChannel) GetName() *string {
+	return s.Name
+}
+
+func (s *LiveChannel) GetPlayUrls() *LiveChannelPlayUrls {
+	return s.PlayUrls
+}
+
+func (s *LiveChannel) GetPublishUrls() *LiveChannelPublishUrls {
+	return s.PublishUrls
+}
+
+func (s *LiveChannel) GetStatus() *string {
+	return s.Status
 }
 
 func (s *LiveChannel) SetDescription(v string) *LiveChannel {
@@ -6047,6 +9197,11 @@ func (s *LiveChannel) SetStatus(v string) *LiveChannel {
 	return s
 }
 
+func (s *LiveChannel) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveChannelAudio struct {
 	Bandwidth  *int64  `json:"Bandwidth,omitempty" xml:"Bandwidth,omitempty"`
 	Codec      *string `json:"Codec,omitempty" xml:"Codec,omitempty"`
@@ -6054,11 +9209,23 @@ type LiveChannelAudio struct {
 }
 
 func (s LiveChannelAudio) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelAudio) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannelAudio) GetBandwidth() *int64 {
+	return s.Bandwidth
+}
+
+func (s *LiveChannelAudio) GetCodec() *string {
+	return s.Codec
+}
+
+func (s *LiveChannelAudio) GetSampleRate() *int64 {
+	return s.SampleRate
 }
 
 func (s *LiveChannelAudio) SetBandwidth(v int64) *LiveChannelAudio {
@@ -6076,6 +9243,11 @@ func (s *LiveChannelAudio) SetSampleRate(v int64) *LiveChannelAudio {
 	return s
 }
 
+func (s *LiveChannelAudio) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveChannelConfiguration struct {
 	Description *string              `json:"Description,omitempty" xml:"Description,omitempty"`
 	Snapshot    *LiveChannelSnapshot `json:"Snapshot,omitempty" xml:"Snapshot,omitempty"`
@@ -6084,11 +9256,27 @@ type LiveChannelConfiguration struct {
 }
 
 func (s LiveChannelConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannelConfiguration) GetDescription() *string {
+	return s.Description
+}
+
+func (s *LiveChannelConfiguration) GetSnapshot() *LiveChannelSnapshot {
+	return s.Snapshot
+}
+
+func (s *LiveChannelConfiguration) GetStatus() *string {
+	return s.Status
+}
+
+func (s *LiveChannelConfiguration) GetTarget() *LiveChannelTarget {
+	return s.Target
 }
 
 func (s *LiveChannelConfiguration) SetDescription(v string) *LiveChannelConfiguration {
@@ -6111,16 +9299,25 @@ func (s *LiveChannelConfiguration) SetTarget(v *LiveChannelTarget) *LiveChannelC
 	return s
 }
 
+func (s *LiveChannelConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveChannelPlayUrls struct {
 	Url *string `json:"Url,omitempty" xml:"Url,omitempty"`
 }
 
 func (s LiveChannelPlayUrls) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelPlayUrls) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannelPlayUrls) GetUrl() *string {
+	return s.Url
 }
 
 func (s *LiveChannelPlayUrls) SetUrl(v string) *LiveChannelPlayUrls {
@@ -6128,22 +9325,36 @@ func (s *LiveChannelPlayUrls) SetUrl(v string) *LiveChannelPlayUrls {
 	return s
 }
 
+func (s *LiveChannelPlayUrls) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveChannelPublishUrls struct {
 	Url *string `json:"Url,omitempty" xml:"Url,omitempty"`
 }
 
 func (s LiveChannelPublishUrls) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelPublishUrls) GoString() string {
 	return s.String()
 }
 
+func (s *LiveChannelPublishUrls) GetUrl() *string {
+	return s.Url
+}
+
 func (s *LiveChannelPublishUrls) SetUrl(v string) *LiveChannelPublishUrls {
 	s.Url = &v
 	return s
 }
+
+func (s *LiveChannelPublishUrls) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type LiveChannelSnapshot struct {
 	DestBucket  *string `json:"DestBucket,omitempty" xml:"DestBucket,omitempty"`
@@ -6153,11 +9364,27 @@ type LiveChannelSnapshot struct {
 }
 
 func (s LiveChannelSnapshot) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelSnapshot) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannelSnapshot) GetDestBucket() *string {
+	return s.DestBucket
+}
+
+func (s *LiveChannelSnapshot) GetInterval() *int64 {
+	return s.Interval
+}
+
+func (s *LiveChannelSnapshot) GetNotifyTopic() *string {
+	return s.NotifyTopic
+}
+
+func (s *LiveChannelSnapshot) GetRoleName() *string {
+	return s.RoleName
 }
 
 func (s *LiveChannelSnapshot) SetDestBucket(v string) *LiveChannelSnapshot {
@@ -6180,6 +9407,11 @@ func (s *LiveChannelSnapshot) SetRoleName(v string) *LiveChannelSnapshot {
 	return s
 }
 
+func (s *LiveChannelSnapshot) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveChannelTarget struct {
 	FragCount    *int64  `json:"FragCount,omitempty" xml:"FragCount,omitempty"`
 	FragDuration *int64  `json:"FragDuration,omitempty" xml:"FragDuration,omitempty"`
@@ -6188,11 +9420,27 @@ type LiveChannelTarget struct {
 }
 
 func (s LiveChannelTarget) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelTarget) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannelTarget) GetFragCount() *int64 {
+	return s.FragCount
+}
+
+func (s *LiveChannelTarget) GetFragDuration() *int64 {
+	return s.FragDuration
+}
+
+func (s *LiveChannelTarget) GetPlaylistName() *string {
+	return s.PlaylistName
+}
+
+func (s *LiveChannelTarget) GetType() *string {
+	return s.Type
 }
 
 func (s *LiveChannelTarget) SetFragCount(v int64) *LiveChannelTarget {
@@ -6215,6 +9463,11 @@ func (s *LiveChannelTarget) SetType(v string) *LiveChannelTarget {
 	return s
 }
 
+func (s *LiveChannelTarget) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveChannelVideo struct {
 	Bandwidth *int64  `json:"Bandwidth,omitempty" xml:"Bandwidth,omitempty"`
 	Codec     *string `json:"Codec,omitempty" xml:"Codec,omitempty"`
@@ -6224,11 +9477,31 @@ type LiveChannelVideo struct {
 }
 
 func (s LiveChannelVideo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveChannelVideo) GoString() string {
 	return s.String()
+}
+
+func (s *LiveChannelVideo) GetBandwidth() *int64 {
+	return s.Bandwidth
+}
+
+func (s *LiveChannelVideo) GetCodec() *string {
+	return s.Codec
+}
+
+func (s *LiveChannelVideo) GetFrameRate() *int64 {
+	return s.FrameRate
+}
+
+func (s *LiveChannelVideo) GetHeight() *int64 {
+	return s.Height
+}
+
+func (s *LiveChannelVideo) GetWidth() *int64 {
+	return s.Width
 }
 
 func (s *LiveChannelVideo) SetBandwidth(v int64) *LiveChannelVideo {
@@ -6256,6 +9529,11 @@ func (s *LiveChannelVideo) SetWidth(v int64) *LiveChannelVideo {
 	return s
 }
 
+func (s *LiveChannelVideo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LiveRecord struct {
 	EndTime    *string `json:"EndTime,omitempty" xml:"EndTime,omitempty"`
 	RemoteAddr *string `json:"RemoteAddr,omitempty" xml:"RemoteAddr,omitempty"`
@@ -6263,11 +9541,23 @@ type LiveRecord struct {
 }
 
 func (s LiveRecord) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LiveRecord) GoString() string {
 	return s.String()
+}
+
+func (s *LiveRecord) GetEndTime() *string {
+	return s.EndTime
+}
+
+func (s *LiveRecord) GetRemoteAddr() *string {
+	return s.RemoteAddr
+}
+
+func (s *LiveRecord) GetStartTime() *string {
+	return s.StartTime
 }
 
 func (s *LiveRecord) SetEndTime(v string) *LiveRecord {
@@ -6285,6 +9575,11 @@ func (s *LiveRecord) SetStartTime(v string) *LiveRecord {
 	return s
 }
 
+func (s *LiveRecord) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type LocationTransferType struct {
 	// example:
 	//
@@ -6294,11 +9589,19 @@ type LocationTransferType struct {
 }
 
 func (s LocationTransferType) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LocationTransferType) GoString() string {
 	return s.String()
+}
+
+func (s *LocationTransferType) GetLocation() *string {
+	return s.Location
+}
+
+func (s *LocationTransferType) GetTransferTypes() *LocationTransferTypeTransferTypes {
+	return s.TransferTypes
 }
 
 func (s *LocationTransferType) SetLocation(v string) *LocationTransferType {
@@ -6311,22 +9614,35 @@ func (s *LocationTransferType) SetTransferTypes(v *LocationTransferTypeTransferT
 	return s
 }
 
+func (s *LocationTransferType) Validate() error {
+	return dara.Validate(s)
+}
+
 type LocationTransferTypeTransferTypes struct {
 	Type []*string `json:"Type,omitempty" xml:"Type,omitempty" type:"Repeated"`
 }
 
 func (s LocationTransferTypeTransferTypes) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LocationTransferTypeTransferTypes) GoString() string {
 	return s.String()
 }
 
+func (s *LocationTransferTypeTransferTypes) GetType() []*string {
+	return s.Type
+}
+
 func (s *LocationTransferTypeTransferTypes) SetType(v []*string) *LocationTransferTypeTransferTypes {
 	s.Type = v
 	return s
 }
+
+func (s *LocationTransferTypeTransferTypes) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type LoggingEnabled struct {
 	// This parameter is required.
@@ -6335,11 +9651,19 @@ type LoggingEnabled struct {
 }
 
 func (s LoggingEnabled) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LoggingEnabled) GoString() string {
 	return s.String()
+}
+
+func (s *LoggingEnabled) GetTargetBucket() *string {
+	return s.TargetBucket
+}
+
+func (s *LoggingEnabled) GetTargetPrefix() *string {
+	return s.TargetPrefix
 }
 
 func (s *LoggingEnabled) SetTargetBucket(v string) *LoggingEnabled {
@@ -6352,22 +9676,75 @@ func (s *LoggingEnabled) SetTargetPrefix(v string) *LoggingEnabled {
 	return s
 }
 
+func (s *LoggingEnabled) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type MetaQuery struct {
 	Aggregations *MetaQueryAggregations `json:"Aggregations,omitempty" xml:"Aggregations,omitempty" type:"Struct"`
-	MaxResults   *int64                 `json:"MaxResults,omitempty" xml:"MaxResults,omitempty"`
-	NextToken    *string                `json:"NextToken,omitempty" xml:"NextToken,omitempty"`
-	Order        *string                `json:"Order,omitempty" xml:"Order,omitempty"`
-	// This parameter is required.
+	// example:
+	//
+	// 100
+	MaxResults *int64               `json:"MaxResults,omitempty" xml:"MaxResults,omitempty"`
+	MediaTypes *MetaQueryMediaTypes `json:"MediaTypes,omitempty" xml:"MediaTypes,omitempty" type:"Struct"`
+	// example:
+	//
+	// MTIzNDU2Nzg6aW1tdGVzdDpleGFtcGxlYnVja2V0OmRhdGFzZXQwMDE6b3NzOi8vZXhhbXBsZWJ1Y2tldC9zYW1wbGVvYmplY3QxLmpw****
+	NextToken *string `json:"NextToken,omitempty" xml:"NextToken,omitempty"`
+	Order     *string `json:"Order,omitempty" xml:"Order,omitempty"`
+	// example:
+	//
+	// {"Field": "Size","Value": "1048576","Operation": "gt"}
 	Query *string `json:"Query,omitempty" xml:"Query,omitempty"`
-	Sort  *string `json:"Sort,omitempty" xml:"Sort,omitempty"`
+	// example:
+	//
+	// {"Operation":"gt", "Field": "Size", "Value": "30"}
+	SimpleQuery *string `json:"SimpleQuery,omitempty" xml:"SimpleQuery,omitempty"`
+	// example:
+	//
+	// Size
+	Sort *string `json:"Sort,omitempty" xml:"Sort,omitempty"`
 }
 
 func (s MetaQuery) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQuery) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQuery) GetAggregations() *MetaQueryAggregations {
+	return s.Aggregations
+}
+
+func (s *MetaQuery) GetMaxResults() *int64 {
+	return s.MaxResults
+}
+
+func (s *MetaQuery) GetMediaTypes() *MetaQueryMediaTypes {
+	return s.MediaTypes
+}
+
+func (s *MetaQuery) GetNextToken() *string {
+	return s.NextToken
+}
+
+func (s *MetaQuery) GetOrder() *string {
+	return s.Order
+}
+
+func (s *MetaQuery) GetQuery() *string {
+	return s.Query
+}
+
+func (s *MetaQuery) GetSimpleQuery() *string {
+	return s.SimpleQuery
+}
+
+func (s *MetaQuery) GetSort() *string {
+	return s.Sort
 }
 
 func (s *MetaQuery) SetAggregations(v *MetaQueryAggregations) *MetaQuery {
@@ -6377,6 +9754,11 @@ func (s *MetaQuery) SetAggregations(v *MetaQueryAggregations) *MetaQuery {
 
 func (s *MetaQuery) SetMaxResults(v int64) *MetaQuery {
 	s.MaxResults = &v
+	return s
+}
+
+func (s *MetaQuery) SetMediaTypes(v *MetaQueryMediaTypes) *MetaQuery {
+	s.MediaTypes = v
 	return s
 }
 
@@ -6395,9 +9777,18 @@ func (s *MetaQuery) SetQuery(v string) *MetaQuery {
 	return s
 }
 
+func (s *MetaQuery) SetSimpleQuery(v string) *MetaQuery {
+	s.SimpleQuery = &v
+	return s
+}
+
 func (s *MetaQuery) SetSort(v string) *MetaQuery {
 	s.Sort = &v
 	return s
+}
+
+func (s *MetaQuery) Validate() error {
+	return dara.Validate(s)
 }
 
 type MetaQueryAggregations struct {
@@ -6405,11 +9796,15 @@ type MetaQueryAggregations struct {
 }
 
 func (s MetaQueryAggregations) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryAggregations) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryAggregations) GetAggregation() []*MetaQueryAggregation {
+	return s.Aggregation
 }
 
 func (s *MetaQueryAggregations) SetAggregation(v []*MetaQueryAggregation) *MetaQueryAggregations {
@@ -6417,17 +9812,55 @@ func (s *MetaQueryAggregations) SetAggregation(v []*MetaQueryAggregation) *MetaQ
 	return s
 }
 
+func (s *MetaQueryAggregations) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryMediaTypes struct {
+	MediaType []*string `json:"MediaType,omitempty" xml:"MediaType,omitempty" type:"Repeated"`
+}
+
+func (s MetaQueryMediaTypes) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryMediaTypes) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryMediaTypes) GetMediaType() []*string {
+	return s.MediaType
+}
+
+func (s *MetaQueryMediaTypes) SetMediaType(v []*string) *MetaQueryMediaTypes {
+	s.MediaType = v
+	return s
+}
+
+func (s *MetaQueryMediaTypes) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type MetaQueryAggregation struct {
 	Field     *string `json:"Field,omitempty" xml:"Field,omitempty"`
 	Operation *string `json:"Operation,omitempty" xml:"Operation,omitempty"`
 }
 
 func (s MetaQueryAggregation) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryAggregation) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryAggregation) GetField() *string {
+	return s.Field
+}
+
+func (s *MetaQueryAggregation) GetOperation() *string {
+	return s.Operation
 }
 
 func (s *MetaQueryAggregation) SetField(v string) *MetaQueryAggregation {
@@ -6440,28 +9873,552 @@ func (s *MetaQueryAggregation) SetOperation(v string) *MetaQueryAggregation {
 	return s
 }
 
+func (s *MetaQueryAggregation) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type MetaQueryAggregationsResult struct {
+	// example:
+	//
+	// Size
+	Field  *string                            `json:"Field,omitempty" xml:"Field,omitempty"`
+	Groups *MetaQueryAggregationsResultGroups `json:"Groups,omitempty" xml:"Groups,omitempty" type:"Struct"`
+	// example:
+	//
+	// sum
+	Operation *string `json:"Operation,omitempty" xml:"Operation,omitempty"`
+	// example:
+	//
+	// 200
+	Value *float64 `json:"Value,omitempty" xml:"Value,omitempty"`
+}
+
+func (s MetaQueryAggregationsResult) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryAggregationsResult) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryAggregationsResult) GetField() *string {
+	return s.Field
+}
+
+func (s *MetaQueryAggregationsResult) GetGroups() *MetaQueryAggregationsResultGroups {
+	return s.Groups
+}
+
+func (s *MetaQueryAggregationsResult) GetOperation() *string {
+	return s.Operation
+}
+
+func (s *MetaQueryAggregationsResult) GetValue() *float64 {
+	return s.Value
+}
+
+func (s *MetaQueryAggregationsResult) SetField(v string) *MetaQueryAggregationsResult {
+	s.Field = &v
+	return s
+}
+
+func (s *MetaQueryAggregationsResult) SetGroups(v *MetaQueryAggregationsResultGroups) *MetaQueryAggregationsResult {
+	s.Groups = v
+	return s
+}
+
+func (s *MetaQueryAggregationsResult) SetOperation(v string) *MetaQueryAggregationsResult {
+	s.Operation = &v
+	return s
+}
+
+func (s *MetaQueryAggregationsResult) SetValue(v float64) *MetaQueryAggregationsResult {
+	s.Value = &v
+	return s
+}
+
+func (s *MetaQueryAggregationsResult) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryAggregationsResultGroups struct {
+	Group []*MetaQueryAggregationsResultGroupsGroup `json:"Group,omitempty" xml:"Group,omitempty" type:"Repeated"`
+}
+
+func (s MetaQueryAggregationsResultGroups) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryAggregationsResultGroups) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryAggregationsResultGroups) GetGroup() []*MetaQueryAggregationsResultGroupsGroup {
+	return s.Group
+}
+
+func (s *MetaQueryAggregationsResultGroups) SetGroup(v []*MetaQueryAggregationsResultGroupsGroup) *MetaQueryAggregationsResultGroups {
+	s.Group = v
+	return s
+}
+
+func (s *MetaQueryAggregationsResultGroups) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryAggregationsResultGroupsGroup struct {
+	// example:
+	//
+	// 5
+	Count *int64 `json:"Count,omitempty" xml:"Count,omitempty"`
+	// example:
+	//
+	// 100
+	Value *string `json:"Value,omitempty" xml:"Value,omitempty"`
+}
+
+func (s MetaQueryAggregationsResultGroupsGroup) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryAggregationsResultGroupsGroup) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryAggregationsResultGroupsGroup) GetCount() *int64 {
+	return s.Count
+}
+
+func (s *MetaQueryAggregationsResultGroupsGroup) GetValue() *string {
+	return s.Value
+}
+
+func (s *MetaQueryAggregationsResultGroupsGroup) SetCount(v int64) *MetaQueryAggregationsResultGroupsGroup {
+	s.Count = &v
+	return s
+}
+
+func (s *MetaQueryAggregationsResultGroupsGroup) SetValue(v string) *MetaQueryAggregationsResultGroupsGroup {
+	s.Value = &v
+	return s
+}
+
+func (s *MetaQueryAggregationsResultGroupsGroup) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type MetaQueryFile struct {
-	ETag                                  *string                   `json:"ETag,omitempty" xml:"ETag,omitempty"`
-	FileModifiedTime                      *string                   `json:"FileModifiedTime,omitempty" xml:"FileModifiedTime,omitempty"`
-	Filename                              *string                   `json:"Filename,omitempty" xml:"Filename,omitempty"`
-	OSSCRC64                              *string                   `json:"OSSCRC64,omitempty" xml:"OSSCRC64,omitempty"`
-	OSSObjectType                         *string                   `json:"OSSObjectType,omitempty" xml:"OSSObjectType,omitempty"`
-	OSSStorageClass                       *string                   `json:"OSSStorageClass,omitempty" xml:"OSSStorageClass,omitempty"`
-	OSSTagging                            *MetaQueryFileOSSTagging  `json:"OSSTagging,omitempty" xml:"OSSTagging,omitempty" type:"Struct"`
-	OSSTaggingCount                       *int64                    `json:"OSSTaggingCount,omitempty" xml:"OSSTaggingCount,omitempty"`
-	OSSUserMeta                           *MetaQueryFileOSSUserMeta `json:"OSSUserMeta,omitempty" xml:"OSSUserMeta,omitempty" type:"Struct"`
-	ObjectACL                             *string                   `json:"ObjectACL,omitempty" xml:"ObjectACL,omitempty"`
-	ServerSideEncryption                  *string                   `json:"ServerSideEncryption,omitempty" xml:"ServerSideEncryption,omitempty"`
-	ServerSideEncryptionCustomerAlgorithm *string                   `json:"ServerSideEncryptionCustomerAlgorithm,omitempty" xml:"ServerSideEncryptionCustomerAlgorithm,omitempty"`
-	Size                                  *int64                    `json:"Size,omitempty" xml:"Size,omitempty"`
+	// example:
+	//
+	// https://aliyundoc.com
+	AccessControlAllowOrigin *string `json:"AccessControlAllowOrigin,omitempty" xml:"AccessControlAllowOrigin,omitempty"`
+	// example:
+	//
+	// PUT
+	AccessControlRequestMethod *string                 `json:"AccessControlRequestMethod,omitempty" xml:"AccessControlRequestMethod,omitempty"`
+	Addresses                  *MetaQueryFileAddresses `json:"Addresses,omitempty" xml:"Addresses,omitempty" type:"Struct"`
+	// example:
+	//
+	// FirstAlbum
+	Album *string `json:"Album,omitempty" xml:"Album,omitempty"`
+	// example:
+	//
+	// Jenny
+	AlbumArtist *string `json:"AlbumArtist,omitempty" xml:"AlbumArtist,omitempty"`
+	// example:
+	//
+	// Jane
+	Artist       *string                    `json:"Artist,omitempty" xml:"Artist,omitempty"`
+	AudioStreams *MetaQueryFileAudioStreams `json:"AudioStreams,omitempty" xml:"AudioStreams,omitempty" type:"Struct"`
+	// example:
+	//
+	// 13091201
+	Bitrate *int64 `json:"Bitrate,omitempty" xml:"Bitrate,omitempty"`
+	// example:
+	//
+	// no-cache
+	CacheControl *string `json:"CacheControl,omitempty" xml:"CacheControl,omitempty"`
+	// example:
+	//
+	// Jane
+	Composer *string `json:"Composer,omitempty" xml:"Composer,omitempty"`
+	// example:
+	//
+	// attachment; filename =test.jpg
+	ContentDisposition *string `json:"ContentDisposition,omitempty" xml:"ContentDisposition,omitempty"`
+	// example:
+	//
+	// UTF-8
+	ContentEncoding *string `json:"ContentEncoding,omitempty" xml:"ContentEncoding,omitempty"`
+	// example:
+	//
+	// zh-CN
+	ContentLanguage *string `json:"ContentLanguage,omitempty" xml:"ContentLanguage,omitempty"`
+	// example:
+	//
+	// image/jpeg
+	ContentType *string `json:"ContentType,omitempty" xml:"ContentType,omitempty"`
+	// example:
+	//
+	// 15.263000
+	Duration *float64 `json:"Duration,omitempty" xml:"Duration,omitempty"`
+	// example:
+	//
+	// "fba9dede5f27731c9771645a3986****"
+	ETag *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
+	// example:
+	//
+	// 2021-06-29T15:04:05.000000000Z07:00
+	FileModifiedTime *string `json:"FileModifiedTime,omitempty" xml:"FileModifiedTime,omitempty"`
+	// example:
+	//
+	// exampleobject.txt
+	Filename *string `json:"Filename,omitempty" xml:"Filename,omitempty"`
+	// example:
+	//
+	// 500
+	ImageHeight *int64 `json:"ImageHeight,omitempty" xml:"ImageHeight,omitempty"`
+	// example:
+	//
+	// 270
+	ImageWidth *int64 `json:"ImageWidth,omitempty" xml:"ImageWidth,omitempty"`
+	// example:
+	//
+	// 30.134390,120.074997
+	LatLong *string `json:"LatLong,omitempty" xml:"LatLong,omitempty"`
+	// example:
+	//
+	// image
+	MediaType *string `json:"MediaType,omitempty" xml:"MediaType,omitempty"`
+	// example:
+	//
+	// 4858A48BD1466884
+	OSSCRC64 *string `json:"OSSCRC64,omitempty" xml:"OSSCRC64,omitempty"`
+	// example:
+	//
+	// 2124-12-01T12:00:00.000Z
+	OSSExpiration *string `json:"OSSExpiration,omitempty" xml:"OSSExpiration,omitempty"`
+	// example:
+	//
+	// Normal
+	OSSObjectType *string `json:"OSSObjectType,omitempty" xml:"OSSObjectType,omitempty"`
+	// example:
+	//
+	// Standard
+	OSSStorageClass *string                  `json:"OSSStorageClass,omitempty" xml:"OSSStorageClass,omitempty"`
+	OSSTagging      *MetaQueryFileOSSTagging `json:"OSSTagging,omitempty" xml:"OSSTagging,omitempty" type:"Struct"`
+	// example:
+	//
+	// 2
+	OSSTaggingCount *int64                    `json:"OSSTaggingCount,omitempty" xml:"OSSTaggingCount,omitempty"`
+	OSSUserMeta     *MetaQueryFileOSSUserMeta `json:"OSSUserMeta,omitempty" xml:"OSSUserMeta,omitempty" type:"Struct"`
+	// example:
+	//
+	// default
+	ObjectACL *string `json:"ObjectACL,omitempty" xml:"ObjectACL,omitempty"`
+	// example:
+	//
+	// Jane
+	Performer *string `json:"Performer,omitempty" xml:"Performer,omitempty"`
+	// example:
+	//
+	// 2021-06-29T14:50:13.011643661+08:00
+	ProduceTime *string `json:"ProduceTime,omitempty" xml:"ProduceTime,omitempty"`
+	// example:
+	//
+	// SM4
+	ServerSideDataEncryption *string `json:"ServerSideDataEncryption,omitempty" xml:"ServerSideDataEncryption,omitempty"`
+	// example:
+	//
+	// AES256
+	ServerSideEncryption *string `json:"ServerSideEncryption,omitempty" xml:"ServerSideEncryption,omitempty"`
+	// example:
+	//
+	// SM4
+	ServerSideEncryptionCustomerAlgorithm *string `json:"ServerSideEncryptionCustomerAlgorithm,omitempty" xml:"ServerSideEncryptionCustomerAlgorithm,omitempty"`
+	// example:
+	//
+	// 9468da86-3509-4f8d-a61e-6eab1eac****
+	ServerSideEncryptionKeyId *string `json:"ServerSideEncryptionKeyId,omitempty" xml:"ServerSideEncryptionKeyId,omitempty"`
+	// example:
+	//
+	// 120
+	Size      *int64                  `json:"Size,omitempty" xml:"Size,omitempty"`
+	Subtitles *MetaQueryFileSubtitles `json:"Subtitles,omitempty" xml:"Subtitles,omitempty" type:"Struct"`
+	// example:
+	//
+	// test
+	Title *string `json:"Title,omitempty" xml:"Title,omitempty"`
+	// example:
+	//
+	// oss://examplebucket/test-object.jpg
+	URI *string `json:"URI,omitempty" xml:"URI,omitempty"`
+	// example:
+	//
+	// 1920
+	VideoHeight  *int64                     `json:"VideoHeight,omitempty" xml:"VideoHeight,omitempty"`
+	VideoStreams *MetaQueryFileVideoStreams `json:"VideoStreams,omitempty" xml:"VideoStreams,omitempty" type:"Struct"`
+	// example:
+	//
+	// 1080
+	VideoWidth *int64 `json:"VideoWidth,omitempty" xml:"VideoWidth,omitempty"`
 }
 
 func (s MetaQueryFile) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryFile) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryFile) GetAccessControlAllowOrigin() *string {
+	return s.AccessControlAllowOrigin
+}
+
+func (s *MetaQueryFile) GetAccessControlRequestMethod() *string {
+	return s.AccessControlRequestMethod
+}
+
+func (s *MetaQueryFile) GetAddresses() *MetaQueryFileAddresses {
+	return s.Addresses
+}
+
+func (s *MetaQueryFile) GetAlbum() *string {
+	return s.Album
+}
+
+func (s *MetaQueryFile) GetAlbumArtist() *string {
+	return s.AlbumArtist
+}
+
+func (s *MetaQueryFile) GetArtist() *string {
+	return s.Artist
+}
+
+func (s *MetaQueryFile) GetAudioStreams() *MetaQueryFileAudioStreams {
+	return s.AudioStreams
+}
+
+func (s *MetaQueryFile) GetBitrate() *int64 {
+	return s.Bitrate
+}
+
+func (s *MetaQueryFile) GetCacheControl() *string {
+	return s.CacheControl
+}
+
+func (s *MetaQueryFile) GetComposer() *string {
+	return s.Composer
+}
+
+func (s *MetaQueryFile) GetContentDisposition() *string {
+	return s.ContentDisposition
+}
+
+func (s *MetaQueryFile) GetContentEncoding() *string {
+	return s.ContentEncoding
+}
+
+func (s *MetaQueryFile) GetContentLanguage() *string {
+	return s.ContentLanguage
+}
+
+func (s *MetaQueryFile) GetContentType() *string {
+	return s.ContentType
+}
+
+func (s *MetaQueryFile) GetDuration() *float64 {
+	return s.Duration
+}
+
+func (s *MetaQueryFile) GetETag() *string {
+	return s.ETag
+}
+
+func (s *MetaQueryFile) GetFileModifiedTime() *string {
+	return s.FileModifiedTime
+}
+
+func (s *MetaQueryFile) GetFilename() *string {
+	return s.Filename
+}
+
+func (s *MetaQueryFile) GetImageHeight() *int64 {
+	return s.ImageHeight
+}
+
+func (s *MetaQueryFile) GetImageWidth() *int64 {
+	return s.ImageWidth
+}
+
+func (s *MetaQueryFile) GetLatLong() *string {
+	return s.LatLong
+}
+
+func (s *MetaQueryFile) GetMediaType() *string {
+	return s.MediaType
+}
+
+func (s *MetaQueryFile) GetOSSCRC64() *string {
+	return s.OSSCRC64
+}
+
+func (s *MetaQueryFile) GetOSSExpiration() *string {
+	return s.OSSExpiration
+}
+
+func (s *MetaQueryFile) GetOSSObjectType() *string {
+	return s.OSSObjectType
+}
+
+func (s *MetaQueryFile) GetOSSStorageClass() *string {
+	return s.OSSStorageClass
+}
+
+func (s *MetaQueryFile) GetOSSTagging() *MetaQueryFileOSSTagging {
+	return s.OSSTagging
+}
+
+func (s *MetaQueryFile) GetOSSTaggingCount() *int64 {
+	return s.OSSTaggingCount
+}
+
+func (s *MetaQueryFile) GetOSSUserMeta() *MetaQueryFileOSSUserMeta {
+	return s.OSSUserMeta
+}
+
+func (s *MetaQueryFile) GetObjectACL() *string {
+	return s.ObjectACL
+}
+
+func (s *MetaQueryFile) GetPerformer() *string {
+	return s.Performer
+}
+
+func (s *MetaQueryFile) GetProduceTime() *string {
+	return s.ProduceTime
+}
+
+func (s *MetaQueryFile) GetServerSideDataEncryption() *string {
+	return s.ServerSideDataEncryption
+}
+
+func (s *MetaQueryFile) GetServerSideEncryption() *string {
+	return s.ServerSideEncryption
+}
+
+func (s *MetaQueryFile) GetServerSideEncryptionCustomerAlgorithm() *string {
+	return s.ServerSideEncryptionCustomerAlgorithm
+}
+
+func (s *MetaQueryFile) GetServerSideEncryptionKeyId() *string {
+	return s.ServerSideEncryptionKeyId
+}
+
+func (s *MetaQueryFile) GetSize() *int64 {
+	return s.Size
+}
+
+func (s *MetaQueryFile) GetSubtitles() *MetaQueryFileSubtitles {
+	return s.Subtitles
+}
+
+func (s *MetaQueryFile) GetTitle() *string {
+	return s.Title
+}
+
+func (s *MetaQueryFile) GetURI() *string {
+	return s.URI
+}
+
+func (s *MetaQueryFile) GetVideoHeight() *int64 {
+	return s.VideoHeight
+}
+
+func (s *MetaQueryFile) GetVideoStreams() *MetaQueryFileVideoStreams {
+	return s.VideoStreams
+}
+
+func (s *MetaQueryFile) GetVideoWidth() *int64 {
+	return s.VideoWidth
+}
+
+func (s *MetaQueryFile) SetAccessControlAllowOrigin(v string) *MetaQueryFile {
+	s.AccessControlAllowOrigin = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetAccessControlRequestMethod(v string) *MetaQueryFile {
+	s.AccessControlRequestMethod = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetAddresses(v *MetaQueryFileAddresses) *MetaQueryFile {
+	s.Addresses = v
+	return s
+}
+
+func (s *MetaQueryFile) SetAlbum(v string) *MetaQueryFile {
+	s.Album = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetAlbumArtist(v string) *MetaQueryFile {
+	s.AlbumArtist = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetArtist(v string) *MetaQueryFile {
+	s.Artist = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetAudioStreams(v *MetaQueryFileAudioStreams) *MetaQueryFile {
+	s.AudioStreams = v
+	return s
+}
+
+func (s *MetaQueryFile) SetBitrate(v int64) *MetaQueryFile {
+	s.Bitrate = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetCacheControl(v string) *MetaQueryFile {
+	s.CacheControl = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetComposer(v string) *MetaQueryFile {
+	s.Composer = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetContentDisposition(v string) *MetaQueryFile {
+	s.ContentDisposition = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetContentEncoding(v string) *MetaQueryFile {
+	s.ContentEncoding = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetContentLanguage(v string) *MetaQueryFile {
+	s.ContentLanguage = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetContentType(v string) *MetaQueryFile {
+	s.ContentType = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetDuration(v float64) *MetaQueryFile {
+	s.Duration = &v
+	return s
 }
 
 func (s *MetaQueryFile) SetETag(v string) *MetaQueryFile {
@@ -6479,8 +10436,33 @@ func (s *MetaQueryFile) SetFilename(v string) *MetaQueryFile {
 	return s
 }
 
+func (s *MetaQueryFile) SetImageHeight(v int64) *MetaQueryFile {
+	s.ImageHeight = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetImageWidth(v int64) *MetaQueryFile {
+	s.ImageWidth = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetLatLong(v string) *MetaQueryFile {
+	s.LatLong = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetMediaType(v string) *MetaQueryFile {
+	s.MediaType = &v
+	return s
+}
+
 func (s *MetaQueryFile) SetOSSCRC64(v string) *MetaQueryFile {
 	s.OSSCRC64 = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetOSSExpiration(v string) *MetaQueryFile {
+	s.OSSExpiration = &v
 	return s
 }
 
@@ -6514,6 +10496,21 @@ func (s *MetaQueryFile) SetObjectACL(v string) *MetaQueryFile {
 	return s
 }
 
+func (s *MetaQueryFile) SetPerformer(v string) *MetaQueryFile {
+	s.Performer = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetProduceTime(v string) *MetaQueryFile {
+	s.ProduceTime = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetServerSideDataEncryption(v string) *MetaQueryFile {
+	s.ServerSideDataEncryption = &v
+	return s
+}
+
 func (s *MetaQueryFile) SetServerSideEncryption(v string) *MetaQueryFile {
 	s.ServerSideEncryption = &v
 	return s
@@ -6524,9 +10521,98 @@ func (s *MetaQueryFile) SetServerSideEncryptionCustomerAlgorithm(v string) *Meta
 	return s
 }
 
+func (s *MetaQueryFile) SetServerSideEncryptionKeyId(v string) *MetaQueryFile {
+	s.ServerSideEncryptionKeyId = &v
+	return s
+}
+
 func (s *MetaQueryFile) SetSize(v int64) *MetaQueryFile {
 	s.Size = &v
 	return s
+}
+
+func (s *MetaQueryFile) SetSubtitles(v *MetaQueryFileSubtitles) *MetaQueryFile {
+	s.Subtitles = v
+	return s
+}
+
+func (s *MetaQueryFile) SetTitle(v string) *MetaQueryFile {
+	s.Title = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetURI(v string) *MetaQueryFile {
+	s.URI = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetVideoHeight(v int64) *MetaQueryFile {
+	s.VideoHeight = &v
+	return s
+}
+
+func (s *MetaQueryFile) SetVideoStreams(v *MetaQueryFileVideoStreams) *MetaQueryFile {
+	s.VideoStreams = v
+	return s
+}
+
+func (s *MetaQueryFile) SetVideoWidth(v int64) *MetaQueryFile {
+	s.VideoWidth = &v
+	return s
+}
+
+func (s *MetaQueryFile) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryFileAddresses struct {
+	Address *MetaQueryRespAddress `json:"Address,omitempty" xml:"Address,omitempty"`
+}
+
+func (s MetaQueryFileAddresses) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryFileAddresses) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryFileAddresses) GetAddress() *MetaQueryRespAddress {
+	return s.Address
+}
+
+func (s *MetaQueryFileAddresses) SetAddress(v *MetaQueryRespAddress) *MetaQueryFileAddresses {
+	s.Address = v
+	return s
+}
+
+func (s *MetaQueryFileAddresses) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryFileAudioStreams struct {
+	AudioStream *MetaQueryRespAudioStream `json:"AudioStream,omitempty" xml:"AudioStream,omitempty"`
+}
+
+func (s MetaQueryFileAudioStreams) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryFileAudioStreams) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryFileAudioStreams) GetAudioStream() *MetaQueryRespAudioStream {
+	return s.AudioStream
+}
+
+func (s *MetaQueryFileAudioStreams) SetAudioStream(v *MetaQueryRespAudioStream) *MetaQueryFileAudioStreams {
+	s.AudioStream = v
+	return s
+}
+
+func (s *MetaQueryFileAudioStreams) Validate() error {
+	return dara.Validate(s)
 }
 
 type MetaQueryFileOSSTagging struct {
@@ -6534,11 +10620,15 @@ type MetaQueryFileOSSTagging struct {
 }
 
 func (s MetaQueryFileOSSTagging) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryFileOSSTagging) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryFileOSSTagging) GetTagging() []*MetaQueryTagging {
+	return s.Tagging
 }
 
 func (s *MetaQueryFileOSSTagging) SetTagging(v []*MetaQueryTagging) *MetaQueryFileOSSTagging {
@@ -6546,16 +10636,24 @@ func (s *MetaQueryFileOSSTagging) SetTagging(v []*MetaQueryTagging) *MetaQueryFi
 	return s
 }
 
+func (s *MetaQueryFileOSSTagging) Validate() error {
+	return dara.Validate(s)
+}
+
 type MetaQueryFileOSSUserMeta struct {
 	UserMeta []*MetaQueryUserMeta `json:"UserMeta,omitempty" xml:"UserMeta,omitempty" type:"Repeated"`
 }
 
 func (s MetaQueryFileOSSUserMeta) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryFileOSSUserMeta) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryFileOSSUserMeta) GetUserMeta() []*MetaQueryUserMeta {
+	return s.UserMeta
 }
 
 func (s *MetaQueryFileOSSUserMeta) SetUserMeta(v []*MetaQueryUserMeta) *MetaQueryFileOSSUserMeta {
@@ -6563,17 +10661,620 @@ func (s *MetaQueryFileOSSUserMeta) SetUserMeta(v []*MetaQueryUserMeta) *MetaQuer
 	return s
 }
 
+func (s *MetaQueryFileOSSUserMeta) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryFileSubtitles struct {
+	Subtitle *MetaQueryRespSubtitle `json:"Subtitle,omitempty" xml:"Subtitle,omitempty"`
+}
+
+func (s MetaQueryFileSubtitles) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryFileSubtitles) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryFileSubtitles) GetSubtitle() *MetaQueryRespSubtitle {
+	return s.Subtitle
+}
+
+func (s *MetaQueryFileSubtitles) SetSubtitle(v *MetaQueryRespSubtitle) *MetaQueryFileSubtitles {
+	s.Subtitle = v
+	return s
+}
+
+func (s *MetaQueryFileSubtitles) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryFileVideoStreams struct {
+	VideoStream *MetaQueryRespVideoStream `json:"VideoStream,omitempty" xml:"VideoStream,omitempty"`
+}
+
+func (s MetaQueryFileVideoStreams) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryFileVideoStreams) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryFileVideoStreams) GetVideoStream() *MetaQueryRespVideoStream {
+	return s.VideoStream
+}
+
+func (s *MetaQueryFileVideoStreams) SetVideoStream(v *MetaQueryRespVideoStream) *MetaQueryFileVideoStreams {
+	s.VideoStream = v
+	return s
+}
+
+func (s *MetaQueryFileVideoStreams) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type MetaQueryResp struct {
+	Aggregations *MetaQueryRespAggregations `json:"Aggregations,omitempty" xml:"Aggregations,omitempty" type:"Struct"`
+	Files        *MetaQueryRespFiles        `json:"Files,omitempty" xml:"Files,omitempty" type:"Struct"`
+	// example:
+	//
+	// MTIzNDU2Nzg6aW1tdGVzdDpleGFtcGxlYnVja2V0OmRhdGFzZXQwMDE6b3NzOi8vZXhhbXBsZWJ1Y2tldC9zYW1wbGVvYmplY3QxLmpw****
+	NextToken *string `json:"NextToken,omitempty" xml:"NextToken,omitempty"`
+}
+
+func (s MetaQueryResp) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryResp) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryResp) GetAggregations() *MetaQueryRespAggregations {
+	return s.Aggregations
+}
+
+func (s *MetaQueryResp) GetFiles() *MetaQueryRespFiles {
+	return s.Files
+}
+
+func (s *MetaQueryResp) GetNextToken() *string {
+	return s.NextToken
+}
+
+func (s *MetaQueryResp) SetAggregations(v *MetaQueryRespAggregations) *MetaQueryResp {
+	s.Aggregations = v
+	return s
+}
+
+func (s *MetaQueryResp) SetFiles(v *MetaQueryRespFiles) *MetaQueryResp {
+	s.Files = v
+	return s
+}
+
+func (s *MetaQueryResp) SetNextToken(v string) *MetaQueryResp {
+	s.NextToken = &v
+	return s
+}
+
+func (s *MetaQueryResp) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryRespAggregations struct {
+	Aggregation []*MetaQueryAggregationsResult `json:"Aggregation,omitempty" xml:"Aggregation,omitempty" type:"Repeated"`
+}
+
+func (s MetaQueryRespAggregations) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryRespAggregations) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryRespAggregations) GetAggregation() []*MetaQueryAggregationsResult {
+	return s.Aggregation
+}
+
+func (s *MetaQueryRespAggregations) SetAggregation(v []*MetaQueryAggregationsResult) *MetaQueryRespAggregations {
+	s.Aggregation = v
+	return s
+}
+
+func (s *MetaQueryRespAggregations) Validate() error {
+	return dara.Validate(s)
+}
+
+type MetaQueryRespFiles struct {
+	File []*MetaQueryFile `json:"File,omitempty" xml:"File,omitempty" type:"Repeated"`
+}
+
+func (s MetaQueryRespFiles) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryRespFiles) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryRespFiles) GetFile() []*MetaQueryFile {
+	return s.File
+}
+
+func (s *MetaQueryRespFiles) SetFile(v []*MetaQueryFile) *MetaQueryRespFiles {
+	s.File = v
+	return s
+}
+
+func (s *MetaQueryRespFiles) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type MetaQueryRespAddress struct {
+	// example:
+	//
+	// 中国浙江省杭州市余杭区文一西路969号
+	AddressLine *string `json:"AddressLine,omitempty" xml:"AddressLine,omitempty"`
+	// example:
+	//
+	// 杭州市
+	City *string `json:"City,omitempty" xml:"City,omitempty"`
+	// example:
+	//
+	// 余杭区
+	District *string `json:"District,omitempty" xml:"District,omitempty"`
+	// example:
+	//
+	// zh-Hans
+	Language *string `json:"Language,omitempty" xml:"Language,omitempty"`
+	// example:
+	//
+	// 浙江省
+	Province *string `json:"Province,omitempty" xml:"Province,omitempty"`
+	// example:
+	//
+	// 文一西路
+	Township *string `json:"Township,omitempty" xml:"Township,omitempty"`
+}
+
+func (s MetaQueryRespAddress) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryRespAddress) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryRespAddress) GetAddressLine() *string {
+	return s.AddressLine
+}
+
+func (s *MetaQueryRespAddress) GetCity() *string {
+	return s.City
+}
+
+func (s *MetaQueryRespAddress) GetDistrict() *string {
+	return s.District
+}
+
+func (s *MetaQueryRespAddress) GetLanguage() *string {
+	return s.Language
+}
+
+func (s *MetaQueryRespAddress) GetProvince() *string {
+	return s.Province
+}
+
+func (s *MetaQueryRespAddress) GetTownship() *string {
+	return s.Township
+}
+
+func (s *MetaQueryRespAddress) SetAddressLine(v string) *MetaQueryRespAddress {
+	s.AddressLine = &v
+	return s
+}
+
+func (s *MetaQueryRespAddress) SetCity(v string) *MetaQueryRespAddress {
+	s.City = &v
+	return s
+}
+
+func (s *MetaQueryRespAddress) SetDistrict(v string) *MetaQueryRespAddress {
+	s.District = &v
+	return s
+}
+
+func (s *MetaQueryRespAddress) SetLanguage(v string) *MetaQueryRespAddress {
+	s.Language = &v
+	return s
+}
+
+func (s *MetaQueryRespAddress) SetProvince(v string) *MetaQueryRespAddress {
+	s.Province = &v
+	return s
+}
+
+func (s *MetaQueryRespAddress) SetTownship(v string) *MetaQueryRespAddress {
+	s.Township = &v
+	return s
+}
+
+func (s *MetaQueryRespAddress) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type MetaQueryRespAudioStream struct {
+	// example:
+	//
+	// 320087
+	Bitrate *int64 `json:"Bitrate,omitempty" xml:"Bitrate,omitempty"`
+	// example:
+	//
+	// 2
+	Channels *int64 `json:"Channels,omitempty" xml:"Channels,omitempty"`
+	// example:
+	//
+	// aac
+	CodecName *string `json:"CodecName,omitempty" xml:"CodecName,omitempty"`
+	// example:
+	//
+	// 3.690667
+	Duration *float64 `json:"Duration,omitempty" xml:"Duration,omitempty"`
+	// example:
+	//
+	// en
+	Language *string `json:"Language,omitempty" xml:"Language,omitempty"`
+	// example:
+	//
+	// 48000
+	SampleRate *int64 `json:"SampleRate,omitempty" xml:"SampleRate,omitempty"`
+	// example:
+	//
+	// 0.0235
+	StartTime *float64 `json:"StartTime,omitempty" xml:"StartTime,omitempty"`
+}
+
+func (s MetaQueryRespAudioStream) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryRespAudioStream) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryRespAudioStream) GetBitrate() *int64 {
+	return s.Bitrate
+}
+
+func (s *MetaQueryRespAudioStream) GetChannels() *int64 {
+	return s.Channels
+}
+
+func (s *MetaQueryRespAudioStream) GetCodecName() *string {
+	return s.CodecName
+}
+
+func (s *MetaQueryRespAudioStream) GetDuration() *float64 {
+	return s.Duration
+}
+
+func (s *MetaQueryRespAudioStream) GetLanguage() *string {
+	return s.Language
+}
+
+func (s *MetaQueryRespAudioStream) GetSampleRate() *int64 {
+	return s.SampleRate
+}
+
+func (s *MetaQueryRespAudioStream) GetStartTime() *float64 {
+	return s.StartTime
+}
+
+func (s *MetaQueryRespAudioStream) SetBitrate(v int64) *MetaQueryRespAudioStream {
+	s.Bitrate = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) SetChannels(v int64) *MetaQueryRespAudioStream {
+	s.Channels = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) SetCodecName(v string) *MetaQueryRespAudioStream {
+	s.CodecName = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) SetDuration(v float64) *MetaQueryRespAudioStream {
+	s.Duration = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) SetLanguage(v string) *MetaQueryRespAudioStream {
+	s.Language = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) SetSampleRate(v int64) *MetaQueryRespAudioStream {
+	s.SampleRate = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) SetStartTime(v float64) *MetaQueryRespAudioStream {
+	s.StartTime = &v
+	return s
+}
+
+func (s *MetaQueryRespAudioStream) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type MetaQueryRespSubtitle struct {
+	// example:
+	//
+	// mov_text
+	CodecName *string `json:"CodecName,omitempty" xml:"CodecName,omitempty"`
+	// example:
+	//
+	// 71.378
+	Duration *float64 `json:"Duration,omitempty" xml:"Duration,omitempty"`
+	// example:
+	//
+	// en
+	Language *string `json:"Language,omitempty" xml:"Language,omitempty"`
+	// example:
+	//
+	// 0.000000
+	StartTime *float64 `json:"StartTime,omitempty" xml:"StartTime,omitempty"`
+}
+
+func (s MetaQueryRespSubtitle) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryRespSubtitle) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryRespSubtitle) GetCodecName() *string {
+	return s.CodecName
+}
+
+func (s *MetaQueryRespSubtitle) GetDuration() *float64 {
+	return s.Duration
+}
+
+func (s *MetaQueryRespSubtitle) GetLanguage() *string {
+	return s.Language
+}
+
+func (s *MetaQueryRespSubtitle) GetStartTime() *float64 {
+	return s.StartTime
+}
+
+func (s *MetaQueryRespSubtitle) SetCodecName(v string) *MetaQueryRespSubtitle {
+	s.CodecName = &v
+	return s
+}
+
+func (s *MetaQueryRespSubtitle) SetDuration(v float64) *MetaQueryRespSubtitle {
+	s.Duration = &v
+	return s
+}
+
+func (s *MetaQueryRespSubtitle) SetLanguage(v string) *MetaQueryRespSubtitle {
+	s.Language = &v
+	return s
+}
+
+func (s *MetaQueryRespSubtitle) SetStartTime(v float64) *MetaQueryRespSubtitle {
+	s.StartTime = &v
+	return s
+}
+
+func (s *MetaQueryRespSubtitle) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type MetaQueryRespVideoStream struct {
+	// example:
+	//
+	// 8
+	BitDepth *int64 `json:"BitDepth,omitempty" xml:"BitDepth,omitempty"`
+	// example:
+	//
+	// 5407765
+	Bitrate *int64 `json:"Bitrate,omitempty" xml:"Bitrate,omitempty"`
+	// example:
+	//
+	// h264
+	CodecName *string `json:"CodecName,omitempty" xml:"CodecName,omitempty"`
+	// example:
+	//
+	// bt709
+	ColorSpace *string `json:"ColorSpace,omitempty" xml:"ColorSpace,omitempty"`
+	// example:
+	//
+	// 22.88
+	Duration *float64 `json:"Duration,omitempty" xml:"Duration,omitempty"`
+	// example:
+	//
+	// 572
+	FrameCount *int64 `json:"FrameCount,omitempty" xml:"FrameCount,omitempty"`
+	// example:
+	//
+	// 25/1
+	FrameRate *string `json:"FrameRate,omitempty" xml:"FrameRate,omitempty"`
+	// example:
+	//
+	// 720
+	Height *int64 `json:"Height,omitempty" xml:"Height,omitempty"`
+	// example:
+	//
+	// en
+	Language *string `json:"Language,omitempty" xml:"Language,omitempty"`
+	// example:
+	//
+	// yuv420p
+	PixelFormat *string `json:"PixelFormat,omitempty" xml:"PixelFormat,omitempty"`
+	// example:
+	//
+	// 0.000000
+	StartTime *float64 `json:"StartTime,omitempty" xml:"StartTime,omitempty"`
+	// example:
+	//
+	// 1280
+	Width *int64 `json:"Width,omitempty" xml:"Width,omitempty"`
+}
+
+func (s MetaQueryRespVideoStream) String() string {
+	return dara.Prettify(s)
+}
+
+func (s MetaQueryRespVideoStream) GoString() string {
+	return s.String()
+}
+
+func (s *MetaQueryRespVideoStream) GetBitDepth() *int64 {
+	return s.BitDepth
+}
+
+func (s *MetaQueryRespVideoStream) GetBitrate() *int64 {
+	return s.Bitrate
+}
+
+func (s *MetaQueryRespVideoStream) GetCodecName() *string {
+	return s.CodecName
+}
+
+func (s *MetaQueryRespVideoStream) GetColorSpace() *string {
+	return s.ColorSpace
+}
+
+func (s *MetaQueryRespVideoStream) GetDuration() *float64 {
+	return s.Duration
+}
+
+func (s *MetaQueryRespVideoStream) GetFrameCount() *int64 {
+	return s.FrameCount
+}
+
+func (s *MetaQueryRespVideoStream) GetFrameRate() *string {
+	return s.FrameRate
+}
+
+func (s *MetaQueryRespVideoStream) GetHeight() *int64 {
+	return s.Height
+}
+
+func (s *MetaQueryRespVideoStream) GetLanguage() *string {
+	return s.Language
+}
+
+func (s *MetaQueryRespVideoStream) GetPixelFormat() *string {
+	return s.PixelFormat
+}
+
+func (s *MetaQueryRespVideoStream) GetStartTime() *float64 {
+	return s.StartTime
+}
+
+func (s *MetaQueryRespVideoStream) GetWidth() *int64 {
+	return s.Width
+}
+
+func (s *MetaQueryRespVideoStream) SetBitDepth(v int64) *MetaQueryRespVideoStream {
+	s.BitDepth = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetBitrate(v int64) *MetaQueryRespVideoStream {
+	s.Bitrate = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetCodecName(v string) *MetaQueryRespVideoStream {
+	s.CodecName = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetColorSpace(v string) *MetaQueryRespVideoStream {
+	s.ColorSpace = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetDuration(v float64) *MetaQueryRespVideoStream {
+	s.Duration = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetFrameCount(v int64) *MetaQueryRespVideoStream {
+	s.FrameCount = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetFrameRate(v string) *MetaQueryRespVideoStream {
+	s.FrameRate = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetHeight(v int64) *MetaQueryRespVideoStream {
+	s.Height = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetLanguage(v string) *MetaQueryRespVideoStream {
+	s.Language = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetPixelFormat(v string) *MetaQueryRespVideoStream {
+	s.PixelFormat = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetStartTime(v float64) *MetaQueryRespVideoStream {
+	s.StartTime = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) SetWidth(v int64) *MetaQueryRespVideoStream {
+	s.Width = &v
+	return s
+}
+
+func (s *MetaQueryRespVideoStream) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type MetaQueryTagging struct {
 	Key   *string `json:"Key,omitempty" xml:"Key,omitempty"`
 	Value *string `json:"Value,omitempty" xml:"Value,omitempty"`
 }
 
 func (s MetaQueryTagging) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryTagging) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryTagging) GetKey() *string {
+	return s.Key
+}
+
+func (s *MetaQueryTagging) GetValue() *string {
+	return s.Value
 }
 
 func (s *MetaQueryTagging) SetKey(v string) *MetaQueryTagging {
@@ -6586,17 +11287,30 @@ func (s *MetaQueryTagging) SetValue(v string) *MetaQueryTagging {
 	return s
 }
 
+func (s *MetaQueryTagging) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type MetaQueryUserMeta struct {
 	Key   *string `json:"Key,omitempty" xml:"Key,omitempty"`
 	Value *string `json:"Value,omitempty" xml:"Value,omitempty"`
 }
 
 func (s MetaQueryUserMeta) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s MetaQueryUserMeta) GoString() string {
 	return s.String()
+}
+
+func (s *MetaQueryUserMeta) GetKey() *string {
+	return s.Key
+}
+
+func (s *MetaQueryUserMeta) GetValue() *string {
+	return s.Value
 }
 
 func (s *MetaQueryUserMeta) SetKey(v string) *MetaQueryUserMeta {
@@ -6609,21 +11323,34 @@ func (s *MetaQueryUserMeta) SetValue(v string) *MetaQueryUserMeta {
 	return s
 }
 
+func (s *MetaQueryUserMeta) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type NotificationConfiguration struct {
 	TopicConfiguration []*NotificationConfigurationTopicConfiguration `json:"TopicConfiguration,omitempty" xml:"TopicConfiguration,omitempty" type:"Repeated"`
 }
 
 func (s NotificationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s NotificationConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *NotificationConfiguration) GetTopicConfiguration() []*NotificationConfigurationTopicConfiguration {
+	return s.TopicConfiguration
+}
+
 func (s *NotificationConfiguration) SetTopicConfiguration(v []*NotificationConfigurationTopicConfiguration) *NotificationConfiguration {
 	s.TopicConfiguration = v
 	return s
+}
+
+func (s *NotificationConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type NotificationConfigurationTopicConfiguration struct {
@@ -6634,17 +11361,26 @@ type NotificationConfigurationTopicConfiguration struct {
 }
 
 func (s NotificationConfigurationTopicConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s NotificationConfigurationTopicConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *NotificationConfigurationTopicConfiguration) GetId() *string {
+	return s.Id
+}
+
 func (s *NotificationConfigurationTopicConfiguration) SetId(v string) *NotificationConfigurationTopicConfiguration {
 	s.Id = &v
 	return s
 }
+
+func (s *NotificationConfigurationTopicConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ObjectHashConfiguration struct {
 	// example:
@@ -6658,11 +11394,19 @@ type ObjectHashConfiguration struct {
 }
 
 func (s ObjectHashConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectHashConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectHashConfiguration) GetDisplayObjectHash() *bool {
+	return s.DisplayObjectHash
+}
+
+func (s *ObjectHashConfiguration) GetObjectHashFunction() *string {
+	return s.ObjectHashFunction
 }
 
 func (s *ObjectHashConfiguration) SetDisplayObjectHash(v bool) *ObjectHashConfiguration {
@@ -6675,6 +11419,11 @@ func (s *ObjectHashConfiguration) SetObjectHashFunction(v string) *ObjectHashCon
 	return s
 }
 
+func (s *ObjectHashConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ObjectIdentifier struct {
 	// This parameter is required.
 	Key       *string `json:"Key,omitempty" xml:"Key,omitempty"`
@@ -6682,11 +11431,19 @@ type ObjectIdentifier struct {
 }
 
 func (s ObjectIdentifier) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectIdentifier) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectIdentifier) GetKey() *string {
+	return s.Key
+}
+
+func (s *ObjectIdentifier) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *ObjectIdentifier) SetKey(v string) *ObjectIdentifier {
@@ -6699,21 +11456,34 @@ func (s *ObjectIdentifier) SetVersionId(v string) *ObjectIdentifier {
 	return s
 }
 
+func (s *ObjectIdentifier) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ObjectLinkInfo struct {
 	Part []*ObjectLinkInfoPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
 }
 
 func (s ObjectLinkInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectLinkInfo) GoString() string {
 	return s.String()
 }
 
+func (s *ObjectLinkInfo) GetPart() []*ObjectLinkInfoPart {
+	return s.Part
+}
+
 func (s *ObjectLinkInfo) SetPart(v []*ObjectLinkInfoPart) *ObjectLinkInfo {
 	s.Part = v
 	return s
+}
+
+func (s *ObjectLinkInfo) Validate() error {
+	return dara.Validate(s)
 }
 
 type ObjectLinkInfoPart struct {
@@ -6728,11 +11498,19 @@ type ObjectLinkInfoPart struct {
 }
 
 func (s ObjectLinkInfoPart) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectLinkInfoPart) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectLinkInfoPart) GetPartName() *string {
+	return s.PartName
+}
+
+func (s *ObjectLinkInfoPart) GetPartNumber() *int64 {
+	return s.PartNumber
 }
 
 func (s *ObjectLinkInfoPart) SetPartName(v string) *ObjectLinkInfoPart {
@@ -6745,17 +11523,30 @@ func (s *ObjectLinkInfoPart) SetPartNumber(v int64) *ObjectLinkInfoPart {
 	return s
 }
 
+func (s *ObjectLinkInfoPart) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ObjectProcessConfiguration struct {
 	AllowedFeatures              *ObjectProcessConfigurationAllowedFeatures              `json:"AllowedFeatures,omitempty" xml:"AllowedFeatures,omitempty" type:"Struct"`
 	TransformationConfigurations *ObjectProcessConfigurationTransformationConfigurations `json:"TransformationConfigurations,omitempty" xml:"TransformationConfigurations,omitempty" type:"Struct"`
 }
 
 func (s ObjectProcessConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectProcessConfiguration) GetAllowedFeatures() *ObjectProcessConfigurationAllowedFeatures {
+	return s.AllowedFeatures
+}
+
+func (s *ObjectProcessConfiguration) GetTransformationConfigurations() *ObjectProcessConfigurationTransformationConfigurations {
+	return s.TransformationConfigurations
 }
 
 func (s *ObjectProcessConfiguration) SetAllowedFeatures(v *ObjectProcessConfigurationAllowedFeatures) *ObjectProcessConfiguration {
@@ -6768,16 +11559,24 @@ func (s *ObjectProcessConfiguration) SetTransformationConfigurations(v *ObjectPr
 	return s
 }
 
+func (s *ObjectProcessConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type ObjectProcessConfigurationAllowedFeatures struct {
 	AllowedFeature []*string `json:"AllowedFeature,omitempty" xml:"AllowedFeature,omitempty" type:"Repeated"`
 }
 
 func (s ObjectProcessConfigurationAllowedFeatures) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationAllowedFeatures) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectProcessConfigurationAllowedFeatures) GetAllowedFeature() []*string {
+	return s.AllowedFeature
 }
 
 func (s *ObjectProcessConfigurationAllowedFeatures) SetAllowedFeature(v []*string) *ObjectProcessConfigurationAllowedFeatures {
@@ -6785,21 +11584,33 @@ func (s *ObjectProcessConfigurationAllowedFeatures) SetAllowedFeature(v []*strin
 	return s
 }
 
+func (s *ObjectProcessConfigurationAllowedFeatures) Validate() error {
+	return dara.Validate(s)
+}
+
 type ObjectProcessConfigurationTransformationConfigurations struct {
 	TransformationConfiguration []*ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration `json:"TransformationConfiguration,omitempty" xml:"TransformationConfiguration,omitempty" type:"Repeated"`
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurations) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurations) GoString() string {
 	return s.String()
 }
 
+func (s *ObjectProcessConfigurationTransformationConfigurations) GetTransformationConfiguration() []*ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration {
+	return s.TransformationConfiguration
+}
+
 func (s *ObjectProcessConfigurationTransformationConfigurations) SetTransformationConfiguration(v []*ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) *ObjectProcessConfigurationTransformationConfigurations {
 	s.TransformationConfiguration = v
 	return s
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurations) Validate() error {
+	return dara.Validate(s)
 }
 
 type ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration struct {
@@ -6808,11 +11619,19 @@ type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigu
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) GetActions() *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions {
+	return s.Actions
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) GetContentTransformation() *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation {
+	return s.ContentTransformation
 }
 
 func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) SetActions(v *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions) *ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration {
@@ -6825,21 +11644,33 @@ func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationCon
 	return s
 }
 
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions struct {
 	Action []*string `json:"Action,omitempty" xml:"Action,omitempty" type:"Repeated"`
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions) GoString() string {
 	return s.String()
 }
 
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions) GetAction() []*string {
+	return s.Action
+}
+
 func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions) SetAction(v []*string) *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions {
 	s.Action = v
 	return s
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions) Validate() error {
+	return dara.Validate(s)
 }
 
 type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation struct {
@@ -6848,11 +11679,19 @@ type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigu
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation) GetAdditionalFeatures() *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures {
+	return s.AdditionalFeatures
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation) GetFunctionCompute() *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute {
+	return s.FunctionCompute
 }
 
 func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation) SetAdditionalFeatures(v *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures) *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation {
@@ -6865,16 +11704,24 @@ func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationCon
 	return s
 }
 
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation) Validate() error {
+	return dara.Validate(s)
+}
+
 type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures struct {
 	CustomForwardHeaders *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders `json:"CustomForwardHeaders,omitempty" xml:"CustomForwardHeaders,omitempty" type:"Struct"`
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures) GetCustomForwardHeaders() *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders {
+	return s.CustomForwardHeaders
 }
 
 func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures) SetCustomForwardHeaders(v *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders) *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures {
@@ -6882,21 +11729,33 @@ func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationCon
 	return s
 }
 
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeatures) Validate() error {
+	return dara.Validate(s)
+}
+
 type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders struct {
 	CustomForwardHeader []*string `json:"CustomForwardHeader,omitempty" xml:"CustomForwardHeader,omitempty" type:"Repeated"`
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders) GoString() string {
 	return s.String()
 }
 
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders) GetCustomForwardHeader() []*string {
+	return s.CustomForwardHeader
+}
+
 func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders) SetCustomForwardHeader(v []*string) *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders {
 	s.CustomForwardHeader = v
 	return s
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationAdditionalFeaturesCustomForwardHeaders) Validate() error {
+	return dara.Validate(s)
 }
 
 type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute struct {
@@ -6911,11 +11770,19 @@ type ObjectProcessConfigurationTransformationConfigurationsTransformationConfigu
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute) GetFunctionArn() *string {
+	return s.FunctionArn
+}
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute) GetFunctionAssumeRoleArn() *string {
+	return s.FunctionAssumeRoleArn
 }
 
 func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute) SetFunctionArn(v string) *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute {
@@ -6927,6 +11794,11 @@ func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationCon
 	s.FunctionAssumeRoleArn = &v
 	return s
 }
+
+func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ObjectSummary struct {
 	// example:
@@ -6966,11 +11838,47 @@ type ObjectSummary struct {
 }
 
 func (s ObjectSummary) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectSummary) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectSummary) GetETag() *string {
+	return s.ETag
+}
+
+func (s *ObjectSummary) GetKey() *string {
+	return s.Key
+}
+
+func (s *ObjectSummary) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *ObjectSummary) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *ObjectSummary) GetRestoreInfo() *string {
+	return s.RestoreInfo
+}
+
+func (s *ObjectSummary) GetSize() *int64 {
+	return s.Size
+}
+
+func (s *ObjectSummary) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *ObjectSummary) GetTransitionTime() *string {
+	return s.TransitionTime
+}
+
+func (s *ObjectSummary) GetType() *string {
+	return s.Type
 }
 
 func (s *ObjectSummary) SetETag(v string) *ObjectSummary {
@@ -7018,6 +11926,11 @@ func (s *ObjectSummary) SetType(v string) *ObjectSummary {
 	return s
 }
 
+func (s *ObjectSummary) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ObjectVersion struct {
 	// example:
 	//
@@ -7060,11 +11973,51 @@ type ObjectVersion struct {
 }
 
 func (s ObjectVersion) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ObjectVersion) GoString() string {
 	return s.String()
+}
+
+func (s *ObjectVersion) GetETag() *string {
+	return s.ETag
+}
+
+func (s *ObjectVersion) GetIsLatest() *bool {
+	return s.IsLatest
+}
+
+func (s *ObjectVersion) GetKey() *string {
+	return s.Key
+}
+
+func (s *ObjectVersion) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *ObjectVersion) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *ObjectVersion) GetRestoreInfo() *string {
+	return s.RestoreInfo
+}
+
+func (s *ObjectVersion) GetSize() *int64 {
+	return s.Size
+}
+
+func (s *ObjectVersion) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *ObjectVersion) GetTransitionTime() *string {
+	return s.TransitionTime
+}
+
+func (s *ObjectVersion) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *ObjectVersion) SetETag(v string) *ObjectVersion {
@@ -7117,6 +12070,11 @@ func (s *ObjectVersion) SetVersionId(v string) *ObjectVersion {
 	return s
 }
 
+func (s *ObjectVersion) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type OutputSerialization struct {
 	Csv              *CSVOutput  `json:"CSV,omitempty" xml:"CSV,omitempty"`
 	EnablePayloadCrc *bool       `json:"EnablePayloadCrc,omitempty" xml:"EnablePayloadCrc,omitempty"`
@@ -7127,11 +12085,35 @@ type OutputSerialization struct {
 }
 
 func (s OutputSerialization) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s OutputSerialization) GoString() string {
 	return s.String()
+}
+
+func (s *OutputSerialization) GetCsv() *CSVOutput {
+	return s.Csv
+}
+
+func (s *OutputSerialization) GetEnablePayloadCrc() *bool {
+	return s.EnablePayloadCrc
+}
+
+func (s *OutputSerialization) GetJson() *JSONOutput {
+	return s.Json
+}
+
+func (s *OutputSerialization) GetKeepAllColumns() *bool {
+	return s.KeepAllColumns
+}
+
+func (s *OutputSerialization) GetOutputHeader() *bool {
+	return s.OutputHeader
+}
+
+func (s *OutputSerialization) GetOutputRawData() *bool {
+	return s.OutputRawData
 }
 
 func (s *OutputSerialization) SetCsv(v *CSVOutput) *OutputSerialization {
@@ -7164,17 +12146,30 @@ func (s *OutputSerialization) SetOutputRawData(v bool) *OutputSerialization {
 	return s
 }
 
+func (s *OutputSerialization) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Owner struct {
 	DisplayName *string `json:"DisplayName,omitempty" xml:"DisplayName,omitempty"`
 	ID          *string `json:"ID,omitempty" xml:"ID,omitempty"`
 }
 
 func (s Owner) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Owner) GoString() string {
 	return s.String()
+}
+
+func (s *Owner) GetDisplayName() *string {
+	return s.DisplayName
+}
+
+func (s *Owner) GetID() *string {
+	return s.ID
 }
 
 func (s *Owner) SetDisplayName(v string) *Owner {
@@ -7187,6 +12182,11 @@ func (s *Owner) SetID(v string) *Owner {
 	return s
 }
 
+func (s *Owner) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Part struct {
 	ETag *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -7196,11 +12196,27 @@ type Part struct {
 }
 
 func (s Part) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Part) GoString() string {
 	return s.String()
+}
+
+func (s *Part) GetETag() *string {
+	return s.ETag
+}
+
+func (s *Part) GetLastModified() *string {
+	return s.LastModified
+}
+
+func (s *Part) GetPartNumber() *int64 {
+	return s.PartNumber
+}
+
+func (s *Part) GetSize() *int64 {
+	return s.Size
 }
 
 func (s *Part) SetETag(v string) *Part {
@@ -7223,21 +12239,34 @@ func (s *Part) SetSize(v int64) *Part {
 	return s
 }
 
+func (s *Part) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PromoteDataLakeCacheReq struct {
 	Object *PromoteDataLakeCacheReqObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Struct"`
 }
 
 func (s PromoteDataLakeCacheReq) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PromoteDataLakeCacheReq) GoString() string {
 	return s.String()
 }
 
+func (s *PromoteDataLakeCacheReq) GetObject() *PromoteDataLakeCacheReqObject {
+	return s.Object
+}
+
 func (s *PromoteDataLakeCacheReq) SetObject(v *PromoteDataLakeCacheReqObject) *PromoteDataLakeCacheReq {
 	s.Object = v
 	return s
+}
+
+func (s *PromoteDataLakeCacheReq) Validate() error {
+	return dara.Validate(s)
 }
 
 type PromoteDataLakeCacheReqObject struct {
@@ -7252,11 +12281,19 @@ type PromoteDataLakeCacheReqObject struct {
 }
 
 func (s PromoteDataLakeCacheReqObject) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PromoteDataLakeCacheReqObject) GoString() string {
 	return s.String()
+}
+
+func (s *PromoteDataLakeCacheReqObject) GetObjectName() *string {
+	return s.ObjectName
+}
+
+func (s *PromoteDataLakeCacheReqObject) GetRange() *string {
+	return s.Range
 }
 
 func (s *PromoteDataLakeCacheReqObject) SetObjectName(v string) *PromoteDataLakeCacheReqObject {
@@ -7269,6 +12306,11 @@ func (s *PromoteDataLakeCacheReqObject) SetRange(v string) *PromoteDataLakeCache
 	return s
 }
 
+func (s *PromoteDataLakeCacheReqObject) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PublicAccessBlockConfiguration struct {
 	// example:
 	//
@@ -7277,17 +12319,26 @@ type PublicAccessBlockConfiguration struct {
 }
 
 func (s PublicAccessBlockConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PublicAccessBlockConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *PublicAccessBlockConfiguration) GetBlockPublicAccess() *bool {
+	return s.BlockPublicAccess
+}
+
 func (s *PublicAccessBlockConfiguration) SetBlockPublicAccess(v bool) *PublicAccessBlockConfiguration {
 	s.BlockPublicAccess = &v
 	return s
 }
+
+func (s *PublicAccessBlockConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutChannelConfiguration struct {
 	// example:
@@ -7325,11 +12376,43 @@ type PutChannelConfiguration struct {
 }
 
 func (s PutChannelConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutChannelConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *PutChannelConfiguration) GetAutoSetContentType() *bool {
+	return s.AutoSetContentType
+}
+
+func (s *PutChannelConfiguration) GetDefault404Pic() *string {
+	return s.Default404Pic
+}
+
+func (s *PutChannelConfiguration) GetOrigPicForbidden() *bool {
+	return s.OrigPicForbidden
+}
+
+func (s *PutChannelConfiguration) GetSetAttachName() *bool {
+	return s.SetAttachName
+}
+
+func (s *PutChannelConfiguration) GetStatus() *string {
+	return s.Status
+}
+
+func (s *PutChannelConfiguration) GetStyleDelimiters() *string {
+	return s.StyleDelimiters
+}
+
+func (s *PutChannelConfiguration) GetUseSrcFormat() *bool {
+	return s.UseSrcFormat
+}
+
+func (s *PutChannelConfiguration) GetUseStyleOnly() *bool {
+	return s.UseStyleOnly
 }
 
 func (s *PutChannelConfiguration) SetAutoSetContentType(v bool) *PutChannelConfiguration {
@@ -7372,6 +12455,11 @@ func (s *PutChannelConfiguration) SetUseStyleOnly(v bool) *PutChannelConfigurati
 	return s
 }
 
+func (s *PutChannelConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutReplicationRule struct {
 	// example:
 	//
@@ -7397,11 +12485,47 @@ type PutReplicationRule struct {
 }
 
 func (s PutReplicationRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutReplicationRule) GoString() string {
 	return s.String()
+}
+
+func (s *PutReplicationRule) GetAction() *string {
+	return s.Action
+}
+
+func (s *PutReplicationRule) GetDestination() *ReplicationDestination {
+	return s.Destination
+}
+
+func (s *PutReplicationRule) GetEncryptionConfiguration() *ReplicationEncryptionConfiguration {
+	return s.EncryptionConfiguration
+}
+
+func (s *PutReplicationRule) GetHistoricalObjectReplication() *string {
+	return s.HistoricalObjectReplication
+}
+
+func (s *PutReplicationRule) GetID() *string {
+	return s.ID
+}
+
+func (s *PutReplicationRule) GetPrefixSet() *ReplicationPrefixSet {
+	return s.PrefixSet
+}
+
+func (s *PutReplicationRule) GetRTC() *RTC {
+	return s.RTC
+}
+
+func (s *PutReplicationRule) GetSourceSelectionCriteria() *ReplicationSourceSelectionCriteria {
+	return s.SourceSelectionCriteria
+}
+
+func (s *PutReplicationRule) GetSyncRole() *string {
+	return s.SyncRole
 }
 
 func (s *PutReplicationRule) SetAction(v string) *PutReplicationRule {
@@ -7449,6 +12573,11 @@ func (s *PutReplicationRule) SetSyncRole(v string) *PutReplicationRule {
 	return s
 }
 
+func (s *PutReplicationRule) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type QoSConfiguration struct {
 	// example:
 	//
@@ -7489,11 +12618,47 @@ type QoSConfiguration struct {
 }
 
 func (s QoSConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s QoSConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *QoSConfiguration) GetExtranetDownloadBandwidth() *int64 {
+	return s.ExtranetDownloadBandwidth
+}
+
+func (s *QoSConfiguration) GetExtranetQps() *int64 {
+	return s.ExtranetQps
+}
+
+func (s *QoSConfiguration) GetExtranetUploadBandwidth() *int64 {
+	return s.ExtranetUploadBandwidth
+}
+
+func (s *QoSConfiguration) GetIntranetDownloadBandwidth() *int64 {
+	return s.IntranetDownloadBandwidth
+}
+
+func (s *QoSConfiguration) GetIntranetQps() *int64 {
+	return s.IntranetQps
+}
+
+func (s *QoSConfiguration) GetIntranetUploadBandwidth() *int64 {
+	return s.IntranetUploadBandwidth
+}
+
+func (s *QoSConfiguration) GetTotalDownloadBandwidth() *int64 {
+	return s.TotalDownloadBandwidth
+}
+
+func (s *QoSConfiguration) GetTotalQps() *int64 {
+	return s.TotalQps
+}
+
+func (s *QoSConfiguration) GetTotalUploadBandwidth() *int64 {
+	return s.TotalUploadBandwidth
 }
 
 func (s *QoSConfiguration) SetExtranetDownloadBandwidth(v int64) *QoSConfiguration {
@@ -7541,6 +12706,11 @@ func (s *QoSConfiguration) SetTotalUploadBandwidth(v int64) *QoSConfiguration {
 	return s
 }
 
+func (s *QoSConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type QoSConfigurationWithRemark struct {
 	// example:
 	//
@@ -7585,11 +12755,51 @@ type QoSConfigurationWithRemark struct {
 }
 
 func (s QoSConfigurationWithRemark) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s QoSConfigurationWithRemark) GoString() string {
 	return s.String()
+}
+
+func (s *QoSConfigurationWithRemark) GetExtranetDownloadBandwidth() *int64 {
+	return s.ExtranetDownloadBandwidth
+}
+
+func (s *QoSConfigurationWithRemark) GetExtranetQps() *int64 {
+	return s.ExtranetQps
+}
+
+func (s *QoSConfigurationWithRemark) GetExtranetUploadBandwidth() *int64 {
+	return s.ExtranetUploadBandwidth
+}
+
+func (s *QoSConfigurationWithRemark) GetIntranetDownloadBandwidth() *int64 {
+	return s.IntranetDownloadBandwidth
+}
+
+func (s *QoSConfigurationWithRemark) GetIntranetQps() *int64 {
+	return s.IntranetQps
+}
+
+func (s *QoSConfigurationWithRemark) GetIntranetUploadBandwidth() *int64 {
+	return s.IntranetUploadBandwidth
+}
+
+func (s *QoSConfigurationWithRemark) GetRemark() *int64 {
+	return s.Remark
+}
+
+func (s *QoSConfigurationWithRemark) GetTotalDownloadBandwidth() *int64 {
+	return s.TotalDownloadBandwidth
+}
+
+func (s *QoSConfigurationWithRemark) GetTotalQps() *int64 {
+	return s.TotalQps
+}
+
+func (s *QoSConfigurationWithRemark) GetTotalUploadBandwidth() *int64 {
+	return s.TotalUploadBandwidth
 }
 
 func (s *QoSConfigurationWithRemark) SetExtranetDownloadBandwidth(v int64) *QoSConfigurationWithRemark {
@@ -7642,6 +12852,11 @@ func (s *QoSConfigurationWithRemark) SetTotalUploadBandwidth(v int64) *QoSConfig
 	return s
 }
 
+func (s *QoSConfigurationWithRemark) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RTC struct {
 	// example:
 	//
@@ -7650,17 +12865,26 @@ type RTC struct {
 }
 
 func (s RTC) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RTC) GoString() string {
 	return s.String()
 }
 
+func (s *RTC) GetStatus() *string {
+	return s.Status
+}
+
 func (s *RTC) SetStatus(v string) *RTC {
 	s.Status = &v
 	return s
 }
+
+func (s *RTC) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type RefererConfiguration struct {
 	// This parameter is required.
@@ -7683,11 +12907,31 @@ type RefererConfiguration struct {
 }
 
 func (s RefererConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RefererConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *RefererConfiguration) GetAllowEmptyReferer() *bool {
+	return s.AllowEmptyReferer
+}
+
+func (s *RefererConfiguration) GetAllowTruncateQueryString() *bool {
+	return s.AllowTruncateQueryString
+}
+
+func (s *RefererConfiguration) GetRefererBlacklist() *RefererConfigurationRefererBlacklist {
+	return s.RefererBlacklist
+}
+
+func (s *RefererConfiguration) GetRefererList() *RefererConfigurationRefererList {
+	return s.RefererList
+}
+
+func (s *RefererConfiguration) GetTruncatePath() *bool {
+	return s.TruncatePath
 }
 
 func (s *RefererConfiguration) SetAllowEmptyReferer(v bool) *RefererConfiguration {
@@ -7715,16 +12959,24 @@ func (s *RefererConfiguration) SetTruncatePath(v bool) *RefererConfiguration {
 	return s
 }
 
+func (s *RefererConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type RefererConfigurationRefererBlacklist struct {
 	Referer []*string `json:"Referer,omitempty" xml:"Referer,omitempty" type:"Repeated"`
 }
 
 func (s RefererConfigurationRefererBlacklist) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RefererConfigurationRefererBlacklist) GoString() string {
 	return s.String()
+}
+
+func (s *RefererConfigurationRefererBlacklist) GetReferer() []*string {
+	return s.Referer
 }
 
 func (s *RefererConfigurationRefererBlacklist) SetReferer(v []*string) *RefererConfigurationRefererBlacklist {
@@ -7732,22 +12984,35 @@ func (s *RefererConfigurationRefererBlacklist) SetReferer(v []*string) *RefererC
 	return s
 }
 
+func (s *RefererConfigurationRefererBlacklist) Validate() error {
+	return dara.Validate(s)
+}
+
 type RefererConfigurationRefererList struct {
 	Referer []*string `json:"Referer,omitempty" xml:"Referer,omitempty" type:"Repeated"`
 }
 
 func (s RefererConfigurationRefererList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RefererConfigurationRefererList) GoString() string {
 	return s.String()
 }
 
+func (s *RefererConfigurationRefererList) GetReferer() []*string {
+	return s.Referer
+}
+
 func (s *RefererConfigurationRefererList) SetReferer(v []*string) *RefererConfigurationRefererList {
 	s.Referer = v
 	return s
 }
+
+func (s *RefererConfigurationRefererList) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type RegionInfo struct {
 	AccelerateEndpoint *string `json:"AccelerateEndpoint,omitempty" xml:"AccelerateEndpoint,omitempty"`
@@ -7757,11 +13022,27 @@ type RegionInfo struct {
 }
 
 func (s RegionInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RegionInfo) GoString() string {
 	return s.String()
+}
+
+func (s *RegionInfo) GetAccelerateEndpoint() *string {
+	return s.AccelerateEndpoint
+}
+
+func (s *RegionInfo) GetInternalEndpoint() *string {
+	return s.InternalEndpoint
+}
+
+func (s *RegionInfo) GetInternetEndpoint() *string {
+	return s.InternetEndpoint
+}
+
+func (s *RegionInfo) GetRegion() *string {
+	return s.Region
 }
 
 func (s *RegionInfo) SetAccelerateEndpoint(v string) *RegionInfo {
@@ -7784,22 +13065,36 @@ func (s *RegionInfo) SetRegion(v string) *RegionInfo {
 	return s
 }
 
+func (s *RegionInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReplicationConfiguration struct {
 	Rule *PutReplicationRule `json:"Rule,omitempty" xml:"Rule,omitempty"`
 }
 
 func (s ReplicationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *ReplicationConfiguration) GetRule() *PutReplicationRule {
+	return s.Rule
+}
+
 func (s *ReplicationConfiguration) SetRule(v *PutReplicationRule) *ReplicationConfiguration {
 	s.Rule = v
 	return s
 }
+
+func (s *ReplicationConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ReplicationDestination struct {
 	// example:
@@ -7817,11 +13112,23 @@ type ReplicationDestination struct {
 }
 
 func (s ReplicationDestination) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationDestination) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationDestination) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *ReplicationDestination) GetLocation() *string {
+	return s.Location
+}
+
+func (s *ReplicationDestination) GetTransferType() *string {
+	return s.TransferType
 }
 
 func (s *ReplicationDestination) SetBucket(v string) *ReplicationDestination {
@@ -7839,6 +13146,11 @@ func (s *ReplicationDestination) SetTransferType(v string) *ReplicationDestinati
 	return s
 }
 
+func (s *ReplicationDestination) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReplicationEncryptionConfiguration struct {
 	// example:
 	//
@@ -7847,11 +13159,15 @@ type ReplicationEncryptionConfiguration struct {
 }
 
 func (s ReplicationEncryptionConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationEncryptionConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationEncryptionConfiguration) GetReplicaKmsKeyID() *string {
+	return s.ReplicaKmsKeyID
 }
 
 func (s *ReplicationEncryptionConfiguration) SetReplicaKmsKeyID(v string) *ReplicationEncryptionConfiguration {
@@ -7859,22 +13175,36 @@ func (s *ReplicationEncryptionConfiguration) SetReplicaKmsKeyID(v string) *Repli
 	return s
 }
 
+func (s *ReplicationEncryptionConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReplicationPrefixSet struct {
 	Prefixs []*string `json:"Prefix,omitempty" xml:"Prefix,omitempty" type:"Repeated"`
 }
 
 func (s ReplicationPrefixSet) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationPrefixSet) GoString() string {
 	return s.String()
 }
 
+func (s *ReplicationPrefixSet) GetPrefixs() []*string {
+	return s.Prefixs
+}
+
 func (s *ReplicationPrefixSet) SetPrefixs(v []*string) *ReplicationPrefixSet {
 	s.Prefixs = v
 	return s
 }
+
+func (s *ReplicationPrefixSet) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ReplicationProgressRule struct {
 	// example:
@@ -7899,11 +13229,39 @@ type ReplicationProgressRule struct {
 }
 
 func (s ReplicationProgressRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationProgressRule) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationProgressRule) GetAction() *string {
+	return s.Action
+}
+
+func (s *ReplicationProgressRule) GetDestination() *ReplicationDestination {
+	return s.Destination
+}
+
+func (s *ReplicationProgressRule) GetHistoricalObjectReplication() *string {
+	return s.HistoricalObjectReplication
+}
+
+func (s *ReplicationProgressRule) GetID() *string {
+	return s.ID
+}
+
+func (s *ReplicationProgressRule) GetPrefixSet() *ReplicationPrefixSet {
+	return s.PrefixSet
+}
+
+func (s *ReplicationProgressRule) GetProgress() *ReplicationProgressRuleProgress {
+	return s.Progress
+}
+
+func (s *ReplicationProgressRule) GetStatus() *string {
+	return s.Status
 }
 
 func (s *ReplicationProgressRule) SetAction(v string) *ReplicationProgressRule {
@@ -7941,6 +13299,10 @@ func (s *ReplicationProgressRule) SetStatus(v string) *ReplicationProgressRule {
 	return s
 }
 
+func (s *ReplicationProgressRule) Validate() error {
+	return dara.Validate(s)
+}
+
 type ReplicationProgressRuleProgress struct {
 	// example:
 	//
@@ -7953,11 +13315,19 @@ type ReplicationProgressRuleProgress struct {
 }
 
 func (s ReplicationProgressRuleProgress) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationProgressRuleProgress) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationProgressRuleProgress) GetHistoricalObject() *string {
+	return s.HistoricalObject
+}
+
+func (s *ReplicationProgressRuleProgress) GetNewObject() *string {
+	return s.NewObject
 }
 
 func (s *ReplicationProgressRuleProgress) SetHistoricalObject(v string) *ReplicationProgressRuleProgress {
@@ -7969,6 +13339,11 @@ func (s *ReplicationProgressRuleProgress) SetNewObject(v string) *ReplicationPro
 	s.NewObject = &v
 	return s
 }
+
+func (s *ReplicationProgressRuleProgress) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ReplicationRule struct {
 	// example:
@@ -7999,11 +13374,51 @@ type ReplicationRule struct {
 }
 
 func (s ReplicationRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationRule) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationRule) GetAction() *string {
+	return s.Action
+}
+
+func (s *ReplicationRule) GetDestination() *ReplicationDestination {
+	return s.Destination
+}
+
+func (s *ReplicationRule) GetEncryptionConfiguration() *ReplicationEncryptionConfiguration {
+	return s.EncryptionConfiguration
+}
+
+func (s *ReplicationRule) GetHistoricalObjectReplication() *string {
+	return s.HistoricalObjectReplication
+}
+
+func (s *ReplicationRule) GetID() *string {
+	return s.ID
+}
+
+func (s *ReplicationRule) GetPrefixSet() *ReplicationPrefixSet {
+	return s.PrefixSet
+}
+
+func (s *ReplicationRule) GetRTC() *RTC {
+	return s.RTC
+}
+
+func (s *ReplicationRule) GetSourceSelectionCriteria() *ReplicationSourceSelectionCriteria {
+	return s.SourceSelectionCriteria
+}
+
+func (s *ReplicationRule) GetStatus() *string {
+	return s.Status
+}
+
+func (s *ReplicationRule) GetSyncRole() *string {
+	return s.SyncRole
 }
 
 func (s *ReplicationRule) SetAction(v string) *ReplicationRule {
@@ -8056,6 +13471,11 @@ func (s *ReplicationRule) SetSyncRole(v string) *ReplicationRule {
 	return s
 }
 
+func (s *ReplicationRule) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReplicationRuleProgress struct {
 	Action    *string               `json:"Action,omitempty" xml:"Action,omitempty"`
 	ID        *string               `json:"ID,omitempty" xml:"ID,omitempty"`
@@ -8063,11 +13483,23 @@ type ReplicationRuleProgress struct {
 }
 
 func (s ReplicationRuleProgress) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationRuleProgress) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationRuleProgress) GetAction() *string {
+	return s.Action
+}
+
+func (s *ReplicationRuleProgress) GetID() *string {
+	return s.ID
+}
+
+func (s *ReplicationRuleProgress) GetPrefixSet() *ReplicationPrefixSet {
+	return s.PrefixSet
 }
 
 func (s *ReplicationRuleProgress) SetAction(v string) *ReplicationRuleProgress {
@@ -8085,16 +13517,25 @@ func (s *ReplicationRuleProgress) SetPrefixSet(v *ReplicationPrefixSet) *Replica
 	return s
 }
 
+func (s *ReplicationRuleProgress) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReplicationRules struct {
 	Ids []*string `json:"ID,omitempty" xml:"ID,omitempty" type:"Repeated"`
 }
 
 func (s ReplicationRules) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationRules) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationRules) GetIds() []*string {
+	return s.Ids
 }
 
 func (s *ReplicationRules) SetIds(v []*string) *ReplicationRules {
@@ -8102,21 +13543,34 @@ func (s *ReplicationRules) SetIds(v []*string) *ReplicationRules {
 	return s
 }
 
+func (s *ReplicationRules) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReplicationSourceSelectionCriteria struct {
 	SseKmsEncryptedObjects *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects `json:"SseKmsEncryptedObjects,omitempty" xml:"SseKmsEncryptedObjects,omitempty" type:"Struct"`
 }
 
 func (s ReplicationSourceSelectionCriteria) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationSourceSelectionCriteria) GoString() string {
 	return s.String()
 }
 
+func (s *ReplicationSourceSelectionCriteria) GetSseKmsEncryptedObjects() *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects {
+	return s.SseKmsEncryptedObjects
+}
+
 func (s *ReplicationSourceSelectionCriteria) SetSseKmsEncryptedObjects(v *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) *ReplicationSourceSelectionCriteria {
 	s.SseKmsEncryptedObjects = v
 	return s
+}
+
+func (s *ReplicationSourceSelectionCriteria) Validate() error {
+	return dara.Validate(s)
 }
 
 type ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects struct {
@@ -8127,11 +13581,15 @@ type ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects struct {
 }
 
 func (s ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) GoString() string {
 	return s.String()
+}
+
+func (s *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) GetStatus() *string {
+	return s.Status
 }
 
 func (s *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) SetStatus(v string) *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects {
@@ -8139,22 +13597,36 @@ func (s *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) SetStatus(v s
 	return s
 }
 
+func (s *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RequestPaymentConfiguration struct {
 	Payer *string `json:"Payer,omitempty" xml:"Payer,omitempty"`
 }
 
 func (s RequestPaymentConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RequestPaymentConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *RequestPaymentConfiguration) GetPayer() *string {
+	return s.Payer
+}
+
 func (s *RequestPaymentConfiguration) SetPayer(v string) *RequestPaymentConfiguration {
 	s.Payer = &v
 	return s
 }
+
+func (s *RequestPaymentConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type RequesterQoSInfo struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
@@ -8165,11 +13637,19 @@ type RequesterQoSInfo struct {
 }
 
 func (s RequesterQoSInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RequesterQoSInfo) GoString() string {
 	return s.String()
+}
+
+func (s *RequesterQoSInfo) GetQoSConfiguration() *QoSConfiguration {
+	return s.QoSConfiguration
+}
+
+func (s *RequesterQoSInfo) GetRequester() *string {
+	return s.Requester
 }
 
 func (s *RequesterQoSInfo) SetQoSConfiguration(v *QoSConfiguration) *RequesterQoSInfo {
@@ -8181,6 +13661,11 @@ func (s *RequesterQoSInfo) SetRequester(v string) *RequesterQoSInfo {
 	s.Requester = &v
 	return s
 }
+
+func (s *RequesterQoSInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ReservedCapacityCreateConfiguration struct {
 	// example:
@@ -8206,11 +13691,31 @@ type ReservedCapacityCreateConfiguration struct {
 }
 
 func (s ReservedCapacityCreateConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReservedCapacityCreateConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ReservedCapacityCreateConfiguration) GetCapacity() *int64 {
+	return s.Capacity
+}
+
+func (s *ReservedCapacityCreateConfiguration) GetDataRedundancyType() *string {
+	return s.DataRedundancyType
+}
+
+func (s *ReservedCapacityCreateConfiguration) GetName() *string {
+	return s.Name
+}
+
+func (s *ReservedCapacityCreateConfiguration) GetRegion() *string {
+	return s.Region
+}
+
+func (s *ReservedCapacityCreateConfiguration) GetYears() *int64 {
+	return s.Years
 }
 
 func (s *ReservedCapacityCreateConfiguration) SetCapacity(v int64) *ReservedCapacityCreateConfiguration {
@@ -8237,6 +13742,11 @@ func (s *ReservedCapacityCreateConfiguration) SetYears(v int64) *ReservedCapacit
 	s.Years = &v
 	return s
 }
+
+func (s *ReservedCapacityCreateConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ReservedCapacityRecord struct {
 	// example:
@@ -8299,11 +13809,71 @@ type ReservedCapacityRecord struct {
 }
 
 func (s ReservedCapacityRecord) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReservedCapacityRecord) GoString() string {
 	return s.String()
+}
+
+func (s *ReservedCapacityRecord) GetCapacity() *int64 {
+	return s.Capacity
+}
+
+func (s *ReservedCapacityRecord) GetCreateTime() *int64 {
+	return s.CreateTime
+}
+
+func (s *ReservedCapacityRecord) GetDataRedundancyType() *string {
+	return s.DataRedundancyType
+}
+
+func (s *ReservedCapacityRecord) GetDueTime() *int64 {
+	return s.DueTime
+}
+
+func (s *ReservedCapacityRecord) GetExpansionTime() *int64 {
+	return s.ExpansionTime
+}
+
+func (s *ReservedCapacityRecord) GetFirstTimeEnabled() *int64 {
+	return s.FirstTimeEnabled
+}
+
+func (s *ReservedCapacityRecord) GetID() *string {
+	return s.ID
+}
+
+func (s *ReservedCapacityRecord) GetLastExpansionCapacity() *int64 {
+	return s.LastExpansionCapacity
+}
+
+func (s *ReservedCapacityRecord) GetLastModifyTime() *int64 {
+	return s.LastModifyTime
+}
+
+func (s *ReservedCapacityRecord) GetName() *string {
+	return s.Name
+}
+
+func (s *ReservedCapacityRecord) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *ReservedCapacityRecord) GetRegion() *string {
+	return s.Region
+}
+
+func (s *ReservedCapacityRecord) GetStatus() *string {
+	return s.Status
+}
+
+func (s *ReservedCapacityRecord) GetVersion() *int64 {
+	return s.Version
+}
+
+func (s *ReservedCapacityRecord) GetYears() *int64 {
+	return s.Years
 }
 
 func (s *ReservedCapacityRecord) SetCapacity(v int64) *ReservedCapacityRecord {
@@ -8381,22 +13951,36 @@ func (s *ReservedCapacityRecord) SetYears(v int64) *ReservedCapacityRecord {
 	return s
 }
 
+func (s *ReservedCapacityRecord) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ReservedCapacityRecordList struct {
 	ReservedCapacityRecord []*ReservedCapacityRecord `json:"ReservedCapacityRecord,omitempty" xml:"ReservedCapacityRecord,omitempty" type:"Repeated"`
 }
 
 func (s ReservedCapacityRecordList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReservedCapacityRecordList) GoString() string {
 	return s.String()
 }
 
+func (s *ReservedCapacityRecordList) GetReservedCapacityRecord() []*ReservedCapacityRecord {
+	return s.ReservedCapacityRecord
+}
+
 func (s *ReservedCapacityRecordList) SetReservedCapacityRecord(v []*ReservedCapacityRecord) *ReservedCapacityRecordList {
 	s.ReservedCapacityRecord = v
 	return s
 }
+
+func (s *ReservedCapacityRecordList) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ReservedCapacityUpdateConfiguration struct {
 	// example:
@@ -8414,11 +13998,23 @@ type ReservedCapacityUpdateConfiguration struct {
 }
 
 func (s ReservedCapacityUpdateConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ReservedCapacityUpdateConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ReservedCapacityUpdateConfiguration) GetCapacity() *int64 {
+	return s.Capacity
+}
+
+func (s *ReservedCapacityUpdateConfiguration) GetStatus() *string {
+	return s.Status
+}
+
+func (s *ReservedCapacityUpdateConfiguration) GetYears() *int64 {
+	return s.Years
 }
 
 func (s *ReservedCapacityUpdateConfiguration) SetCapacity(v int64) *ReservedCapacityUpdateConfiguration {
@@ -8436,6 +14032,11 @@ func (s *ReservedCapacityUpdateConfiguration) SetYears(v int64) *ReservedCapacit
 	return s
 }
 
+func (s *ReservedCapacityUpdateConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ResourcePoolBucket struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
 	//
@@ -8450,11 +14051,19 @@ type ResourcePoolBucket struct {
 }
 
 func (s ResourcePoolBucket) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ResourcePoolBucket) GoString() string {
 	return s.String()
+}
+
+func (s *ResourcePoolBucket) GetJoinTime() *string {
+	return s.JoinTime
+}
+
+func (s *ResourcePoolBucket) GetName() *string {
+	return s.Name
 }
 
 func (s *ResourcePoolBucket) SetJoinTime(v string) *ResourcePoolBucket {
@@ -8466,6 +14075,89 @@ func (s *ResourcePoolBucket) SetName(v string) *ResourcePoolBucket {
 	s.Name = &v
 	return s
 }
+
+func (s *ResourcePoolBucket) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ResourcePoolBucketGroup struct {
+	GroupBucketInfo []*GroupBucketInfo `json:"GroupBucketInfo,omitempty" xml:"GroupBucketInfo,omitempty" type:"Repeated"`
+	// example:
+	//
+	// test-group-1
+	GroupName *string `json:"GroupName,omitempty" xml:"GroupName,omitempty"`
+}
+
+func (s ResourcePoolBucketGroup) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ResourcePoolBucketGroup) GoString() string {
+	return s.String()
+}
+
+func (s *ResourcePoolBucketGroup) GetGroupBucketInfo() []*GroupBucketInfo {
+	return s.GroupBucketInfo
+}
+
+func (s *ResourcePoolBucketGroup) GetGroupName() *string {
+	return s.GroupName
+}
+
+func (s *ResourcePoolBucketGroup) SetGroupBucketInfo(v []*GroupBucketInfo) *ResourcePoolBucketGroup {
+	s.GroupBucketInfo = v
+	return s
+}
+
+func (s *ResourcePoolBucketGroup) SetGroupName(v string) *ResourcePoolBucketGroup {
+	s.GroupName = &v
+	return s
+}
+
+func (s *ResourcePoolBucketGroup) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ResourcePoolBucketGroupQoSInfo struct {
+	// example:
+	//
+	// test-group
+	GroupName        *string           `json:"GroupName,omitempty" xml:"GroupName,omitempty"`
+	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
+}
+
+func (s ResourcePoolBucketGroupQoSInfo) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ResourcePoolBucketGroupQoSInfo) GoString() string {
+	return s.String()
+}
+
+func (s *ResourcePoolBucketGroupQoSInfo) GetGroupName() *string {
+	return s.GroupName
+}
+
+func (s *ResourcePoolBucketGroupQoSInfo) GetQoSConfiguration() *QoSConfiguration {
+	return s.QoSConfiguration
+}
+
+func (s *ResourcePoolBucketGroupQoSInfo) SetGroupName(v string) *ResourcePoolBucketGroupQoSInfo {
+	s.GroupName = &v
+	return s
+}
+
+func (s *ResourcePoolBucketGroupQoSInfo) SetQoSConfiguration(v *QoSConfiguration) *ResourcePoolBucketGroupQoSInfo {
+	s.QoSConfiguration = v
+	return s
+}
+
+func (s *ResourcePoolBucketGroupQoSInfo) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ResourcePoolSimpleInfo struct {
 	// example:
@@ -8479,11 +14171,19 @@ type ResourcePoolSimpleInfo struct {
 }
 
 func (s ResourcePoolSimpleInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ResourcePoolSimpleInfo) GoString() string {
 	return s.String()
+}
+
+func (s *ResourcePoolSimpleInfo) GetCreateTime() *string {
+	return s.CreateTime
+}
+
+func (s *ResourcePoolSimpleInfo) GetName() *string {
+	return s.Name
 }
 
 func (s *ResourcePoolSimpleInfo) SetCreateTime(v string) *ResourcePoolSimpleInfo {
@@ -8496,21 +14196,34 @@ func (s *ResourcePoolSimpleInfo) SetName(v string) *ResourcePoolSimpleInfo {
 	return s
 }
 
+func (s *ResourcePoolSimpleInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ResponseHeaderConfiguration struct {
 	Rule []*ResponseHeaderConfigurationRule `json:"Rule,omitempty" xml:"Rule,omitempty" type:"Repeated"`
 }
 
 func (s ResponseHeaderConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ResponseHeaderConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *ResponseHeaderConfiguration) GetRule() []*ResponseHeaderConfigurationRule {
+	return s.Rule
+}
+
 func (s *ResponseHeaderConfiguration) SetRule(v []*ResponseHeaderConfigurationRule) *ResponseHeaderConfiguration {
 	s.Rule = v
 	return s
+}
+
+func (s *ResponseHeaderConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type ResponseHeaderConfigurationRule struct {
@@ -8523,11 +14236,23 @@ type ResponseHeaderConfigurationRule struct {
 }
 
 func (s ResponseHeaderConfigurationRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ResponseHeaderConfigurationRule) GoString() string {
 	return s.String()
+}
+
+func (s *ResponseHeaderConfigurationRule) GetFilters() *ResponseHeaderConfigurationRuleFilters {
+	return s.Filters
+}
+
+func (s *ResponseHeaderConfigurationRule) GetHideHeaders() *ResponseHeaderConfigurationRuleHideHeaders {
+	return s.HideHeaders
+}
+
+func (s *ResponseHeaderConfigurationRule) GetName() *string {
+	return s.Name
 }
 
 func (s *ResponseHeaderConfigurationRule) SetFilters(v *ResponseHeaderConfigurationRuleFilters) *ResponseHeaderConfigurationRule {
@@ -8545,16 +14270,24 @@ func (s *ResponseHeaderConfigurationRule) SetName(v string) *ResponseHeaderConfi
 	return s
 }
 
+func (s *ResponseHeaderConfigurationRule) Validate() error {
+	return dara.Validate(s)
+}
+
 type ResponseHeaderConfigurationRuleFilters struct {
 	Operation []*string `json:"Operation,omitempty" xml:"Operation,omitempty" type:"Repeated"`
 }
 
 func (s ResponseHeaderConfigurationRuleFilters) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ResponseHeaderConfigurationRuleFilters) GoString() string {
 	return s.String()
+}
+
+func (s *ResponseHeaderConfigurationRuleFilters) GetOperation() []*string {
+	return s.Operation
 }
 
 func (s *ResponseHeaderConfigurationRuleFilters) SetOperation(v []*string) *ResponseHeaderConfigurationRuleFilters {
@@ -8562,16 +14295,24 @@ func (s *ResponseHeaderConfigurationRuleFilters) SetOperation(v []*string) *Resp
 	return s
 }
 
+func (s *ResponseHeaderConfigurationRuleFilters) Validate() error {
+	return dara.Validate(s)
+}
+
 type ResponseHeaderConfigurationRuleHideHeaders struct {
 	Header []*string `json:"Header,omitempty" xml:"Header,omitempty" type:"Repeated"`
 }
 
 func (s ResponseHeaderConfigurationRuleHideHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ResponseHeaderConfigurationRuleHideHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *ResponseHeaderConfigurationRuleHideHeaders) GetHeader() []*string {
+	return s.Header
 }
 
 func (s *ResponseHeaderConfigurationRuleHideHeaders) SetHeader(v []*string) *ResponseHeaderConfigurationRuleHideHeaders {
@@ -8579,17 +14320,30 @@ func (s *ResponseHeaderConfigurationRuleHideHeaders) SetHeader(v []*string) *Res
 	return s
 }
 
+func (s *ResponseHeaderConfigurationRuleHideHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RestoreRequest struct {
 	Days          *int64                       `json:"Days,omitempty" xml:"Days,omitempty"`
 	JobParameters *RestoreRequestJobParameters `json:"JobParameters,omitempty" xml:"JobParameters,omitempty" type:"Struct"`
 }
 
 func (s RestoreRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RestoreRequest) GoString() string {
 	return s.String()
+}
+
+func (s *RestoreRequest) GetDays() *int64 {
+	return s.Days
+}
+
+func (s *RestoreRequest) GetJobParameters() *RestoreRequestJobParameters {
+	return s.JobParameters
 }
 
 func (s *RestoreRequest) SetDays(v int64) *RestoreRequest {
@@ -8602,22 +14356,35 @@ func (s *RestoreRequest) SetJobParameters(v *RestoreRequestJobParameters) *Resto
 	return s
 }
 
+func (s *RestoreRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 type RestoreRequestJobParameters struct {
 	Tier *string `json:"Tier,omitempty" xml:"Tier,omitempty"`
 }
 
 func (s RestoreRequestJobParameters) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RestoreRequestJobParameters) GoString() string {
 	return s.String()
 }
 
+func (s *RestoreRequestJobParameters) GetTier() *string {
+	return s.Tier
+}
+
 func (s *RestoreRequestJobParameters) SetTier(v string) *RestoreRequestJobParameters {
 	s.Tier = &v
 	return s
 }
+
+func (s *RestoreRequestJobParameters) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type RoutingRule struct {
 	Condition *RoutingRuleCondition `json:"Condition,omitempty" xml:"Condition,omitempty"`
@@ -8630,11 +14397,27 @@ type RoutingRule struct {
 }
 
 func (s RoutingRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRule) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRule) GetCondition() *RoutingRuleCondition {
+	return s.Condition
+}
+
+func (s *RoutingRule) GetLuaConfig() *RoutingRuleLuaConfig {
+	return s.LuaConfig
+}
+
+func (s *RoutingRule) GetRedirect() *RoutingRuleRedirect {
+	return s.Redirect
+}
+
+func (s *RoutingRule) GetRuleNumber() *int64 {
+	return s.RuleNumber
 }
 
 func (s *RoutingRule) SetCondition(v *RoutingRuleCondition) *RoutingRule {
@@ -8657,6 +14440,11 @@ func (s *RoutingRule) SetRuleNumber(v int64) *RoutingRule {
 	return s
 }
 
+func (s *RoutingRule) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RoutingRuleCondition struct {
 	// example:
 	//
@@ -8674,11 +14462,27 @@ type RoutingRuleCondition struct {
 }
 
 func (s RoutingRuleCondition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleCondition) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleCondition) GetHttpErrorCodeReturnedEquals() *int64 {
+	return s.HttpErrorCodeReturnedEquals
+}
+
+func (s *RoutingRuleCondition) GetIncludeHeader() []*RoutingRuleConditionIncludeHeader {
+	return s.IncludeHeader
+}
+
+func (s *RoutingRuleCondition) GetKeyPrefixEquals() *string {
+	return s.KeyPrefixEquals
+}
+
+func (s *RoutingRuleCondition) GetKeySuffixEquals() *string {
+	return s.KeySuffixEquals
 }
 
 func (s *RoutingRuleCondition) SetHttpErrorCodeReturnedEquals(v int64) *RoutingRuleCondition {
@@ -8701,6 +14505,10 @@ func (s *RoutingRuleCondition) SetKeySuffixEquals(v string) *RoutingRuleConditio
 	return s
 }
 
+func (s *RoutingRuleCondition) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleConditionIncludeHeader struct {
 	// example:
 	//
@@ -8721,11 +14529,27 @@ type RoutingRuleConditionIncludeHeader struct {
 }
 
 func (s RoutingRuleConditionIncludeHeader) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleConditionIncludeHeader) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleConditionIncludeHeader) GetEndsWith() *string {
+	return s.EndsWith
+}
+
+func (s *RoutingRuleConditionIncludeHeader) GetEquals() *string {
+	return s.Equals
+}
+
+func (s *RoutingRuleConditionIncludeHeader) GetKey() *string {
+	return s.Key
+}
+
+func (s *RoutingRuleConditionIncludeHeader) GetStartsWith() *string {
+	return s.StartsWith
 }
 
 func (s *RoutingRuleConditionIncludeHeader) SetEndsWith(v string) *RoutingRuleConditionIncludeHeader {
@@ -8748,6 +14572,11 @@ func (s *RoutingRuleConditionIncludeHeader) SetStartsWith(v string) *RoutingRule
 	return s
 }
 
+func (s *RoutingRuleConditionIncludeHeader) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RoutingRuleLuaConfig struct {
 	// example:
 	//
@@ -8756,17 +14585,26 @@ type RoutingRuleLuaConfig struct {
 }
 
 func (s RoutingRuleLuaConfig) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleLuaConfig) GoString() string {
 	return s.String()
 }
 
+func (s *RoutingRuleLuaConfig) GetScript() *string {
+	return s.Script
+}
+
 func (s *RoutingRuleLuaConfig) SetScript(v string) *RoutingRuleLuaConfig {
 	s.Script = &v
 	return s
 }
+
+func (s *RoutingRuleLuaConfig) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type RoutingRuleRedirect struct {
 	// example:
@@ -8905,11 +14743,159 @@ type RoutingRuleRedirect struct {
 }
 
 func (s RoutingRuleRedirect) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirect) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirect) GetEnableReplacePrefix() *bool {
+	return s.EnableReplacePrefix
+}
+
+func (s *RoutingRuleRedirect) GetHostName() *string {
+	return s.HostName
+}
+
+func (s *RoutingRuleRedirect) GetHttpRedirectCode() *int64 {
+	return s.HttpRedirectCode
+}
+
+func (s *RoutingRuleRedirect) GetMirrorAllowGetImageInfo() *bool {
+	return s.MirrorAllowGetImageInfo
+}
+
+func (s *RoutingRuleRedirect) GetMirrorAllowHeadObject() *bool {
+	return s.MirrorAllowHeadObject
+}
+
+func (s *RoutingRuleRedirect) GetMirrorAllowVideoSnapshot() *bool {
+	return s.MirrorAllowVideoSnapshot
+}
+
+func (s *RoutingRuleRedirect) GetMirrorAsyncStatus() *int64 {
+	return s.MirrorAsyncStatus
+}
+
+func (s *RoutingRuleRedirect) GetMirrorAuth() *RoutingRuleRedirectMirrorAuth {
+	return s.MirrorAuth
+}
+
+func (s *RoutingRuleRedirect) GetMirrorCheckMd5() *bool {
+	return s.MirrorCheckMd5
+}
+
+func (s *RoutingRuleRedirect) GetMirrorDstRegion() *string {
+	return s.MirrorDstRegion
+}
+
+func (s *RoutingRuleRedirect) GetMirrorDstSlaveVpcId() *string {
+	return s.MirrorDstSlaveVpcId
+}
+
+func (s *RoutingRuleRedirect) GetMirrorDstVpcId() *string {
+	return s.MirrorDstVpcId
+}
+
+func (s *RoutingRuleRedirect) GetMirrorFollowRedirect() *bool {
+	return s.MirrorFollowRedirect
+}
+
+func (s *RoutingRuleRedirect) GetMirrorHeaders() *RoutingRuleRedirectMirrorHeaders {
+	return s.MirrorHeaders
+}
+
+func (s *RoutingRuleRedirect) GetMirrorIsExpressTunnel() *bool {
+	return s.MirrorIsExpressTunnel
+}
+
+func (s *RoutingRuleRedirect) GetMirrorMultiAlternates() *RoutingRuleRedirectMirrorMultiAlternates {
+	return s.MirrorMultiAlternates
+}
+
+func (s *RoutingRuleRedirect) GetMirrorPassOriginalSlashes() *bool {
+	return s.MirrorPassOriginalSlashes
+}
+
+func (s *RoutingRuleRedirect) GetMirrorPassQueryString() *bool {
+	return s.MirrorPassQueryString
+}
+
+func (s *RoutingRuleRedirect) GetMirrorProxyPass() *bool {
+	return s.MirrorProxyPass
+}
+
+func (s *RoutingRuleRedirect) GetMirrorReturnHeaders() *RoutingRuleRedirectMirrorReturnHeaders {
+	return s.MirrorReturnHeaders
+}
+
+func (s *RoutingRuleRedirect) GetMirrorRole() *string {
+	return s.MirrorRole
+}
+
+func (s *RoutingRuleRedirect) GetMirrorSNI() *bool {
+	return s.MirrorSNI
+}
+
+func (s *RoutingRuleRedirect) GetMirrorSaveOssMeta() *bool {
+	return s.MirrorSaveOssMeta
+}
+
+func (s *RoutingRuleRedirect) GetMirrorSwitchAllErrors() *bool {
+	return s.MirrorSwitchAllErrors
+}
+
+func (s *RoutingRuleRedirect) GetMirrorTaggings() *RoutingRuleRedirectMirrorTaggings {
+	return s.MirrorTaggings
+}
+
+func (s *RoutingRuleRedirect) GetMirrorTunnelId() *string {
+	return s.MirrorTunnelId
+}
+
+func (s *RoutingRuleRedirect) GetMirrorURL() *string {
+	return s.MirrorURL
+}
+
+func (s *RoutingRuleRedirect) GetMirrorURLProbe() *string {
+	return s.MirrorURLProbe
+}
+
+func (s *RoutingRuleRedirect) GetMirrorURLSlave() *string {
+	return s.MirrorURLSlave
+}
+
+func (s *RoutingRuleRedirect) GetMirrorUserLastModified() *bool {
+	return s.MirrorUserLastModified
+}
+
+func (s *RoutingRuleRedirect) GetMirrorUsingRole() *bool {
+	return s.MirrorUsingRole
+}
+
+func (s *RoutingRuleRedirect) GetPassQueryString() *bool {
+	return s.PassQueryString
+}
+
+func (s *RoutingRuleRedirect) GetProtocol() *string {
+	return s.Protocol
+}
+
+func (s *RoutingRuleRedirect) GetRedirectType() *string {
+	return s.RedirectType
+}
+
+func (s *RoutingRuleRedirect) GetReplaceKeyPrefixWith() *string {
+	return s.ReplaceKeyPrefixWith
+}
+
+func (s *RoutingRuleRedirect) GetReplaceKeyWith() *string {
+	return s.ReplaceKeyWith
+}
+
+func (s *RoutingRuleRedirect) GetTransparentMirrorResponseCodes() *string {
+	return s.TransparentMirrorResponseCodes
 }
 
 func (s *RoutingRuleRedirect) SetEnableReplacePrefix(v bool) *RoutingRuleRedirect {
@@ -9097,6 +15083,10 @@ func (s *RoutingRuleRedirect) SetTransparentMirrorResponseCodes(v string) *Routi
 	return s
 }
 
+func (s *RoutingRuleRedirect) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleRedirectMirrorAuth struct {
 	// example:
 	//
@@ -9117,11 +15107,27 @@ type RoutingRuleRedirectMirrorAuth struct {
 }
 
 func (s RoutingRuleRedirectMirrorAuth) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorAuth) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirectMirrorAuth) GetAccessKeyId() *string {
+	return s.AccessKeyId
+}
+
+func (s *RoutingRuleRedirectMirrorAuth) GetAccessKeySecret() *string {
+	return s.AccessKeySecret
+}
+
+func (s *RoutingRuleRedirectMirrorAuth) GetAuthType() *string {
+	return s.AuthType
+}
+
+func (s *RoutingRuleRedirectMirrorAuth) GetRegion() *string {
+	return s.Region
 }
 
 func (s *RoutingRuleRedirectMirrorAuth) SetAccessKeyId(v string) *RoutingRuleRedirectMirrorAuth {
@@ -9144,6 +15150,10 @@ func (s *RoutingRuleRedirectMirrorAuth) SetRegion(v string) *RoutingRuleRedirect
 	return s
 }
 
+func (s *RoutingRuleRedirectMirrorAuth) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleRedirectMirrorHeaders struct {
 	Pass []*string `json:"Pass,omitempty" xml:"Pass,omitempty" type:"Repeated"`
 	// example:
@@ -9155,11 +15165,27 @@ type RoutingRuleRedirectMirrorHeaders struct {
 }
 
 func (s RoutingRuleRedirectMirrorHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirectMirrorHeaders) GetPass() []*string {
+	return s.Pass
+}
+
+func (s *RoutingRuleRedirectMirrorHeaders) GetPassAll() *bool {
+	return s.PassAll
+}
+
+func (s *RoutingRuleRedirectMirrorHeaders) GetRemove() []*string {
+	return s.Remove
+}
+
+func (s *RoutingRuleRedirectMirrorHeaders) GetSet() []*RoutingRuleRedirectMirrorHeadersSet {
+	return s.Set
 }
 
 func (s *RoutingRuleRedirectMirrorHeaders) SetPass(v []*string) *RoutingRuleRedirectMirrorHeaders {
@@ -9182,6 +15208,10 @@ func (s *RoutingRuleRedirectMirrorHeaders) SetSet(v []*RoutingRuleRedirectMirror
 	return s
 }
 
+func (s *RoutingRuleRedirectMirrorHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleRedirectMirrorHeadersSet struct {
 	// example:
 	//
@@ -9194,11 +15224,19 @@ type RoutingRuleRedirectMirrorHeadersSet struct {
 }
 
 func (s RoutingRuleRedirectMirrorHeadersSet) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorHeadersSet) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirectMirrorHeadersSet) GetKey() *string {
+	return s.Key
+}
+
+func (s *RoutingRuleRedirectMirrorHeadersSet) GetValue() *string {
+	return s.Value
 }
 
 func (s *RoutingRuleRedirectMirrorHeadersSet) SetKey(v string) *RoutingRuleRedirectMirrorHeadersSet {
@@ -9211,21 +15249,33 @@ func (s *RoutingRuleRedirectMirrorHeadersSet) SetValue(v string) *RoutingRuleRed
 	return s
 }
 
+func (s *RoutingRuleRedirectMirrorHeadersSet) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleRedirectMirrorMultiAlternates struct {
 	MirrorMultiAlternate []*RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate `json:"MirrorMultiAlternate,omitempty" xml:"MirrorMultiAlternate,omitempty" type:"Repeated"`
 }
 
 func (s RoutingRuleRedirectMirrorMultiAlternates) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorMultiAlternates) GoString() string {
 	return s.String()
 }
 
+func (s *RoutingRuleRedirectMirrorMultiAlternates) GetMirrorMultiAlternate() []*RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate {
+	return s.MirrorMultiAlternate
+}
+
 func (s *RoutingRuleRedirectMirrorMultiAlternates) SetMirrorMultiAlternate(v []*RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) *RoutingRuleRedirectMirrorMultiAlternates {
 	s.MirrorMultiAlternate = v
 	return s
+}
+
+func (s *RoutingRuleRedirectMirrorMultiAlternates) Validate() error {
+	return dara.Validate(s)
 }
 
 type RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate struct {
@@ -9248,11 +15298,27 @@ type RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate struct {
 }
 
 func (s RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) GetMirrorMultiAlternateDstRegion() *string {
+	return s.MirrorMultiAlternateDstRegion
+}
+
+func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) GetMirrorMultiAlternateNumber() *int64 {
+	return s.MirrorMultiAlternateNumber
+}
+
+func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) GetMirrorMultiAlternateURL() *string {
+	return s.MirrorMultiAlternateURL
+}
+
+func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) GetMirrorMultiAlternateVpcId() *string {
+	return s.MirrorMultiAlternateVpcId
 }
 
 func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) SetMirrorMultiAlternateDstRegion(v string) *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate {
@@ -9275,21 +15341,33 @@ func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) SetMirror
 	return s
 }
 
+func (s *RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleRedirectMirrorReturnHeaders struct {
 	ReturnHeader []*RoutingRuleRedirectMirrorReturnHeadersReturnHeader `json:"ReturnHeader,omitempty" xml:"ReturnHeader,omitempty" type:"Repeated"`
 }
 
 func (s RoutingRuleRedirectMirrorReturnHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorReturnHeaders) GoString() string {
 	return s.String()
 }
 
+func (s *RoutingRuleRedirectMirrorReturnHeaders) GetReturnHeader() []*RoutingRuleRedirectMirrorReturnHeadersReturnHeader {
+	return s.ReturnHeader
+}
+
 func (s *RoutingRuleRedirectMirrorReturnHeaders) SetReturnHeader(v []*RoutingRuleRedirectMirrorReturnHeadersReturnHeader) *RoutingRuleRedirectMirrorReturnHeaders {
 	s.ReturnHeader = v
 	return s
+}
+
+func (s *RoutingRuleRedirectMirrorReturnHeaders) Validate() error {
+	return dara.Validate(s)
 }
 
 type RoutingRuleRedirectMirrorReturnHeadersReturnHeader struct {
@@ -9304,11 +15382,19 @@ type RoutingRuleRedirectMirrorReturnHeadersReturnHeader struct {
 }
 
 func (s RoutingRuleRedirectMirrorReturnHeadersReturnHeader) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorReturnHeadersReturnHeader) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirectMirrorReturnHeadersReturnHeader) GetKey() *string {
+	return s.Key
+}
+
+func (s *RoutingRuleRedirectMirrorReturnHeadersReturnHeader) GetValue() *string {
+	return s.Value
 }
 
 func (s *RoutingRuleRedirectMirrorReturnHeadersReturnHeader) SetKey(v string) *RoutingRuleRedirectMirrorReturnHeadersReturnHeader {
@@ -9321,21 +15407,33 @@ func (s *RoutingRuleRedirectMirrorReturnHeadersReturnHeader) SetValue(v string) 
 	return s
 }
 
+func (s *RoutingRuleRedirectMirrorReturnHeadersReturnHeader) Validate() error {
+	return dara.Validate(s)
+}
+
 type RoutingRuleRedirectMirrorTaggings struct {
 	Taggings []*RoutingRuleRedirectMirrorTaggingsTaggings `json:"Taggings,omitempty" xml:"Taggings,omitempty" type:"Repeated"`
 }
 
 func (s RoutingRuleRedirectMirrorTaggings) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorTaggings) GoString() string {
 	return s.String()
 }
 
+func (s *RoutingRuleRedirectMirrorTaggings) GetTaggings() []*RoutingRuleRedirectMirrorTaggingsTaggings {
+	return s.Taggings
+}
+
 func (s *RoutingRuleRedirectMirrorTaggings) SetTaggings(v []*RoutingRuleRedirectMirrorTaggingsTaggings) *RoutingRuleRedirectMirrorTaggings {
 	s.Taggings = v
 	return s
+}
+
+func (s *RoutingRuleRedirectMirrorTaggings) Validate() error {
+	return dara.Validate(s)
 }
 
 type RoutingRuleRedirectMirrorTaggingsTaggings struct {
@@ -9350,11 +15448,19 @@ type RoutingRuleRedirectMirrorTaggingsTaggings struct {
 }
 
 func (s RoutingRuleRedirectMirrorTaggingsTaggings) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RoutingRuleRedirectMirrorTaggingsTaggings) GoString() string {
 	return s.String()
+}
+
+func (s *RoutingRuleRedirectMirrorTaggingsTaggings) GetKey() *string {
+	return s.Key
+}
+
+func (s *RoutingRuleRedirectMirrorTaggingsTaggings) GetValue() *string {
+	return s.Value
 }
 
 func (s *RoutingRuleRedirectMirrorTaggingsTaggings) SetKey(v string) *RoutingRuleRedirectMirrorTaggingsTaggings {
@@ -9367,6 +15473,11 @@ func (s *RoutingRuleRedirectMirrorTaggingsTaggings) SetValue(v string) *RoutingR
 	return s
 }
 
+func (s *RoutingRuleRedirectMirrorTaggingsTaggings) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RtcConfiguration struct {
 	// example:
 	//
@@ -9376,11 +15487,19 @@ type RtcConfiguration struct {
 }
 
 func (s RtcConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RtcConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *RtcConfiguration) GetID() *string {
+	return s.ID
+}
+
+func (s *RtcConfiguration) GetRTC() *RTC {
+	return s.RTC
 }
 
 func (s *RtcConfiguration) SetID(v string) *RtcConfiguration {
@@ -9393,6 +15512,11 @@ func (s *RtcConfiguration) SetRTC(v *RTC) *RtcConfiguration {
 	return s
 }
 
+func (s *RtcConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type SSEKMS struct {
 	// if can be null:
 	// true
@@ -9404,11 +15528,15 @@ type SSEKMS struct {
 }
 
 func (s SSEKMS) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SSEKMS) GoString() string {
 	return s.String()
+}
+
+func (s *SSEKMS) GetKeyId() *string {
+	return s.KeyId
 }
 
 func (s *SSEKMS) SetKeyId(v string) *SSEKMS {
@@ -9416,17 +15544,30 @@ func (s *SSEKMS) SetKeyId(v string) *SSEKMS {
 	return s
 }
 
+func (s *SSEKMS) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type SelectMetaRequest struct {
 	InputSerialization *InputSerialization `json:"InputSerialization,omitempty" xml:"InputSerialization,omitempty"`
 	OverwriteIfExists  *bool               `json:"OverwriteIfExists,omitempty" xml:"OverwriteIfExists,omitempty"`
 }
 
 func (s SelectMetaRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SelectMetaRequest) GoString() string {
 	return s.String()
+}
+
+func (s *SelectMetaRequest) GetInputSerialization() *InputSerialization {
+	return s.InputSerialization
+}
+
+func (s *SelectMetaRequest) GetOverwriteIfExists() *bool {
+	return s.OverwriteIfExists
 }
 
 func (s *SelectMetaRequest) SetInputSerialization(v *InputSerialization) *SelectMetaRequest {
@@ -9439,6 +15580,11 @@ func (s *SelectMetaRequest) SetOverwriteIfExists(v bool) *SelectMetaRequest {
 	return s
 }
 
+func (s *SelectMetaRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type SelectMetaStatus struct {
 	ColsCount         *int64  `json:"ColsCount,omitempty" xml:"ColsCount,omitempty"`
 	ErrorMessage      *string `json:"ErrorMessage,omitempty" xml:"ErrorMessage,omitempty"`
@@ -9450,11 +15596,39 @@ type SelectMetaStatus struct {
 }
 
 func (s SelectMetaStatus) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SelectMetaStatus) GoString() string {
 	return s.String()
+}
+
+func (s *SelectMetaStatus) GetColsCount() *int64 {
+	return s.ColsCount
+}
+
+func (s *SelectMetaStatus) GetErrorMessage() *string {
+	return s.ErrorMessage
+}
+
+func (s *SelectMetaStatus) GetOffset() *int64 {
+	return s.Offset
+}
+
+func (s *SelectMetaStatus) GetRowsCount() *int64 {
+	return s.RowsCount
+}
+
+func (s *SelectMetaStatus) GetSplitsCount() *int64 {
+	return s.SplitsCount
+}
+
+func (s *SelectMetaStatus) GetStatus() *int64 {
+	return s.Status
+}
+
+func (s *SelectMetaStatus) GetTotalScannedBytes() *int64 {
+	return s.TotalScannedBytes
 }
 
 func (s *SelectMetaStatus) SetColsCount(v int64) *SelectMetaStatus {
@@ -9492,6 +15666,11 @@ func (s *SelectMetaStatus) SetTotalScannedBytes(v int64) *SelectMetaStatus {
 	return s
 }
 
+func (s *SelectMetaStatus) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type SelectRequest struct {
 	Expression          *string               `json:"Expression,omitempty" xml:"Expression,omitempty"`
 	InputSerialization  *InputSerialization   `json:"InputSerialization,omitempty" xml:"InputSerialization,omitempty"`
@@ -9500,11 +15679,27 @@ type SelectRequest struct {
 }
 
 func (s SelectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SelectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *SelectRequest) GetExpression() *string {
+	return s.Expression
+}
+
+func (s *SelectRequest) GetInputSerialization() *InputSerialization {
+	return s.InputSerialization
+}
+
+func (s *SelectRequest) GetOptions() *SelectRequestOptions {
+	return s.Options
+}
+
+func (s *SelectRequest) GetOutputSerialization() *OutputSerialization {
+	return s.OutputSerialization
 }
 
 func (s *SelectRequest) SetExpression(v string) *SelectRequest {
@@ -9527,17 +15722,30 @@ func (s *SelectRequest) SetOutputSerialization(v *OutputSerialization) *SelectRe
 	return s
 }
 
+func (s *SelectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type SelectRequestOptions struct {
 	MaxSkippedRecordsAllowed *int64 `json:"MaxSkippedRecordsAllowed,omitempty" xml:"MaxSkippedRecordsAllowed,omitempty"`
 	SkipPartialDataRecord    *bool  `json:"SkipPartialDataRecord,omitempty" xml:"SkipPartialDataRecord,omitempty"`
 }
 
 func (s SelectRequestOptions) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SelectRequestOptions) GoString() string {
 	return s.String()
+}
+
+func (s *SelectRequestOptions) GetMaxSkippedRecordsAllowed() *int64 {
+	return s.MaxSkippedRecordsAllowed
+}
+
+func (s *SelectRequestOptions) GetSkipPartialDataRecord() *bool {
+	return s.SkipPartialDataRecord
 }
 
 func (s *SelectRequestOptions) SetMaxSkippedRecordsAllowed(v int64) *SelectRequestOptions {
@@ -9550,22 +15758,36 @@ func (s *SelectRequestOptions) SetSkipPartialDataRecord(v bool) *SelectRequestOp
 	return s
 }
 
+func (s *SelectRequestOptions) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ServerSideEncryptionRule struct {
 	ApplyServerSideEncryptionByDefault *ApplyServerSideEncryptionByDefault `json:"ApplyServerSideEncryptionByDefault,omitempty" xml:"ApplyServerSideEncryptionByDefault,omitempty"`
 }
 
 func (s ServerSideEncryptionRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ServerSideEncryptionRule) GoString() string {
 	return s.String()
 }
 
+func (s *ServerSideEncryptionRule) GetApplyServerSideEncryptionByDefault() *ApplyServerSideEncryptionByDefault {
+	return s.ApplyServerSideEncryptionByDefault
+}
+
 func (s *ServerSideEncryptionRule) SetApplyServerSideEncryptionByDefault(v *ApplyServerSideEncryptionByDefault) *ServerSideEncryptionRule {
 	s.ApplyServerSideEncryptionByDefault = v
 	return s
 }
+
+func (s *ServerSideEncryptionRule) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type StartPartUploadResult struct {
 	// example:
@@ -9591,11 +15813,31 @@ type StartPartUploadResult struct {
 }
 
 func (s StartPartUploadResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartPartUploadResult) GoString() string {
 	return s.String()
+}
+
+func (s *StartPartUploadResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *StartPartUploadResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *StartPartUploadResult) GetKey() *string {
+	return s.Key
+}
+
+func (s *StartPartUploadResult) GetPartUploadId() *string {
+	return s.PartUploadId
+}
+
+func (s *StartPartUploadResult) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *StartPartUploadResult) SetBucket(v string) *StartPartUploadResult {
@@ -9623,22 +15865,36 @@ func (s *StartPartUploadResult) SetUploadId(v string) *StartPartUploadResult {
 	return s
 }
 
+func (s *StartPartUploadResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Style struct {
 	Content *string `json:"Content,omitempty" xml:"Content,omitempty"`
 }
 
 func (s Style) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Style) GoString() string {
 	return s.String()
 }
 
+func (s *Style) GetContent() *string {
+	return s.Content
+}
+
 func (s *Style) SetContent(v string) *Style {
 	s.Content = &v
 	return s
 }
+
+func (s *Style) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type StyleInfo struct {
 	// example:
@@ -9664,11 +15920,31 @@ type StyleInfo struct {
 }
 
 func (s StyleInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StyleInfo) GoString() string {
 	return s.String()
+}
+
+func (s *StyleInfo) GetCategory() *string {
+	return s.Category
+}
+
+func (s *StyleInfo) GetContent() *string {
+	return s.Content
+}
+
+func (s *StyleInfo) GetCreateTime() *string {
+	return s.CreateTime
+}
+
+func (s *StyleInfo) GetLastModifyTime() *string {
+	return s.LastModifyTime
+}
+
+func (s *StyleInfo) GetName() *string {
+	return s.Name
 }
 
 func (s *StyleInfo) SetCategory(v string) *StyleInfo {
@@ -9696,6 +15972,11 @@ func (s *StyleInfo) SetName(v string) *StyleInfo {
 	return s
 }
 
+func (s *StyleInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Tag struct {
 	// This parameter is required.
 	Key   *string `json:"Key,omitempty" xml:"Key,omitempty"`
@@ -9703,11 +15984,19 @@ type Tag struct {
 }
 
 func (s Tag) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Tag) GoString() string {
 	return s.String()
+}
+
+func (s *Tag) GetKey() *string {
+	return s.Key
+}
+
+func (s *Tag) GetValue() *string {
+	return s.Value
 }
 
 func (s *Tag) SetKey(v string) *Tag {
@@ -9720,16 +16009,25 @@ func (s *Tag) SetValue(v string) *Tag {
 	return s
 }
 
+func (s *Tag) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type TagSet struct {
 	Tags []*Tag `json:"Tag,omitempty" xml:"Tag,omitempty" type:"Repeated"`
 }
 
 func (s TagSet) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s TagSet) GoString() string {
 	return s.String()
+}
+
+func (s *TagSet) GetTags() []*Tag {
+	return s.Tags
 }
 
 func (s *TagSet) SetTags(v []*Tag) *TagSet {
@@ -9737,16 +16035,25 @@ func (s *TagSet) SetTags(v []*Tag) *TagSet {
 	return s
 }
 
+func (s *TagSet) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type Tagging struct {
 	TagSet *TagSet `json:"TagSet,omitempty" xml:"TagSet,omitempty"`
 }
 
 func (s Tagging) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Tagging) GoString() string {
 	return s.String()
+}
+
+func (s *Tagging) GetTagSet() *TagSet {
+	return s.TagSet
 }
 
 func (s *Tagging) SetTagSet(v *TagSet) *Tagging {
@@ -9754,22 +16061,36 @@ func (s *Tagging) SetTagSet(v *TagSet) *Tagging {
 	return s
 }
 
+func (s *Tagging) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type TransferAccelerationConfiguration struct {
 	Enabled *bool `json:"Enabled,omitempty" xml:"Enabled,omitempty"`
 }
 
 func (s TransferAccelerationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s TransferAccelerationConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *TransferAccelerationConfiguration) GetEnabled() *bool {
+	return s.Enabled
+}
+
 func (s *TransferAccelerationConfiguration) SetEnabled(v bool) *TransferAccelerationConfiguration {
 	s.Enabled = &v
 	return s
 }
+
+func (s *TransferAccelerationConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type Upload struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -9779,11 +16100,23 @@ type Upload struct {
 }
 
 func (s Upload) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Upload) GoString() string {
 	return s.String()
+}
+
+func (s *Upload) GetInitiated() *string {
+	return s.Initiated
+}
+
+func (s *Upload) GetKey() *string {
+	return s.Key
+}
+
+func (s *Upload) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *Upload) SetInitiated(v string) *Upload {
@@ -9801,6 +16134,11 @@ func (s *Upload) SetUploadId(v string) *Upload {
 	return s
 }
 
+func (s *Upload) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UserAntiDDOSInfo struct {
 	ActiveTime *int64  `json:"ActiveTime,omitempty" xml:"ActiveTime,omitempty"`
 	Ctime      *int64  `json:"Ctime,omitempty" xml:"Ctime,omitempty"`
@@ -9811,11 +16149,35 @@ type UserAntiDDOSInfo struct {
 }
 
 func (s UserAntiDDOSInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UserAntiDDOSInfo) GoString() string {
 	return s.String()
+}
+
+func (s *UserAntiDDOSInfo) GetActiveTime() *int64 {
+	return s.ActiveTime
+}
+
+func (s *UserAntiDDOSInfo) GetCtime() *int64 {
+	return s.Ctime
+}
+
+func (s *UserAntiDDOSInfo) GetInstanceId() *string {
+	return s.InstanceId
+}
+
+func (s *UserAntiDDOSInfo) GetMtime() *int64 {
+	return s.Mtime
+}
+
+func (s *UserAntiDDOSInfo) GetOwner() *string {
+	return s.Owner
+}
+
+func (s *UserAntiDDOSInfo) GetStatus() *string {
+	return s.Status
 }
 
 func (s *UserAntiDDOSInfo) SetActiveTime(v int64) *UserAntiDDOSInfo {
@@ -9848,17 +16210,30 @@ func (s *UserAntiDDOSInfo) SetStatus(v string) *UserAntiDDOSInfo {
 	return s
 }
 
+func (s *UserAntiDDOSInfo) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UserDefinedLogFieldsConfiguration struct {
 	HeaderSet *UserDefinedLogFieldsConfigurationHeaderSet `json:"HeaderSet,omitempty" xml:"HeaderSet,omitempty" type:"Struct"`
 	ParamSet  *UserDefinedLogFieldsConfigurationParamSet  `json:"ParamSet,omitempty" xml:"ParamSet,omitempty" type:"Struct"`
 }
 
 func (s UserDefinedLogFieldsConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UserDefinedLogFieldsConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *UserDefinedLogFieldsConfiguration) GetHeaderSet() *UserDefinedLogFieldsConfigurationHeaderSet {
+	return s.HeaderSet
+}
+
+func (s *UserDefinedLogFieldsConfiguration) GetParamSet() *UserDefinedLogFieldsConfigurationParamSet {
+	return s.ParamSet
 }
 
 func (s *UserDefinedLogFieldsConfiguration) SetHeaderSet(v *UserDefinedLogFieldsConfigurationHeaderSet) *UserDefinedLogFieldsConfiguration {
@@ -9871,21 +16246,33 @@ func (s *UserDefinedLogFieldsConfiguration) SetParamSet(v *UserDefinedLogFieldsC
 	return s
 }
 
+func (s *UserDefinedLogFieldsConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type UserDefinedLogFieldsConfigurationHeaderSet struct {
 	Header []*string `json:"header,omitempty" xml:"header,omitempty" type:"Repeated"`
 }
 
 func (s UserDefinedLogFieldsConfigurationHeaderSet) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UserDefinedLogFieldsConfigurationHeaderSet) GoString() string {
 	return s.String()
 }
 
+func (s *UserDefinedLogFieldsConfigurationHeaderSet) GetHeader() []*string {
+	return s.Header
+}
+
 func (s *UserDefinedLogFieldsConfigurationHeaderSet) SetHeader(v []*string) *UserDefinedLogFieldsConfigurationHeaderSet {
 	s.Header = v
 	return s
+}
+
+func (s *UserDefinedLogFieldsConfigurationHeaderSet) Validate() error {
+	return dara.Validate(s)
 }
 
 type UserDefinedLogFieldsConfigurationParamSet struct {
@@ -9896,17 +16283,26 @@ type UserDefinedLogFieldsConfigurationParamSet struct {
 }
 
 func (s UserDefinedLogFieldsConfigurationParamSet) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UserDefinedLogFieldsConfigurationParamSet) GoString() string {
 	return s.String()
 }
 
+func (s *UserDefinedLogFieldsConfigurationParamSet) GetParameter() []*string {
+	return s.Parameter
+}
+
 func (s *UserDefinedLogFieldsConfigurationParamSet) SetParameter(v []*string) *UserDefinedLogFieldsConfigurationParamSet {
 	s.Parameter = v
 	return s
 }
+
+func (s *UserDefinedLogFieldsConfigurationParamSet) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type UserQosConfiguration struct {
 	DefaultQoSConfiguration *QoSConfigurationWithRemark `json:"DefaultQoSConfiguration,omitempty" xml:"DefaultQoSConfiguration,omitempty"`
@@ -9957,11 +16353,59 @@ type UserQosConfiguration struct {
 }
 
 func (s UserQosConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UserQosConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *UserQosConfiguration) GetDefaultQoSConfiguration() *QoSConfigurationWithRemark {
+	return s.DefaultQoSConfiguration
+}
+
+func (s *UserQosConfiguration) GetExtranetDownloadBandwidth() *int64 {
+	return s.ExtranetDownloadBandwidth
+}
+
+func (s *UserQosConfiguration) GetExtranetQps() *int64 {
+	return s.ExtranetQps
+}
+
+func (s *UserQosConfiguration) GetExtranetUploadBandwidth() *int64 {
+	return s.ExtranetUploadBandwidth
+}
+
+func (s *UserQosConfiguration) GetIntranetDownloadBandwidth() *int64 {
+	return s.IntranetDownloadBandwidth
+}
+
+func (s *UserQosConfiguration) GetIntranetQps() *int64 {
+	return s.IntranetQps
+}
+
+func (s *UserQosConfiguration) GetIntranetUploadBandwidth() *int64 {
+	return s.IntranetUploadBandwidth
+}
+
+func (s *UserQosConfiguration) GetRegion() *string {
+	return s.Region
+}
+
+func (s *UserQosConfiguration) GetRemark() *int64 {
+	return s.Remark
+}
+
+func (s *UserQosConfiguration) GetTotalDownloadBandwidth() *int64 {
+	return s.TotalDownloadBandwidth
+}
+
+func (s *UserQosConfiguration) GetTotalQps() *int64 {
+	return s.TotalQps
+}
+
+func (s *UserQosConfiguration) GetTotalUploadBandwidth() *int64 {
+	return s.TotalUploadBandwidth
 }
 
 func (s *UserQosConfiguration) SetDefaultQoSConfiguration(v *QoSConfigurationWithRemark) *UserQosConfiguration {
@@ -10024,22 +16468,36 @@ func (s *UserQosConfiguration) SetTotalUploadBandwidth(v int64) *UserQosConfigur
 	return s
 }
 
+func (s *UserQosConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type VersioningConfiguration struct {
 	Status *string `json:"Status,omitempty" xml:"Status,omitempty"`
 }
 
 func (s VersioningConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VersioningConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *VersioningConfiguration) GetStatus() *string {
+	return s.Status
+}
+
 func (s *VersioningConfiguration) SetStatus(v string) *VersioningConfiguration {
 	s.Status = &v
 	return s
 }
+
+func (s *VersioningConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type VirtualBucket struct {
 	// example:
@@ -10050,11 +16508,19 @@ type VirtualBucket struct {
 }
 
 func (s VirtualBucket) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VirtualBucket) GoString() string {
 	return s.String()
+}
+
+func (s *VirtualBucket) GetName() *string {
+	return s.Name
+}
+
+func (s *VirtualBucket) GetRealBucket() []*VirtualBucketRealBucket {
+	return s.RealBucket
 }
 
 func (s *VirtualBucket) SetName(v string) *VirtualBucket {
@@ -10065,6 +16531,10 @@ func (s *VirtualBucket) SetName(v string) *VirtualBucket {
 func (s *VirtualBucket) SetRealBucket(v []*VirtualBucketRealBucket) *VirtualBucket {
 	s.RealBucket = v
 	return s
+}
+
+func (s *VirtualBucket) Validate() error {
+	return dara.Validate(s)
 }
 
 type VirtualBucketRealBucket struct {
@@ -10079,11 +16549,19 @@ type VirtualBucketRealBucket struct {
 }
 
 func (s VirtualBucketRealBucket) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VirtualBucketRealBucket) GoString() string {
 	return s.String()
+}
+
+func (s *VirtualBucketRealBucket) GetName() *string {
+	return s.Name
+}
+
+func (s *VirtualBucketRealBucket) GetStatus() *string {
+	return s.Status
 }
 
 func (s *VirtualBucketRealBucket) SetName(v string) *VirtualBucketRealBucket {
@@ -10096,21 +16574,34 @@ func (s *VirtualBucketRealBucket) SetStatus(v string) *VirtualBucketRealBucket {
 	return s
 }
 
+func (s *VirtualBucketRealBucket) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type VirtualBucketConfiguration struct {
 	RealBucket []*VirtualBucketConfigurationRealBucket `json:"RealBucket,omitempty" xml:"RealBucket,omitempty" type:"Repeated"`
 }
 
 func (s VirtualBucketConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VirtualBucketConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *VirtualBucketConfiguration) GetRealBucket() []*VirtualBucketConfigurationRealBucket {
+	return s.RealBucket
+}
+
 func (s *VirtualBucketConfiguration) SetRealBucket(v []*VirtualBucketConfigurationRealBucket) *VirtualBucketConfiguration {
 	s.RealBucket = v
 	return s
+}
+
+func (s *VirtualBucketConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type VirtualBucketConfigurationRealBucket struct {
@@ -10121,17 +16612,26 @@ type VirtualBucketConfigurationRealBucket struct {
 }
 
 func (s VirtualBucketConfigurationRealBucket) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VirtualBucketConfigurationRealBucket) GoString() string {
 	return s.String()
 }
 
+func (s *VirtualBucketConfigurationRealBucket) GetName() *string {
+	return s.Name
+}
+
 func (s *VirtualBucketConfigurationRealBucket) SetName(v string) *VirtualBucketConfigurationRealBucket {
 	s.Name = &v
 	return s
 }
+
+func (s *VirtualBucketConfigurationRealBucket) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type WebsiteConfiguration struct {
 	ErrorDocument *ErrorDocument                    `json:"ErrorDocument,omitempty" xml:"ErrorDocument,omitempty"`
@@ -10140,11 +16640,23 @@ type WebsiteConfiguration struct {
 }
 
 func (s WebsiteConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s WebsiteConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *WebsiteConfiguration) GetErrorDocument() *ErrorDocument {
+	return s.ErrorDocument
+}
+
+func (s *WebsiteConfiguration) GetIndexDocument() *IndexDocument {
+	return s.IndexDocument
+}
+
+func (s *WebsiteConfiguration) GetRoutingRules() *WebsiteConfigurationRoutingRules {
+	return s.RoutingRules
 }
 
 func (s *WebsiteConfiguration) SetErrorDocument(v *ErrorDocument) *WebsiteConfiguration {
@@ -10162,16 +16674,24 @@ func (s *WebsiteConfiguration) SetRoutingRules(v *WebsiteConfigurationRoutingRul
 	return s
 }
 
+func (s *WebsiteConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type WebsiteConfigurationRoutingRules struct {
 	RoutingRule []*RoutingRule `json:"RoutingRule,omitempty" xml:"RoutingRule,omitempty" type:"Repeated"`
 }
 
 func (s WebsiteConfigurationRoutingRules) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s WebsiteConfigurationRoutingRules) GoString() string {
 	return s.String()
+}
+
+func (s *WebsiteConfigurationRoutingRules) GetRoutingRule() []*RoutingRule {
+	return s.RoutingRule
 }
 
 func (s *WebsiteConfigurationRoutingRules) SetRoutingRule(v []*RoutingRule) *WebsiteConfigurationRoutingRules {
@@ -10179,17 +16699,30 @@ func (s *WebsiteConfigurationRoutingRules) SetRoutingRule(v []*RoutingRule) *Web
 	return s
 }
 
+func (s *WebsiteConfigurationRoutingRules) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AbortBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s AbortBucketWormResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AbortBucketWormResponse) GoString() string {
 	return s.String()
+}
+
+func (s *AbortBucketWormResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *AbortBucketWormResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *AbortBucketWormResponse) SetHeaders(v map[string]*string) *AbortBucketWormResponse {
@@ -10201,6 +16734,11 @@ func (s *AbortBucketWormResponse) SetStatusCode(v int32) *AbortBucketWormRespons
 	s.StatusCode = &v
 	return s
 }
+
+func (s *AbortBucketWormResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type AbortMultipartUploadRequest struct {
 	// The ID of the multipart upload task.
@@ -10214,11 +16752,15 @@ type AbortMultipartUploadRequest struct {
 }
 
 func (s AbortMultipartUploadRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AbortMultipartUploadRequest) GoString() string {
 	return s.String()
+}
+
+func (s *AbortMultipartUploadRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *AbortMultipartUploadRequest) SetUploadId(v string) *AbortMultipartUploadRequest {
@@ -10226,17 +16768,30 @@ func (s *AbortMultipartUploadRequest) SetUploadId(v string) *AbortMultipartUploa
 	return s
 }
 
+func (s *AbortMultipartUploadRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AbortMultipartUploadResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s AbortMultipartUploadResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AbortMultipartUploadResponse) GoString() string {
 	return s.String()
+}
+
+func (s *AbortMultipartUploadResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *AbortMultipartUploadResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *AbortMultipartUploadResponse) SetHeaders(v map[string]*string) *AbortMultipartUploadResponse {
@@ -10248,6 +16803,11 @@ func (s *AbortMultipartUploadResponse) SetStatusCode(v int32) *AbortMultipartUpl
 	s.StatusCode = &v
 	return s
 }
+
+func (s *AbortMultipartUploadResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type AppendObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -10366,11 +16926,51 @@ type AppendObjectHeaders struct {
 }
 
 func (s AppendObjectHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AppendObjectHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *AppendObjectHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *AppendObjectHeaders) GetCacheControl() *string {
+	return s.CacheControl
+}
+
+func (s *AppendObjectHeaders) GetContentDisposition() *string {
+	return s.ContentDisposition
+}
+
+func (s *AppendObjectHeaders) GetContentEncoding() *string {
+	return s.ContentEncoding
+}
+
+func (s *AppendObjectHeaders) GetContentMD5() *string {
+	return s.ContentMD5
+}
+
+func (s *AppendObjectHeaders) GetExpires() *string {
+	return s.Expires
+}
+
+func (s *AppendObjectHeaders) GetMetaData() map[string]*string {
+	return s.MetaData
+}
+
+func (s *AppendObjectHeaders) GetAcl() *string {
+	return s.Acl
+}
+
+func (s *AppendObjectHeaders) GetServerSideEncryption() *string {
+	return s.ServerSideEncryption
+}
+
+func (s *AppendObjectHeaders) GetStorageClass() *string {
+	return s.StorageClass
 }
 
 func (s *AppendObjectHeaders) SetCommonHeaders(v map[string]*string) *AppendObjectHeaders {
@@ -10423,6 +17023,11 @@ func (s *AppendObjectHeaders) SetStorageClass(v string) *AppendObjectHeaders {
 	return s
 }
 
+func (s *AppendObjectHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AppendObjectRequest struct {
 	// The request body.
 	//
@@ -10447,11 +17052,19 @@ type AppendObjectRequest struct {
 }
 
 func (s AppendObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AppendObjectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *AppendObjectRequest) GetBody() io.Reader {
+	return s.Body
+}
+
+func (s *AppendObjectRequest) GetPosition() *int64 {
+	return s.Position
 }
 
 func (s *AppendObjectRequest) SetBody(v io.Reader) *AppendObjectRequest {
@@ -10464,17 +17077,30 @@ func (s *AppendObjectRequest) SetPosition(v int64) *AppendObjectRequest {
 	return s
 }
 
+func (s *AppendObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type AppendObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s AppendObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AppendObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *AppendObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *AppendObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *AppendObjectResponse) SetHeaders(v map[string]*string) *AppendObjectResponse {
@@ -10487,17 +17113,30 @@ func (s *AppendObjectResponse) SetStatusCode(v int32) *AppendObjectResponse {
 	return s
 }
 
+func (s *AppendObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CleanRestoredObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s CleanRestoredObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CleanRestoredObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CleanRestoredObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CleanRestoredObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *CleanRestoredObjectResponse) SetHeaders(v map[string]*string) *CleanRestoredObjectResponse {
@@ -10510,17 +17149,30 @@ func (s *CleanRestoredObjectResponse) SetStatusCode(v int32) *CleanRestoredObjec
 	return s
 }
 
+func (s *CleanRestoredObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CloseMetaQueryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s CloseMetaQueryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CloseMetaQueryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CloseMetaQueryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CloseMetaQueryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *CloseMetaQueryResponse) SetHeaders(v map[string]*string) *CloseMetaQueryResponse {
@@ -10533,6 +17185,11 @@ func (s *CloseMetaQueryResponse) SetStatusCode(v int32) *CloseMetaQueryResponse 
 	return s
 }
 
+func (s *CloseMetaQueryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CommitPartRequest struct {
 	// This parameter is required.
 	PartUploadId *string `json:"partUploadId,omitempty" xml:"partUploadId,omitempty"`
@@ -10541,11 +17198,19 @@ type CommitPartRequest struct {
 }
 
 func (s CommitPartRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CommitPartRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CommitPartRequest) GetPartUploadId() *string {
+	return s.PartUploadId
+}
+
+func (s *CommitPartRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *CommitPartRequest) SetPartUploadId(v string) *CommitPartRequest {
@@ -10558,17 +17223,30 @@ func (s *CommitPartRequest) SetUploadId(v string) *CommitPartRequest {
 	return s
 }
 
+func (s *CommitPartRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CommitPartResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s CommitPartResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CommitPartResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CommitPartResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CommitPartResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *CommitPartResponse) SetHeaders(v map[string]*string) *CommitPartResponse {
@@ -10580,6 +17258,11 @@ func (s *CommitPartResponse) SetStatusCode(v int32) *CommitPartResponse {
 	s.StatusCode = &v
 	return s
 }
+
+func (s *CommitPartResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CompleteBucketWormRequest struct {
 	// The ID of the retention policy.
@@ -10593,11 +17276,15 @@ type CompleteBucketWormRequest struct {
 }
 
 func (s CompleteBucketWormRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteBucketWormRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteBucketWormRequest) GetWormId() *string {
+	return s.WormId
 }
 
 func (s *CompleteBucketWormRequest) SetWormId(v string) *CompleteBucketWormRequest {
@@ -10605,17 +17292,30 @@ func (s *CompleteBucketWormRequest) SetWormId(v string) *CompleteBucketWormReque
 	return s
 }
 
+func (s *CompleteBucketWormRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CompleteBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s CompleteBucketWormResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteBucketWormResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteBucketWormResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CompleteBucketWormResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *CompleteBucketWormResponse) SetHeaders(v map[string]*string) *CompleteBucketWormResponse {
@@ -10627,6 +17327,11 @@ func (s *CompleteBucketWormResponse) SetStatusCode(v int32) *CompleteBucketWormR
 	s.StatusCode = &v
 	return s
 }
+
+func (s *CompleteBucketWormResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CompleteMultipartUploadHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -10661,11 +17366,23 @@ type CompleteMultipartUploadHeaders struct {
 }
 
 func (s CompleteMultipartUploadHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUploadHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteMultipartUploadHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *CompleteMultipartUploadHeaders) GetCompleteAll() *string {
+	return s.CompleteAll
+}
+
+func (s *CompleteMultipartUploadHeaders) GetForbidOverwrite() *string {
+	return s.ForbidOverwrite
 }
 
 func (s *CompleteMultipartUploadHeaders) SetCommonHeaders(v map[string]*string) *CompleteMultipartUploadHeaders {
@@ -10682,6 +17399,11 @@ func (s *CompleteMultipartUploadHeaders) SetForbidOverwrite(v string) *CompleteM
 	s.ForbidOverwrite = &v
 	return s
 }
+
+func (s *CompleteMultipartUploadHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CompleteMultipartUploadRequest struct {
 	// The container that stores the content of the CompleteMultipartUpload request.
@@ -10701,11 +17423,23 @@ type CompleteMultipartUploadRequest struct {
 }
 
 func (s CompleteMultipartUploadRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUploadRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteMultipartUploadRequest) GetCompleteMultipartUpload() *CompleteMultipartUpload {
+	return s.CompleteMultipartUpload
+}
+
+func (s *CompleteMultipartUploadRequest) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *CompleteMultipartUploadRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *CompleteMultipartUploadRequest) SetCompleteMultipartUpload(v *CompleteMultipartUpload) *CompleteMultipartUploadRequest {
@@ -10723,22 +17457,35 @@ func (s *CompleteMultipartUploadRequest) SetUploadId(v string) *CompleteMultipar
 	return s
 }
 
+func (s *CompleteMultipartUploadRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CompleteMultipartUploadResponseBody struct {
 	// The container that stores the results of the CompleteMultipartUpload request.
 	CompleteMultipartUploadResult *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult `json:"CompleteMultipartUploadResult,omitempty" xml:"CompleteMultipartUploadResult,omitempty" type:"Struct"`
 }
 
 func (s CompleteMultipartUploadResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUploadResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CompleteMultipartUploadResponseBody) GetCompleteMultipartUploadResult() *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult {
+	return s.CompleteMultipartUploadResult
+}
+
 func (s *CompleteMultipartUploadResponseBody) SetCompleteMultipartUploadResult(v *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) *CompleteMultipartUploadResponseBody {
 	s.CompleteMultipartUploadResult = v
 	return s
+}
+
+func (s *CompleteMultipartUploadResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult struct {
@@ -10779,11 +17526,31 @@ type CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult struct {
 }
 
 func (s CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) GetKey() *string {
+	return s.Key
+}
+
+func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) GetLocation() *string {
+	return s.Location
 }
 
 func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) SetBucket(v string) *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult {
@@ -10811,6 +17578,11 @@ func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) SetLo
 	return s
 }
 
+func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CompleteMultipartUploadResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                               `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -10818,11 +17590,23 @@ type CompleteMultipartUploadResponse struct {
 }
 
 func (s CompleteMultipartUploadResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CompleteMultipartUploadResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CompleteMultipartUploadResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CompleteMultipartUploadResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CompleteMultipartUploadResponse) GetBody() *CompleteMultipartUploadResponseBody {
+	return s.Body
 }
 
 func (s *CompleteMultipartUploadResponse) SetHeaders(v map[string]*string) *CompleteMultipartUploadResponse {
@@ -10839,6 +17623,11 @@ func (s *CompleteMultipartUploadResponse) SetBody(v *CompleteMultipartUploadResp
 	s.Body = v
 	return s
 }
+
+func (s *CompleteMultipartUploadResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CopyObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -10971,11 +17760,75 @@ type CopyObjectHeaders struct {
 }
 
 func (s CopyObjectHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *CopyObjectHeaders) GetCopySource() *string {
+	return s.CopySource
+}
+
+func (s *CopyObjectHeaders) GetCopySourceIfMatch() *string {
+	return s.CopySourceIfMatch
+}
+
+func (s *CopyObjectHeaders) GetCopySourceIfModifiedSince() *string {
+	return s.CopySourceIfModifiedSince
+}
+
+func (s *CopyObjectHeaders) GetCopySourceIfNoneMatch() *string {
+	return s.CopySourceIfNoneMatch
+}
+
+func (s *CopyObjectHeaders) GetCopySourceIfUnmodifiedSince() *string {
+	return s.CopySourceIfUnmodifiedSince
+}
+
+func (s *CopyObjectHeaders) GetForbidOverwrite() *string {
+	return s.ForbidOverwrite
+}
+
+func (s *CopyObjectHeaders) GetMetaData() map[string]*string {
+	return s.MetaData
+}
+
+func (s *CopyObjectHeaders) GetMetadataDirective() *string {
+	return s.MetadataDirective
+}
+
+func (s *CopyObjectHeaders) GetAcl() *string {
+	return s.Acl
+}
+
+func (s *CopyObjectHeaders) GetXOssServerSideDataEncryption() *string {
+	return s.XOssServerSideDataEncryption
+}
+
+func (s *CopyObjectHeaders) GetServerSideEncryption() *string {
+	return s.ServerSideEncryption
+}
+
+func (s *CopyObjectHeaders) GetSseKeyId() *string {
+	return s.SseKeyId
+}
+
+func (s *CopyObjectHeaders) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *CopyObjectHeaders) GetTagging() *string {
+	return s.Tagging
+}
+
+func (s *CopyObjectHeaders) GetTaggingDirective() *string {
+	return s.TaggingDirective
 }
 
 func (s *CopyObjectHeaders) SetCommonHeaders(v map[string]*string) *CopyObjectHeaders {
@@ -11058,22 +17911,35 @@ func (s *CopyObjectHeaders) SetTaggingDirective(v string) *CopyObjectHeaders {
 	return s
 }
 
+func (s *CopyObjectHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectResponseBody struct {
 	// The results of the CopyObject operation.
 	CopyObjectResult *CopyObjectResponseBodyCopyObjectResult `json:"CopyObjectResult,omitempty" xml:"CopyObjectResult,omitempty" type:"Struct"`
 }
 
 func (s CopyObjectResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CopyObjectResponseBody) GetCopyObjectResult() *CopyObjectResponseBodyCopyObjectResult {
+	return s.CopyObjectResult
+}
+
 func (s *CopyObjectResponseBody) SetCopyObjectResult(v *CopyObjectResponseBodyCopyObjectResult) *CopyObjectResponseBody {
 	s.CopyObjectResult = v
 	return s
+}
+
+func (s *CopyObjectResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type CopyObjectResponseBodyCopyObjectResult struct {
@@ -11092,11 +17958,19 @@ type CopyObjectResponseBodyCopyObjectResult struct {
 }
 
 func (s CopyObjectResponseBodyCopyObjectResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectResponseBodyCopyObjectResult) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectResponseBodyCopyObjectResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *CopyObjectResponseBodyCopyObjectResult) GetLastModified() *string {
+	return s.LastModified
 }
 
 func (s *CopyObjectResponseBodyCopyObjectResult) SetETag(v string) *CopyObjectResponseBodyCopyObjectResult {
@@ -11109,6 +17983,11 @@ func (s *CopyObjectResponseBodyCopyObjectResult) SetLastModified(v string) *Copy
 	return s
 }
 
+func (s *CopyObjectResponseBodyCopyObjectResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectResponse struct {
 	Headers    map[string]*string      `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                  `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -11116,11 +17995,23 @@ type CopyObjectResponse struct {
 }
 
 func (s CopyObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CopyObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CopyObjectResponse) GetBody() *CopyObjectResponseBody {
+	return s.Body
 }
 
 func (s *CopyObjectResponse) SetHeaders(v map[string]*string) *CopyObjectResponse {
@@ -11138,16 +18029,25 @@ func (s *CopyObjectResponse) SetBody(v *CopyObjectResponseBody) *CopyObjectRespo
 	return s
 }
 
+func (s *CopyObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectsRequest struct {
 	Copy *CopyObjectsCopy `json:"Copy,omitempty" xml:"Copy,omitempty"`
 }
 
 func (s CopyObjectsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsRequest) GetCopy() *CopyObjectsCopy {
+	return s.Copy
 }
 
 func (s *CopyObjectsRequest) SetCopy(v *CopyObjectsCopy) *CopyObjectsRequest {
@@ -11155,22 +18055,36 @@ func (s *CopyObjectsRequest) SetCopy(v *CopyObjectsCopy) *CopyObjectsRequest {
 	return s
 }
 
+func (s *CopyObjectsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CopyObjectsResponseBody struct {
 	CopyObjectsResult *CopyObjectsResult `json:"CopyObjectsResult,omitempty" xml:"CopyObjectsResult,omitempty"`
 }
 
 func (s CopyObjectsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CopyObjectsResponseBody) GetCopyObjectsResult() *CopyObjectsResult {
+	return s.CopyObjectsResult
+}
+
 func (s *CopyObjectsResponseBody) SetCopyObjectsResult(v *CopyObjectsResult) *CopyObjectsResponseBody {
 	s.CopyObjectsResult = v
 	return s
 }
+
+func (s *CopyObjectsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CopyObjectsResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -11179,11 +18093,23 @@ type CopyObjectsResponse struct {
 }
 
 func (s CopyObjectsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CopyObjectsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CopyObjectsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CopyObjectsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CopyObjectsResponse) GetBody() *CopyObjectsResponseBody {
+	return s.Body
 }
 
 func (s *CopyObjectsResponse) SetHeaders(v map[string]*string) *CopyObjectsResponse {
@@ -11201,17 +18127,26 @@ func (s *CopyObjectsResponse) SetBody(v *CopyObjectsResponseBody) *CopyObjectsRe
 	return s
 }
 
+func (s *CopyObjectsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointRequest struct {
 	// The container that stores the information about the access point.
 	CreateAccessPointConfiguration *CreateAccessPointConfiguration `json:"CreateAccessPointConfiguration,omitempty" xml:"CreateAccessPointConfiguration,omitempty"`
 }
 
 func (s CreateAccessPointRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointRequest) GetCreateAccessPointConfiguration() *CreateAccessPointConfiguration {
+	return s.CreateAccessPointConfiguration
 }
 
 func (s *CreateAccessPointRequest) SetCreateAccessPointConfiguration(v *CreateAccessPointConfiguration) *CreateAccessPointRequest {
@@ -11219,23 +18154,37 @@ func (s *CreateAccessPointRequest) SetCreateAccessPointConfiguration(v *CreateAc
 	return s
 }
 
+func (s *CreateAccessPointRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointResponseBody struct {
 	// The container that stores the information about the access point.
 	CreateAccessPointResult *CreateAccessPointResult `json:"CreateAccessPointResult,omitempty" xml:"CreateAccessPointResult,omitempty"`
 }
 
 func (s CreateAccessPointResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CreateAccessPointResponseBody) GetCreateAccessPointResult() *CreateAccessPointResult {
+	return s.CreateAccessPointResult
+}
+
 func (s *CreateAccessPointResponseBody) SetCreateAccessPointResult(v *CreateAccessPointResult) *CreateAccessPointResponseBody {
 	s.CreateAccessPointResult = v
 	return s
 }
+
+func (s *CreateAccessPointResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateAccessPointResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -11244,11 +18193,23 @@ type CreateAccessPointResponse struct {
 }
 
 func (s CreateAccessPointResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CreateAccessPointResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CreateAccessPointResponse) GetBody() *CreateAccessPointResponseBody {
+	return s.Body
 }
 
 func (s *CreateAccessPointResponse) SetHeaders(v map[string]*string) *CreateAccessPointResponse {
@@ -11266,6 +18227,11 @@ func (s *CreateAccessPointResponse) SetBody(v *CreateAccessPointResponseBody) *C
 	return s
 }
 
+func (s *CreateAccessPointResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the Object FC Access Point.
@@ -11279,11 +18245,19 @@ type CreateAccessPointForObjectProcessHeaders struct {
 }
 
 func (s CreateAccessPointForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *CreateAccessPointForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *CreateAccessPointForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *CreateAccessPointForObjectProcessHeaders {
@@ -11296,22 +18270,35 @@ func (s *CreateAccessPointForObjectProcessHeaders) SetXOssAccessPointForObjectPr
 	return s
 }
 
+func (s *CreateAccessPointForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointForObjectProcessRequest struct {
 	// The container that stores information about the Object FC Access Point.
 	CreateAccessPointForObjectProcessConfiguration *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration `json:"CreateAccessPointForObjectProcessConfiguration,omitempty" xml:"CreateAccessPointForObjectProcessConfiguration,omitempty" type:"Struct"`
 }
 
 func (s CreateAccessPointForObjectProcessRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointForObjectProcessRequest) GoString() string {
 	return s.String()
 }
 
+func (s *CreateAccessPointForObjectProcessRequest) GetCreateAccessPointForObjectProcessConfiguration() *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration {
+	return s.CreateAccessPointForObjectProcessConfiguration
+}
+
 func (s *CreateAccessPointForObjectProcessRequest) SetCreateAccessPointForObjectProcessConfiguration(v *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) *CreateAccessPointForObjectProcessRequest {
 	s.CreateAccessPointForObjectProcessConfiguration = v
 	return s
+}
+
+func (s *CreateAccessPointForObjectProcessRequest) Validate() error {
+	return dara.Validate(s)
 }
 
 type CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration struct {
@@ -11332,11 +18319,23 @@ type CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessCo
 }
 
 func (s CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) GetAccessPointName() *string {
+	return s.AccessPointName
+}
+
+func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) GetAllowAnonymousAccessForObjectProcess() *string {
+	return s.AllowAnonymousAccessForObjectProcess
+}
+
+func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) GetObjectProcessConfiguration() *ObjectProcessConfiguration {
+	return s.ObjectProcessConfiguration
 }
 
 func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) SetAccessPointName(v string) *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration {
@@ -11354,22 +18353,35 @@ func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProce
 	return s
 }
 
+func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProcessConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointForObjectProcessResponseBody struct {
 	// The container that stores information about the Object FC Access Point.
 	CreateAccessPointForObjectProcessResult *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult `json:"CreateAccessPointForObjectProcessResult,omitempty" xml:"CreateAccessPointForObjectProcessResult,omitempty" type:"Struct"`
 }
 
 func (s CreateAccessPointForObjectProcessResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointForObjectProcessResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CreateAccessPointForObjectProcessResponseBody) GetCreateAccessPointForObjectProcessResult() *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult {
+	return s.CreateAccessPointForObjectProcessResult
+}
+
 func (s *CreateAccessPointForObjectProcessResponseBody) SetCreateAccessPointForObjectProcessResult(v *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) *CreateAccessPointForObjectProcessResponseBody {
 	s.CreateAccessPointForObjectProcessResult = v
 	return s
+}
+
+func (s *CreateAccessPointForObjectProcessResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult struct {
@@ -11388,11 +18400,19 @@ type CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProc
 }
 
 func (s CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) GetAccessPointForObjectProcessAlias() *string {
+	return s.AccessPointForObjectProcessAlias
+}
+
+func (s *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) GetAccessPointForObjectProcessArn() *string {
+	return s.AccessPointForObjectProcessArn
 }
 
 func (s *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) SetAccessPointForObjectProcessAlias(v string) *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult {
@@ -11405,6 +18425,11 @@ func (s *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObject
 	return s
 }
 
+func (s *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateAccessPointForObjectProcessResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                         `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -11412,11 +18437,23 @@ type CreateAccessPointForObjectProcessResponse struct {
 }
 
 func (s CreateAccessPointForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAccessPointForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CreateAccessPointForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CreateAccessPointForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CreateAccessPointForObjectProcessResponse) GetBody() *CreateAccessPointForObjectProcessResponseBody {
+	return s.Body
 }
 
 func (s *CreateAccessPointForObjectProcessResponse) SetHeaders(v map[string]*string) *CreateAccessPointForObjectProcessResponse {
@@ -11434,6 +18471,11 @@ func (s *CreateAccessPointForObjectProcessResponse) SetBody(v *CreateAccessPoint
 	return s
 }
 
+func (s *CreateAccessPointForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateBucketDataRedundancyTransitionRequest struct {
 	// The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of a bucket from LRS to ZRS.
 	//
@@ -11446,11 +18488,15 @@ type CreateBucketDataRedundancyTransitionRequest struct {
 }
 
 func (s CreateBucketDataRedundancyTransitionRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateBucketDataRedundancyTransitionRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CreateBucketDataRedundancyTransitionRequest) GetXOssTargetRedundancyType() *string {
+	return s.XOssTargetRedundancyType
 }
 
 func (s *CreateBucketDataRedundancyTransitionRequest) SetXOssTargetRedundancyType(v string) *CreateBucketDataRedundancyTransitionRequest {
@@ -11458,22 +18504,35 @@ func (s *CreateBucketDataRedundancyTransitionRequest) SetXOssTargetRedundancyTyp
 	return s
 }
 
+func (s *CreateBucketDataRedundancyTransitionRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateBucketDataRedundancyTransitionResponseBody struct {
 	// The container in which the redundancy type conversion task is stored.
 	BucketDataRedundancyTransition *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition `json:"BucketDataRedundancyTransition,omitempty" xml:"BucketDataRedundancyTransition,omitempty" type:"Struct"`
 }
 
 func (s CreateBucketDataRedundancyTransitionResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateBucketDataRedundancyTransitionResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CreateBucketDataRedundancyTransitionResponseBody) GetBucketDataRedundancyTransition() *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition {
+	return s.BucketDataRedundancyTransition
+}
+
 func (s *CreateBucketDataRedundancyTransitionResponseBody) SetBucketDataRedundancyTransition(v *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition) *CreateBucketDataRedundancyTransitionResponseBody {
 	s.BucketDataRedundancyTransition = v
 	return s
+}
+
+func (s *CreateBucketDataRedundancyTransitionResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition struct {
@@ -11486,17 +18545,26 @@ type CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransit
 }
 
 func (s CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition) GoString() string {
 	return s.String()
 }
 
+func (s *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition) GetTaskId() *string {
+	return s.TaskId
+}
+
 func (s *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition) SetTaskId(v string) *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition {
 	s.TaskId = &v
 	return s
 }
+
+func (s *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTransition) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -11505,11 +18573,23 @@ type CreateBucketDataRedundancyTransitionResponse struct {
 }
 
 func (s CreateBucketDataRedundancyTransitionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateBucketDataRedundancyTransitionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CreateBucketDataRedundancyTransitionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CreateBucketDataRedundancyTransitionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CreateBucketDataRedundancyTransitionResponse) GetBody() *CreateBucketDataRedundancyTransitionResponseBody {
+	return s.Body
 }
 
 func (s *CreateBucketDataRedundancyTransitionResponse) SetHeaders(v map[string]*string) *CreateBucketDataRedundancyTransitionResponse {
@@ -11527,22 +18607,35 @@ func (s *CreateBucketDataRedundancyTransitionResponse) SetBody(v *CreateBucketDa
 	return s
 }
 
+func (s *CreateBucketDataRedundancyTransitionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateCnameTokenRequest struct {
 	// The container that stores the CNAME record.
 	BucketCnameConfiguration *CreateCnameTokenRequestBucketCnameConfiguration `json:"BucketCnameConfiguration,omitempty" xml:"BucketCnameConfiguration,omitempty" type:"Struct"`
 }
 
 func (s CreateCnameTokenRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateCnameTokenRequest) GoString() string {
 	return s.String()
 }
 
+func (s *CreateCnameTokenRequest) GetBucketCnameConfiguration() *CreateCnameTokenRequestBucketCnameConfiguration {
+	return s.BucketCnameConfiguration
+}
+
 func (s *CreateCnameTokenRequest) SetBucketCnameConfiguration(v *CreateCnameTokenRequestBucketCnameConfiguration) *CreateCnameTokenRequest {
 	s.BucketCnameConfiguration = v
 	return s
+}
+
+func (s *CreateCnameTokenRequest) Validate() error {
+	return dara.Validate(s)
 }
 
 type CreateCnameTokenRequestBucketCnameConfiguration struct {
@@ -11551,16 +18644,24 @@ type CreateCnameTokenRequestBucketCnameConfiguration struct {
 }
 
 func (s CreateCnameTokenRequestBucketCnameConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateCnameTokenRequestBucketCnameConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *CreateCnameTokenRequestBucketCnameConfiguration) GetCname() *CreateCnameTokenRequestBucketCnameConfigurationCname {
+	return s.Cname
+}
+
 func (s *CreateCnameTokenRequestBucketCnameConfiguration) SetCname(v *CreateCnameTokenRequestBucketCnameConfigurationCname) *CreateCnameTokenRequestBucketCnameConfiguration {
 	s.Cname = v
 	return s
+}
+
+func (s *CreateCnameTokenRequestBucketCnameConfiguration) Validate() error {
+	return dara.Validate(s)
 }
 
 type CreateCnameTokenRequestBucketCnameConfigurationCname struct {
@@ -11573,11 +18674,15 @@ type CreateCnameTokenRequestBucketCnameConfigurationCname struct {
 }
 
 func (s CreateCnameTokenRequestBucketCnameConfigurationCname) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateCnameTokenRequestBucketCnameConfigurationCname) GoString() string {
 	return s.String()
+}
+
+func (s *CreateCnameTokenRequestBucketCnameConfigurationCname) GetDomain() *string {
+	return s.Domain
 }
 
 func (s *CreateCnameTokenRequestBucketCnameConfigurationCname) SetDomain(v string) *CreateCnameTokenRequestBucketCnameConfigurationCname {
@@ -11585,23 +18690,37 @@ func (s *CreateCnameTokenRequestBucketCnameConfigurationCname) SetDomain(v strin
 	return s
 }
 
+func (s *CreateCnameTokenRequestBucketCnameConfigurationCname) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateCnameTokenResponseBody struct {
 	// The container in which the CNAME token is stored.
 	CnameToken *CnameToken `json:"CnameToken,omitempty" xml:"CnameToken,omitempty"`
 }
 
 func (s CreateCnameTokenResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateCnameTokenResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CreateCnameTokenResponseBody) GetCnameToken() *CnameToken {
+	return s.CnameToken
+}
+
 func (s *CreateCnameTokenResponseBody) SetCnameToken(v *CnameToken) *CreateCnameTokenResponseBody {
 	s.CnameToken = v
 	return s
 }
+
+func (s *CreateCnameTokenResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateCnameTokenResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -11610,11 +18729,23 @@ type CreateCnameTokenResponse struct {
 }
 
 func (s CreateCnameTokenResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateCnameTokenResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CreateCnameTokenResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CreateCnameTokenResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CreateCnameTokenResponse) GetBody() *CreateCnameTokenResponseBody {
+	return s.Body
 }
 
 func (s *CreateCnameTokenResponse) SetHeaders(v map[string]*string) *CreateCnameTokenResponse {
@@ -11632,16 +18763,25 @@ func (s *CreateCnameTokenResponse) SetBody(v *CreateCnameTokenResponseBody) *Cre
 	return s
 }
 
+func (s *CreateCnameTokenResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateReservedCapacityRequest struct {
 	ReservedCapacityCreateConfiguration *ReservedCapacityCreateConfiguration `json:"ReservedCapacityCreateConfiguration,omitempty" xml:"ReservedCapacityCreateConfiguration,omitempty"`
 }
 
 func (s CreateReservedCapacityRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateReservedCapacityRequest) GoString() string {
 	return s.String()
+}
+
+func (s *CreateReservedCapacityRequest) GetReservedCapacityCreateConfiguration() *ReservedCapacityCreateConfiguration {
+	return s.ReservedCapacityCreateConfiguration
 }
 
 func (s *CreateReservedCapacityRequest) SetReservedCapacityCreateConfiguration(v *ReservedCapacityCreateConfiguration) *CreateReservedCapacityRequest {
@@ -11649,22 +18789,36 @@ func (s *CreateReservedCapacityRequest) SetReservedCapacityCreateConfiguration(v
 	return s
 }
 
+func (s *CreateReservedCapacityRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateReservedCapacityResponseBody struct {
 	CreateLargeReservedCapacityResult *CreateLargeReservedCapacityResult `json:"CreateLargeReservedCapacityResult,omitempty" xml:"CreateLargeReservedCapacityResult,omitempty"`
 }
 
 func (s CreateReservedCapacityResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateReservedCapacityResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *CreateReservedCapacityResponseBody) GetCreateLargeReservedCapacityResult() *CreateLargeReservedCapacityResult {
+	return s.CreateLargeReservedCapacityResult
+}
+
 func (s *CreateReservedCapacityResponseBody) SetCreateLargeReservedCapacityResult(v *CreateLargeReservedCapacityResult) *CreateReservedCapacityResponseBody {
 	s.CreateLargeReservedCapacityResult = v
 	return s
 }
+
+func (s *CreateReservedCapacityResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateReservedCapacityResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -11673,11 +18827,23 @@ type CreateReservedCapacityResponse struct {
 }
 
 func (s CreateReservedCapacityResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateReservedCapacityResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CreateReservedCapacityResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CreateReservedCapacityResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CreateReservedCapacityResponse) GetBody() *CreateReservedCapacityResponseBody {
+	return s.Body
 }
 
 func (s *CreateReservedCapacityResponse) SetHeaders(v map[string]*string) *CreateReservedCapacityResponse {
@@ -11695,23 +18861,54 @@ func (s *CreateReservedCapacityResponse) SetBody(v *CreateReservedCapacityRespon
 	return s
 }
 
+func (s *CreateReservedCapacityResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type CreateSelectObjectMetaRequest struct {
-	// The container that stores SelectMetaRequest information.
-	SelectMetaRequest *SelectMetaRequest `json:"SelectMetaRequest,omitempty" xml:"SelectMetaRequest,omitempty"`
+	// The request body used to create select meta.
+	CsvMetaRequest *SelectMetaRequest `json:"CsvMetaRequest,omitempty" xml:"CsvMetaRequest,omitempty"`
+	// Parameters to specify the file formate.
+	//
+	// This parameter is required.
+	//
+	// example:
+	//
+	// csv/meta
+	XOssProcess *string `json:"x-oss-process,omitempty" xml:"x-oss-process,omitempty"`
 }
 
 func (s CreateSelectObjectMetaRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateSelectObjectMetaRequest) GoString() string {
 	return s.String()
 }
 
-func (s *CreateSelectObjectMetaRequest) SetSelectMetaRequest(v *SelectMetaRequest) *CreateSelectObjectMetaRequest {
-	s.SelectMetaRequest = v
+func (s *CreateSelectObjectMetaRequest) GetCsvMetaRequest() *SelectMetaRequest {
+	return s.CsvMetaRequest
+}
+
+func (s *CreateSelectObjectMetaRequest) GetXOssProcess() *string {
+	return s.XOssProcess
+}
+
+func (s *CreateSelectObjectMetaRequest) SetCsvMetaRequest(v *SelectMetaRequest) *CreateSelectObjectMetaRequest {
+	s.CsvMetaRequest = v
 	return s
 }
+
+func (s *CreateSelectObjectMetaRequest) SetXOssProcess(v string) *CreateSelectObjectMetaRequest {
+	s.XOssProcess = &v
+	return s
+}
+
+func (s *CreateSelectObjectMetaRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type CreateSelectObjectMetaResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -11720,11 +18917,23 @@ type CreateSelectObjectMetaResponse struct {
 }
 
 func (s CreateSelectObjectMetaResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateSelectObjectMetaResponse) GoString() string {
 	return s.String()
+}
+
+func (s *CreateSelectObjectMetaResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *CreateSelectObjectMetaResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *CreateSelectObjectMetaResponse) GetBody() *SelectMetaStatus {
+	return s.Body
 }
 
 func (s *CreateSelectObjectMetaResponse) SetHeaders(v map[string]*string) *CreateSelectObjectMetaResponse {
@@ -11742,6 +18951,11 @@ func (s *CreateSelectObjectMetaResponse) SetBody(v *SelectMetaStatus) *CreateSel
 	return s
 }
 
+func (s *CreateSelectObjectMetaResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the access point.
@@ -11755,11 +18969,19 @@ type DeleteAccessPointHeaders struct {
 }
 
 func (s DeleteAccessPointHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *DeleteAccessPointHeaders) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *DeleteAccessPointHeaders) SetCommonHeaders(v map[string]*string) *DeleteAccessPointHeaders {
@@ -11772,17 +18994,30 @@ func (s *DeleteAccessPointHeaders) SetXOssAccessPointName(v string) *DeleteAcces
 	return s
 }
 
+func (s *DeleteAccessPointHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteAccessPointResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteAccessPointResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteAccessPointResponse) SetHeaders(v map[string]*string) *DeleteAccessPointResponse {
@@ -11794,6 +19029,11 @@ func (s *DeleteAccessPointResponse) SetStatusCode(v int32) *DeleteAccessPointRes
 	s.StatusCode = &v
 	return s
 }
+
+func (s *DeleteAccessPointResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DeleteAccessPointForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -11808,11 +19048,19 @@ type DeleteAccessPointForObjectProcessHeaders struct {
 }
 
 func (s DeleteAccessPointForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *DeleteAccessPointForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *DeleteAccessPointForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *DeleteAccessPointForObjectProcessHeaders {
@@ -11825,17 +19073,30 @@ func (s *DeleteAccessPointForObjectProcessHeaders) SetXOssAccessPointForObjectPr
 	return s
 }
 
+func (s *DeleteAccessPointForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteAccessPointForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteAccessPointForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteAccessPointForObjectProcessResponse) SetHeaders(v map[string]*string) *DeleteAccessPointForObjectProcessResponse {
@@ -11847,6 +19108,11 @@ func (s *DeleteAccessPointForObjectProcessResponse) SetStatusCode(v int32) *Dele
 	s.StatusCode = &v
 	return s
 }
+
+func (s *DeleteAccessPointForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DeleteAccessPointPolicyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -11861,11 +19127,19 @@ type DeleteAccessPointPolicyHeaders struct {
 }
 
 func (s DeleteAccessPointPolicyHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointPolicyHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointPolicyHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *DeleteAccessPointPolicyHeaders) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *DeleteAccessPointPolicyHeaders) SetCommonHeaders(v map[string]*string) *DeleteAccessPointPolicyHeaders {
@@ -11878,17 +19152,30 @@ func (s *DeleteAccessPointPolicyHeaders) SetXOssAccessPointName(v string) *Delet
 	return s
 }
 
+func (s *DeleteAccessPointPolicyHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteAccessPointPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteAccessPointPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteAccessPointPolicyResponse) SetHeaders(v map[string]*string) *DeleteAccessPointPolicyResponse {
@@ -11900,6 +19187,11 @@ func (s *DeleteAccessPointPolicyResponse) SetStatusCode(v int32) *DeleteAccessPo
 	s.StatusCode = &v
 	return s
 }
+
+func (s *DeleteAccessPointPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DeleteAccessPointPolicyForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -11914,11 +19206,19 @@ type DeleteAccessPointPolicyForObjectProcessHeaders struct {
 }
 
 func (s DeleteAccessPointPolicyForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointPolicyForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointPolicyForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *DeleteAccessPointPolicyForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *DeleteAccessPointPolicyForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *DeleteAccessPointPolicyForObjectProcessHeaders {
@@ -11931,17 +19231,30 @@ func (s *DeleteAccessPointPolicyForObjectProcessHeaders) SetXOssAccessPointForOb
 	return s
 }
 
+func (s *DeleteAccessPointPolicyForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointPolicyForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteAccessPointPolicyForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointPolicyForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointPolicyForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteAccessPointPolicyForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteAccessPointPolicyForObjectProcessResponse) SetHeaders(v map[string]*string) *DeleteAccessPointPolicyForObjectProcessResponse {
@@ -11954,6 +19267,11 @@ func (s *DeleteAccessPointPolicyForObjectProcessResponse) SetStatusCode(v int32)
 	return s
 }
 
+func (s *DeleteAccessPointPolicyForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointPublicAccessBlockRequest struct {
 	// The name of the access point.
 	//
@@ -11964,11 +19282,15 @@ type DeleteAccessPointPublicAccessBlockRequest struct {
 }
 
 func (s DeleteAccessPointPublicAccessBlockRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointPublicAccessBlockRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointPublicAccessBlockRequest) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *DeleteAccessPointPublicAccessBlockRequest) SetXOssAccessPointName(v string) *DeleteAccessPointPublicAccessBlockRequest {
@@ -11976,17 +19298,30 @@ func (s *DeleteAccessPointPublicAccessBlockRequest) SetXOssAccessPointName(v str
 	return s
 }
 
+func (s *DeleteAccessPointPublicAccessBlockRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteAccessPointPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteAccessPointPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAccessPointPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteAccessPointPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteAccessPointPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteAccessPointPublicAccessBlockResponse) SetHeaders(v map[string]*string) *DeleteAccessPointPublicAccessBlockResponse {
@@ -11999,17 +19334,30 @@ func (s *DeleteAccessPointPublicAccessBlockResponse) SetStatusCode(v int32) *Del
 	return s
 }
 
+func (s *DeleteAccessPointPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketResponse) SetHeaders(v map[string]*string) *DeleteBucketResponse {
@@ -12022,17 +19370,30 @@ func (s *DeleteBucketResponse) SetStatusCode(v int32) *DeleteBucketResponse {
 	return s
 }
 
+func (s *DeleteBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketCacheConfigurationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketCacheConfigurationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketCacheConfigurationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketCacheConfigurationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketCacheConfigurationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketCacheConfigurationResponse) SetHeaders(v map[string]*string) *DeleteBucketCacheConfigurationResponse {
@@ -12045,17 +19406,30 @@ func (s *DeleteBucketCacheConfigurationResponse) SetStatusCode(v int32) *DeleteB
 	return s
 }
 
+func (s *DeleteBucketCacheConfigurationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketCallbackPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketCallbackPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketCallbackPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketCallbackPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketCallbackPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketCallbackPolicyResponse) SetHeaders(v map[string]*string) *DeleteBucketCallbackPolicyResponse {
@@ -12068,17 +19442,30 @@ func (s *DeleteBucketCallbackPolicyResponse) SetStatusCode(v int32) *DeleteBucke
 	return s
 }
 
+func (s *DeleteBucketCallbackPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketCommonHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketCommonHeaderResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketCommonHeaderResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketCommonHeaderResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketCommonHeaderResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketCommonHeaderResponse) SetHeaders(v map[string]*string) *DeleteBucketCommonHeaderResponse {
@@ -12091,17 +19478,30 @@ func (s *DeleteBucketCommonHeaderResponse) SetStatusCode(v int32) *DeleteBucketC
 	return s
 }
 
+func (s *DeleteBucketCommonHeaderResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketCorsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketCorsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketCorsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketCorsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketCorsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketCorsResponse) SetHeaders(v map[string]*string) *DeleteBucketCorsResponse {
@@ -12114,17 +19514,30 @@ func (s *DeleteBucketCorsResponse) SetStatusCode(v int32) *DeleteBucketCorsRespo
 	return s
 }
 
+func (s *DeleteBucketCorsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketDataAcceleratorResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketDataAcceleratorResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketDataAcceleratorResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketDataAcceleratorResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketDataAcceleratorResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketDataAcceleratorResponse) SetHeaders(v map[string]*string) *DeleteBucketDataAcceleratorResponse {
@@ -12136,6 +19549,11 @@ func (s *DeleteBucketDataAcceleratorResponse) SetStatusCode(v int32) *DeleteBuck
 	s.StatusCode = &v
 	return s
 }
+
+func (s *DeleteBucketDataAcceleratorResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DeleteBucketDataRedundancyTransitionRequest struct {
 	// The ID of the redundancy type change task.
@@ -12149,11 +19567,15 @@ type DeleteBucketDataRedundancyTransitionRequest struct {
 }
 
 func (s DeleteBucketDataRedundancyTransitionRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketDataRedundancyTransitionRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketDataRedundancyTransitionRequest) GetXOssRedundancyTransitionTaskid() *string {
+	return s.XOssRedundancyTransitionTaskid
 }
 
 func (s *DeleteBucketDataRedundancyTransitionRequest) SetXOssRedundancyTransitionTaskid(v string) *DeleteBucketDataRedundancyTransitionRequest {
@@ -12161,17 +19583,30 @@ func (s *DeleteBucketDataRedundancyTransitionRequest) SetXOssRedundancyTransitio
 	return s
 }
 
+func (s *DeleteBucketDataRedundancyTransitionRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketDataRedundancyTransitionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketDataRedundancyTransitionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketDataRedundancyTransitionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketDataRedundancyTransitionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketDataRedundancyTransitionResponse) SetHeaders(v map[string]*string) *DeleteBucketDataRedundancyTransitionResponse {
@@ -12184,17 +19619,30 @@ func (s *DeleteBucketDataRedundancyTransitionResponse) SetStatusCode(v int32) *D
 	return s
 }
 
+func (s *DeleteBucketDataRedundancyTransitionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketEncryptionResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketEncryptionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketEncryptionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketEncryptionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketEncryptionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketEncryptionResponse) SetHeaders(v map[string]*string) *DeleteBucketEncryptionResponse {
@@ -12207,17 +19655,30 @@ func (s *DeleteBucketEncryptionResponse) SetStatusCode(v int32) *DeleteBucketEnc
 	return s
 }
 
+func (s *DeleteBucketEncryptionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketEventNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketEventNotificationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketEventNotificationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketEventNotificationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketEventNotificationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketEventNotificationResponse) SetHeaders(v map[string]*string) *DeleteBucketEventNotificationResponse {
@@ -12229,6 +19690,11 @@ func (s *DeleteBucketEventNotificationResponse) SetStatusCode(v int32) *DeleteBu
 	s.StatusCode = &v
 	return s
 }
+
+func (s *DeleteBucketEventNotificationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DeleteBucketInventoryRequest struct {
 	// The name of the inventory that you want to delete.
@@ -12242,11 +19708,15 @@ type DeleteBucketInventoryRequest struct {
 }
 
 func (s DeleteBucketInventoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketInventoryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketInventoryRequest) GetInventoryId() *string {
+	return s.InventoryId
 }
 
 func (s *DeleteBucketInventoryRequest) SetInventoryId(v string) *DeleteBucketInventoryRequest {
@@ -12254,17 +19724,30 @@ func (s *DeleteBucketInventoryRequest) SetInventoryId(v string) *DeleteBucketInv
 	return s
 }
 
+func (s *DeleteBucketInventoryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketInventoryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketInventoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketInventoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketInventoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketInventoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketInventoryResponse) SetHeaders(v map[string]*string) *DeleteBucketInventoryResponse {
@@ -12277,17 +19760,30 @@ func (s *DeleteBucketInventoryResponse) SetStatusCode(v int32) *DeleteBucketInve
 	return s
 }
 
+func (s *DeleteBucketInventoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketLifecycleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketLifecycleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketLifecycleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketLifecycleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketLifecycleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketLifecycleResponse) SetHeaders(v map[string]*string) *DeleteBucketLifecycleResponse {
@@ -12300,17 +19796,30 @@ func (s *DeleteBucketLifecycleResponse) SetStatusCode(v int32) *DeleteBucketLife
 	return s
 }
 
+func (s *DeleteBucketLifecycleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketLoggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketLoggingResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketLoggingResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketLoggingResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketLoggingResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketLoggingResponse) SetHeaders(v map[string]*string) *DeleteBucketLoggingResponse {
@@ -12323,17 +19832,30 @@ func (s *DeleteBucketLoggingResponse) SetStatusCode(v int32) *DeleteBucketLoggin
 	return s
 }
 
+func (s *DeleteBucketLoggingResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketNotificationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketNotificationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketNotificationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketNotificationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketNotificationResponse) SetHeaders(v map[string]*string) *DeleteBucketNotificationResponse {
@@ -12346,17 +19868,30 @@ func (s *DeleteBucketNotificationResponse) SetStatusCode(v int32) *DeleteBucketN
 	return s
 }
 
+func (s *DeleteBucketNotificationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketPolicyResponse) SetHeaders(v map[string]*string) *DeleteBucketPolicyResponse {
@@ -12369,17 +19904,30 @@ func (s *DeleteBucketPolicyResponse) SetStatusCode(v int32) *DeleteBucketPolicyR
 	return s
 }
 
+func (s *DeleteBucketPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketPublicAccessBlockResponse) SetHeaders(v map[string]*string) *DeleteBucketPublicAccessBlockResponse {
@@ -12392,17 +19940,30 @@ func (s *DeleteBucketPublicAccessBlockResponse) SetStatusCode(v int32) *DeleteBu
 	return s
 }
 
+func (s *DeleteBucketPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketQoSInfoResponse) SetHeaders(v map[string]*string) *DeleteBucketQoSInfoResponse {
@@ -12415,17 +19976,26 @@ func (s *DeleteBucketQoSInfoResponse) SetStatusCode(v int32) *DeleteBucketQoSInf
 	return s
 }
 
+func (s *DeleteBucketQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketReplicationRequest struct {
 	// The container that is used to store the data replication rule to delete.
 	ReplicationRules *DeleteBucketReplicationRequestReplicationRules `json:"ReplicationRules,omitempty" xml:"ReplicationRules,omitempty" type:"Struct"`
 }
 
 func (s DeleteBucketReplicationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketReplicationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketReplicationRequest) GetReplicationRules() *DeleteBucketReplicationRequestReplicationRules {
+	return s.ReplicationRules
 }
 
 func (s *DeleteBucketReplicationRequest) SetReplicationRules(v *DeleteBucketReplicationRequestReplicationRules) *DeleteBucketReplicationRequest {
@@ -12433,16 +20003,24 @@ func (s *DeleteBucketReplicationRequest) SetReplicationRules(v *DeleteBucketRepl
 	return s
 }
 
+func (s *DeleteBucketReplicationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 type DeleteBucketReplicationRequestReplicationRules struct {
 	ID *string `json:"ID,omitempty" xml:"ID,omitempty"`
 }
 
 func (s DeleteBucketReplicationRequestReplicationRules) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketReplicationRequestReplicationRules) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketReplicationRequestReplicationRules) GetID() *string {
+	return s.ID
 }
 
 func (s *DeleteBucketReplicationRequestReplicationRules) SetID(v string) *DeleteBucketReplicationRequestReplicationRules {
@@ -12450,17 +20028,30 @@ func (s *DeleteBucketReplicationRequestReplicationRules) SetID(v string) *Delete
 	return s
 }
 
+func (s *DeleteBucketReplicationRequestReplicationRules) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketReplicationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketReplicationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketReplicationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketReplicationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketReplicationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketReplicationResponse) SetHeaders(v map[string]*string) *DeleteBucketReplicationResponse {
@@ -12473,6 +20064,11 @@ func (s *DeleteBucketReplicationResponse) SetStatusCode(v int32) *DeleteBucketRe
 	return s
 }
 
+func (s *DeleteBucketReplicationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	//
@@ -12483,11 +20079,15 @@ type DeleteBucketRequesterQoSInfoRequest struct {
 }
 
 func (s DeleteBucketRequesterQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketRequesterQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketRequesterQoSInfoRequest) GetQosRequester() *string {
+	return s.QosRequester
 }
 
 func (s *DeleteBucketRequesterQoSInfoRequest) SetQosRequester(v string) *DeleteBucketRequesterQoSInfoRequest {
@@ -12495,17 +20095,30 @@ func (s *DeleteBucketRequesterQoSInfoRequest) SetQosRequester(v string) *DeleteB
 	return s
 }
 
+func (s *DeleteBucketRequesterQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketRequesterQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketRequesterQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketRequesterQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketRequesterQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketRequesterQoSInfoResponse) SetHeaders(v map[string]*string) *DeleteBucketRequesterQoSInfoResponse {
@@ -12518,17 +20131,30 @@ func (s *DeleteBucketRequesterQoSInfoResponse) SetStatusCode(v int32) *DeleteBuc
 	return s
 }
 
+func (s *DeleteBucketRequesterQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketResponseHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketResponseHeaderResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketResponseHeaderResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketResponseHeaderResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketResponseHeaderResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketResponseHeaderResponse) SetHeaders(v map[string]*string) *DeleteBucketResponseHeaderResponse {
@@ -12541,17 +20167,30 @@ func (s *DeleteBucketResponseHeaderResponse) SetStatusCode(v int32) *DeleteBucke
 	return s
 }
 
+func (s *DeleteBucketResponseHeaderResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketTagsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketTagsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketTagsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketTagsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketTagsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketTagsResponse) SetHeaders(v map[string]*string) *DeleteBucketTagsResponse {
@@ -12564,17 +20203,30 @@ func (s *DeleteBucketTagsResponse) SetStatusCode(v int32) *DeleteBucketTagsRespo
 	return s
 }
 
+func (s *DeleteBucketTagsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketTransferAccelerationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketTransferAccelerationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketTransferAccelerationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketTransferAccelerationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketTransferAccelerationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketTransferAccelerationResponse) SetHeaders(v map[string]*string) *DeleteBucketTransferAccelerationResponse {
@@ -12587,17 +20239,30 @@ func (s *DeleteBucketTransferAccelerationResponse) SetStatusCode(v int32) *Delet
 	return s
 }
 
+func (s *DeleteBucketTransferAccelerationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteBucketWebsiteResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteBucketWebsiteResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteBucketWebsiteResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteBucketWebsiteResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketWebsiteResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteBucketWebsiteResponse) SetHeaders(v map[string]*string) *DeleteBucketWebsiteResponse {
@@ -12610,17 +20275,30 @@ func (s *DeleteBucketWebsiteResponse) SetStatusCode(v int32) *DeleteBucketWebsit
 	return s
 }
 
+func (s *DeleteBucketWebsiteResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteCacheRequest struct {
 	XOssDatalakeCacheAvailableZone *string `json:"x-oss-datalake-cache-available-zone,omitempty" xml:"x-oss-datalake-cache-available-zone,omitempty"`
 	XOssDatalakeCacheName          *string `json:"x-oss-datalake-cache-name,omitempty" xml:"x-oss-datalake-cache-name,omitempty"`
 }
 
 func (s DeleteCacheRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteCacheRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteCacheRequest) GetXOssDatalakeCacheAvailableZone() *string {
+	return s.XOssDatalakeCacheAvailableZone
+}
+
+func (s *DeleteCacheRequest) GetXOssDatalakeCacheName() *string {
+	return s.XOssDatalakeCacheName
 }
 
 func (s *DeleteCacheRequest) SetXOssDatalakeCacheAvailableZone(v string) *DeleteCacheRequest {
@@ -12633,17 +20311,30 @@ func (s *DeleteCacheRequest) SetXOssDatalakeCacheName(v string) *DeleteCacheRequ
 	return s
 }
 
+func (s *DeleteCacheRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteCacheResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteCacheResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteCacheResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteCacheResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteCacheResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteCacheResponse) SetHeaders(v map[string]*string) *DeleteCacheResponse {
@@ -12656,29 +20347,10 @@ func (s *DeleteCacheResponse) SetStatusCode(v int32) *DeleteCacheResponse {
 	return s
 }
 
-type DeleteChannelHeaders struct {
-	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
-	// This parameter is required.
-	Bucket *string `json:"bucket,omitempty" xml:"bucket,omitempty"`
+func (s *DeleteCacheResponse) Validate() error {
+	return dara.Validate(s)
 }
 
-func (s DeleteChannelHeaders) String() string {
-	return tea.Prettify(s)
-}
-
-func (s DeleteChannelHeaders) GoString() string {
-	return s.String()
-}
-
-func (s *DeleteChannelHeaders) SetCommonHeaders(v map[string]*string) *DeleteChannelHeaders {
-	s.CommonHeaders = v
-	return s
-}
-
-func (s *DeleteChannelHeaders) SetBucket(v string) *DeleteChannelHeaders {
-	s.Bucket = &v
-	return s
-}
 
 type DeleteChannelResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -12686,11 +20358,19 @@ type DeleteChannelResponse struct {
 }
 
 func (s DeleteChannelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteChannelResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteChannelResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteChannelResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteChannelResponse) SetHeaders(v map[string]*string) *DeleteChannelResponse {
@@ -12703,17 +20383,26 @@ func (s *DeleteChannelResponse) SetStatusCode(v int32) *DeleteChannelResponse {
 	return s
 }
 
+func (s *DeleteChannelResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteCnameRequest struct {
 	// The container that stores the CNAME record.
 	BucketCnameConfiguration *DeleteCnameRequestBucketCnameConfiguration `json:"BucketCnameConfiguration,omitempty" xml:"BucketCnameConfiguration,omitempty" type:"Struct"`
 }
 
 func (s DeleteCnameRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteCnameRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteCnameRequest) GetBucketCnameConfiguration() *DeleteCnameRequestBucketCnameConfiguration {
+	return s.BucketCnameConfiguration
 }
 
 func (s *DeleteCnameRequest) SetBucketCnameConfiguration(v *DeleteCnameRequestBucketCnameConfiguration) *DeleteCnameRequest {
@@ -12721,16 +20410,24 @@ func (s *DeleteCnameRequest) SetBucketCnameConfiguration(v *DeleteCnameRequestBu
 	return s
 }
 
+func (s *DeleteCnameRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 type DeleteCnameRequestBucketCnameConfiguration struct {
 	Cname *DeleteCnameRequestBucketCnameConfigurationCname `json:"Cname,omitempty" xml:"Cname,omitempty" type:"Struct"`
 }
 
 func (s DeleteCnameRequestBucketCnameConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteCnameRequestBucketCnameConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteCnameRequestBucketCnameConfiguration) GetCname() *DeleteCnameRequestBucketCnameConfigurationCname {
+	return s.Cname
 }
 
 func (s *DeleteCnameRequestBucketCnameConfiguration) SetCname(v *DeleteCnameRequestBucketCnameConfigurationCname) *DeleteCnameRequestBucketCnameConfiguration {
@@ -12738,16 +20435,24 @@ func (s *DeleteCnameRequestBucketCnameConfiguration) SetCname(v *DeleteCnameRequ
 	return s
 }
 
+func (s *DeleteCnameRequestBucketCnameConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 type DeleteCnameRequestBucketCnameConfigurationCname struct {
 	Domain *string `json:"Domain,omitempty" xml:"Domain,omitempty"`
 }
 
 func (s DeleteCnameRequestBucketCnameConfigurationCname) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteCnameRequestBucketCnameConfigurationCname) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteCnameRequestBucketCnameConfigurationCname) GetDomain() *string {
+	return s.Domain
 }
 
 func (s *DeleteCnameRequestBucketCnameConfigurationCname) SetDomain(v string) *DeleteCnameRequestBucketCnameConfigurationCname {
@@ -12755,17 +20460,30 @@ func (s *DeleteCnameRequestBucketCnameConfigurationCname) SetDomain(v string) *D
 	return s
 }
 
+func (s *DeleteCnameRequestBucketCnameConfigurationCname) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteCnameResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteCnameResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteCnameResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteCnameResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteCnameResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteCnameResponse) SetHeaders(v map[string]*string) *DeleteCnameResponse {
@@ -12778,17 +20496,26 @@ func (s *DeleteCnameResponse) SetStatusCode(v int32) *DeleteCnameResponse {
 	return s
 }
 
+func (s *DeleteCnameResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s DeleteDataLakeCachePrefetchJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteDataLakeCachePrefetchJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteDataLakeCachePrefetchJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *DeleteDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *DeleteDataLakeCachePrefetchJobRequest {
@@ -12796,17 +20523,30 @@ func (s *DeleteDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *
 	return s
 }
 
+func (s *DeleteDataLakeCachePrefetchJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteDataLakeCachePrefetchJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteDataLakeCachePrefetchJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteDataLakeCachePrefetchJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteDataLakeCachePrefetchJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteDataLakeCachePrefetchJobResponse) SetHeaders(v map[string]*string) *DeleteDataLakeCachePrefetchJobResponse {
@@ -12819,17 +20559,26 @@ func (s *DeleteDataLakeCachePrefetchJobResponse) SetStatusCode(v int32) *DeleteD
 	return s
 }
 
+func (s *DeleteDataLakeCachePrefetchJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s DeleteDataLakeStorageTransferJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteDataLakeStorageTransferJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteDataLakeStorageTransferJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *DeleteDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *DeleteDataLakeStorageTransferJobRequest {
@@ -12837,17 +20586,30 @@ func (s *DeleteDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string)
 	return s
 }
 
+func (s *DeleteDataLakeStorageTransferJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteDataLakeStorageTransferJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteDataLakeStorageTransferJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteDataLakeStorageTransferJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteDataLakeStorageTransferJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteDataLakeStorageTransferJobResponse) SetHeaders(v map[string]*string) *DeleteDataLakeStorageTransferJobResponse {
@@ -12860,17 +20622,30 @@ func (s *DeleteDataLakeStorageTransferJobResponse) SetStatusCode(v int32) *Delet
 	return s
 }
 
+func (s *DeleteDataLakeStorageTransferJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteLiveChannelResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteLiveChannelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteLiveChannelResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteLiveChannelResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteLiveChannelResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteLiveChannelResponse) SetHeaders(v map[string]*string) *DeleteLiveChannelResponse {
@@ -12883,6 +20658,11 @@ func (s *DeleteLiveChannelResponse) SetStatusCode(v int32) *DeleteLiveChannelRes
 	return s
 }
 
+func (s *DeleteLiveChannelResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteMultipleObjectsHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// This parameter is required.
@@ -12894,11 +20674,19 @@ type DeleteMultipleObjectsHeaders struct {
 }
 
 func (s DeleteMultipleObjectsHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteMultipleObjectsHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteMultipleObjectsHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *DeleteMultipleObjectsHeaders) GetContentMd5() *string {
+	return s.ContentMd5
 }
 
 func (s *DeleteMultipleObjectsHeaders) SetCommonHeaders(v map[string]*string) *DeleteMultipleObjectsHeaders {
@@ -12911,6 +20699,11 @@ func (s *DeleteMultipleObjectsHeaders) SetContentMd5(v string) *DeleteMultipleOb
 	return s
 }
 
+func (s *DeleteMultipleObjectsHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteMultipleObjectsRequest struct {
 	Delete *Delete `json:"Delete,omitempty" xml:"Delete,omitempty"`
 	// The encoding type of the object name in the response. The value of the Key parameter is UTF-8 encoded. If the Key parameter includes control characters that are not supported by the XML 1.0 standard, you can specify this header to encode the value of the Key parameter in the response.
@@ -12922,11 +20715,19 @@ type DeleteMultipleObjectsRequest struct {
 }
 
 func (s DeleteMultipleObjectsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteMultipleObjectsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteMultipleObjectsRequest) GetDelete() *Delete {
+	return s.Delete
+}
+
+func (s *DeleteMultipleObjectsRequest) GetEncodingType() *string {
+	return s.EncodingType
 }
 
 func (s *DeleteMultipleObjectsRequest) SetDelete(v *Delete) *DeleteMultipleObjectsRequest {
@@ -12939,21 +20740,34 @@ func (s *DeleteMultipleObjectsRequest) SetEncodingType(v string) *DeleteMultiple
 	return s
 }
 
+func (s *DeleteMultipleObjectsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteMultipleObjectsResponseBody struct {
 	DeleteResult *DeleteMultipleObjectsResponseBodyDeleteResult `json:"DeleteResult,omitempty" xml:"DeleteResult,omitempty" type:"Struct"`
 }
 
 func (s DeleteMultipleObjectsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteMultipleObjectsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *DeleteMultipleObjectsResponseBody) GetDeleteResult() *DeleteMultipleObjectsResponseBodyDeleteResult {
+	return s.DeleteResult
+}
+
 func (s *DeleteMultipleObjectsResponseBody) SetDeleteResult(v *DeleteMultipleObjectsResponseBodyDeleteResult) *DeleteMultipleObjectsResponseBody {
 	s.DeleteResult = v
 	return s
+}
+
+func (s *DeleteMultipleObjectsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type DeleteMultipleObjectsResponseBodyDeleteResult struct {
@@ -12962,11 +20776,19 @@ type DeleteMultipleObjectsResponseBodyDeleteResult struct {
 }
 
 func (s DeleteMultipleObjectsResponseBodyDeleteResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteMultipleObjectsResponseBodyDeleteResult) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteMultipleObjectsResponseBodyDeleteResult) GetDeleted() []*DeletedObject {
+	return s.Deleted
+}
+
+func (s *DeleteMultipleObjectsResponseBodyDeleteResult) GetEncodingType() *string {
+	return s.EncodingType
 }
 
 func (s *DeleteMultipleObjectsResponseBodyDeleteResult) SetDeleted(v []*DeletedObject) *DeleteMultipleObjectsResponseBodyDeleteResult {
@@ -12979,6 +20801,11 @@ func (s *DeleteMultipleObjectsResponseBodyDeleteResult) SetEncodingType(v string
 	return s
 }
 
+func (s *DeleteMultipleObjectsResponseBodyDeleteResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteMultipleObjectsResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -12986,11 +20813,23 @@ type DeleteMultipleObjectsResponse struct {
 }
 
 func (s DeleteMultipleObjectsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteMultipleObjectsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteMultipleObjectsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteMultipleObjectsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *DeleteMultipleObjectsResponse) GetBody() *DeleteMultipleObjectsResponseBody {
+	return s.Body
 }
 
 func (s *DeleteMultipleObjectsResponse) SetHeaders(v map[string]*string) *DeleteMultipleObjectsResponse {
@@ -13008,6 +20847,11 @@ func (s *DeleteMultipleObjectsResponse) SetBody(v *DeleteMultipleObjectsResponse
 	return s
 }
 
+func (s *DeleteMultipleObjectsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteObjectRequest struct {
 	// The version ID of the object.
 	//
@@ -13018,11 +20862,15 @@ type DeleteObjectRequest struct {
 }
 
 func (s DeleteObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteObjectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteObjectRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *DeleteObjectRequest) SetVersionId(v string) *DeleteObjectRequest {
@@ -13030,17 +20878,30 @@ func (s *DeleteObjectRequest) SetVersionId(v string) *DeleteObjectRequest {
 	return s
 }
 
+func (s *DeleteObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteObjectResponse) SetHeaders(v map[string]*string) *DeleteObjectResponse {
@@ -13053,6 +20914,11 @@ func (s *DeleteObjectResponse) SetStatusCode(v int32) *DeleteObjectResponse {
 	return s
 }
 
+func (s *DeleteObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteObjectTaggingRequest struct {
 	// The version ID of the object that you want to delete.
 	//
@@ -13063,11 +20929,15 @@ type DeleteObjectTaggingRequest struct {
 }
 
 func (s DeleteObjectTaggingRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteObjectTaggingRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteObjectTaggingRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *DeleteObjectTaggingRequest) SetVersionId(v string) *DeleteObjectTaggingRequest {
@@ -13075,17 +20945,30 @@ func (s *DeleteObjectTaggingRequest) SetVersionId(v string) *DeleteObjectTagging
 	return s
 }
 
+func (s *DeleteObjectTaggingRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteObjectTaggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteObjectTaggingResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteObjectTaggingResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteObjectTaggingResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteObjectTaggingResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteObjectTaggingResponse) SetHeaders(v map[string]*string) *DeleteObjectTaggingResponse {
@@ -13098,17 +20981,30 @@ func (s *DeleteObjectTaggingResponse) SetStatusCode(v int32) *DeleteObjectTaggin
 	return s
 }
 
+func (s *DeleteObjectTaggingResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeletePublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeletePublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeletePublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeletePublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeletePublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeletePublicAccessBlockResponse) SetHeaders(v map[string]*string) *DeletePublicAccessBlockResponse {
@@ -13121,17 +21017,26 @@ func (s *DeletePublicAccessBlockResponse) SetStatusCode(v int32) *DeletePublicAc
 	return s
 }
 
+func (s *DeletePublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteReservedCapacityRequest struct {
 	// This parameter is required.
 	XOssReservedCapacityId *string `json:"x-oss-reserved-capacity-id,omitempty" xml:"x-oss-reserved-capacity-id,omitempty"`
 }
 
 func (s DeleteReservedCapacityRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteReservedCapacityRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteReservedCapacityRequest) GetXOssReservedCapacityId() *string {
+	return s.XOssReservedCapacityId
 }
 
 func (s *DeleteReservedCapacityRequest) SetXOssReservedCapacityId(v string) *DeleteReservedCapacityRequest {
@@ -13139,17 +21044,30 @@ func (s *DeleteReservedCapacityRequest) SetXOssReservedCapacityId(v string) *Del
 	return s
 }
 
+func (s *DeleteReservedCapacityRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteReservedCapacityResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteReservedCapacityResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteReservedCapacityResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteReservedCapacityResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteReservedCapacityResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteReservedCapacityResponse) SetHeaders(v map[string]*string) *DeleteReservedCapacityResponse {
@@ -13162,6 +21080,85 @@ func (s *DeleteReservedCapacityResponse) SetStatusCode(v int32) *DeleteReservedC
 	return s
 }
 
+func (s *DeleteReservedCapacityResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type DeleteResourcePoolBucketGroupQoSInfoRequest struct {
+	// This parameter is required.
+	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
+	// This parameter is required.
+	ResourcePoolBucketGroup *string `json:"resourcePoolBucketGroup,omitempty" xml:"resourcePoolBucketGroup,omitempty"`
+}
+
+func (s DeleteResourcePoolBucketGroupQoSInfoRequest) String() string {
+	return dara.Prettify(s)
+}
+
+func (s DeleteResourcePoolBucketGroupQoSInfoRequest) GoString() string {
+	return s.String()
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoRequest) GetResourcePoolBucketGroup() *string {
+	return s.ResourcePoolBucketGroup
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoRequest) SetResourcePool(v string) *DeleteResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoRequest) SetResourcePoolBucketGroup(v string) *DeleteResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePoolBucketGroup = &v
+	return s
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type DeleteResourcePoolBucketGroupQoSInfoResponse struct {
+	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+}
+
+func (s DeleteResourcePoolBucketGroupQoSInfoResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s DeleteResourcePoolBucketGroupQoSInfoResponse) GoString() string {
+	return s.String()
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) SetHeaders(v map[string]*string) *DeleteResourcePoolBucketGroupQoSInfoResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) SetStatusCode(v int32) *DeleteResourcePoolBucketGroupQoSInfoResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteResourcePoolRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	QosRequester *string `json:"qosRequester,omitempty" xml:"qosRequester,omitempty"`
@@ -13170,11 +21167,19 @@ type DeleteResourcePoolRequesterQoSInfoRequest struct {
 }
 
 func (s DeleteResourcePoolRequesterQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteResourcePoolRequesterQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteResourcePoolRequesterQoSInfoRequest) GetQosRequester() *string {
+	return s.QosRequester
+}
+
+func (s *DeleteResourcePoolRequesterQoSInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *DeleteResourcePoolRequesterQoSInfoRequest) SetQosRequester(v string) *DeleteResourcePoolRequesterQoSInfoRequest {
@@ -13187,17 +21192,30 @@ func (s *DeleteResourcePoolRequesterQoSInfoRequest) SetResourcePool(v string) *D
 	return s
 }
 
+func (s *DeleteResourcePoolRequesterQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteResourcePoolRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteResourcePoolRequesterQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteResourcePoolRequesterQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteResourcePoolRequesterQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteResourcePoolRequesterQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteResourcePoolRequesterQoSInfoResponse) SetHeaders(v map[string]*string) *DeleteResourcePoolRequesterQoSInfoResponse {
@@ -13209,6 +21227,11 @@ func (s *DeleteResourcePoolRequesterQoSInfoResponse) SetStatusCode(v int32) *Del
 	s.StatusCode = &v
 	return s
 }
+
+func (s *DeleteResourcePoolRequesterQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DeleteStyleRequest struct {
 	// The name of the image style.
@@ -13222,11 +21245,15 @@ type DeleteStyleRequest struct {
 }
 
 func (s DeleteStyleRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteStyleRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteStyleRequest) GetStyleName() *string {
+	return s.StyleName
 }
 
 func (s *DeleteStyleRequest) SetStyleName(v string) *DeleteStyleRequest {
@@ -13234,17 +21261,30 @@ func (s *DeleteStyleRequest) SetStyleName(v string) *DeleteStyleRequest {
 	return s
 }
 
+func (s *DeleteStyleRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteStyleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteStyleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteStyleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteStyleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteStyleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteStyleResponse) SetHeaders(v map[string]*string) *DeleteStyleResponse {
@@ -13257,17 +21297,30 @@ func (s *DeleteStyleResponse) SetStatusCode(v int32) *DeleteStyleResponse {
 	return s
 }
 
+func (s *DeleteStyleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteUserDefinedLogFieldsConfigResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteUserDefinedLogFieldsConfigResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteUserDefinedLogFieldsConfigResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteUserDefinedLogFieldsConfigResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteUserDefinedLogFieldsConfigResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteUserDefinedLogFieldsConfigResponse) SetHeaders(v map[string]*string) *DeleteUserDefinedLogFieldsConfigResponse {
@@ -13280,17 +21333,30 @@ func (s *DeleteUserDefinedLogFieldsConfigResponse) SetStatusCode(v int32) *Delet
 	return s
 }
 
+func (s *DeleteUserDefinedLogFieldsConfigResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DeleteVirtualBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s DeleteVirtualBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteVirtualBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DeleteVirtualBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteVirtualBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *DeleteVirtualBucketResponse) SetHeaders(v map[string]*string) *DeleteVirtualBucketResponse {
@@ -13303,6 +21369,11 @@ func (s *DeleteVirtualBucketResponse) SetStatusCode(v int32) *DeleteVirtualBucke
 	return s
 }
 
+func (s *DeleteVirtualBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DescribeRegionsRequest struct {
 	// The region ID of the request.
 	//
@@ -13313,11 +21384,15 @@ type DescribeRegionsRequest struct {
 }
 
 func (s DescribeRegionsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DescribeRegionsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DescribeRegionsRequest) GetRegions() *string {
+	return s.Regions
 }
 
 func (s *DescribeRegionsRequest) SetRegions(v string) *DescribeRegionsRequest {
@@ -13325,22 +21400,35 @@ func (s *DescribeRegionsRequest) SetRegions(v string) *DescribeRegionsRequest {
 	return s
 }
 
+func (s *DescribeRegionsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DescribeRegionsResponseBody struct {
 	// The information about the regions.
 	RegionInfoList *DescribeRegionsResponseBodyRegionInfoList `json:"RegionInfoList,omitempty" xml:"RegionInfoList,omitempty" type:"Struct"`
 }
 
 func (s DescribeRegionsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DescribeRegionsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *DescribeRegionsResponseBody) GetRegionInfoList() *DescribeRegionsResponseBodyRegionInfoList {
+	return s.RegionInfoList
+}
+
 func (s *DescribeRegionsResponseBody) SetRegionInfoList(v *DescribeRegionsResponseBodyRegionInfoList) *DescribeRegionsResponseBody {
 	s.RegionInfoList = v
 	return s
+}
+
+func (s *DescribeRegionsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type DescribeRegionsResponseBodyRegionInfoList struct {
@@ -13349,17 +21437,26 @@ type DescribeRegionsResponseBodyRegionInfoList struct {
 }
 
 func (s DescribeRegionsResponseBodyRegionInfoList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DescribeRegionsResponseBodyRegionInfoList) GoString() string {
 	return s.String()
 }
 
+func (s *DescribeRegionsResponseBodyRegionInfoList) GetRegionInfos() []*RegionInfo {
+	return s.RegionInfos
+}
+
 func (s *DescribeRegionsResponseBodyRegionInfoList) SetRegionInfos(v []*RegionInfo) *DescribeRegionsResponseBodyRegionInfoList {
 	s.RegionInfos = v
 	return s
 }
+
+func (s *DescribeRegionsResponseBodyRegionInfoList) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type DescribeRegionsResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -13368,11 +21465,23 @@ type DescribeRegionsResponse struct {
 }
 
 func (s DescribeRegionsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DescribeRegionsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DescribeRegionsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DescribeRegionsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *DescribeRegionsResponse) GetBody() *DescribeRegionsResponseBody {
+	return s.Body
 }
 
 func (s *DescribeRegionsResponse) SetHeaders(v map[string]*string) *DescribeRegionsResponse {
@@ -13390,17 +21499,31 @@ func (s *DescribeRegionsResponse) SetBody(v *DescribeRegionsResponseBody) *Descr
 	return s
 }
 
+func (s *DescribeRegionsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DoMetaQueryRequest struct {
 	// The containerfor query conditions.
 	MetaQuery *MetaQuery `json:"MetaQuery,omitempty" xml:"MetaQuery,omitempty"`
+	Mode      *string    `json:"mode,omitempty" xml:"mode,omitempty"`
 }
 
 func (s DoMetaQueryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DoMetaQueryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *DoMetaQueryRequest) GetMetaQuery() *MetaQuery {
+	return s.MetaQuery
+}
+
+func (s *DoMetaQueryRequest) GetMode() *string {
+	return s.Mode
 }
 
 func (s *DoMetaQueryRequest) SetMetaQuery(v *MetaQuery) *DoMetaQueryRequest {
@@ -13408,74 +21531,42 @@ func (s *DoMetaQueryRequest) SetMetaQuery(v *MetaQuery) *DoMetaQueryRequest {
 	return s
 }
 
+func (s *DoMetaQueryRequest) SetMode(v string) *DoMetaQueryRequest {
+	s.Mode = &v
+	return s
+}
+
+func (s *DoMetaQueryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type DoMetaQueryResponseBody struct {
 	// The container for the query result.
-	MetaQuery *DoMetaQueryResponseBodyMetaQuery `json:"MetaQuery,omitempty" xml:"MetaQuery,omitempty" type:"Struct"`
+	MetaQuery *MetaQueryResp `json:"MetaQuery,omitempty" xml:"MetaQuery,omitempty"`
 }
 
 func (s DoMetaQueryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DoMetaQueryResponseBody) GoString() string {
 	return s.String()
 }
 
-func (s *DoMetaQueryResponseBody) SetMetaQuery(v *DoMetaQueryResponseBodyMetaQuery) *DoMetaQueryResponseBody {
+func (s *DoMetaQueryResponseBody) GetMetaQuery() *MetaQueryResp {
+	return s.MetaQuery
+}
+
+func (s *DoMetaQueryResponseBody) SetMetaQuery(v *MetaQueryResp) *DoMetaQueryResponseBody {
 	s.MetaQuery = v
 	return s
 }
 
-type DoMetaQueryResponseBodyMetaQuery struct {
-	// The container for the information about objects.
-	Files *DoMetaQueryResponseBodyMetaQueryFiles `json:"Files,omitempty" xml:"Files,omitempty" type:"Struct"`
-	// The token that is used for the next query when the total number of objects exceeds the value of MaxResults.
-	//
-	// The value of NextToken is used to return the unreturned results in the next query.
-	//
-	// This parameter has a value only when not all objects are returned.
-	//
-	// example:
-	//
-	// MTIzNDU2Nzg6aW1tdGVzdDpleGFtcGxlYnVja2V0OmRhdGFzZXQwMDE6b3NzOi8vZXhhbXBsZWJ1Y2tldC9zYW1wbGVvYmplY3QxLmpw****
-	NextToken *string `json:"NextToken,omitempty" xml:"NextToken,omitempty"`
+func (s *DoMetaQueryResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
-func (s DoMetaQueryResponseBodyMetaQuery) String() string {
-	return tea.Prettify(s)
-}
-
-func (s DoMetaQueryResponseBodyMetaQuery) GoString() string {
-	return s.String()
-}
-
-func (s *DoMetaQueryResponseBodyMetaQuery) SetFiles(v *DoMetaQueryResponseBodyMetaQueryFiles) *DoMetaQueryResponseBodyMetaQuery {
-	s.Files = v
-	return s
-}
-
-func (s *DoMetaQueryResponseBodyMetaQuery) SetNextToken(v string) *DoMetaQueryResponseBodyMetaQuery {
-	s.NextToken = &v
-	return s
-}
-
-type DoMetaQueryResponseBodyMetaQueryFiles struct {
-	// The list of file information.
-	File []*MetaQueryFile `json:"File,omitempty" xml:"File,omitempty" type:"Repeated"`
-}
-
-func (s DoMetaQueryResponseBodyMetaQueryFiles) String() string {
-	return tea.Prettify(s)
-}
-
-func (s DoMetaQueryResponseBodyMetaQueryFiles) GoString() string {
-	return s.String()
-}
-
-func (s *DoMetaQueryResponseBodyMetaQueryFiles) SetFile(v []*MetaQueryFile) *DoMetaQueryResponseBodyMetaQueryFiles {
-	s.File = v
-	return s
-}
 
 type DoMetaQueryResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -13484,11 +21575,23 @@ type DoMetaQueryResponse struct {
 }
 
 func (s DoMetaQueryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DoMetaQueryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *DoMetaQueryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DoMetaQueryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *DoMetaQueryResponse) GetBody() *DoMetaQueryResponseBody {
+	return s.Body
 }
 
 func (s *DoMetaQueryResponse) SetHeaders(v map[string]*string) *DoMetaQueryResponse {
@@ -13506,6 +21609,11 @@ func (s *DoMetaQueryResponse) SetBody(v *DoMetaQueryResponseBody) *DoMetaQueryRe
 	return s
 }
 
+func (s *DoMetaQueryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ExtendBucketWormRequest struct {
 	// The parameters for WORM extension.
 	ExtendWormConfiguration *ExtendWormConfiguration `json:"ExtendWormConfiguration,omitempty" xml:"ExtendWormConfiguration,omitempty"`
@@ -13522,11 +21630,19 @@ type ExtendBucketWormRequest struct {
 }
 
 func (s ExtendBucketWormRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ExtendBucketWormRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ExtendBucketWormRequest) GetExtendWormConfiguration() *ExtendWormConfiguration {
+	return s.ExtendWormConfiguration
+}
+
+func (s *ExtendBucketWormRequest) GetWormId() *string {
+	return s.WormId
 }
 
 func (s *ExtendBucketWormRequest) SetExtendWormConfiguration(v *ExtendWormConfiguration) *ExtendBucketWormRequest {
@@ -13539,17 +21655,30 @@ func (s *ExtendBucketWormRequest) SetWormId(v string) *ExtendBucketWormRequest {
 	return s
 }
 
+func (s *ExtendBucketWormRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ExtendBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s ExtendBucketWormResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ExtendBucketWormResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ExtendBucketWormResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ExtendBucketWormResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *ExtendBucketWormResponse) SetHeaders(v map[string]*string) *ExtendBucketWormResponse {
@@ -13561,6 +21690,11 @@ func (s *ExtendBucketWormResponse) SetStatusCode(v int32) *ExtendBucketWormRespo
 	s.StatusCode = &v
 	return s
 }
+
+func (s *ExtendBucketWormResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetAccessPointHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -13575,11 +21709,19 @@ type GetAccessPointHeaders struct {
 }
 
 func (s GetAccessPointHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetAccessPointHeaders) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *GetAccessPointHeaders) SetCommonHeaders(v map[string]*string) *GetAccessPointHeaders {
@@ -13592,23 +21734,37 @@ func (s *GetAccessPointHeaders) SetXOssAccessPointName(v string) *GetAccessPoint
 	return s
 }
 
+func (s *GetAccessPointHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointResponseBody struct {
 	// The container that stores the information about the access point.
 	GetAccessPointResult *GetAccessPointResult `json:"GetAccessPointResult,omitempty" xml:"GetAccessPointResult,omitempty"`
 }
 
 func (s GetAccessPointResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetAccessPointResponseBody) GetGetAccessPointResult() *GetAccessPointResult {
+	return s.GetAccessPointResult
+}
+
 func (s *GetAccessPointResponseBody) SetGetAccessPointResult(v *GetAccessPointResult) *GetAccessPointResponseBody {
 	s.GetAccessPointResult = v
 	return s
 }
+
+func (s *GetAccessPointResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetAccessPointResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -13617,11 +21773,23 @@ type GetAccessPointResponse struct {
 }
 
 func (s GetAccessPointResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAccessPointResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAccessPointResponse) GetBody() *GetAccessPointResponseBody {
+	return s.Body
 }
 
 func (s *GetAccessPointResponse) SetHeaders(v map[string]*string) *GetAccessPointResponse {
@@ -13639,6 +21807,11 @@ func (s *GetAccessPointResponse) SetBody(v *GetAccessPointResponseBody) *GetAcce
 	return s
 }
 
+func (s *GetAccessPointResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointConfigForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the Object FC Access Point.
@@ -13652,11 +21825,19 @@ type GetAccessPointConfigForObjectProcessHeaders struct {
 }
 
 func (s GetAccessPointConfigForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointConfigForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointConfigForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetAccessPointConfigForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *GetAccessPointConfigForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *GetAccessPointConfigForObjectProcessHeaders {
@@ -13669,22 +21850,35 @@ func (s *GetAccessPointConfigForObjectProcessHeaders) SetXOssAccessPointForObjec
 	return s
 }
 
+func (s *GetAccessPointConfigForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointConfigForObjectProcessResponseBody struct {
 	// The container that stores the configurations of the Object FC Access Point.
 	GetAccessPointConfigForObjectProcessResult *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult `json:"GetAccessPointConfigForObjectProcessResult,omitempty" xml:"GetAccessPointConfigForObjectProcessResult,omitempty" type:"Struct"`
 }
 
 func (s GetAccessPointConfigForObjectProcessResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointConfigForObjectProcessResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetAccessPointConfigForObjectProcessResponseBody) GetGetAccessPointConfigForObjectProcessResult() *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult {
+	return s.GetAccessPointConfigForObjectProcessResult
+}
+
 func (s *GetAccessPointConfigForObjectProcessResponseBody) SetGetAccessPointConfigForObjectProcessResult(v *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) *GetAccessPointConfigForObjectProcessResponseBody {
 	s.GetAccessPointConfigForObjectProcessResult = v
 	return s
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult struct {
@@ -13701,11 +21895,23 @@ type GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObje
 }
 
 func (s GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) GetAllowAnonymousAccessForObjectProcess() *string {
+	return s.AllowAnonymousAccessForObjectProcess
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) GetObjectProcessConfiguration() *ObjectProcessConfiguration {
+	return s.ObjectProcessConfiguration
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
 }
 
 func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) SetAllowAnonymousAccessForObjectProcess(v string) *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult {
@@ -13723,6 +21929,11 @@ func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigFor
 	return s
 }
 
+func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigForObjectProcessResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointConfigForObjectProcessResponse struct {
 	Headers    map[string]*string                                `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                            `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -13730,11 +21941,23 @@ type GetAccessPointConfigForObjectProcessResponse struct {
 }
 
 func (s GetAccessPointConfigForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointConfigForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAccessPointConfigForObjectProcessResponse) GetBody() *GetAccessPointConfigForObjectProcessResponseBody {
+	return s.Body
 }
 
 func (s *GetAccessPointConfigForObjectProcessResponse) SetHeaders(v map[string]*string) *GetAccessPointConfigForObjectProcessResponse {
@@ -13751,6 +21974,11 @@ func (s *GetAccessPointConfigForObjectProcessResponse) SetBody(v *GetAccessPoint
 	s.Body = v
 	return s
 }
+
+func (s *GetAccessPointConfigForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetAccessPointForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -13771,11 +21999,19 @@ type GetAccessPointForObjectProcessHeaders struct {
 }
 
 func (s GetAccessPointForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetAccessPointForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *GetAccessPointForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *GetAccessPointForObjectProcessHeaders {
@@ -13788,22 +22024,35 @@ func (s *GetAccessPointForObjectProcessHeaders) SetXOssAccessPointForObjectProce
 	return s
 }
 
+func (s *GetAccessPointForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointForObjectProcessResponseBody struct {
 	// The container that stores information about the Object FC Access Point.
 	GetAccessPointForObjectProcessResult *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult `json:"GetAccessPointForObjectProcessResult,omitempty" xml:"GetAccessPointForObjectProcessResult,omitempty" type:"Struct"`
 }
 
 func (s GetAccessPointForObjectProcessResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointForObjectProcessResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetAccessPointForObjectProcessResponseBody) GetGetAccessPointForObjectProcessResult() *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult {
+	return s.GetAccessPointForObjectProcessResult
+}
+
 func (s *GetAccessPointForObjectProcessResponseBody) SetGetAccessPointForObjectProcessResult(v *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) *GetAccessPointForObjectProcessResponseBody {
 	s.GetAccessPointForObjectProcessResult = v
 	return s
+}
+
+func (s *GetAccessPointForObjectProcessResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult struct {
@@ -13870,11 +22119,51 @@ type GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessRes
 }
 
 func (s GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetAccessPointForObjectProcessAlias() *string {
+	return s.AccessPointForObjectProcessAlias
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetAccessPointForObjectProcessArn() *string {
+	return s.AccessPointForObjectProcessArn
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetAccessPointName() *string {
+	return s.AccessPointName
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetAccessPointNameForObjectProcess() *string {
+	return s.AccessPointNameForObjectProcess
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetAccountId() *string {
+	return s.AccountId
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetAllowAnonymousAccessForObjectProcess() *string {
+	return s.AllowAnonymousAccessForObjectProcess
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetEndpoints() *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints {
+	return s.Endpoints
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) GetStatus() *string {
+	return s.Status
 }
 
 func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) SetAccessPointForObjectProcessAlias(v string) *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult {
@@ -13927,6 +22216,10 @@ func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProces
 	return s
 }
 
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints struct {
 	// The internal endpoint of the Object FC Access Point.
 	//
@@ -13943,11 +22236,19 @@ type GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessRes
 }
 
 func (s GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints) GetInternalEndpoint() *string {
+	return s.InternalEndpoint
+}
+
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints) GetPublicEndpoint() *string {
+	return s.PublicEndpoint
 }
 
 func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints) SetInternalEndpoint(v string) *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints {
@@ -13960,6 +22261,11 @@ func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProces
 	return s
 }
 
+func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProcessResultEndpoints) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointForObjectProcessResponse struct {
 	Headers    map[string]*string                          `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                      `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -13967,11 +22273,23 @@ type GetAccessPointForObjectProcessResponse struct {
 }
 
 func (s GetAccessPointForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAccessPointForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAccessPointForObjectProcessResponse) GetBody() *GetAccessPointForObjectProcessResponseBody {
+	return s.Body
 }
 
 func (s *GetAccessPointForObjectProcessResponse) SetHeaders(v map[string]*string) *GetAccessPointForObjectProcessResponse {
@@ -13989,6 +22307,11 @@ func (s *GetAccessPointForObjectProcessResponse) SetBody(v *GetAccessPointForObj
 	return s
 }
 
+func (s *GetAccessPointForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointPolicyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the access point.
@@ -14002,11 +22325,19 @@ type GetAccessPointPolicyHeaders struct {
 }
 
 func (s GetAccessPointPolicyHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPolicyHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointPolicyHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetAccessPointPolicyHeaders) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *GetAccessPointPolicyHeaders) SetCommonHeaders(v map[string]*string) *GetAccessPointPolicyHeaders {
@@ -14019,6 +22350,11 @@ func (s *GetAccessPointPolicyHeaders) SetXOssAccessPointName(v string) *GetAcces
 	return s
 }
 
+func (s *GetAccessPointPolicyHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -14026,11 +22362,23 @@ type GetAccessPointPolicyResponse struct {
 }
 
 func (s GetAccessPointPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAccessPointPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAccessPointPolicyResponse) GetBody() *string {
+	return s.Body
 }
 
 func (s *GetAccessPointPolicyResponse) SetHeaders(v map[string]*string) *GetAccessPointPolicyResponse {
@@ -14048,6 +22396,11 @@ func (s *GetAccessPointPolicyResponse) SetBody(v string) *GetAccessPointPolicyRe
 	return s
 }
 
+func (s *GetAccessPointPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointPolicyForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the Object FC Access Point.
@@ -14061,11 +22414,19 @@ type GetAccessPointPolicyForObjectProcessHeaders struct {
 }
 
 func (s GetAccessPointPolicyForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPolicyForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointPolicyForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetAccessPointPolicyForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *GetAccessPointPolicyForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *GetAccessPointPolicyForObjectProcessHeaders {
@@ -14078,6 +22439,11 @@ func (s *GetAccessPointPolicyForObjectProcessHeaders) SetXOssAccessPointForObjec
 	return s
 }
 
+func (s *GetAccessPointPolicyForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointPolicyForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -14085,11 +22451,23 @@ type GetAccessPointPolicyForObjectProcessResponse struct {
 }
 
 func (s GetAccessPointPolicyForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPolicyForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointPolicyForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAccessPointPolicyForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAccessPointPolicyForObjectProcessResponse) GetBody() *string {
+	return s.Body
 }
 
 func (s *GetAccessPointPolicyForObjectProcessResponse) SetHeaders(v map[string]*string) *GetAccessPointPolicyForObjectProcessResponse {
@@ -14107,6 +22485,11 @@ func (s *GetAccessPointPolicyForObjectProcessResponse) SetBody(v string) *GetAcc
 	return s
 }
 
+func (s *GetAccessPointPolicyForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointPublicAccessBlockRequest struct {
 	// The name of the access point.
 	//
@@ -14117,11 +22500,15 @@ type GetAccessPointPublicAccessBlockRequest struct {
 }
 
 func (s GetAccessPointPublicAccessBlockRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPublicAccessBlockRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointPublicAccessBlockRequest) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *GetAccessPointPublicAccessBlockRequest) SetXOssAccessPointName(v string) *GetAccessPointPublicAccessBlockRequest {
@@ -14129,23 +22516,37 @@ func (s *GetAccessPointPublicAccessBlockRequest) SetXOssAccessPointName(v string
 	return s
 }
 
+func (s *GetAccessPointPublicAccessBlockRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAccessPointPublicAccessBlockResponseBody struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
 }
 
 func (s GetAccessPointPublicAccessBlockResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPublicAccessBlockResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetAccessPointPublicAccessBlockResponseBody) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
+}
+
 func (s *GetAccessPointPublicAccessBlockResponseBody) SetPublicAccessBlockConfiguration(v *PublicAccessBlockConfiguration) *GetAccessPointPublicAccessBlockResponseBody {
 	s.PublicAccessBlockConfiguration = v
 	return s
 }
+
+func (s *GetAccessPointPublicAccessBlockResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetAccessPointPublicAccessBlockResponse struct {
 	Headers    map[string]*string                           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14154,11 +22555,23 @@ type GetAccessPointPublicAccessBlockResponse struct {
 }
 
 func (s GetAccessPointPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAccessPointPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAccessPointPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAccessPointPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAccessPointPublicAccessBlockResponse) GetBody() *GetAccessPointPublicAccessBlockResponseBody {
+	return s.Body
 }
 
 func (s *GetAccessPointPublicAccessBlockResponse) SetHeaders(v map[string]*string) *GetAccessPointPublicAccessBlockResponse {
@@ -14176,6 +22589,11 @@ func (s *GetAccessPointPublicAccessBlockResponse) SetBody(v *GetAccessPointPubli
 	return s
 }
 
+func (s *GetAccessPointPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAsyncFetchTaskHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// This parameter is required.
@@ -14183,11 +22601,19 @@ type GetAsyncFetchTaskHeaders struct {
 }
 
 func (s GetAsyncFetchTaskHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAsyncFetchTaskHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetAsyncFetchTaskHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetAsyncFetchTaskHeaders) GetXOssTaskId() *string {
+	return s.XOssTaskId
 }
 
 func (s *GetAsyncFetchTaskHeaders) SetCommonHeaders(v map[string]*string) *GetAsyncFetchTaskHeaders {
@@ -14200,22 +22626,36 @@ func (s *GetAsyncFetchTaskHeaders) SetXOssTaskId(v string) *GetAsyncFetchTaskHea
 	return s
 }
 
+func (s *GetAsyncFetchTaskHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetAsyncFetchTaskResponseBody struct {
 	AsyncFetchTaskInfo *AsyncFetchTaskInfo `json:"AsyncFetchTaskInfo,omitempty" xml:"AsyncFetchTaskInfo,omitempty"`
 }
 
 func (s GetAsyncFetchTaskResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAsyncFetchTaskResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetAsyncFetchTaskResponseBody) GetAsyncFetchTaskInfo() *AsyncFetchTaskInfo {
+	return s.AsyncFetchTaskInfo
+}
+
 func (s *GetAsyncFetchTaskResponseBody) SetAsyncFetchTaskInfo(v *AsyncFetchTaskInfo) *GetAsyncFetchTaskResponseBody {
 	s.AsyncFetchTaskInfo = v
 	return s
 }
+
+func (s *GetAsyncFetchTaskResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetAsyncFetchTaskResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14224,11 +22664,23 @@ type GetAsyncFetchTaskResponse struct {
 }
 
 func (s GetAsyncFetchTaskResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAsyncFetchTaskResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetAsyncFetchTaskResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetAsyncFetchTaskResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetAsyncFetchTaskResponse) GetBody() *GetAsyncFetchTaskResponseBody {
+	return s.Body
 }
 
 func (s *GetAsyncFetchTaskResponse) SetHeaders(v map[string]*string) *GetAsyncFetchTaskResponse {
@@ -14246,22 +22698,35 @@ func (s *GetAsyncFetchTaskResponse) SetBody(v *GetAsyncFetchTaskResponseBody) *G
 	return s
 }
 
+func (s *GetAsyncFetchTaskResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketAccessMonitorResponseBody struct {
 	// The container that stores access monitor configuration.
 	AccessMonitorConfiguration *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration `json:"AccessMonitorConfiguration,omitempty" xml:"AccessMonitorConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketAccessMonitorResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAccessMonitorResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketAccessMonitorResponseBody) GetAccessMonitorConfiguration() *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration {
+	return s.AccessMonitorConfiguration
+}
+
 func (s *GetBucketAccessMonitorResponseBody) SetAccessMonitorConfiguration(v *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) *GetBucketAccessMonitorResponseBody {
 	s.AccessMonitorConfiguration = v
 	return s
+}
+
+func (s *GetBucketAccessMonitorResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration struct {
@@ -14274,17 +22739,26 @@ type GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration struct {
 }
 
 func (s GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) GetStatus() *string {
+	return s.Status
+}
+
 func (s *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) SetStatus(v string) *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration {
 	s.Status = &v
 	return s
 }
+
+func (s *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketAccessMonitorResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14293,11 +22767,23 @@ type GetBucketAccessMonitorResponse struct {
 }
 
 func (s GetBucketAccessMonitorResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAccessMonitorResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketAccessMonitorResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketAccessMonitorResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketAccessMonitorResponse) GetBody() *GetBucketAccessMonitorResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketAccessMonitorResponse) SetHeaders(v map[string]*string) *GetBucketAccessMonitorResponse {
@@ -14315,22 +22801,35 @@ func (s *GetBucketAccessMonitorResponse) SetBody(v *GetBucketAccessMonitorRespon
 	return s
 }
 
+func (s *GetBucketAccessMonitorResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketAclResponseBody struct {
 	// The container that stores the ACL information.
 	AccessControlPolicy *GetBucketAclResponseBodyAccessControlPolicy `json:"AccessControlPolicy,omitempty" xml:"AccessControlPolicy,omitempty" type:"Struct"`
 }
 
 func (s GetBucketAclResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAclResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketAclResponseBody) GetAccessControlPolicy() *GetBucketAclResponseBodyAccessControlPolicy {
+	return s.AccessControlPolicy
+}
+
 func (s *GetBucketAclResponseBody) SetAccessControlPolicy(v *GetBucketAclResponseBodyAccessControlPolicy) *GetBucketAclResponseBody {
 	s.AccessControlPolicy = v
 	return s
+}
+
+func (s *GetBucketAclResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketAclResponseBodyAccessControlPolicy struct {
@@ -14341,11 +22840,19 @@ type GetBucketAclResponseBodyAccessControlPolicy struct {
 }
 
 func (s GetBucketAclResponseBodyAccessControlPolicy) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAclResponseBodyAccessControlPolicy) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketAclResponseBodyAccessControlPolicy) GetAccessControlList() *GetBucketAclResponseBodyAccessControlPolicyAccessControlList {
+	return s.AccessControlList
+}
+
+func (s *GetBucketAclResponseBodyAccessControlPolicy) GetOwner() *Owner {
+	return s.Owner
 }
 
 func (s *GetBucketAclResponseBodyAccessControlPolicy) SetAccessControlList(v *GetBucketAclResponseBodyAccessControlPolicyAccessControlList) *GetBucketAclResponseBodyAccessControlPolicy {
@@ -14358,23 +22865,36 @@ func (s *GetBucketAclResponseBodyAccessControlPolicy) SetOwner(v *Owner) *GetBuc
 	return s
 }
 
+func (s *GetBucketAclResponseBodyAccessControlPolicy) Validate() error {
+	return dara.Validate(s)
+}
+
 type GetBucketAclResponseBodyAccessControlPolicyAccessControlList struct {
 	// The ACL of the bucket.
 	Grant *string `json:"Grant,omitempty" xml:"Grant,omitempty"`
 }
 
 func (s GetBucketAclResponseBodyAccessControlPolicyAccessControlList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAclResponseBodyAccessControlPolicyAccessControlList) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketAclResponseBodyAccessControlPolicyAccessControlList) GetGrant() *string {
+	return s.Grant
+}
+
 func (s *GetBucketAclResponseBodyAccessControlPolicyAccessControlList) SetGrant(v string) *GetBucketAclResponseBodyAccessControlPolicyAccessControlList {
 	s.Grant = &v
 	return s
 }
+
+func (s *GetBucketAclResponseBodyAccessControlPolicyAccessControlList) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketAclResponse struct {
 	Headers    map[string]*string        `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14383,11 +22903,23 @@ type GetBucketAclResponse struct {
 }
 
 func (s GetBucketAclResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketAclResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketAclResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketAclResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketAclResponse) GetBody() *GetBucketAclResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketAclResponse) SetHeaders(v map[string]*string) *GetBucketAclResponse {
@@ -14405,23 +22937,37 @@ func (s *GetBucketAclResponse) SetBody(v *GetBucketAclResponseBody) *GetBucketAc
 	return s
 }
 
+func (s *GetBucketAclResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketArchiveDirectReadResponseBody struct {
 	// The container that stores the configurations for real-time access of Archive objects.
 	ArchiveDirectReadConfiguration *ArchiveDirectReadConfiguration `json:"ArchiveDirectReadConfiguration,omitempty" xml:"ArchiveDirectReadConfiguration,omitempty"`
 }
 
 func (s GetBucketArchiveDirectReadResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketArchiveDirectReadResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketArchiveDirectReadResponseBody) GetArchiveDirectReadConfiguration() *ArchiveDirectReadConfiguration {
+	return s.ArchiveDirectReadConfiguration
+}
+
 func (s *GetBucketArchiveDirectReadResponseBody) SetArchiveDirectReadConfiguration(v *ArchiveDirectReadConfiguration) *GetBucketArchiveDirectReadResponseBody {
 	s.ArchiveDirectReadConfiguration = v
 	return s
 }
+
+func (s *GetBucketArchiveDirectReadResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketArchiveDirectReadResponse struct {
 	Headers    map[string]*string                      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14430,11 +22976,23 @@ type GetBucketArchiveDirectReadResponse struct {
 }
 
 func (s GetBucketArchiveDirectReadResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketArchiveDirectReadResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketArchiveDirectReadResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketArchiveDirectReadResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketArchiveDirectReadResponse) GetBody() *GetBucketArchiveDirectReadResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketArchiveDirectReadResponse) SetHeaders(v map[string]*string) *GetBucketArchiveDirectReadResponse {
@@ -14452,22 +23010,36 @@ func (s *GetBucketArchiveDirectReadResponse) SetBody(v *GetBucketArchiveDirectRe
 	return s
 }
 
+func (s *GetBucketArchiveDirectReadResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketCacheConfigurationResponseBody struct {
 	CacheConfiguration *CacheConfiguration `json:"CacheConfiguration,omitempty" xml:"CacheConfiguration,omitempty"`
 }
 
 func (s GetBucketCacheConfigurationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCacheConfigurationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketCacheConfigurationResponseBody) GetCacheConfiguration() *CacheConfiguration {
+	return s.CacheConfiguration
+}
+
 func (s *GetBucketCacheConfigurationResponseBody) SetCacheConfiguration(v *CacheConfiguration) *GetBucketCacheConfigurationResponseBody {
 	s.CacheConfiguration = v
 	return s
 }
+
+func (s *GetBucketCacheConfigurationResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketCacheConfigurationResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14476,11 +23048,23 @@ type GetBucketCacheConfigurationResponse struct {
 }
 
 func (s GetBucketCacheConfigurationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCacheConfigurationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketCacheConfigurationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketCacheConfigurationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketCacheConfigurationResponse) GetBody() *GetBucketCacheConfigurationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketCacheConfigurationResponse) SetHeaders(v map[string]*string) *GetBucketCacheConfigurationResponse {
@@ -14498,22 +23082,36 @@ func (s *GetBucketCacheConfigurationResponse) SetBody(v *GetBucketCacheConfigura
 	return s
 }
 
+func (s *GetBucketCacheConfigurationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketCallbackPolicyResponseBody struct {
 	BucketCallbackPolicy *CallbackPolicy `json:"BucketCallbackPolicy,omitempty" xml:"BucketCallbackPolicy,omitempty"`
 }
 
 func (s GetBucketCallbackPolicyResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCallbackPolicyResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketCallbackPolicyResponseBody) GetBucketCallbackPolicy() *CallbackPolicy {
+	return s.BucketCallbackPolicy
+}
+
 func (s *GetBucketCallbackPolicyResponseBody) SetBucketCallbackPolicy(v *CallbackPolicy) *GetBucketCallbackPolicyResponseBody {
 	s.BucketCallbackPolicy = v
 	return s
 }
+
+func (s *GetBucketCallbackPolicyResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketCallbackPolicyResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14522,11 +23120,23 @@ type GetBucketCallbackPolicyResponse struct {
 }
 
 func (s GetBucketCallbackPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCallbackPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketCallbackPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketCallbackPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketCallbackPolicyResponse) GetBody() *GetBucketCallbackPolicyResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketCallbackPolicyResponse) SetHeaders(v map[string]*string) *GetBucketCallbackPolicyResponse {
@@ -14544,22 +23154,36 @@ func (s *GetBucketCallbackPolicyResponse) SetBody(v *GetBucketCallbackPolicyResp
 	return s
 }
 
+func (s *GetBucketCallbackPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketCommonHeaderResponseBody struct {
 	CommonHeaders *CommonHeaders `json:"CommonHeaders,omitempty" xml:"CommonHeaders,omitempty"`
 }
 
 func (s GetBucketCommonHeaderResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCommonHeaderResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketCommonHeaderResponseBody) GetCommonHeaders() *CommonHeaders {
+	return s.CommonHeaders
+}
+
 func (s *GetBucketCommonHeaderResponseBody) SetCommonHeaders(v *CommonHeaders) *GetBucketCommonHeaderResponseBody {
 	s.CommonHeaders = v
 	return s
 }
+
+func (s *GetBucketCommonHeaderResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketCommonHeaderResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14568,11 +23192,23 @@ type GetBucketCommonHeaderResponse struct {
 }
 
 func (s GetBucketCommonHeaderResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCommonHeaderResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketCommonHeaderResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketCommonHeaderResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketCommonHeaderResponse) GetBody() *GetBucketCommonHeaderResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketCommonHeaderResponse) SetHeaders(v map[string]*string) *GetBucketCommonHeaderResponse {
@@ -14590,22 +23226,35 @@ func (s *GetBucketCommonHeaderResponse) SetBody(v *GetBucketCommonHeaderResponse
 	return s
 }
 
+func (s *GetBucketCommonHeaderResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketCorsResponseBody struct {
 	// The container that stores CORS configuration.
 	CORSConfiguration *GetBucketCorsResponseBodyCORSConfiguration `json:"CORSConfiguration,omitempty" xml:"CORSConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketCorsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCorsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketCorsResponseBody) GetCORSConfiguration() *GetBucketCorsResponseBodyCORSConfiguration {
+	return s.CORSConfiguration
+}
+
 func (s *GetBucketCorsResponseBody) SetCORSConfiguration(v *GetBucketCorsResponseBodyCORSConfiguration) *GetBucketCorsResponseBody {
 	s.CORSConfiguration = v
 	return s
+}
+
+func (s *GetBucketCorsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketCorsResponseBodyCORSConfiguration struct {
@@ -14624,11 +23273,19 @@ type GetBucketCorsResponseBodyCORSConfiguration struct {
 }
 
 func (s GetBucketCorsResponseBodyCORSConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCorsResponseBodyCORSConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketCorsResponseBodyCORSConfiguration) GetCORSRule() []*CORSRule {
+	return s.CORSRule
+}
+
+func (s *GetBucketCorsResponseBodyCORSConfiguration) GetResponseVary() *bool {
+	return s.ResponseVary
 }
 
 func (s *GetBucketCorsResponseBodyCORSConfiguration) SetCORSRule(v []*CORSRule) *GetBucketCorsResponseBodyCORSConfiguration {
@@ -14641,6 +23298,11 @@ func (s *GetBucketCorsResponseBodyCORSConfiguration) SetResponseVary(v bool) *Ge
 	return s
 }
 
+func (s *GetBucketCorsResponseBodyCORSConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketCorsResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -14648,11 +23310,23 @@ type GetBucketCorsResponse struct {
 }
 
 func (s GetBucketCorsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketCorsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketCorsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketCorsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketCorsResponse) GetBody() *GetBucketCorsResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketCorsResponse) SetHeaders(v map[string]*string) *GetBucketCorsResponse {
@@ -14670,16 +23344,25 @@ func (s *GetBucketCorsResponse) SetBody(v *GetBucketCorsResponseBody) *GetBucket
 	return s
 }
 
+func (s *GetBucketCorsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketDataAcceleratorRequest struct {
 	Verbose *string `json:"verbose,omitempty" xml:"verbose,omitempty"`
 }
 
 func (s GetBucketDataAcceleratorRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketDataAcceleratorRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketDataAcceleratorRequest) GetVerbose() *string {
+	return s.Verbose
 }
 
 func (s *GetBucketDataAcceleratorRequest) SetVerbose(v string) *GetBucketDataAcceleratorRequest {
@@ -14687,22 +23370,36 @@ func (s *GetBucketDataAcceleratorRequest) SetVerbose(v string) *GetBucketDataAcc
 	return s
 }
 
+func (s *GetBucketDataAcceleratorRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketDataAcceleratorResponseBody struct {
 	DataAccelerator *DataAccelerator `json:"DataAccelerator,omitempty" xml:"DataAccelerator,omitempty"`
 }
 
 func (s GetBucketDataAcceleratorResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketDataAcceleratorResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketDataAcceleratorResponseBody) GetDataAccelerator() *DataAccelerator {
+	return s.DataAccelerator
+}
+
 func (s *GetBucketDataAcceleratorResponseBody) SetDataAccelerator(v *DataAccelerator) *GetBucketDataAcceleratorResponseBody {
 	s.DataAccelerator = v
 	return s
 }
+
+func (s *GetBucketDataAcceleratorResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketDataAcceleratorResponse struct {
 	Headers    map[string]*string                    `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14711,11 +23408,23 @@ type GetBucketDataAcceleratorResponse struct {
 }
 
 func (s GetBucketDataAcceleratorResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketDataAcceleratorResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketDataAcceleratorResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketDataAcceleratorResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketDataAcceleratorResponse) GetBody() *GetBucketDataAcceleratorResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketDataAcceleratorResponse) SetHeaders(v map[string]*string) *GetBucketDataAcceleratorResponse {
@@ -14733,6 +23442,11 @@ func (s *GetBucketDataAcceleratorResponse) SetBody(v *GetBucketDataAcceleratorRe
 	return s
 }
 
+func (s *GetBucketDataAcceleratorResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketDataRedundancyTransitionRequest struct {
 	// The ID of the redundancy change task.
 	//
@@ -14745,11 +23459,15 @@ type GetBucketDataRedundancyTransitionRequest struct {
 }
 
 func (s GetBucketDataRedundancyTransitionRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketDataRedundancyTransitionRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketDataRedundancyTransitionRequest) GetXOssRedundancyTransitionTaskid() *string {
+	return s.XOssRedundancyTransitionTaskid
 }
 
 func (s *GetBucketDataRedundancyTransitionRequest) SetXOssRedundancyTransitionTaskid(v string) *GetBucketDataRedundancyTransitionRequest {
@@ -14757,23 +23475,37 @@ func (s *GetBucketDataRedundancyTransitionRequest) SetXOssRedundancyTransitionTa
 	return s
 }
 
+func (s *GetBucketDataRedundancyTransitionRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketDataRedundancyTransitionResponseBody struct {
 	// The container for a specific redundancy type change task.
 	BucketDataRedundancyTransition *BucketDataRedundancyTransition `json:"BucketDataRedundancyTransition,omitempty" xml:"BucketDataRedundancyTransition,omitempty"`
 }
 
 func (s GetBucketDataRedundancyTransitionResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketDataRedundancyTransitionResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketDataRedundancyTransitionResponseBody) GetBucketDataRedundancyTransition() *BucketDataRedundancyTransition {
+	return s.BucketDataRedundancyTransition
+}
+
 func (s *GetBucketDataRedundancyTransitionResponseBody) SetBucketDataRedundancyTransition(v *BucketDataRedundancyTransition) *GetBucketDataRedundancyTransitionResponseBody {
 	s.BucketDataRedundancyTransition = v
 	return s
 }
+
+func (s *GetBucketDataRedundancyTransitionResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14782,11 +23514,23 @@ type GetBucketDataRedundancyTransitionResponse struct {
 }
 
 func (s GetBucketDataRedundancyTransitionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketDataRedundancyTransitionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketDataRedundancyTransitionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketDataRedundancyTransitionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketDataRedundancyTransitionResponse) GetBody() *GetBucketDataRedundancyTransitionResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketDataRedundancyTransitionResponse) SetHeaders(v map[string]*string) *GetBucketDataRedundancyTransitionResponse {
@@ -14804,22 +23548,35 @@ func (s *GetBucketDataRedundancyTransitionResponse) SetBody(v *GetBucketDataRedu
 	return s
 }
 
+func (s *GetBucketDataRedundancyTransitionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketEncryptionResponseBody struct {
 	// The container that stores server-side encryption rules.
 	ServerSideEncryptionRule *GetBucketEncryptionResponseBodyServerSideEncryptionRule `json:"ServerSideEncryptionRule,omitempty" xml:"ServerSideEncryptionRule,omitempty" type:"Struct"`
 }
 
 func (s GetBucketEncryptionResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketEncryptionResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketEncryptionResponseBody) GetServerSideEncryptionRule() *GetBucketEncryptionResponseBodyServerSideEncryptionRule {
+	return s.ServerSideEncryptionRule
+}
+
 func (s *GetBucketEncryptionResponseBody) SetServerSideEncryptionRule(v *GetBucketEncryptionResponseBodyServerSideEncryptionRule) *GetBucketEncryptionResponseBody {
 	s.ServerSideEncryptionRule = v
 	return s
+}
+
+func (s *GetBucketEncryptionResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketEncryptionResponseBodyServerSideEncryptionRule struct {
@@ -14828,17 +23585,26 @@ type GetBucketEncryptionResponseBodyServerSideEncryptionRule struct {
 }
 
 func (s GetBucketEncryptionResponseBodyServerSideEncryptionRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketEncryptionResponseBodyServerSideEncryptionRule) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketEncryptionResponseBodyServerSideEncryptionRule) GetApplyServerSideEncryptionByDefault() *ApplyServerSideEncryptionByDefault {
+	return s.ApplyServerSideEncryptionByDefault
+}
+
 func (s *GetBucketEncryptionResponseBodyServerSideEncryptionRule) SetApplyServerSideEncryptionByDefault(v *ApplyServerSideEncryptionByDefault) *GetBucketEncryptionResponseBodyServerSideEncryptionRule {
 	s.ApplyServerSideEncryptionByDefault = v
 	return s
 }
+
+func (s *GetBucketEncryptionResponseBodyServerSideEncryptionRule) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketEncryptionResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14847,11 +23613,23 @@ type GetBucketEncryptionResponse struct {
 }
 
 func (s GetBucketEncryptionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketEncryptionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketEncryptionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketEncryptionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketEncryptionResponse) GetBody() *GetBucketEncryptionResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketEncryptionResponse) SetHeaders(v map[string]*string) *GetBucketEncryptionResponse {
@@ -14869,22 +23647,37 @@ func (s *GetBucketEncryptionResponse) SetBody(v *GetBucketEncryptionResponseBody
 	return s
 }
 
+func (s *GetBucketEncryptionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketEventNotificationResponseBody struct {
+	// Function Compute service configuration for a bucket.
 	NotificationConfiguration *EventNotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
 
 func (s GetBucketEventNotificationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketEventNotificationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketEventNotificationResponseBody) GetNotificationConfiguration() *EventNotificationConfiguration {
+	return s.NotificationConfiguration
+}
+
 func (s *GetBucketEventNotificationResponseBody) SetNotificationConfiguration(v *EventNotificationConfiguration) *GetBucketEventNotificationResponseBody {
 	s.NotificationConfiguration = v
 	return s
 }
+
+func (s *GetBucketEventNotificationResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketEventNotificationResponse struct {
 	Headers    map[string]*string                      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14893,11 +23686,23 @@ type GetBucketEventNotificationResponse struct {
 }
 
 func (s GetBucketEventNotificationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketEventNotificationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketEventNotificationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketEventNotificationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketEventNotificationResponse) GetBody() *GetBucketEventNotificationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketEventNotificationResponse) SetHeaders(v map[string]*string) *GetBucketEventNotificationResponse {
@@ -14915,22 +23720,36 @@ func (s *GetBucketEventNotificationResponse) SetBody(v *GetBucketEventNotificati
 	return s
 }
 
+func (s *GetBucketEventNotificationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketHashResponseBody struct {
 	ObjectHashConfiguration *ObjectHashConfiguration `json:"ObjectHashConfiguration,omitempty" xml:"ObjectHashConfiguration,omitempty"`
 }
 
 func (s GetBucketHashResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketHashResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketHashResponseBody) GetObjectHashConfiguration() *ObjectHashConfiguration {
+	return s.ObjectHashConfiguration
+}
+
 func (s *GetBucketHashResponseBody) SetObjectHashConfiguration(v *ObjectHashConfiguration) *GetBucketHashResponseBody {
 	s.ObjectHashConfiguration = v
 	return s
 }
+
+func (s *GetBucketHashResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketHashResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14939,11 +23758,23 @@ type GetBucketHashResponse struct {
 }
 
 func (s GetBucketHashResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketHashResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketHashResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketHashResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketHashResponse) GetBody() *GetBucketHashResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketHashResponse) SetHeaders(v map[string]*string) *GetBucketHashResponse {
@@ -14961,23 +23792,37 @@ func (s *GetBucketHashResponse) SetBody(v *GetBucketHashResponseBody) *GetBucket
 	return s
 }
 
+func (s *GetBucketHashResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketHttpsConfigResponseBody struct {
 	// The container that stores HTTPS configurations.
 	HttpsConfiguration *HttpsConfiguration `json:"HttpsConfiguration,omitempty" xml:"HttpsConfiguration,omitempty"`
 }
 
 func (s GetBucketHttpsConfigResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketHttpsConfigResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketHttpsConfigResponseBody) GetHttpsConfiguration() *HttpsConfiguration {
+	return s.HttpsConfiguration
+}
+
 func (s *GetBucketHttpsConfigResponseBody) SetHttpsConfiguration(v *HttpsConfiguration) *GetBucketHttpsConfigResponseBody {
 	s.HttpsConfiguration = v
 	return s
 }
+
+func (s *GetBucketHttpsConfigResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketHttpsConfigResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -14986,11 +23831,23 @@ type GetBucketHttpsConfigResponse struct {
 }
 
 func (s GetBucketHttpsConfigResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketHttpsConfigResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketHttpsConfigResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketHttpsConfigResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketHttpsConfigResponse) GetBody() *GetBucketHttpsConfigResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketHttpsConfigResponse) SetHeaders(v map[string]*string) *GetBucketHttpsConfigResponse {
@@ -15008,23 +23865,37 @@ func (s *GetBucketHttpsConfigResponse) SetBody(v *GetBucketHttpsConfigResponseBo
 	return s
 }
 
+func (s *GetBucketHttpsConfigResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketInfoResponseBody struct {
 	// The container that stores the information about the bucket.
 	BucketInfo *BucketInfo `json:"BucketInfo,omitempty" xml:"BucketInfo,omitempty"`
 }
 
 func (s GetBucketInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketInfoResponseBody) GetBucketInfo() *BucketInfo {
+	return s.BucketInfo
+}
+
 func (s *GetBucketInfoResponseBody) SetBucketInfo(v *BucketInfo) *GetBucketInfoResponseBody {
 	s.BucketInfo = v
 	return s
 }
+
+func (s *GetBucketInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketInfoResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15033,11 +23904,23 @@ type GetBucketInfoResponse struct {
 }
 
 func (s GetBucketInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketInfoResponse) GetBody() *GetBucketInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketInfoResponse) SetHeaders(v map[string]*string) *GetBucketInfoResponse {
@@ -15055,6 +23938,11 @@ func (s *GetBucketInfoResponse) SetBody(v *GetBucketInfoResponseBody) *GetBucket
 	return s
 }
 
+func (s *GetBucketInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketInventoryRequest struct {
 	// The name of the inventory to be queried.
 	//
@@ -15067,11 +23955,15 @@ type GetBucketInventoryRequest struct {
 }
 
 func (s GetBucketInventoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketInventoryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketInventoryRequest) GetInventoryId() *string {
+	return s.InventoryId
 }
 
 func (s *GetBucketInventoryRequest) SetInventoryId(v string) *GetBucketInventoryRequest {
@@ -15079,23 +23971,37 @@ func (s *GetBucketInventoryRequest) SetInventoryId(v string) *GetBucketInventory
 	return s
 }
 
+func (s *GetBucketInventoryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketInventoryResponseBody struct {
 	// The inventory task configured for a bucket.
 	InventoryConfiguration *InventoryConfiguration `json:"InventoryConfiguration,omitempty" xml:"InventoryConfiguration,omitempty"`
 }
 
 func (s GetBucketInventoryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketInventoryResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketInventoryResponseBody) GetInventoryConfiguration() *InventoryConfiguration {
+	return s.InventoryConfiguration
+}
+
 func (s *GetBucketInventoryResponseBody) SetInventoryConfiguration(v *InventoryConfiguration) *GetBucketInventoryResponseBody {
 	s.InventoryConfiguration = v
 	return s
 }
+
+func (s *GetBucketInventoryResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketInventoryResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15104,11 +24010,23 @@ type GetBucketInventoryResponse struct {
 }
 
 func (s GetBucketInventoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketInventoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketInventoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketInventoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketInventoryResponse) GetBody() *GetBucketInventoryResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketInventoryResponse) SetHeaders(v map[string]*string) *GetBucketInventoryResponse {
@@ -15126,23 +24044,37 @@ func (s *GetBucketInventoryResponse) SetBody(v *GetBucketInventoryResponseBody) 
 	return s
 }
 
+func (s *GetBucketInventoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketLifecycleResponseBody struct {
 	// The container that stores the lifecycle rules configured for the bucket.
 	LifecycleConfiguration *LifecycleConfiguration `json:"LifecycleConfiguration,omitempty" xml:"LifecycleConfiguration,omitempty"`
 }
 
 func (s GetBucketLifecycleResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLifecycleResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketLifecycleResponseBody) GetLifecycleConfiguration() *LifecycleConfiguration {
+	return s.LifecycleConfiguration
+}
+
 func (s *GetBucketLifecycleResponseBody) SetLifecycleConfiguration(v *LifecycleConfiguration) *GetBucketLifecycleResponseBody {
 	s.LifecycleConfiguration = v
 	return s
 }
+
+func (s *GetBucketLifecycleResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketLifecycleResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15151,11 +24083,23 @@ type GetBucketLifecycleResponse struct {
 }
 
 func (s GetBucketLifecycleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLifecycleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketLifecycleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketLifecycleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketLifecycleResponse) GetBody() *GetBucketLifecycleResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketLifecycleResponse) SetHeaders(v map[string]*string) *GetBucketLifecycleResponse {
@@ -15173,6 +24117,11 @@ func (s *GetBucketLifecycleResponse) SetBody(v *GetBucketLifecycleResponseBody) 
 	return s
 }
 
+func (s *GetBucketLifecycleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketLocationResponseBody struct {
 	// The region in which the bucket resides.\\
 	//
@@ -15189,17 +24138,26 @@ type GetBucketLocationResponseBody struct {
 }
 
 func (s GetBucketLocationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLocationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketLocationResponseBody) GetLocationConstraint() *string {
+	return s.LocationConstraint
+}
+
 func (s *GetBucketLocationResponseBody) SetLocationConstraint(v string) *GetBucketLocationResponseBody {
 	s.LocationConstraint = &v
 	return s
 }
+
+func (s *GetBucketLocationResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketLocationResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15208,11 +24166,23 @@ type GetBucketLocationResponse struct {
 }
 
 func (s GetBucketLocationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLocationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketLocationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketLocationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketLocationResponse) GetBody() *GetBucketLocationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketLocationResponse) SetHeaders(v map[string]*string) *GetBucketLocationResponse {
@@ -15230,22 +24200,35 @@ func (s *GetBucketLocationResponse) SetBody(v *GetBucketLocationResponseBody) *G
 	return s
 }
 
+func (s *GetBucketLocationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketLoggingResponseBody struct {
 	// Indicates the container used to store access logging configuration of a bucket.
 	BucketLoggingStatus *GetBucketLoggingResponseBodyBucketLoggingStatus `json:"BucketLoggingStatus,omitempty" xml:"BucketLoggingStatus,omitempty" type:"Struct"`
 }
 
 func (s GetBucketLoggingResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLoggingResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketLoggingResponseBody) GetBucketLoggingStatus() *GetBucketLoggingResponseBodyBucketLoggingStatus {
+	return s.BucketLoggingStatus
+}
+
 func (s *GetBucketLoggingResponseBody) SetBucketLoggingStatus(v *GetBucketLoggingResponseBodyBucketLoggingStatus) *GetBucketLoggingResponseBody {
 	s.BucketLoggingStatus = v
 	return s
+}
+
+func (s *GetBucketLoggingResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketLoggingResponseBodyBucketLoggingStatus struct {
@@ -15254,17 +24237,26 @@ type GetBucketLoggingResponseBodyBucketLoggingStatus struct {
 }
 
 func (s GetBucketLoggingResponseBodyBucketLoggingStatus) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLoggingResponseBodyBucketLoggingStatus) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketLoggingResponseBodyBucketLoggingStatus) GetLoggingEnabled() *LoggingEnabled {
+	return s.LoggingEnabled
+}
+
 func (s *GetBucketLoggingResponseBodyBucketLoggingStatus) SetLoggingEnabled(v *LoggingEnabled) *GetBucketLoggingResponseBodyBucketLoggingStatus {
 	s.LoggingEnabled = v
 	return s
 }
+
+func (s *GetBucketLoggingResponseBodyBucketLoggingStatus) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketLoggingResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15273,11 +24265,23 @@ type GetBucketLoggingResponse struct {
 }
 
 func (s GetBucketLoggingResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketLoggingResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketLoggingResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketLoggingResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketLoggingResponse) GetBody() *GetBucketLoggingResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketLoggingResponse) SetHeaders(v map[string]*string) *GetBucketLoggingResponse {
@@ -15295,22 +24299,36 @@ func (s *GetBucketLoggingResponse) SetBody(v *GetBucketLoggingResponseBody) *Get
 	return s
 }
 
+func (s *GetBucketLoggingResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketNotificationResponseBody struct {
 	NotificationConfiguration *NotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
 
 func (s GetBucketNotificationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketNotificationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketNotificationResponseBody) GetNotificationConfiguration() *NotificationConfiguration {
+	return s.NotificationConfiguration
+}
+
 func (s *GetBucketNotificationResponseBody) SetNotificationConfiguration(v *NotificationConfiguration) *GetBucketNotificationResponseBody {
 	s.NotificationConfiguration = v
 	return s
 }
+
+func (s *GetBucketNotificationResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketNotificationResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15319,11 +24337,23 @@ type GetBucketNotificationResponse struct {
 }
 
 func (s GetBucketNotificationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketNotificationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketNotificationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketNotificationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketNotificationResponse) GetBody() *GetBucketNotificationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketNotificationResponse) SetHeaders(v map[string]*string) *GetBucketNotificationResponse {
@@ -15341,6 +24371,11 @@ func (s *GetBucketNotificationResponse) SetBody(v *GetBucketNotificationResponse
 	return s
 }
 
+func (s *GetBucketNotificationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -15348,11 +24383,23 @@ type GetBucketPolicyResponse struct {
 }
 
 func (s GetBucketPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketPolicyResponse) GetBody() *string {
+	return s.Body
 }
 
 func (s *GetBucketPolicyResponse) SetHeaders(v map[string]*string) *GetBucketPolicyResponse {
@@ -15370,22 +24417,35 @@ func (s *GetBucketPolicyResponse) SetBody(v string) *GetBucketPolicyResponse {
 	return s
 }
 
+func (s *GetBucketPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketPolicyStatusResponseBody struct {
 	// The container that stores public access information.
 	PolicyStatus *GetBucketPolicyStatusResponseBodyPolicyStatus `json:"PolicyStatus,omitempty" xml:"PolicyStatus,omitempty" type:"Struct"`
 }
 
 func (s GetBucketPolicyStatusResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketPolicyStatusResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketPolicyStatusResponseBody) GetPolicyStatus() *GetBucketPolicyStatusResponseBodyPolicyStatus {
+	return s.PolicyStatus
+}
+
 func (s *GetBucketPolicyStatusResponseBody) SetPolicyStatus(v *GetBucketPolicyStatusResponseBodyPolicyStatus) *GetBucketPolicyStatusResponseBody {
 	s.PolicyStatus = v
 	return s
+}
+
+func (s *GetBucketPolicyStatusResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketPolicyStatusResponseBodyPolicyStatus struct {
@@ -15402,17 +24462,26 @@ type GetBucketPolicyStatusResponseBodyPolicyStatus struct {
 }
 
 func (s GetBucketPolicyStatusResponseBodyPolicyStatus) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketPolicyStatusResponseBodyPolicyStatus) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketPolicyStatusResponseBodyPolicyStatus) GetIsPublic() *bool {
+	return s.IsPublic
+}
+
 func (s *GetBucketPolicyStatusResponseBodyPolicyStatus) SetIsPublic(v bool) *GetBucketPolicyStatusResponseBodyPolicyStatus {
 	s.IsPublic = &v
 	return s
 }
+
+func (s *GetBucketPolicyStatusResponseBodyPolicyStatus) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketPolicyStatusResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15421,11 +24490,23 @@ type GetBucketPolicyStatusResponse struct {
 }
 
 func (s GetBucketPolicyStatusResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketPolicyStatusResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketPolicyStatusResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketPolicyStatusResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketPolicyStatusResponse) GetBody() *GetBucketPolicyStatusResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketPolicyStatusResponse) SetHeaders(v map[string]*string) *GetBucketPolicyStatusResponse {
@@ -15443,23 +24524,37 @@ func (s *GetBucketPolicyStatusResponse) SetBody(v *GetBucketPolicyStatusResponse
 	return s
 }
 
+func (s *GetBucketPolicyStatusResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketPublicAccessBlockResponseBody struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
 }
 
 func (s GetBucketPublicAccessBlockResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketPublicAccessBlockResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketPublicAccessBlockResponseBody) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
+}
+
 func (s *GetBucketPublicAccessBlockResponseBody) SetPublicAccessBlockConfiguration(v *PublicAccessBlockConfiguration) *GetBucketPublicAccessBlockResponseBody {
 	s.PublicAccessBlockConfiguration = v
 	return s
 }
+
+func (s *GetBucketPublicAccessBlockResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketPublicAccessBlockResponse struct {
 	Headers    map[string]*string                      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15468,11 +24563,23 @@ type GetBucketPublicAccessBlockResponse struct {
 }
 
 func (s GetBucketPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketPublicAccessBlockResponse) GetBody() *GetBucketPublicAccessBlockResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketPublicAccessBlockResponse) SetHeaders(v map[string]*string) *GetBucketPublicAccessBlockResponse {
@@ -15490,22 +24597,36 @@ func (s *GetBucketPublicAccessBlockResponse) SetBody(v *GetBucketPublicAccessBlo
 	return s
 }
 
+func (s *GetBucketPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketQoSInfoResponseBody struct {
 	QoSConfiguration *BucketQoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 }
 
 func (s GetBucketQoSInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketQoSInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketQoSInfoResponseBody) GetQoSConfiguration() *BucketQoSConfiguration {
+	return s.QoSConfiguration
+}
+
 func (s *GetBucketQoSInfoResponseBody) SetQoSConfiguration(v *BucketQoSConfiguration) *GetBucketQoSInfoResponseBody {
 	s.QoSConfiguration = v
 	return s
 }
+
+func (s *GetBucketQoSInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketQoSInfoResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15514,11 +24635,23 @@ type GetBucketQoSInfoResponse struct {
 }
 
 func (s GetBucketQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketQoSInfoResponse) GetBody() *GetBucketQoSInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketQoSInfoResponse) SetHeaders(v map[string]*string) *GetBucketQoSInfoResponse {
@@ -15536,23 +24669,37 @@ func (s *GetBucketQoSInfoResponse) SetBody(v *GetBucketQoSInfoResponseBody) *Get
 	return s
 }
 
+func (s *GetBucketQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketRefererResponseBody struct {
 	// The container that stores the hotlink protection configurations.
 	RefererConfiguration *RefererConfiguration `json:"RefererConfiguration,omitempty" xml:"RefererConfiguration,omitempty"`
 }
 
 func (s GetBucketRefererResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRefererResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketRefererResponseBody) GetRefererConfiguration() *RefererConfiguration {
+	return s.RefererConfiguration
+}
+
 func (s *GetBucketRefererResponseBody) SetRefererConfiguration(v *RefererConfiguration) *GetBucketRefererResponseBody {
 	s.RefererConfiguration = v
 	return s
 }
+
+func (s *GetBucketRefererResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketRefererResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15561,11 +24708,23 @@ type GetBucketRefererResponse struct {
 }
 
 func (s GetBucketRefererResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRefererResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketRefererResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketRefererResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketRefererResponse) GetBody() *GetBucketRefererResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketRefererResponse) SetHeaders(v map[string]*string) *GetBucketRefererResponse {
@@ -15583,22 +24742,35 @@ func (s *GetBucketRefererResponse) SetBody(v *GetBucketRefererResponseBody) *Get
 	return s
 }
 
+func (s *GetBucketRefererResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketReplicationResponseBody struct {
 	// The container that stores data replication configurations.
 	ReplicationConfiguration *GetBucketReplicationResponseBodyReplicationConfiguration `json:"ReplicationConfiguration,omitempty" xml:"ReplicationConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketReplicationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationResponseBody) GetReplicationConfiguration() *GetBucketReplicationResponseBodyReplicationConfiguration {
+	return s.ReplicationConfiguration
+}
+
 func (s *GetBucketReplicationResponseBody) SetReplicationConfiguration(v *GetBucketReplicationResponseBodyReplicationConfiguration) *GetBucketReplicationResponseBody {
 	s.ReplicationConfiguration = v
 	return s
+}
+
+func (s *GetBucketReplicationResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketReplicationResponseBodyReplicationConfiguration struct {
@@ -15607,17 +24779,26 @@ type GetBucketReplicationResponseBodyReplicationConfiguration struct {
 }
 
 func (s GetBucketReplicationResponseBodyReplicationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationResponseBodyReplicationConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationResponseBodyReplicationConfiguration) GetRule() []*ReplicationRule {
+	return s.Rule
+}
+
 func (s *GetBucketReplicationResponseBodyReplicationConfiguration) SetRule(v []*ReplicationRule) *GetBucketReplicationResponseBodyReplicationConfiguration {
 	s.Rule = v
 	return s
 }
+
+func (s *GetBucketReplicationResponseBodyReplicationConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketReplicationResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15626,11 +24807,23 @@ type GetBucketReplicationResponse struct {
 }
 
 func (s GetBucketReplicationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketReplicationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketReplicationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketReplicationResponse) GetBody() *GetBucketReplicationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketReplicationResponse) SetHeaders(v map[string]*string) *GetBucketReplicationResponse {
@@ -15648,22 +24841,35 @@ func (s *GetBucketReplicationResponse) SetBody(v *GetBucketReplicationResponseBo
 	return s
 }
 
+func (s *GetBucketReplicationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketReplicationLocationResponseBody struct {
 	// The container that stores the region in which the destination bucket can be located.
 	ReplicationLocation *GetBucketReplicationLocationResponseBodyReplicationLocation `json:"ReplicationLocation,omitempty" xml:"ReplicationLocation,omitempty" type:"Struct"`
 }
 
 func (s GetBucketReplicationLocationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationLocationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationLocationResponseBody) GetReplicationLocation() *GetBucketReplicationLocationResponseBodyReplicationLocation {
+	return s.ReplicationLocation
+}
+
 func (s *GetBucketReplicationLocationResponseBody) SetReplicationLocation(v *GetBucketReplicationLocationResponseBodyReplicationLocation) *GetBucketReplicationLocationResponseBody {
 	s.ReplicationLocation = v
 	return s
+}
+
+func (s *GetBucketReplicationLocationResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketReplicationLocationResponseBodyReplicationLocation struct {
@@ -15676,11 +24882,23 @@ type GetBucketReplicationLocationResponseBodyReplicationLocation struct {
 }
 
 func (s GetBucketReplicationLocationResponseBodyReplicationLocation) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationLocationResponseBodyReplicationLocation) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocation) GetLocation() []*string {
+	return s.Location
+}
+
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocation) GetLocationRTCConstraint() *GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint {
+	return s.LocationRTCConstraint
+}
+
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocation) GetLocationTransferTypeConstraint() *GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint {
+	return s.LocationTransferTypeConstraint
 }
 
 func (s *GetBucketReplicationLocationResponseBodyReplicationLocation) SetLocation(v []*string) *GetBucketReplicationLocationResponseBodyReplicationLocation {
@@ -15698,22 +24916,34 @@ func (s *GetBucketReplicationLocationResponseBodyReplicationLocation) SetLocatio
 	return s
 }
 
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocation) Validate() error {
+	return dara.Validate(s)
+}
+
 type GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint struct {
 	// The regions where RTC is supported.
 	Location []*string `json:"Location,omitempty" xml:"Location,omitempty" type:"Repeated"`
 }
 
 func (s GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint) GetLocation() []*string {
+	return s.Location
+}
+
 func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint) SetLocation(v []*string) *GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint {
 	s.Location = v
 	return s
+}
+
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationRTCConstraint) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint struct {
@@ -15722,17 +24952,26 @@ type GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransfer
 }
 
 func (s GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint) GetLocationTransferType() []*LocationTransferType {
+	return s.LocationTransferType
+}
+
 func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint) SetLocationTransferType(v []*LocationTransferType) *GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint {
 	s.LocationTransferType = v
 	return s
 }
+
+func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationTransferTypeConstraint) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketReplicationLocationResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15741,11 +24980,23 @@ type GetBucketReplicationLocationResponse struct {
 }
 
 func (s GetBucketReplicationLocationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationLocationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketReplicationLocationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketReplicationLocationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketReplicationLocationResponse) GetBody() *GetBucketReplicationLocationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketReplicationLocationResponse) SetHeaders(v map[string]*string) *GetBucketReplicationLocationResponse {
@@ -15763,6 +25014,11 @@ func (s *GetBucketReplicationLocationResponse) SetBody(v *GetBucketReplicationLo
 	return s
 }
 
+func (s *GetBucketReplicationLocationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketReplicationProgressRequest struct {
 	// The ID of the data replication rule. You can call the GetBucketReplication operation to query the ID.
 	//
@@ -15775,11 +25031,15 @@ type GetBucketReplicationProgressRequest struct {
 }
 
 func (s GetBucketReplicationProgressRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationProgressRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketReplicationProgressRequest) GetRuleId() *string {
+	return s.RuleId
 }
 
 func (s *GetBucketReplicationProgressRequest) SetRuleId(v string) *GetBucketReplicationProgressRequest {
@@ -15787,22 +25047,35 @@ func (s *GetBucketReplicationProgressRequest) SetRuleId(v string) *GetBucketRepl
 	return s
 }
 
+func (s *GetBucketReplicationProgressRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketReplicationProgressResponseBody struct {
 	// The container that is used to store the progress of data replication tasks.
 	ReplicationProgress *GetBucketReplicationProgressResponseBodyReplicationProgress `json:"ReplicationProgress,omitempty" xml:"ReplicationProgress,omitempty" type:"Struct"`
 }
 
 func (s GetBucketReplicationProgressResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationProgressResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationProgressResponseBody) GetReplicationProgress() *GetBucketReplicationProgressResponseBodyReplicationProgress {
+	return s.ReplicationProgress
+}
+
 func (s *GetBucketReplicationProgressResponseBody) SetReplicationProgress(v *GetBucketReplicationProgressResponseBodyReplicationProgress) *GetBucketReplicationProgressResponseBody {
 	s.ReplicationProgress = v
 	return s
+}
+
+func (s *GetBucketReplicationProgressResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketReplicationProgressResponseBodyReplicationProgress struct {
@@ -15811,17 +25084,26 @@ type GetBucketReplicationProgressResponseBodyReplicationProgress struct {
 }
 
 func (s GetBucketReplicationProgressResponseBodyReplicationProgress) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationProgressResponseBodyReplicationProgress) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketReplicationProgressResponseBodyReplicationProgress) GetRule() []*ReplicationProgressRule {
+	return s.Rule
+}
+
 func (s *GetBucketReplicationProgressResponseBodyReplicationProgress) SetRule(v []*ReplicationProgressRule) *GetBucketReplicationProgressResponseBodyReplicationProgress {
 	s.Rule = v
 	return s
 }
+
+func (s *GetBucketReplicationProgressResponseBodyReplicationProgress) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketReplicationProgressResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15830,11 +25112,23 @@ type GetBucketReplicationProgressResponse struct {
 }
 
 func (s GetBucketReplicationProgressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketReplicationProgressResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketReplicationProgressResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketReplicationProgressResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketReplicationProgressResponse) GetBody() *GetBucketReplicationProgressResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketReplicationProgressResponse) SetHeaders(v map[string]*string) *GetBucketReplicationProgressResponse {
@@ -15852,22 +25146,35 @@ func (s *GetBucketReplicationProgressResponse) SetBody(v *GetBucketReplicationPr
 	return s
 }
 
+func (s *GetBucketReplicationProgressResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketRequestPaymentResponseBody struct {
 	// Indicates the container for the payer.
 	RequestPaymentConfiguration *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration `json:"RequestPaymentConfiguration,omitempty" xml:"RequestPaymentConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketRequestPaymentResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRequestPaymentResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketRequestPaymentResponseBody) GetRequestPaymentConfiguration() *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration {
+	return s.RequestPaymentConfiguration
+}
+
 func (s *GetBucketRequestPaymentResponseBody) SetRequestPaymentConfiguration(v *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) *GetBucketRequestPaymentResponseBody {
 	s.RequestPaymentConfiguration = v
 	return s
+}
+
+func (s *GetBucketRequestPaymentResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration struct {
@@ -15880,17 +25187,26 @@ type GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration struct {
 }
 
 func (s GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) GetPayer() *string {
+	return s.Payer
+}
+
 func (s *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) SetPayer(v string) *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration {
 	s.Payer = &v
 	return s
 }
+
+func (s *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketRequestPaymentResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15899,11 +25215,23 @@ type GetBucketRequestPaymentResponse struct {
 }
 
 func (s GetBucketRequestPaymentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRequestPaymentResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketRequestPaymentResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketRequestPaymentResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketRequestPaymentResponse) GetBody() *GetBucketRequestPaymentResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketRequestPaymentResponse) SetHeaders(v map[string]*string) *GetBucketRequestPaymentResponse {
@@ -15921,6 +25249,11 @@ func (s *GetBucketRequestPaymentResponse) SetBody(v *GetBucketRequestPaymentResp
 	return s
 }
 
+func (s *GetBucketRequestPaymentResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	//
@@ -15931,11 +25264,15 @@ type GetBucketRequesterQoSInfoRequest struct {
 }
 
 func (s GetBucketRequesterQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRequesterQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketRequesterQoSInfoRequest) GetQosRequester() *string {
+	return s.QosRequester
 }
 
 func (s *GetBucketRequesterQoSInfoRequest) SetQosRequester(v string) *GetBucketRequesterQoSInfoRequest {
@@ -15943,22 +25280,36 @@ func (s *GetBucketRequesterQoSInfoRequest) SetQosRequester(v string) *GetBucketR
 	return s
 }
 
+func (s *GetBucketRequesterQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketRequesterQoSInfoResponseBody struct {
 	RequesterQoSInfo *RequesterQoSInfo `json:"RequesterQoSInfo,omitempty" xml:"RequesterQoSInfo,omitempty"`
 }
 
 func (s GetBucketRequesterQoSInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRequesterQoSInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketRequesterQoSInfoResponseBody) GetRequesterQoSInfo() *RequesterQoSInfo {
+	return s.RequesterQoSInfo
+}
+
 func (s *GetBucketRequesterQoSInfoResponseBody) SetRequesterQoSInfo(v *RequesterQoSInfo) *GetBucketRequesterQoSInfoResponseBody {
 	s.RequesterQoSInfo = v
 	return s
 }
+
+func (s *GetBucketRequesterQoSInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketRequesterQoSInfoResponse struct {
 	Headers    map[string]*string                     `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -15967,11 +25318,23 @@ type GetBucketRequesterQoSInfoResponse struct {
 }
 
 func (s GetBucketRequesterQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketRequesterQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketRequesterQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketRequesterQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketRequesterQoSInfoResponse) GetBody() *GetBucketRequesterQoSInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketRequesterQoSInfoResponse) SetHeaders(v map[string]*string) *GetBucketRequesterQoSInfoResponse {
@@ -15989,22 +25352,35 @@ func (s *GetBucketRequesterQoSInfoResponse) SetBody(v *GetBucketRequesterQoSInfo
 	return s
 }
 
+func (s *GetBucketRequesterQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketResourceGroupResponseBody struct {
 	// The container that stores the ID of the resource group.
 	BucketResourceGroupConfiguration *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration `json:"BucketResourceGroupConfiguration,omitempty" xml:"BucketResourceGroupConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketResourceGroupResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketResourceGroupResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketResourceGroupResponseBody) GetBucketResourceGroupConfiguration() *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration {
+	return s.BucketResourceGroupConfiguration
+}
+
 func (s *GetBucketResourceGroupResponseBody) SetBucketResourceGroupConfiguration(v *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) *GetBucketResourceGroupResponseBody {
 	s.BucketResourceGroupConfiguration = v
 	return s
+}
+
+func (s *GetBucketResourceGroupResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration struct {
@@ -16019,17 +25395,26 @@ type GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration struct {
 }
 
 func (s GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) GetResourceGroupId() *string {
+	return s.ResourceGroupId
+}
+
 func (s *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) SetResourceGroupId(v string) *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration {
 	s.ResourceGroupId = &v
 	return s
 }
+
+func (s *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketResourceGroupResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16038,11 +25423,23 @@ type GetBucketResourceGroupResponse struct {
 }
 
 func (s GetBucketResourceGroupResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketResourceGroupResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketResourceGroupResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketResourceGroupResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketResourceGroupResponse) GetBody() *GetBucketResourceGroupResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketResourceGroupResponse) SetHeaders(v map[string]*string) *GetBucketResourceGroupResponse {
@@ -16060,22 +25457,36 @@ func (s *GetBucketResourceGroupResponse) SetBody(v *GetBucketResourceGroupRespon
 	return s
 }
 
+func (s *GetBucketResourceGroupResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketResponseHeaderResponseBody struct {
 	ResponseHeaderConfiguration *ResponseHeaderConfiguration `json:"ResponseHeaderConfiguration,omitempty" xml:"ResponseHeaderConfiguration,omitempty"`
 }
 
 func (s GetBucketResponseHeaderResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketResponseHeaderResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketResponseHeaderResponseBody) GetResponseHeaderConfiguration() *ResponseHeaderConfiguration {
+	return s.ResponseHeaderConfiguration
+}
+
 func (s *GetBucketResponseHeaderResponseBody) SetResponseHeaderConfiguration(v *ResponseHeaderConfiguration) *GetBucketResponseHeaderResponseBody {
 	s.ResponseHeaderConfiguration = v
 	return s
 }
+
+func (s *GetBucketResponseHeaderResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketResponseHeaderResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16084,11 +25495,23 @@ type GetBucketResponseHeaderResponse struct {
 }
 
 func (s GetBucketResponseHeaderResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketResponseHeaderResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketResponseHeaderResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketResponseHeaderResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketResponseHeaderResponse) GetBody() *GetBucketResponseHeaderResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketResponseHeaderResponse) SetHeaders(v map[string]*string) *GetBucketResponseHeaderResponse {
@@ -16106,23 +25529,37 @@ func (s *GetBucketResponseHeaderResponse) SetBody(v *GetBucketResponseHeaderResp
 	return s
 }
 
+func (s *GetBucketResponseHeaderResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketStatResponseBody struct {
 	// The container that stores all information returned for the GetBucketStat request.
 	BucketStat *BucketStat `json:"BucketStat,omitempty" xml:"BucketStat,omitempty"`
 }
 
 func (s GetBucketStatResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketStatResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketStatResponseBody) GetBucketStat() *BucketStat {
+	return s.BucketStat
+}
+
 func (s *GetBucketStatResponseBody) SetBucketStat(v *BucketStat) *GetBucketStatResponseBody {
 	s.BucketStat = v
 	return s
 }
+
+func (s *GetBucketStatResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketStatResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16131,11 +25568,23 @@ type GetBucketStatResponse struct {
 }
 
 func (s GetBucketStatResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketStatResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketStatResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketStatResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketStatResponse) GetBody() *GetBucketStatResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketStatResponse) SetHeaders(v map[string]*string) *GetBucketStatResponse {
@@ -16153,6 +25602,11 @@ func (s *GetBucketStatResponse) SetBody(v *GetBucketStatResponseBody) *GetBucket
 	return s
 }
 
+func (s *GetBucketStatResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketTagsResponseBody struct {
 	// The container that stores the returned tags of the bucket.
 	//
@@ -16161,16 +25615,24 @@ type GetBucketTagsResponseBody struct {
 }
 
 func (s GetBucketTagsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketTagsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketTagsResponseBody) GetTagging() *GetBucketTagsResponseBodyTagging {
+	return s.Tagging
+}
+
 func (s *GetBucketTagsResponseBody) SetTagging(v *GetBucketTagsResponseBodyTagging) *GetBucketTagsResponseBody {
 	s.Tagging = v
 	return s
+}
+
+func (s *GetBucketTagsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketTagsResponseBodyTagging struct {
@@ -16179,17 +25641,26 @@ type GetBucketTagsResponseBodyTagging struct {
 }
 
 func (s GetBucketTagsResponseBodyTagging) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketTagsResponseBodyTagging) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketTagsResponseBodyTagging) GetTagSet() *TagSet {
+	return s.TagSet
+}
+
 func (s *GetBucketTagsResponseBodyTagging) SetTagSet(v *TagSet) *GetBucketTagsResponseBodyTagging {
 	s.TagSet = v
 	return s
 }
+
+func (s *GetBucketTagsResponseBodyTagging) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketTagsResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16198,11 +25669,23 @@ type GetBucketTagsResponse struct {
 }
 
 func (s GetBucketTagsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketTagsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketTagsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketTagsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketTagsResponse) GetBody() *GetBucketTagsResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketTagsResponse) SetHeaders(v map[string]*string) *GetBucketTagsResponse {
@@ -16220,22 +25703,35 @@ func (s *GetBucketTagsResponse) SetBody(v *GetBucketTagsResponseBody) *GetBucket
 	return s
 }
 
+func (s *GetBucketTagsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketTransferAccelerationResponseBody struct {
 	// The container that stores the transfer acceleration configurations.
 	TransferAccelerationConfiguration *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration `json:"TransferAccelerationConfiguration,omitempty" xml:"TransferAccelerationConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketTransferAccelerationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketTransferAccelerationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketTransferAccelerationResponseBody) GetTransferAccelerationConfiguration() *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration {
+	return s.TransferAccelerationConfiguration
+}
+
 func (s *GetBucketTransferAccelerationResponseBody) SetTransferAccelerationConfiguration(v *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration) *GetBucketTransferAccelerationResponseBody {
 	s.TransferAccelerationConfiguration = v
 	return s
+}
+
+func (s *GetBucketTransferAccelerationResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration struct {
@@ -16248,17 +25744,26 @@ type GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration 
 }
 
 func (s GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration) GetEnabled() *bool {
+	return s.Enabled
+}
+
 func (s *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration) SetEnabled(v bool) *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration {
 	s.Enabled = &v
 	return s
 }
+
+func (s *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketTransferAccelerationResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16267,11 +25772,23 @@ type GetBucketTransferAccelerationResponse struct {
 }
 
 func (s GetBucketTransferAccelerationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketTransferAccelerationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketTransferAccelerationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketTransferAccelerationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketTransferAccelerationResponse) GetBody() *GetBucketTransferAccelerationResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketTransferAccelerationResponse) SetHeaders(v map[string]*string) *GetBucketTransferAccelerationResponse {
@@ -16289,22 +25806,35 @@ func (s *GetBucketTransferAccelerationResponse) SetBody(v *GetBucketTransferAcce
 	return s
 }
 
+func (s *GetBucketTransferAccelerationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketVersioningResponseBody struct {
 	// The container that stores the versioning state of the bucket.
 	VersioningConfiguration *GetBucketVersioningResponseBodyVersioningConfiguration `json:"VersioningConfiguration,omitempty" xml:"VersioningConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketVersioningResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketVersioningResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketVersioningResponseBody) GetVersioningConfiguration() *GetBucketVersioningResponseBodyVersioningConfiguration {
+	return s.VersioningConfiguration
+}
+
 func (s *GetBucketVersioningResponseBody) SetVersioningConfiguration(v *GetBucketVersioningResponseBodyVersioningConfiguration) *GetBucketVersioningResponseBody {
 	s.VersioningConfiguration = v
 	return s
+}
+
+func (s *GetBucketVersioningResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketVersioningResponseBodyVersioningConfiguration struct {
@@ -16313,17 +25843,26 @@ type GetBucketVersioningResponseBodyVersioningConfiguration struct {
 }
 
 func (s GetBucketVersioningResponseBodyVersioningConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketVersioningResponseBodyVersioningConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketVersioningResponseBodyVersioningConfiguration) GetStatus() *string {
+	return s.Status
+}
+
 func (s *GetBucketVersioningResponseBodyVersioningConfiguration) SetStatus(v string) *GetBucketVersioningResponseBodyVersioningConfiguration {
 	s.Status = &v
 	return s
 }
+
+func (s *GetBucketVersioningResponseBodyVersioningConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketVersioningResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16332,11 +25871,23 @@ type GetBucketVersioningResponse struct {
 }
 
 func (s GetBucketVersioningResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketVersioningResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketVersioningResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketVersioningResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketVersioningResponse) GetBody() *GetBucketVersioningResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketVersioningResponse) SetHeaders(v map[string]*string) *GetBucketVersioningResponse {
@@ -16354,23 +25905,37 @@ func (s *GetBucketVersioningResponse) SetBody(v *GetBucketVersioningResponseBody
 	return s
 }
 
+func (s *GetBucketVersioningResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketWebsiteResponseBody struct {
 	// The containers of the website configuration.
 	WebsiteConfiguration *WebsiteConfiguration `json:"WebsiteConfiguration,omitempty" xml:"WebsiteConfiguration,omitempty"`
 }
 
 func (s GetBucketWebsiteResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketWebsiteResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketWebsiteResponseBody) GetWebsiteConfiguration() *WebsiteConfiguration {
+	return s.WebsiteConfiguration
+}
+
 func (s *GetBucketWebsiteResponseBody) SetWebsiteConfiguration(v *WebsiteConfiguration) *GetBucketWebsiteResponseBody {
 	s.WebsiteConfiguration = v
 	return s
 }
+
+func (s *GetBucketWebsiteResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetBucketWebsiteResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16379,11 +25944,23 @@ type GetBucketWebsiteResponse struct {
 }
 
 func (s GetBucketWebsiteResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketWebsiteResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketWebsiteResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketWebsiteResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketWebsiteResponse) GetBody() *GetBucketWebsiteResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketWebsiteResponse) SetHeaders(v map[string]*string) *GetBucketWebsiteResponse {
@@ -16401,22 +25978,35 @@ func (s *GetBucketWebsiteResponse) SetBody(v *GetBucketWebsiteResponseBody) *Get
 	return s
 }
 
+func (s *GetBucketWebsiteResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketWormResponseBody struct {
 	// The container that stores the information about retention policies of the bucket.
 	WormConfiguration *GetBucketWormResponseBodyWormConfiguration `json:"WormConfiguration,omitempty" xml:"WormConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetBucketWormResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketWormResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetBucketWormResponseBody) GetWormConfiguration() *GetBucketWormResponseBodyWormConfiguration {
+	return s.WormConfiguration
+}
+
 func (s *GetBucketWormResponseBody) SetWormConfiguration(v *GetBucketWormResponseBodyWormConfiguration) *GetBucketWormResponseBody {
 	s.WormConfiguration = v
 	return s
+}
+
+func (s *GetBucketWormResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetBucketWormResponseBodyWormConfiguration struct {
@@ -16455,11 +26045,31 @@ type GetBucketWormResponseBodyWormConfiguration struct {
 }
 
 func (s GetBucketWormResponseBodyWormConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketWormResponseBodyWormConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketWormResponseBodyWormConfiguration) GetCreationDate() *string {
+	return s.CreationDate
+}
+
+func (s *GetBucketWormResponseBodyWormConfiguration) GetExpirationDate() *string {
+	return s.ExpirationDate
+}
+
+func (s *GetBucketWormResponseBodyWormConfiguration) GetRetentionPeriodInDays() *int32 {
+	return s.RetentionPeriodInDays
+}
+
+func (s *GetBucketWormResponseBodyWormConfiguration) GetState() *string {
+	return s.State
+}
+
+func (s *GetBucketWormResponseBodyWormConfiguration) GetWormId() *string {
+	return s.WormId
 }
 
 func (s *GetBucketWormResponseBodyWormConfiguration) SetCreationDate(v string) *GetBucketWormResponseBodyWormConfiguration {
@@ -16487,6 +26097,11 @@ func (s *GetBucketWormResponseBodyWormConfiguration) SetWormId(v string) *GetBuc
 	return s
 }
 
+func (s *GetBucketWormResponseBodyWormConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetBucketWormResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -16494,11 +26109,23 @@ type GetBucketWormResponse struct {
 }
 
 func (s GetBucketWormResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetBucketWormResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetBucketWormResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetBucketWormResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetBucketWormResponse) GetBody() *GetBucketWormResponseBody {
+	return s.Body
 }
 
 func (s *GetBucketWormResponse) SetHeaders(v map[string]*string) *GetBucketWormResponse {
@@ -16516,6 +26143,11 @@ func (s *GetBucketWormResponse) SetBody(v *GetBucketWormResponseBody) *GetBucket
 	return s
 }
 
+func (s *GetBucketWormResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetCacheRequest struct {
 	// This parameter is required.
 	XOssDatalakeCacheAvailableZone *string `json:"x-oss-datalake-cache-available-zone,omitempty" xml:"x-oss-datalake-cache-available-zone,omitempty"`
@@ -16525,11 +26157,23 @@ type GetCacheRequest struct {
 }
 
 func (s GetCacheRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetCacheRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetCacheRequest) GetXOssDatalakeCacheAvailableZone() *string {
+	return s.XOssDatalakeCacheAvailableZone
+}
+
+func (s *GetCacheRequest) GetXOssDatalakeCacheName() *string {
+	return s.XOssDatalakeCacheName
+}
+
+func (s *GetCacheRequest) GetXOssDatalakeCacheVerbose() *bool {
+	return s.XOssDatalakeCacheVerbose
 }
 
 func (s *GetCacheRequest) SetXOssDatalakeCacheAvailableZone(v string) *GetCacheRequest {
@@ -16547,22 +26191,36 @@ func (s *GetCacheRequest) SetXOssDatalakeCacheVerbose(v bool) *GetCacheRequest {
 	return s
 }
 
+func (s *GetCacheRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetCacheResponseBody struct {
 	Cache *CacheDetailInfo `json:"Cache,omitempty" xml:"Cache,omitempty"`
 }
 
 func (s GetCacheResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetCacheResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetCacheResponseBody) GetCache() *CacheDetailInfo {
+	return s.Cache
+}
+
 func (s *GetCacheResponseBody) SetCache(v *CacheDetailInfo) *GetCacheResponseBody {
 	s.Cache = v
 	return s
 }
+
+func (s *GetCacheResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetCacheResponse struct {
 	Headers    map[string]*string    `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16571,11 +26229,23 @@ type GetCacheResponse struct {
 }
 
 func (s GetCacheResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetCacheResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetCacheResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetCacheResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetCacheResponse) GetBody() *GetCacheResponseBody {
+	return s.Body
 }
 
 func (s *GetCacheResponse) SetHeaders(v map[string]*string) *GetCacheResponse {
@@ -16593,46 +26263,36 @@ func (s *GetCacheResponse) SetBody(v *GetCacheResponseBody) *GetCacheResponse {
 	return s
 }
 
-type GetChannelHeaders struct {
-	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
-	// This parameter is required.
-	Bucket *string `json:"bucket,omitempty" xml:"bucket,omitempty"`
+func (s *GetCacheResponse) Validate() error {
+	return dara.Validate(s)
 }
 
-func (s GetChannelHeaders) String() string {
-	return tea.Prettify(s)
-}
-
-func (s GetChannelHeaders) GoString() string {
-	return s.String()
-}
-
-func (s *GetChannelHeaders) SetCommonHeaders(v map[string]*string) *GetChannelHeaders {
-	s.CommonHeaders = v
-	return s
-}
-
-func (s *GetChannelHeaders) SetBucket(v string) *GetChannelHeaders {
-	s.Bucket = &v
-	return s
-}
 
 type GetChannelResponseBody struct {
 	Channel *GetChannelResult `json:"channel,omitempty" xml:"channel,omitempty"`
 }
 
 func (s GetChannelResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetChannelResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetChannelResponseBody) GetChannel() *GetChannelResult {
+	return s.Channel
+}
+
 func (s *GetChannelResponseBody) SetChannel(v *GetChannelResult) *GetChannelResponseBody {
 	s.Channel = v
 	return s
 }
+
+func (s *GetChannelResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetChannelResponse struct {
 	Headers    map[string]*string      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16641,11 +26301,23 @@ type GetChannelResponse struct {
 }
 
 func (s GetChannelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetChannelResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetChannelResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetChannelResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetChannelResponse) GetBody() *GetChannelResponseBody {
+	return s.Body
 }
 
 func (s *GetChannelResponse) SetHeaders(v map[string]*string) *GetChannelResponse {
@@ -16663,6 +26335,11 @@ func (s *GetChannelResponse) SetBody(v *GetChannelResponseBody) *GetChannelRespo
 	return s
 }
 
+func (s *GetChannelResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetCnameTokenRequest struct {
 	// The name of the CNAME record that is mapped to the bucket.
 	//
@@ -16675,11 +26352,15 @@ type GetCnameTokenRequest struct {
 }
 
 func (s GetCnameTokenRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetCnameTokenRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetCnameTokenRequest) GetCname() *string {
+	return s.Cname
 }
 
 func (s *GetCnameTokenRequest) SetCname(v string) *GetCnameTokenRequest {
@@ -16687,23 +26368,37 @@ func (s *GetCnameTokenRequest) SetCname(v string) *GetCnameTokenRequest {
 	return s
 }
 
+func (s *GetCnameTokenRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetCnameTokenResponseBody struct {
 	// The container in which the CNAME token is stored.
 	CnameToken *CnameToken `json:"CnameToken,omitempty" xml:"CnameToken,omitempty"`
 }
 
 func (s GetCnameTokenResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetCnameTokenResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetCnameTokenResponseBody) GetCnameToken() *CnameToken {
+	return s.CnameToken
+}
+
 func (s *GetCnameTokenResponseBody) SetCnameToken(v *CnameToken) *GetCnameTokenResponseBody {
 	s.CnameToken = v
 	return s
 }
+
+func (s *GetCnameTokenResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetCnameTokenResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16712,11 +26407,23 @@ type GetCnameTokenResponse struct {
 }
 
 func (s GetCnameTokenResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetCnameTokenResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetCnameTokenResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetCnameTokenResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetCnameTokenResponse) GetBody() *GetCnameTokenResponseBody {
+	return s.Body
 }
 
 func (s *GetCnameTokenResponse) SetHeaders(v map[string]*string) *GetCnameTokenResponse {
@@ -16734,17 +26441,26 @@ func (s *GetCnameTokenResponse) SetBody(v *GetCnameTokenResponseBody) *GetCnameT
 	return s
 }
 
+func (s *GetCnameTokenResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s GetDataLakeCachePrefetchJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetDataLakeCachePrefetchJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetDataLakeCachePrefetchJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *GetDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *GetDataLakeCachePrefetchJobRequest {
@@ -16752,22 +26468,36 @@ func (s *GetDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *Get
 	return s
 }
 
+func (s *GetDataLakeCachePrefetchJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetDataLakeCachePrefetchJobResponseBody struct {
 	DataLakeCachePrefetchJob *DataLakeCachePrefetchJob `json:"DataLakeCachePrefetchJob,omitempty" xml:"DataLakeCachePrefetchJob,omitempty"`
 }
 
 func (s GetDataLakeCachePrefetchJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetDataLakeCachePrefetchJobResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetDataLakeCachePrefetchJobResponseBody) GetDataLakeCachePrefetchJob() *DataLakeCachePrefetchJob {
+	return s.DataLakeCachePrefetchJob
+}
+
 func (s *GetDataLakeCachePrefetchJobResponseBody) SetDataLakeCachePrefetchJob(v *DataLakeCachePrefetchJob) *GetDataLakeCachePrefetchJobResponseBody {
 	s.DataLakeCachePrefetchJob = v
 	return s
 }
+
+func (s *GetDataLakeCachePrefetchJobResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16776,11 +26506,23 @@ type GetDataLakeCachePrefetchJobResponse struct {
 }
 
 func (s GetDataLakeCachePrefetchJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetDataLakeCachePrefetchJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetDataLakeCachePrefetchJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetDataLakeCachePrefetchJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetDataLakeCachePrefetchJobResponse) GetBody() *GetDataLakeCachePrefetchJobResponseBody {
+	return s.Body
 }
 
 func (s *GetDataLakeCachePrefetchJobResponse) SetHeaders(v map[string]*string) *GetDataLakeCachePrefetchJobResponse {
@@ -16798,6 +26540,11 @@ func (s *GetDataLakeCachePrefetchJobResponse) SetBody(v *GetDataLakeCachePrefetc
 	return s
 }
 
+func (s *GetDataLakeCachePrefetchJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId       *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -16805,11 +26552,19 @@ type GetDataLakeStorageTransferJobRequest struct {
 }
 
 func (s GetDataLakeStorageTransferJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetDataLakeStorageTransferJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetDataLakeStorageTransferJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
+}
+
+func (s *GetDataLakeStorageTransferJobRequest) GetXOssDatalakeJobProgress() *string {
+	return s.XOssDatalakeJobProgress
 }
 
 func (s *GetDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *GetDataLakeStorageTransferJobRequest {
@@ -16822,22 +26577,36 @@ func (s *GetDataLakeStorageTransferJobRequest) SetXOssDatalakeJobProgress(v stri
 	return s
 }
 
+func (s *GetDataLakeStorageTransferJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJob *DataLakeStorageTransferJob `json:"DataLakeStorageTransferJob,omitempty" xml:"DataLakeStorageTransferJob,omitempty"`
 }
 
 func (s GetDataLakeStorageTransferJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetDataLakeStorageTransferJobResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetDataLakeStorageTransferJobResponseBody) GetDataLakeStorageTransferJob() *DataLakeStorageTransferJob {
+	return s.DataLakeStorageTransferJob
+}
+
 func (s *GetDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJob(v *DataLakeStorageTransferJob) *GetDataLakeStorageTransferJobResponseBody {
 	s.DataLakeStorageTransferJob = v
 	return s
 }
+
+func (s *GetDataLakeStorageTransferJobResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16846,11 +26615,23 @@ type GetDataLakeStorageTransferJobResponse struct {
 }
 
 func (s GetDataLakeStorageTransferJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetDataLakeStorageTransferJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetDataLakeStorageTransferJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetDataLakeStorageTransferJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetDataLakeStorageTransferJobResponse) GetBody() *GetDataLakeStorageTransferJobResponseBody {
+	return s.Body
 }
 
 func (s *GetDataLakeStorageTransferJobResponse) SetHeaders(v map[string]*string) *GetDataLakeStorageTransferJobResponse {
@@ -16868,22 +26649,35 @@ func (s *GetDataLakeStorageTransferJobResponse) SetBody(v *GetDataLakeStorageTra
 	return s
 }
 
+func (s *GetDataLakeStorageTransferJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetLiveChannelHistoryResponseBody struct {
 	// The container that stores the returned results of the GetLiveChannelHistory request.
 	LiveChannelHistory *GetLiveChannelHistoryResponseBodyLiveChannelHistory `json:"LiveChannelHistory,omitempty" xml:"LiveChannelHistory,omitempty" type:"Struct"`
 }
 
 func (s GetLiveChannelHistoryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelHistoryResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetLiveChannelHistoryResponseBody) GetLiveChannelHistory() *GetLiveChannelHistoryResponseBodyLiveChannelHistory {
+	return s.LiveChannelHistory
+}
+
 func (s *GetLiveChannelHistoryResponseBody) SetLiveChannelHistory(v *GetLiveChannelHistoryResponseBodyLiveChannelHistory) *GetLiveChannelHistoryResponseBody {
 	s.LiveChannelHistory = v
 	return s
+}
+
+func (s *GetLiveChannelHistoryResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetLiveChannelHistoryResponseBodyLiveChannelHistory struct {
@@ -16892,17 +26686,26 @@ type GetLiveChannelHistoryResponseBodyLiveChannelHistory struct {
 }
 
 func (s GetLiveChannelHistoryResponseBodyLiveChannelHistory) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelHistoryResponseBodyLiveChannelHistory) GoString() string {
 	return s.String()
 }
 
+func (s *GetLiveChannelHistoryResponseBodyLiveChannelHistory) GetLiveRecord() []*LiveRecord {
+	return s.LiveRecord
+}
+
 func (s *GetLiveChannelHistoryResponseBodyLiveChannelHistory) SetLiveRecord(v []*LiveRecord) *GetLiveChannelHistoryResponseBodyLiveChannelHistory {
 	s.LiveRecord = v
 	return s
 }
+
+func (s *GetLiveChannelHistoryResponseBodyLiveChannelHistory) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetLiveChannelHistoryResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16911,11 +26714,23 @@ type GetLiveChannelHistoryResponse struct {
 }
 
 func (s GetLiveChannelHistoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelHistoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetLiveChannelHistoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetLiveChannelHistoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetLiveChannelHistoryResponse) GetBody() *GetLiveChannelHistoryResponseBody {
+	return s.Body
 }
 
 func (s *GetLiveChannelHistoryResponse) SetHeaders(v map[string]*string) *GetLiveChannelHistoryResponse {
@@ -16933,22 +26748,35 @@ func (s *GetLiveChannelHistoryResponse) SetBody(v *GetLiveChannelHistoryResponse
 	return s
 }
 
+func (s *GetLiveChannelHistoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetLiveChannelInfoResponseBody struct {
 	// The container that stores the returned results of the GetLiveChannelInfo request.
 	LiveChannelConfiguration *GetLiveChannelInfoResponseBodyLiveChannelConfiguration `json:"LiveChannelConfiguration,omitempty" xml:"LiveChannelConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetLiveChannelInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetLiveChannelInfoResponseBody) GetLiveChannelConfiguration() *GetLiveChannelInfoResponseBodyLiveChannelConfiguration {
+	return s.LiveChannelConfiguration
+}
+
 func (s *GetLiveChannelInfoResponseBody) SetLiveChannelConfiguration(v *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) *GetLiveChannelInfoResponseBody {
 	s.LiveChannelConfiguration = v
 	return s
+}
+
+func (s *GetLiveChannelInfoResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetLiveChannelInfoResponseBodyLiveChannelConfiguration struct {
@@ -16977,11 +26805,23 @@ type GetLiveChannelInfoResponseBodyLiveChannelConfiguration struct {
 }
 
 func (s GetLiveChannelInfoResponseBodyLiveChannelConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelInfoResponseBodyLiveChannelConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) GetDescription() *string {
+	return s.Description
+}
+
+func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) GetStatus() *string {
+	return s.Status
+}
+
+func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) GetTarget() *LiveChannelTarget {
+	return s.Target
 }
 
 func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) SetDescription(v string) *GetLiveChannelInfoResponseBodyLiveChannelConfiguration {
@@ -16999,6 +26839,11 @@ func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) SetTarget(v *Li
 	return s
 }
 
+func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetLiveChannelInfoResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17006,11 +26851,23 @@ type GetLiveChannelInfoResponse struct {
 }
 
 func (s GetLiveChannelInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetLiveChannelInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetLiveChannelInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetLiveChannelInfoResponse) GetBody() *GetLiveChannelInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetLiveChannelInfoResponse) SetHeaders(v map[string]*string) *GetLiveChannelInfoResponse {
@@ -17028,22 +26885,35 @@ func (s *GetLiveChannelInfoResponse) SetBody(v *GetLiveChannelInfoResponseBody) 
 	return s
 }
 
+func (s *GetLiveChannelInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetLiveChannelStatResponseBody struct {
 	// The container that stores the returned results of the GetLiveChannelStat request.
 	LiveChannelStat *GetLiveChannelStatResponseBodyLiveChannelStat `json:"LiveChannelStat,omitempty" xml:"LiveChannelStat,omitempty" type:"Struct"`
 }
 
 func (s GetLiveChannelStatResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelStatResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetLiveChannelStatResponseBody) GetLiveChannelStat() *GetLiveChannelStatResponseBodyLiveChannelStat {
+	return s.LiveChannelStat
+}
+
 func (s *GetLiveChannelStatResponseBody) SetLiveChannelStat(v *GetLiveChannelStatResponseBodyLiveChannelStat) *GetLiveChannelStatResponseBody {
 	s.LiveChannelStat = v
 	return s
+}
+
+func (s *GetLiveChannelStatResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetLiveChannelStatResponseBodyLiveChannelStat struct {
@@ -17078,11 +26948,31 @@ type GetLiveChannelStatResponseBodyLiveChannelStat struct {
 }
 
 func (s GetLiveChannelStatResponseBodyLiveChannelStat) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelStatResponseBodyLiveChannelStat) GoString() string {
 	return s.String()
+}
+
+func (s *GetLiveChannelStatResponseBodyLiveChannelStat) GetAudio() *LiveChannelAudio {
+	return s.Audio
+}
+
+func (s *GetLiveChannelStatResponseBodyLiveChannelStat) GetConnectedTime() *string {
+	return s.ConnectedTime
+}
+
+func (s *GetLiveChannelStatResponseBodyLiveChannelStat) GetRemoteAddr() *string {
+	return s.RemoteAddr
+}
+
+func (s *GetLiveChannelStatResponseBodyLiveChannelStat) GetStatus() *string {
+	return s.Status
+}
+
+func (s *GetLiveChannelStatResponseBodyLiveChannelStat) GetVideo() *LiveChannelVideo {
+	return s.Video
 }
 
 func (s *GetLiveChannelStatResponseBodyLiveChannelStat) SetAudio(v *LiveChannelAudio) *GetLiveChannelStatResponseBodyLiveChannelStat {
@@ -17110,6 +27000,11 @@ func (s *GetLiveChannelStatResponseBodyLiveChannelStat) SetVideo(v *LiveChannelV
 	return s
 }
 
+func (s *GetLiveChannelStatResponseBodyLiveChannelStat) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetLiveChannelStatResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17117,11 +27012,23 @@ type GetLiveChannelStatResponse struct {
 }
 
 func (s GetLiveChannelStatResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetLiveChannelStatResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetLiveChannelStatResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetLiveChannelStatResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetLiveChannelStatResponse) GetBody() *GetLiveChannelStatResponseBody {
+	return s.Body
 }
 
 func (s *GetLiveChannelStatResponse) SetHeaders(v map[string]*string) *GetLiveChannelStatResponse {
@@ -17139,22 +27046,35 @@ func (s *GetLiveChannelStatResponse) SetBody(v *GetLiveChannelStatResponseBody) 
 	return s
 }
 
+func (s *GetLiveChannelStatResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetMetaQueryStatusResponseBody struct {
 	// The container that stores the metadata information.
 	MetaQueryStatus *GetMetaQueryStatusResponseBodyMetaQueryStatus `json:"MetaQueryStatus,omitempty" xml:"MetaQueryStatus,omitempty" type:"Struct"`
 }
 
 func (s GetMetaQueryStatusResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetMetaQueryStatusResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetMetaQueryStatusResponseBody) GetMetaQueryStatus() *GetMetaQueryStatusResponseBodyMetaQueryStatus {
+	return s.MetaQueryStatus
+}
+
 func (s *GetMetaQueryStatusResponseBody) SetMetaQueryStatus(v *GetMetaQueryStatusResponseBodyMetaQueryStatus) *GetMetaQueryStatusResponseBody {
 	s.MetaQueryStatus = v
 	return s
+}
+
+func (s *GetMetaQueryStatusResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetMetaQueryStatusResponseBodyMetaQueryStatus struct {
@@ -17203,11 +27123,27 @@ type GetMetaQueryStatusResponseBodyMetaQueryStatus struct {
 }
 
 func (s GetMetaQueryStatusResponseBodyMetaQueryStatus) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetMetaQueryStatusResponseBodyMetaQueryStatus) GoString() string {
 	return s.String()
+}
+
+func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) GetCreateTime() *string {
+	return s.CreateTime
+}
+
+func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) GetPhase() *string {
+	return s.Phase
+}
+
+func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) GetState() *string {
+	return s.State
+}
+
+func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) GetUpdateTime() *string {
+	return s.UpdateTime
 }
 
 func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) SetCreateTime(v string) *GetMetaQueryStatusResponseBodyMetaQueryStatus {
@@ -17230,6 +27166,11 @@ func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) SetUpdateTime(v string) 
 	return s
 }
 
+func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetMetaQueryStatusResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17237,11 +27178,23 @@ type GetMetaQueryStatusResponse struct {
 }
 
 func (s GetMetaQueryStatusResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetMetaQueryStatusResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetMetaQueryStatusResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetMetaQueryStatusResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetMetaQueryStatusResponse) GetBody() *GetMetaQueryStatusResponseBody {
+	return s.Body
 }
 
 func (s *GetMetaQueryStatusResponse) SetHeaders(v map[string]*string) *GetMetaQueryStatusResponse {
@@ -17258,6 +27211,11 @@ func (s *GetMetaQueryStatusResponse) SetBody(v *GetMetaQueryStatusResponseBody) 
 	s.Body = v
 	return s
 }
+
+func (s *GetMetaQueryStatusResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -17338,11 +27296,39 @@ type GetObjectHeaders struct {
 }
 
 func (s GetObjectHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetObjectHeaders) GetAcceptEncoding() *string {
+	return s.AcceptEncoding
+}
+
+func (s *GetObjectHeaders) GetIfMatch() *string {
+	return s.IfMatch
+}
+
+func (s *GetObjectHeaders) GetIfModifiedSince() *string {
+	return s.IfModifiedSince
+}
+
+func (s *GetObjectHeaders) GetIfNoneMatch() *string {
+	return s.IfNoneMatch
+}
+
+func (s *GetObjectHeaders) GetIfUnmodifiedSince() *string {
+	return s.IfUnmodifiedSince
+}
+
+func (s *GetObjectHeaders) GetRange() *string {
+	return s.Range
 }
 
 func (s *GetObjectHeaders) SetCommonHeaders(v map[string]*string) *GetObjectHeaders {
@@ -17379,6 +27365,11 @@ func (s *GetObjectHeaders) SetRange(v string) *GetObjectHeaders {
 	s.Range = &v
 	return s
 }
+
+func (s *GetObjectHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectRequest struct {
 	// The cache-control header in the response that OSS returns.
@@ -17426,11 +27417,39 @@ type GetObjectRequest struct {
 }
 
 func (s GetObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectRequest) GetResponseCacheControl() *string {
+	return s.ResponseCacheControl
+}
+
+func (s *GetObjectRequest) GetResponseContentDisposition() *string {
+	return s.ResponseContentDisposition
+}
+
+func (s *GetObjectRequest) GetResponseContentEncoding() *string {
+	return s.ResponseContentEncoding
+}
+
+func (s *GetObjectRequest) GetResponseContentLanguage() *string {
+	return s.ResponseContentLanguage
+}
+
+func (s *GetObjectRequest) GetResponseContentType() *string {
+	return s.ResponseContentType
+}
+
+func (s *GetObjectRequest) GetResponseExpires() *string {
+	return s.ResponseExpires
+}
+
+func (s *GetObjectRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *GetObjectRequest) SetResponseCacheControl(v string) *GetObjectRequest {
@@ -17468,6 +27487,11 @@ func (s *GetObjectRequest) SetVersionId(v string) *GetObjectRequest {
 	return s
 }
 
+func (s *GetObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17475,11 +27499,23 @@ type GetObjectResponse struct {
 }
 
 func (s GetObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectResponse) GetBody() io.Reader {
+	return s.Body
 }
 
 func (s *GetObjectResponse) SetHeaders(v map[string]*string) *GetObjectResponse {
@@ -17497,6 +27533,11 @@ func (s *GetObjectResponse) SetBody(v io.Reader) *GetObjectResponse {
 	return s
 }
 
+func (s *GetObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectAclRequest struct {
 	// The verison id of the target object.
 	//
@@ -17507,11 +27548,15 @@ type GetObjectAclRequest struct {
 }
 
 func (s GetObjectAclRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectAclRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectAclRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *GetObjectAclRequest) SetVersionId(v string) *GetObjectAclRequest {
@@ -17519,22 +27564,35 @@ func (s *GetObjectAclRequest) SetVersionId(v string) *GetObjectAclRequest {
 	return s
 }
 
+func (s *GetObjectAclRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectAclResponseBody struct {
 	// The container that stores the results of the GetObjectACL request.
 	AccessControlPolicy *GetObjectAclResponseBodyAccessControlPolicy `json:"AccessControlPolicy,omitempty" xml:"AccessControlPolicy,omitempty" type:"Struct"`
 }
 
 func (s GetObjectAclResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectAclResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectAclResponseBody) GetAccessControlPolicy() *GetObjectAclResponseBodyAccessControlPolicy {
+	return s.AccessControlPolicy
+}
+
 func (s *GetObjectAclResponseBody) SetAccessControlPolicy(v *GetObjectAclResponseBodyAccessControlPolicy) *GetObjectAclResponseBody {
 	s.AccessControlPolicy = v
 	return s
+}
+
+func (s *GetObjectAclResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetObjectAclResponseBodyAccessControlPolicy struct {
@@ -17545,11 +27603,19 @@ type GetObjectAclResponseBodyAccessControlPolicy struct {
 }
 
 func (s GetObjectAclResponseBodyAccessControlPolicy) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectAclResponseBodyAccessControlPolicy) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectAclResponseBodyAccessControlPolicy) GetAccessControlList() *GetObjectAclResponseBodyAccessControlPolicyAccessControlList {
+	return s.AccessControlList
+}
+
+func (s *GetObjectAclResponseBodyAccessControlPolicy) GetOwner() *Owner {
+	return s.Owner
 }
 
 func (s *GetObjectAclResponseBodyAccessControlPolicy) SetAccessControlList(v *GetObjectAclResponseBodyAccessControlPolicyAccessControlList) *GetObjectAclResponseBodyAccessControlPolicy {
@@ -17562,23 +27628,36 @@ func (s *GetObjectAclResponseBodyAccessControlPolicy) SetOwner(v *Owner) *GetObj
 	return s
 }
 
+func (s *GetObjectAclResponseBodyAccessControlPolicy) Validate() error {
+	return dara.Validate(s)
+}
+
 type GetObjectAclResponseBodyAccessControlPolicyAccessControlList struct {
 	// The ACL of the object. Default value: default.
 	ACL *string `json:"Grant,omitempty" xml:"Grant,omitempty"`
 }
 
 func (s GetObjectAclResponseBodyAccessControlPolicyAccessControlList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectAclResponseBodyAccessControlPolicyAccessControlList) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectAclResponseBodyAccessControlPolicyAccessControlList) GetACL() *string {
+	return s.ACL
+}
+
 func (s *GetObjectAclResponseBodyAccessControlPolicyAccessControlList) SetACL(v string) *GetObjectAclResponseBodyAccessControlPolicyAccessControlList {
 	s.ACL = &v
 	return s
 }
+
+func (s *GetObjectAclResponseBodyAccessControlPolicyAccessControlList) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectAclResponse struct {
 	Headers    map[string]*string        `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17587,11 +27666,23 @@ type GetObjectAclResponse struct {
 }
 
 func (s GetObjectAclResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectAclResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectAclResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectAclResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectAclResponse) GetBody() *GetObjectAclResponseBody {
+	return s.Body
 }
 
 func (s *GetObjectAclResponse) SetHeaders(v map[string]*string) *GetObjectAclResponse {
@@ -17609,6 +27700,11 @@ func (s *GetObjectAclResponse) SetBody(v *GetObjectAclResponseBody) *GetObjectAc
 	return s
 }
 
+func (s *GetObjectAclResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectGroupIndexHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// This parameter is required.
@@ -17616,11 +27712,19 @@ type GetObjectGroupIndexHeaders struct {
 }
 
 func (s GetObjectGroupIndexHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectGroupIndexHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectGroupIndexHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetObjectGroupIndexHeaders) GetXOssFileGroup() *string {
+	return s.XOssFileGroup
 }
 
 func (s *GetObjectGroupIndexHeaders) SetCommonHeaders(v map[string]*string) *GetObjectGroupIndexHeaders {
@@ -17633,22 +27737,36 @@ func (s *GetObjectGroupIndexHeaders) SetXOssFileGroup(v string) *GetObjectGroupI
 	return s
 }
 
+func (s *GetObjectGroupIndexHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectGroupIndexResponseBody struct {
 	FileGroup *FileGroupInfo `json:"FileGroup,omitempty" xml:"FileGroup,omitempty"`
 }
 
 func (s GetObjectGroupIndexResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectGroupIndexResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectGroupIndexResponseBody) GetFileGroup() *FileGroupInfo {
+	return s.FileGroup
+}
+
 func (s *GetObjectGroupIndexResponseBody) SetFileGroup(v *FileGroupInfo) *GetObjectGroupIndexResponseBody {
 	s.FileGroup = v
 	return s
 }
+
+func (s *GetObjectGroupIndexResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectGroupIndexResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17657,11 +27775,23 @@ type GetObjectGroupIndexResponse struct {
 }
 
 func (s GetObjectGroupIndexResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectGroupIndexResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectGroupIndexResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectGroupIndexResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectGroupIndexResponse) GetBody() *GetObjectGroupIndexResponseBody {
+	return s.Body
 }
 
 func (s *GetObjectGroupIndexResponse) SetHeaders(v map[string]*string) *GetObjectGroupIndexResponse {
@@ -17679,22 +27809,36 @@ func (s *GetObjectGroupIndexResponse) SetBody(v *GetObjectGroupIndexResponseBody
 	return s
 }
 
+func (s *GetObjectGroupIndexResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectInfoResponseBody struct {
 	GetObjectInfoResult *GetObjectInfoResult `json:"GetObjectInfoResult,omitempty" xml:"GetObjectInfoResult,omitempty"`
 }
 
 func (s GetObjectInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectInfoResponseBody) GetGetObjectInfoResult() *GetObjectInfoResult {
+	return s.GetObjectInfoResult
+}
+
 func (s *GetObjectInfoResponseBody) SetGetObjectInfoResult(v *GetObjectInfoResult) *GetObjectInfoResponseBody {
 	s.GetObjectInfoResult = v
 	return s
 }
+
+func (s *GetObjectInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectInfoResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17703,11 +27847,23 @@ type GetObjectInfoResponse struct {
 }
 
 func (s GetObjectInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectInfoResponse) GetBody() *GetObjectInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetObjectInfoResponse) SetHeaders(v map[string]*string) *GetObjectInfoResponse {
@@ -17725,22 +27881,36 @@ func (s *GetObjectInfoResponse) SetBody(v *GetObjectInfoResponseBody) *GetObject
 	return s
 }
 
+func (s *GetObjectInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectLinkResponseBody struct {
 	ObjectLink *ObjectLinkInfo `json:"ObjectLink,omitempty" xml:"ObjectLink,omitempty"`
 }
 
 func (s GetObjectLinkResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectLinkResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectLinkResponseBody) GetObjectLink() *ObjectLinkInfo {
+	return s.ObjectLink
+}
+
 func (s *GetObjectLinkResponseBody) SetObjectLink(v *ObjectLinkInfo) *GetObjectLinkResponseBody {
 	s.ObjectLink = v
 	return s
 }
+
+func (s *GetObjectLinkResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectLinkResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17749,11 +27919,23 @@ type GetObjectLinkResponse struct {
 }
 
 func (s GetObjectLinkResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectLinkResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectLinkResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectLinkResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectLinkResponse) GetBody() *GetObjectLinkResponseBody {
+	return s.Body
 }
 
 func (s *GetObjectLinkResponse) SetHeaders(v map[string]*string) *GetObjectLinkResponse {
@@ -17771,6 +27953,11 @@ func (s *GetObjectLinkResponse) SetBody(v *GetObjectLinkResponseBody) *GetObject
 	return s
 }
 
+func (s *GetObjectLinkResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectMetaRequest struct {
 	// The versionID of the object.
 	//
@@ -17781,11 +27968,15 @@ type GetObjectMetaRequest struct {
 }
 
 func (s GetObjectMetaRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectMetaRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectMetaRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *GetObjectMetaRequest) SetVersionId(v string) *GetObjectMetaRequest {
@@ -17793,17 +27984,30 @@ func (s *GetObjectMetaRequest) SetVersionId(v string) *GetObjectMetaRequest {
 	return s
 }
 
+func (s *GetObjectMetaRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectMetaResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s GetObjectMetaResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectMetaResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectMetaResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectMetaResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *GetObjectMetaResponse) SetHeaders(v map[string]*string) *GetObjectMetaResponse {
@@ -17816,6 +28020,11 @@ func (s *GetObjectMetaResponse) SetStatusCode(v int32) *GetObjectMetaResponse {
 	return s
 }
 
+func (s *GetObjectMetaResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectTaggingRequest struct {
 	// The versionID of the object that you want to query.
 	//
@@ -17826,11 +28035,15 @@ type GetObjectTaggingRequest struct {
 }
 
 func (s GetObjectTaggingRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectTaggingRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectTaggingRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *GetObjectTaggingRequest) SetVersionId(v string) *GetObjectTaggingRequest {
@@ -17838,22 +28051,35 @@ func (s *GetObjectTaggingRequest) SetVersionId(v string) *GetObjectTaggingReques
 	return s
 }
 
+func (s *GetObjectTaggingRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectTaggingResponseBody struct {
 	// The container that stores the returned tag of the bucket.
 	Tagging *GetObjectTaggingResponseBodyTagging `json:"Tagging,omitempty" xml:"Tagging,omitempty" type:"Struct"`
 }
 
 func (s GetObjectTaggingResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectTaggingResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectTaggingResponseBody) GetTagging() *GetObjectTaggingResponseBodyTagging {
+	return s.Tagging
+}
+
 func (s *GetObjectTaggingResponseBody) SetTagging(v *GetObjectTaggingResponseBodyTagging) *GetObjectTaggingResponseBody {
 	s.Tagging = v
 	return s
+}
+
+func (s *GetObjectTaggingResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetObjectTaggingResponseBodyTagging struct {
@@ -17862,17 +28088,26 @@ type GetObjectTaggingResponseBodyTagging struct {
 }
 
 func (s GetObjectTaggingResponseBodyTagging) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectTaggingResponseBodyTagging) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectTaggingResponseBodyTagging) GetTagSet() *TagSet {
+	return s.TagSet
+}
+
 func (s *GetObjectTaggingResponseBodyTagging) SetTagSet(v *TagSet) *GetObjectTaggingResponseBodyTagging {
 	s.TagSet = v
 	return s
 }
+
+func (s *GetObjectTaggingResponseBodyTagging) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetObjectTaggingResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17881,11 +28116,23 @@ type GetObjectTaggingResponse struct {
 }
 
 func (s GetObjectTaggingResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectTaggingResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectTaggingResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectTaggingResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectTaggingResponse) GetBody() *GetObjectTaggingResponseBody {
+	return s.Body
 }
 
 func (s *GetObjectTaggingResponse) SetHeaders(v map[string]*string) *GetObjectTaggingResponse {
@@ -17903,21 +28150,36 @@ func (s *GetObjectTaggingResponse) SetBody(v *GetObjectTaggingResponseBody) *Get
 	return s
 }
 
+func (s *GetObjectTaggingResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetObjectsRequest struct {
 	GetObjectsRequest *GetObjectsReq `json:"GetObjectsRequest,omitempty" xml:"GetObjectsRequest,omitempty"`
 }
 
 func (s GetObjectsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectsRequest) GoString() string {
 	return s.String()
 }
 
+func (s *GetObjectsRequest) GetGetObjectsRequest() *GetObjectsReq {
+	return s.GetObjectsRequest
+}
+
 func (s *GetObjectsRequest) SetGetObjectsRequest(v *GetObjectsReq) *GetObjectsRequest {
 	s.GetObjectsRequest = v
 	return s
+}
+
+func (s *GetObjectsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 }
 
 type GetObjectsResponse struct {
@@ -17927,11 +28189,23 @@ type GetObjectsResponse struct {
 }
 
 func (s GetObjectsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetObjectsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetObjectsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetObjectsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetObjectsResponse) GetBody() interface{} {
+	return s.Body
 }
 
 func (s *GetObjectsResponse) SetHeaders(v map[string]*string) *GetObjectsResponse {
@@ -17949,22 +28223,36 @@ func (s *GetObjectsResponse) SetBody(v interface{}) *GetObjectsResponse {
 	return s
 }
 
+func (s *GetObjectsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetProcessConfigurationResponseBody struct {
 	BucketProcessConfiguration *GetBucketProcessConfiguration `json:"BucketProcessConfiguration,omitempty" xml:"BucketProcessConfiguration,omitempty"`
 }
 
 func (s GetProcessConfigurationResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetProcessConfigurationResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetProcessConfigurationResponseBody) GetBucketProcessConfiguration() *GetBucketProcessConfiguration {
+	return s.BucketProcessConfiguration
+}
+
 func (s *GetProcessConfigurationResponseBody) SetBucketProcessConfiguration(v *GetBucketProcessConfiguration) *GetProcessConfigurationResponseBody {
 	s.BucketProcessConfiguration = v
 	return s
 }
+
+func (s *GetProcessConfigurationResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetProcessConfigurationResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17973,11 +28261,23 @@ type GetProcessConfigurationResponse struct {
 }
 
 func (s GetProcessConfigurationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetProcessConfigurationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetProcessConfigurationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetProcessConfigurationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetProcessConfigurationResponse) GetBody() *GetProcessConfigurationResponseBody {
+	return s.Body
 }
 
 func (s *GetProcessConfigurationResponse) SetHeaders(v map[string]*string) *GetProcessConfigurationResponse {
@@ -17995,23 +28295,37 @@ func (s *GetProcessConfigurationResponse) SetBody(v *GetProcessConfigurationResp
 	return s
 }
 
+func (s *GetProcessConfigurationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetPublicAccessBlockResponseBody struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
 }
 
 func (s GetPublicAccessBlockResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetPublicAccessBlockResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetPublicAccessBlockResponseBody) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
+}
+
 func (s *GetPublicAccessBlockResponseBody) SetPublicAccessBlockConfiguration(v *PublicAccessBlockConfiguration) *GetPublicAccessBlockResponseBody {
 	s.PublicAccessBlockConfiguration = v
 	return s
 }
+
+func (s *GetPublicAccessBlockResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetPublicAccessBlockResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18020,11 +28334,23 @@ type GetPublicAccessBlockResponse struct {
 }
 
 func (s GetPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetPublicAccessBlockResponse) GetBody() *GetPublicAccessBlockResponseBody {
+	return s.Body
 }
 
 func (s *GetPublicAccessBlockResponse) SetHeaders(v map[string]*string) *GetPublicAccessBlockResponse {
@@ -18042,17 +28368,26 @@ func (s *GetPublicAccessBlockResponse) SetBody(v *GetPublicAccessBlockResponseBo
 	return s
 }
 
+func (s *GetPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetReservedCapacityRequest struct {
 	// This parameter is required.
 	XOssReservedCapacityId *string `json:"x-oss-reserved-capacity-id,omitempty" xml:"x-oss-reserved-capacity-id,omitempty"`
 }
 
 func (s GetReservedCapacityRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReservedCapacityRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetReservedCapacityRequest) GetXOssReservedCapacityId() *string {
+	return s.XOssReservedCapacityId
 }
 
 func (s *GetReservedCapacityRequest) SetXOssReservedCapacityId(v string) *GetReservedCapacityRequest {
@@ -18060,22 +28395,36 @@ func (s *GetReservedCapacityRequest) SetXOssReservedCapacityId(v string) *GetRes
 	return s
 }
 
+func (s *GetReservedCapacityRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetReservedCapacityResponseBody struct {
 	ReservedCapacityRecord *ReservedCapacityRecord `json:"ReservedCapacityRecord,omitempty" xml:"ReservedCapacityRecord,omitempty"`
 }
 
 func (s GetReservedCapacityResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReservedCapacityResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetReservedCapacityResponseBody) GetReservedCapacityRecord() *ReservedCapacityRecord {
+	return s.ReservedCapacityRecord
+}
+
 func (s *GetReservedCapacityResponseBody) SetReservedCapacityRecord(v *ReservedCapacityRecord) *GetReservedCapacityResponseBody {
 	s.ReservedCapacityRecord = v
 	return s
 }
+
+func (s *GetReservedCapacityResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetReservedCapacityResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18084,11 +28433,23 @@ type GetReservedCapacityResponse struct {
 }
 
 func (s GetReservedCapacityResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReservedCapacityResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetReservedCapacityResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetReservedCapacityResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetReservedCapacityResponse) GetBody() *GetReservedCapacityResponseBody {
+	return s.Body
 }
 
 func (s *GetReservedCapacityResponse) SetHeaders(v map[string]*string) *GetReservedCapacityResponse {
@@ -18106,6 +28467,121 @@ func (s *GetReservedCapacityResponse) SetBody(v *GetReservedCapacityResponseBody
 	return s
 }
 
+func (s *GetReservedCapacityResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type GetResourcePoolBucketGroupQoSInfoRequest struct {
+	// This parameter is required.
+	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
+	// This parameter is required.
+	ResourcePoolBucketGroup *string `json:"resourcePoolBucketGroup,omitempty" xml:"resourcePoolBucketGroup,omitempty"`
+}
+
+func (s GetResourcePoolBucketGroupQoSInfoRequest) String() string {
+	return dara.Prettify(s)
+}
+
+func (s GetResourcePoolBucketGroupQoSInfoRequest) GoString() string {
+	return s.String()
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoRequest) GetResourcePoolBucketGroup() *string {
+	return s.ResourcePoolBucketGroup
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoRequest) SetResourcePool(v string) *GetResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoRequest) SetResourcePoolBucketGroup(v string) *GetResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePoolBucketGroup = &v
+	return s
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type GetResourcePoolBucketGroupQoSInfoResponseBody struct {
+	ResourcePoolBucketGroupQoSInfo *ResourcePoolBucketGroupQoSInfo `json:"ResourcePoolBucketGroupQoSInfo,omitempty" xml:"ResourcePoolBucketGroupQoSInfo,omitempty"`
+}
+
+func (s GetResourcePoolBucketGroupQoSInfoResponseBody) String() string {
+	return dara.Prettify(s)
+}
+
+func (s GetResourcePoolBucketGroupQoSInfoResponseBody) GoString() string {
+	return s.String()
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponseBody) GetResourcePoolBucketGroupQoSInfo() *ResourcePoolBucketGroupQoSInfo {
+	return s.ResourcePoolBucketGroupQoSInfo
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponseBody) SetResourcePoolBucketGroupQoSInfo(v *ResourcePoolBucketGroupQoSInfo) *GetResourcePoolBucketGroupQoSInfoResponseBody {
+	s.ResourcePoolBucketGroupQoSInfo = v
+	return s
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type GetResourcePoolBucketGroupQoSInfoResponse struct {
+	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32                                         `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+	Body       *GetResourcePoolBucketGroupQoSInfoResponseBody `json:"body,omitempty" xml:"body,omitempty"`
+}
+
+func (s GetResourcePoolBucketGroupQoSInfoResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s GetResourcePoolBucketGroupQoSInfoResponse) GoString() string {
+	return s.String()
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) GetBody() *GetResourcePoolBucketGroupQoSInfoResponseBody {
+	return s.Body
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) SetHeaders(v map[string]*string) *GetResourcePoolBucketGroupQoSInfoResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) SetStatusCode(v int32) *GetResourcePoolBucketGroupQoSInfoResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) SetBody(v *GetResourcePoolBucketGroupQoSInfoResponseBody) *GetResourcePoolBucketGroupQoSInfoResponse {
+	s.Body = v
+	return s
+}
+
+func (s *GetResourcePoolBucketGroupQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetResourcePoolInfoRequest struct {
 	// This parameter is required.
 	//
@@ -18116,11 +28592,15 @@ type GetResourcePoolInfoRequest struct {
 }
 
 func (s GetResourcePoolInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetResourcePoolInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *GetResourcePoolInfoRequest) SetResourcePool(v string) *GetResourcePoolInfoRequest {
@@ -18128,22 +28608,36 @@ func (s *GetResourcePoolInfoRequest) SetResourcePool(v string) *GetResourcePoolI
 	return s
 }
 
+func (s *GetResourcePoolInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetResourcePoolInfoResponseBody struct {
 	GetResourcePoolInfoResponse *GetResourcePoolInfoResp `json:"GetResourcePoolInfoResponse,omitempty" xml:"GetResourcePoolInfoResponse,omitempty"`
 }
 
 func (s GetResourcePoolInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetResourcePoolInfoResponseBody) GetGetResourcePoolInfoResponse() *GetResourcePoolInfoResp {
+	return s.GetResourcePoolInfoResponse
+}
+
 func (s *GetResourcePoolInfoResponseBody) SetGetResourcePoolInfoResponse(v *GetResourcePoolInfoResp) *GetResourcePoolInfoResponseBody {
 	s.GetResourcePoolInfoResponse = v
 	return s
 }
+
+func (s *GetResourcePoolInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetResourcePoolInfoResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18152,11 +28646,23 @@ type GetResourcePoolInfoResponse struct {
 }
 
 func (s GetResourcePoolInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetResourcePoolInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetResourcePoolInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetResourcePoolInfoResponse) GetBody() *GetResourcePoolInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetResourcePoolInfoResponse) SetHeaders(v map[string]*string) *GetResourcePoolInfoResponse {
@@ -18174,6 +28680,11 @@ func (s *GetResourcePoolInfoResponse) SetBody(v *GetResourcePoolInfoResponseBody
 	return s
 }
 
+func (s *GetResourcePoolInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetResourcePoolRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	//
@@ -18190,11 +28701,19 @@ type GetResourcePoolRequesterQoSInfoRequest struct {
 }
 
 func (s GetResourcePoolRequesterQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolRequesterQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetResourcePoolRequesterQoSInfoRequest) GetQosRequester() *string {
+	return s.QosRequester
+}
+
+func (s *GetResourcePoolRequesterQoSInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *GetResourcePoolRequesterQoSInfoRequest) SetQosRequester(v string) *GetResourcePoolRequesterQoSInfoRequest {
@@ -18207,22 +28726,36 @@ func (s *GetResourcePoolRequesterQoSInfoRequest) SetResourcePool(v string) *GetR
 	return s
 }
 
+func (s *GetResourcePoolRequesterQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetResourcePoolRequesterQoSInfoResponseBody struct {
 	RequesterQoSInfo *RequesterQoSInfo `json:"RequesterQoSInfo,omitempty" xml:"RequesterQoSInfo,omitempty"`
 }
 
 func (s GetResourcePoolRequesterQoSInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolRequesterQoSInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetResourcePoolRequesterQoSInfoResponseBody) GetRequesterQoSInfo() *RequesterQoSInfo {
+	return s.RequesterQoSInfo
+}
+
 func (s *GetResourcePoolRequesterQoSInfoResponseBody) SetRequesterQoSInfo(v *RequesterQoSInfo) *GetResourcePoolRequesterQoSInfoResponseBody {
 	s.RequesterQoSInfo = v
 	return s
 }
+
+func (s *GetResourcePoolRequesterQoSInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetResourcePoolRequesterQoSInfoResponse struct {
 	Headers    map[string]*string                           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18231,11 +28764,23 @@ type GetResourcePoolRequesterQoSInfoResponse struct {
 }
 
 func (s GetResourcePoolRequesterQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetResourcePoolRequesterQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetResourcePoolRequesterQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetResourcePoolRequesterQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetResourcePoolRequesterQoSInfoResponse) GetBody() *GetResourcePoolRequesterQoSInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetResourcePoolRequesterQoSInfoResponse) SetHeaders(v map[string]*string) *GetResourcePoolRequesterQoSInfoResponse {
@@ -18253,6 +28798,11 @@ func (s *GetResourcePoolRequesterQoSInfoResponse) SetBody(v *GetResourcePoolRequ
 	return s
 }
 
+func (s *GetResourcePoolRequesterQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetStyleRequest struct {
 	// The name of the image style.
 	//
@@ -18265,11 +28815,15 @@ type GetStyleRequest struct {
 }
 
 func (s GetStyleRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetStyleRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetStyleRequest) GetStyleName() *string {
+	return s.StyleName
 }
 
 func (s *GetStyleRequest) SetStyleName(v string) *GetStyleRequest {
@@ -18277,23 +28831,37 @@ func (s *GetStyleRequest) SetStyleName(v string) *GetStyleRequest {
 	return s
 }
 
+func (s *GetStyleRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetStyleResponseBody struct {
-	// The container that stores the information about the image style.
+	// The container in which the queried image styles are stored.
 	Style *StyleInfo `json:"Style,omitempty" xml:"Style,omitempty"`
 }
 
 func (s GetStyleResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetStyleResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetStyleResponseBody) GetStyle() *StyleInfo {
+	return s.Style
+}
+
 func (s *GetStyleResponseBody) SetStyle(v *StyleInfo) *GetStyleResponseBody {
 	s.Style = v
 	return s
 }
+
+func (s *GetStyleResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetStyleResponse struct {
 	Headers    map[string]*string    `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18302,11 +28870,23 @@ type GetStyleResponse struct {
 }
 
 func (s GetStyleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetStyleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetStyleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetStyleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetStyleResponse) GetBody() *GetStyleResponseBody {
+	return s.Body
 }
 
 func (s *GetStyleResponse) SetHeaders(v map[string]*string) *GetStyleResponse {
@@ -18324,6 +28904,11 @@ func (s *GetStyleResponse) SetBody(v *GetStyleResponseBody) *GetStyleResponse {
 	return s
 }
 
+func (s *GetStyleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetSymlinkRequest struct {
 	// The version of the object to which the symbolic link points.
 	//
@@ -18334,11 +28919,15 @@ type GetSymlinkRequest struct {
 }
 
 func (s GetSymlinkRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetSymlinkRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetSymlinkRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *GetSymlinkRequest) SetVersionId(v string) *GetSymlinkRequest {
@@ -18346,17 +28935,30 @@ func (s *GetSymlinkRequest) SetVersionId(v string) *GetSymlinkRequest {
 	return s
 }
 
+func (s *GetSymlinkRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetSymlinkResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s GetSymlinkResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetSymlinkResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetSymlinkResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetSymlinkResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *GetSymlinkResponse) SetHeaders(v map[string]*string) *GetSymlinkResponse {
@@ -18369,22 +28971,35 @@ func (s *GetSymlinkResponse) SetStatusCode(v int32) *GetSymlinkResponse {
 	return s
 }
 
+func (s *GetSymlinkResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetUserAntiDDosInfoResponseBody struct {
 	// The container that stores the list of Anti-DDoS instances.
 	AntiDDOSListConfiguration *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration `json:"AntiDDOSListConfiguration,omitempty" xml:"AntiDDOSListConfiguration,omitempty" type:"Struct"`
 }
 
 func (s GetUserAntiDDosInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserAntiDDosInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetUserAntiDDosInfoResponseBody) GetAntiDDOSListConfiguration() *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration {
+	return s.AntiDDOSListConfiguration
+}
+
 func (s *GetUserAntiDDosInfoResponseBody) SetAntiDDOSListConfiguration(v *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) *GetUserAntiDDosInfoResponseBody {
 	s.AntiDDOSListConfiguration = v
 	return s
+}
+
+func (s *GetUserAntiDDosInfoResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration struct {
@@ -18393,17 +29008,26 @@ type GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration struct {
 }
 
 func (s GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) GoString() string {
 	return s.String()
 }
 
+func (s *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) GetAntiDDOSConfiguration() []*UserAntiDDOSInfo {
+	return s.AntiDDOSConfiguration
+}
+
 func (s *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) SetAntiDDOSConfiguration(v []*UserAntiDDOSInfo) *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration {
 	s.AntiDDOSConfiguration = v
 	return s
 }
+
+func (s *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetUserAntiDDosInfoResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18412,11 +29036,23 @@ type GetUserAntiDDosInfoResponse struct {
 }
 
 func (s GetUserAntiDDosInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserAntiDDosInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetUserAntiDDosInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetUserAntiDDosInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetUserAntiDDosInfoResponse) GetBody() *GetUserAntiDDosInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetUserAntiDDosInfoResponse) SetHeaders(v map[string]*string) *GetUserAntiDDosInfoResponse {
@@ -18434,23 +29070,37 @@ func (s *GetUserAntiDDosInfoResponse) SetBody(v *GetUserAntiDDosInfoResponseBody
 	return s
 }
 
+func (s *GetUserAntiDDosInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetUserDefinedLogFieldsConfigResponseBody struct {
 	// The container for the user-defined logging configuration.
 	UserDefinedLogFieldsConfiguration *UserDefinedLogFieldsConfiguration `json:"UserDefinedLogFieldsConfiguration,omitempty" xml:"UserDefinedLogFieldsConfiguration,omitempty"`
 }
 
 func (s GetUserDefinedLogFieldsConfigResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserDefinedLogFieldsConfigResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetUserDefinedLogFieldsConfigResponseBody) GetUserDefinedLogFieldsConfiguration() *UserDefinedLogFieldsConfiguration {
+	return s.UserDefinedLogFieldsConfiguration
+}
+
 func (s *GetUserDefinedLogFieldsConfigResponseBody) SetUserDefinedLogFieldsConfiguration(v *UserDefinedLogFieldsConfiguration) *GetUserDefinedLogFieldsConfigResponseBody {
 	s.UserDefinedLogFieldsConfiguration = v
 	return s
 }
+
+func (s *GetUserDefinedLogFieldsConfigResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetUserDefinedLogFieldsConfigResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18459,11 +29109,23 @@ type GetUserDefinedLogFieldsConfigResponse struct {
 }
 
 func (s GetUserDefinedLogFieldsConfigResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserDefinedLogFieldsConfigResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetUserDefinedLogFieldsConfigResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetUserDefinedLogFieldsConfigResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetUserDefinedLogFieldsConfigResponse) GetBody() *GetUserDefinedLogFieldsConfigResponseBody {
+	return s.Body
 }
 
 func (s *GetUserDefinedLogFieldsConfigResponse) SetHeaders(v map[string]*string) *GetUserDefinedLogFieldsConfigResponse {
@@ -18481,6 +29143,11 @@ func (s *GetUserDefinedLogFieldsConfigResponse) SetBody(v *GetUserDefinedLogFiel
 	return s
 }
 
+func (s *GetUserDefinedLogFieldsConfigResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetUserQoSInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// example:
@@ -18490,11 +29157,19 @@ type GetUserQoSInfoHeaders struct {
 }
 
 func (s GetUserQoSInfoHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserQoSInfoHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *GetUserQoSInfoHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *GetUserQoSInfoHeaders) GetXOssReturnDefault() *bool {
+	return s.XOssReturnDefault
 }
 
 func (s *GetUserQoSInfoHeaders) SetCommonHeaders(v map[string]*string) *GetUserQoSInfoHeaders {
@@ -18507,22 +29182,36 @@ func (s *GetUserQoSInfoHeaders) SetXOssReturnDefault(v bool) *GetUserQoSInfoHead
 	return s
 }
 
+func (s *GetUserQoSInfoHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetUserQoSInfoResponseBody struct {
 	QoSConfiguration *UserQosConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 }
 
 func (s GetUserQoSInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserQoSInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetUserQoSInfoResponseBody) GetQoSConfiguration() *UserQosConfiguration {
+	return s.QoSConfiguration
+}
+
 func (s *GetUserQoSInfoResponseBody) SetQoSConfiguration(v *UserQosConfiguration) *GetUserQoSInfoResponseBody {
 	s.QoSConfiguration = v
 	return s
 }
+
+func (s *GetUserQoSInfoResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetUserQoSInfoResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18531,11 +29220,23 @@ type GetUserQoSInfoResponse struct {
 }
 
 func (s GetUserQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetUserQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetUserQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetUserQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetUserQoSInfoResponse) GetBody() *GetUserQoSInfoResponseBody {
+	return s.Body
 }
 
 func (s *GetUserQoSInfoResponse) SetHeaders(v map[string]*string) *GetUserQoSInfoResponse {
@@ -18553,22 +29254,36 @@ func (s *GetUserQoSInfoResponse) SetBody(v *GetUserQoSInfoResponseBody) *GetUser
 	return s
 }
 
+func (s *GetUserQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetVirtualBucketResponseBody struct {
 	VirtualBucketConfiguration *VirtualBucket `json:"VirtualBucketConfiguration,omitempty" xml:"VirtualBucketConfiguration,omitempty"`
 }
 
 func (s GetVirtualBucketResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetVirtualBucketResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *GetVirtualBucketResponseBody) GetVirtualBucketConfiguration() *VirtualBucket {
+	return s.VirtualBucketConfiguration
+}
+
 func (s *GetVirtualBucketResponseBody) SetVirtualBucketConfiguration(v *VirtualBucket) *GetVirtualBucketResponseBody {
 	s.VirtualBucketConfiguration = v
 	return s
 }
+
+func (s *GetVirtualBucketResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetVirtualBucketResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18577,11 +29292,23 @@ type GetVirtualBucketResponse struct {
 }
 
 func (s GetVirtualBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetVirtualBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetVirtualBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetVirtualBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetVirtualBucketResponse) GetBody() *GetVirtualBucketResponseBody {
+	return s.Body
 }
 
 func (s *GetVirtualBucketResponse) SetHeaders(v map[string]*string) *GetVirtualBucketResponse {
@@ -18598,6 +29325,11 @@ func (s *GetVirtualBucketResponse) SetBody(v *GetVirtualBucketResponseBody) *Get
 	s.Body = v
 	return s
 }
+
+func (s *GetVirtualBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type GetVodPlaylistRequest struct {
 	// The end time of the time range during which the TS files that you want to query are generated in the Unix timestamp format.
@@ -18621,11 +29353,19 @@ type GetVodPlaylistRequest struct {
 }
 
 func (s GetVodPlaylistRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetVodPlaylistRequest) GoString() string {
 	return s.String()
+}
+
+func (s *GetVodPlaylistRequest) GetEndTime() *string {
+	return s.EndTime
+}
+
+func (s *GetVodPlaylistRequest) GetStartTime() *string {
+	return s.StartTime
 }
 
 func (s *GetVodPlaylistRequest) SetEndTime(v string) *GetVodPlaylistRequest {
@@ -18638,6 +29378,11 @@ func (s *GetVodPlaylistRequest) SetStartTime(v string) *GetVodPlaylistRequest {
 	return s
 }
 
+func (s *GetVodPlaylistRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type GetVodPlaylistResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -18645,11 +29390,23 @@ type GetVodPlaylistResponse struct {
 }
 
 func (s GetVodPlaylistResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetVodPlaylistResponse) GoString() string {
 	return s.String()
+}
+
+func (s *GetVodPlaylistResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *GetVodPlaylistResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *GetVodPlaylistResponse) GetBody() io.Reader {
+	return s.Body
 }
 
 func (s *GetVodPlaylistResponse) SetHeaders(v map[string]*string) *GetVodPlaylistResponse {
@@ -18667,17 +29424,30 @@ func (s *GetVodPlaylistResponse) SetBody(v io.Reader) *GetVodPlaylistResponse {
 	return s
 }
 
+func (s *GetVodPlaylistResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type HeadBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s HeadBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s HeadBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *HeadBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *HeadBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *HeadBucketResponse) SetHeaders(v map[string]*string) *HeadBucketResponse {
@@ -18689,6 +29459,11 @@ func (s *HeadBucketResponse) SetStatusCode(v int32) *HeadBucketResponse {
 	s.StatusCode = &v
 	return s
 }
+
+func (s *HeadBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type HeadObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -18727,11 +29502,31 @@ type HeadObjectHeaders struct {
 }
 
 func (s HeadObjectHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s HeadObjectHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *HeadObjectHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *HeadObjectHeaders) GetIfMatch() *string {
+	return s.IfMatch
+}
+
+func (s *HeadObjectHeaders) GetIfModifiedSince() *string {
+	return s.IfModifiedSince
+}
+
+func (s *HeadObjectHeaders) GetIfNoneMatch() *string {
+	return s.IfNoneMatch
+}
+
+func (s *HeadObjectHeaders) GetIfUnmodifiedSince() *string {
+	return s.IfUnmodifiedSince
 }
 
 func (s *HeadObjectHeaders) SetCommonHeaders(v map[string]*string) *HeadObjectHeaders {
@@ -18759,6 +29554,11 @@ func (s *HeadObjectHeaders) SetIfUnmodifiedSince(v string) *HeadObjectHeaders {
 	return s
 }
 
+func (s *HeadObjectHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type HeadObjectRequest struct {
 	// The version ID of the object for which you want to query metadata.
 	//
@@ -18769,11 +29569,15 @@ type HeadObjectRequest struct {
 }
 
 func (s HeadObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s HeadObjectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *HeadObjectRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *HeadObjectRequest) SetVersionId(v string) *HeadObjectRequest {
@@ -18781,17 +29585,30 @@ func (s *HeadObjectRequest) SetVersionId(v string) *HeadObjectRequest {
 	return s
 }
 
+func (s *HeadObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type HeadObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s HeadObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s HeadObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *HeadObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *HeadObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *HeadObjectResponse) SetHeaders(v map[string]*string) *HeadObjectResponse {
@@ -18803,6 +29620,11 @@ func (s *HeadObjectResponse) SetStatusCode(v int32) *HeadObjectResponse {
 	s.StatusCode = &v
 	return s
 }
+
+func (s *HeadObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type InitBucketAntiDDosInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -18825,11 +29647,23 @@ type InitBucketAntiDDosInfoHeaders struct {
 }
 
 func (s InitBucketAntiDDosInfoHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitBucketAntiDDosInfoHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *InitBucketAntiDDosInfoHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *InitBucketAntiDDosInfoHeaders) GetDefenderInstance() *string {
+	return s.DefenderInstance
+}
+
+func (s *InitBucketAntiDDosInfoHeaders) GetDefenderType() *string {
+	return s.DefenderType
 }
 
 func (s *InitBucketAntiDDosInfoHeaders) SetCommonHeaders(v map[string]*string) *InitBucketAntiDDosInfoHeaders {
@@ -18847,17 +29681,26 @@ func (s *InitBucketAntiDDosInfoHeaders) SetDefenderType(v string) *InitBucketAnt
 	return s
 }
 
+func (s *InitBucketAntiDDosInfoHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitBucketAntiDDosInfoRequest struct {
 	// The container that stores the configurations of Anti-DDoS instances.
 	AntiDDOSConfiguration *BucketAntiDDOSConfiguration `json:"AntiDDOSConfiguration,omitempty" xml:"AntiDDOSConfiguration,omitempty"`
 }
 
 func (s InitBucketAntiDDosInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitBucketAntiDDosInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *InitBucketAntiDDosInfoRequest) GetAntiDDOSConfiguration() *BucketAntiDDOSConfiguration {
+	return s.AntiDDOSConfiguration
 }
 
 func (s *InitBucketAntiDDosInfoRequest) SetAntiDDOSConfiguration(v *BucketAntiDDOSConfiguration) *InitBucketAntiDDosInfoRequest {
@@ -18865,17 +29708,30 @@ func (s *InitBucketAntiDDosInfoRequest) SetAntiDDOSConfiguration(v *BucketAntiDD
 	return s
 }
 
+func (s *InitBucketAntiDDosInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitBucketAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s InitBucketAntiDDosInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitBucketAntiDDosInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *InitBucketAntiDDosInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *InitBucketAntiDDosInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *InitBucketAntiDDosInfoResponse) SetHeaders(v map[string]*string) *InitBucketAntiDDosInfoResponse {
@@ -18888,17 +29744,30 @@ func (s *InitBucketAntiDDosInfoResponse) SetStatusCode(v int32) *InitBucketAntiD
 	return s
 }
 
+func (s *InitBucketAntiDDosInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitUserAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s InitUserAntiDDosInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitUserAntiDDosInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *InitUserAntiDDosInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *InitUserAntiDDosInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *InitUserAntiDDosInfoResponse) SetHeaders(v map[string]*string) *InitUserAntiDDosInfoResponse {
@@ -18911,17 +29780,26 @@ func (s *InitUserAntiDDosInfoResponse) SetStatusCode(v int32) *InitUserAntiDDosI
 	return s
 }
 
+func (s *InitUserAntiDDosInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitiateBucketWormRequest struct {
 	// The parameters for WORM initialization.
 	InitiateWormConfiguration *InitiateWormConfiguration `json:"InitiateWormConfiguration,omitempty" xml:"InitiateWormConfiguration,omitempty"`
 }
 
 func (s InitiateBucketWormRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateBucketWormRequest) GoString() string {
 	return s.String()
+}
+
+func (s *InitiateBucketWormRequest) GetInitiateWormConfiguration() *InitiateWormConfiguration {
+	return s.InitiateWormConfiguration
 }
 
 func (s *InitiateBucketWormRequest) SetInitiateWormConfiguration(v *InitiateWormConfiguration) *InitiateBucketWormRequest {
@@ -18929,17 +29807,30 @@ func (s *InitiateBucketWormRequest) SetInitiateWormConfiguration(v *InitiateWorm
 	return s
 }
 
+func (s *InitiateBucketWormRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitiateBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s InitiateBucketWormResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateBucketWormResponse) GoString() string {
 	return s.String()
+}
+
+func (s *InitiateBucketWormResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *InitiateBucketWormResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *InitiateBucketWormResponse) SetHeaders(v map[string]*string) *InitiateBucketWormResponse {
@@ -18951,6 +29842,11 @@ func (s *InitiateBucketWormResponse) SetStatusCode(v int32) *InitiateBucketWormR
 	s.StatusCode = &v
 	return s
 }
+
+func (s *InitiateBucketWormResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type InitiateMultipartUploadHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -19052,11 +29948,55 @@ type InitiateMultipartUploadHeaders struct {
 }
 
 func (s InitiateMultipartUploadHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateMultipartUploadHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *InitiateMultipartUploadHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *InitiateMultipartUploadHeaders) GetCacheControl() *string {
+	return s.CacheControl
+}
+
+func (s *InitiateMultipartUploadHeaders) GetContentDisposition() *string {
+	return s.ContentDisposition
+}
+
+func (s *InitiateMultipartUploadHeaders) GetContentEncoding() *string {
+	return s.ContentEncoding
+}
+
+func (s *InitiateMultipartUploadHeaders) GetExpires() *string {
+	return s.Expires
+}
+
+func (s *InitiateMultipartUploadHeaders) GetForbidOverwrite() *string {
+	return s.ForbidOverwrite
+}
+
+func (s *InitiateMultipartUploadHeaders) GetSseDataEncryption() *string {
+	return s.SseDataEncryption
+}
+
+func (s *InitiateMultipartUploadHeaders) GetServerSideEncryption() *string {
+	return s.ServerSideEncryption
+}
+
+func (s *InitiateMultipartUploadHeaders) GetSseKeyId() *string {
+	return s.SseKeyId
+}
+
+func (s *InitiateMultipartUploadHeaders) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *InitiateMultipartUploadHeaders) GetTagging() *string {
+	return s.Tagging
 }
 
 func (s *InitiateMultipartUploadHeaders) SetCommonHeaders(v map[string]*string) *InitiateMultipartUploadHeaders {
@@ -19114,6 +30054,11 @@ func (s *InitiateMultipartUploadHeaders) SetTagging(v string) *InitiateMultipart
 	return s
 }
 
+func (s *InitiateMultipartUploadHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitiateMultipartUploadRequest struct {
 	// The method used to encode the object name in the response. Only URL encoding is supported. The object name can contain characters encoded in UTF-8. However, the XML 1.0 standard cannot be used to parse specific control characters, such as characters whose ASCII values range from 0 to 10. You can configure the encoding-type parameter to encode object names that include characters that cannot be parsed by XML 1.0 in the response.
 	//
@@ -19122,11 +30067,15 @@ type InitiateMultipartUploadRequest struct {
 }
 
 func (s InitiateMultipartUploadRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateMultipartUploadRequest) GoString() string {
 	return s.String()
+}
+
+func (s *InitiateMultipartUploadRequest) GetEncodingType() *string {
+	return s.EncodingType
 }
 
 func (s *InitiateMultipartUploadRequest) SetEncodingType(v string) *InitiateMultipartUploadRequest {
@@ -19134,22 +30083,35 @@ func (s *InitiateMultipartUploadRequest) SetEncodingType(v string) *InitiateMult
 	return s
 }
 
+func (s *InitiateMultipartUploadRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitiateMultipartUploadResponseBody struct {
 	// The container that stores the results of the InitiateMultipartUpload request.
 	InitiateMultipartUploadResult *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult `json:"InitiateMultipartUploadResult,omitempty" xml:"InitiateMultipartUploadResult,omitempty" type:"Struct"`
 }
 
 func (s InitiateMultipartUploadResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateMultipartUploadResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *InitiateMultipartUploadResponseBody) GetInitiateMultipartUploadResult() *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult {
+	return s.InitiateMultipartUploadResult
+}
+
 func (s *InitiateMultipartUploadResponseBody) SetInitiateMultipartUploadResult(v *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) *InitiateMultipartUploadResponseBody {
 	s.InitiateMultipartUploadResult = v
 	return s
+}
+
+func (s *InitiateMultipartUploadResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult struct {
@@ -19180,11 +30142,27 @@ type InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult struct {
 }
 
 func (s InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) GoString() string {
 	return s.String()
+}
+
+func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) GetKey() *string {
+	return s.Key
+}
+
+func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) SetBucket(v string) *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult {
@@ -19207,6 +30185,11 @@ func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) SetUp
 	return s
 }
 
+func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type InitiateMultipartUploadResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                               `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19214,11 +30197,23 @@ type InitiateMultipartUploadResponse struct {
 }
 
 func (s InitiateMultipartUploadResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s InitiateMultipartUploadResponse) GoString() string {
 	return s.String()
+}
+
+func (s *InitiateMultipartUploadResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *InitiateMultipartUploadResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *InitiateMultipartUploadResponse) GetBody() *InitiateMultipartUploadResponseBody {
+	return s.Body
 }
 
 func (s *InitiateMultipartUploadResponse) SetHeaders(v map[string]*string) *InitiateMultipartUploadResponse {
@@ -19235,6 +30230,11 @@ func (s *InitiateMultipartUploadResponse) SetBody(v *InitiateMultipartUploadResp
 	s.Body = v
 	return s
 }
+
+func (s *InitiateMultipartUploadResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListAccessPointsRequest struct {
 	// The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
@@ -19256,11 +30256,19 @@ type ListAccessPointsRequest struct {
 }
 
 func (s ListAccessPointsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListAccessPointsRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
 }
 
 func (s *ListAccessPointsRequest) SetContinuationToken(v string) *ListAccessPointsRequest {
@@ -19273,23 +30281,37 @@ func (s *ListAccessPointsRequest) SetMaxKeys(v int64) *ListAccessPointsRequest {
 	return s
 }
 
+func (s *ListAccessPointsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListAccessPointsResponseBody struct {
 	// The container that stores the information about access points.
 	ListAccessPointsResult *ListAccessPointsResult `json:"ListAccessPointsResult,omitempty" xml:"ListAccessPointsResult,omitempty"`
 }
 
 func (s ListAccessPointsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListAccessPointsResponseBody) GetListAccessPointsResult() *ListAccessPointsResult {
+	return s.ListAccessPointsResult
+}
+
 func (s *ListAccessPointsResponseBody) SetListAccessPointsResult(v *ListAccessPointsResult) *ListAccessPointsResponseBody {
 	s.ListAccessPointsResult = v
 	return s
 }
+
+func (s *ListAccessPointsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListAccessPointsResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19298,11 +30320,23 @@ type ListAccessPointsResponse struct {
 }
 
 func (s ListAccessPointsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListAccessPointsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListAccessPointsResponse) GetBody() *ListAccessPointsResponseBody {
+	return s.Body
 }
 
 func (s *ListAccessPointsResponse) SetHeaders(v map[string]*string) *ListAccessPointsResponse {
@@ -19319,6 +30353,11 @@ func (s *ListAccessPointsResponse) SetBody(v *ListAccessPointsResponseBody) *Lis
 	s.Body = v
 	return s
 }
+
+func (s *ListAccessPointsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListAccessPointsForObjectProcessRequest struct {
 	// The token from which the list operation must start. You can obtain this token from the NextContinuationToken element in the returned result.
@@ -19340,11 +30379,19 @@ type ListAccessPointsForObjectProcessRequest struct {
 }
 
 func (s ListAccessPointsForObjectProcessRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsForObjectProcessRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsForObjectProcessRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListAccessPointsForObjectProcessRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
 }
 
 func (s *ListAccessPointsForObjectProcessRequest) SetContinuationToken(v string) *ListAccessPointsForObjectProcessRequest {
@@ -19357,22 +30404,35 @@ func (s *ListAccessPointsForObjectProcessRequest) SetMaxKeys(v int64) *ListAcces
 	return s
 }
 
+func (s *ListAccessPointsForObjectProcessRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListAccessPointsForObjectProcessResponseBody struct {
 	// The container that stores information about the Object FC Access Points that are returned.
 	ListAccessPointsForObjectProcessResult *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult `json:"ListAccessPointsForObjectProcessResult,omitempty" xml:"ListAccessPointsForObjectProcessResult,omitempty" type:"Struct"`
 }
 
 func (s ListAccessPointsForObjectProcessResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsForObjectProcessResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListAccessPointsForObjectProcessResponseBody) GetListAccessPointsForObjectProcessResult() *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult {
+	return s.ListAccessPointsForObjectProcessResult
+}
+
 func (s *ListAccessPointsForObjectProcessResponseBody) SetListAccessPointsForObjectProcessResult(v *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) *ListAccessPointsForObjectProcessResponseBody {
 	s.ListAccessPointsForObjectProcessResult = v
 	return s
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult struct {
@@ -19403,11 +30463,27 @@ type ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProces
 }
 
 func (s ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) GetAccessPointsForObjectProcess() *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess {
+	return s.AccessPointsForObjectProcess
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) GetAccountId() *string {
+	return s.AccountId
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
 }
 
 func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) SetAccessPointsForObjectProcess(v *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess) *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult {
@@ -19430,22 +30506,34 @@ func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectPr
 	return s
 }
 
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess struct {
 	// The container that stores information about a single Object FC Access Point.
 	AccessPointForObjectProcess []*ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess `json:"AccessPointForObjectProcess,omitempty" xml:"AccessPointForObjectProcess,omitempty" type:"Repeated"`
 }
 
 func (s ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess) GoString() string {
 	return s.String()
 }
 
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess) GetAccessPointForObjectProcess() []*ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess {
+	return s.AccessPointForObjectProcess
+}
+
 func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess) SetAccessPointForObjectProcess(v []*ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess {
 	s.AccessPointForObjectProcess = v
 	return s
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcess) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess struct {
@@ -19490,11 +30578,31 @@ type ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProces
 }
 
 func (s ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) GetAccessPointForObjectProcessAlias() *string {
+	return s.AccessPointForObjectProcessAlias
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) GetAccessPointName() *string {
+	return s.AccessPointName
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) GetAccessPointNameForObjectProcess() *string {
+	return s.AccessPointNameForObjectProcess
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) GetAllowAnonymousAccessForObjectProcess() *string {
+	return s.AllowAnonymousAccessForObjectProcess
+}
+
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) GetStatus() *string {
+	return s.Status
 }
 
 func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) SetAccessPointForObjectProcessAlias(v string) *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess {
@@ -19522,6 +30630,11 @@ func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectPr
 	return s
 }
 
+func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectProcessResultAccessPointsForObjectProcessAccessPointForObjectProcess) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListAccessPointsForObjectProcessResponse struct {
 	Headers    map[string]*string                            `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                        `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19529,11 +30642,23 @@ type ListAccessPointsForObjectProcessResponse struct {
 }
 
 func (s ListAccessPointsForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAccessPointsForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListAccessPointsForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListAccessPointsForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListAccessPointsForObjectProcessResponse) GetBody() *ListAccessPointsForObjectProcessResponseBody {
+	return s.Body
 }
 
 func (s *ListAccessPointsForObjectProcessResponse) SetHeaders(v map[string]*string) *ListAccessPointsForObjectProcessResponse {
@@ -19550,6 +30675,11 @@ func (s *ListAccessPointsForObjectProcessResponse) SetBody(v *ListAccessPointsFo
 	s.Body = v
 	return s
 }
+
+func (s *ListAccessPointsForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListBucketAntiDDosInfoRequest struct {
 	// The name of the Anti-DDoS instance from which the list starts. The Anti-DDoS instances whose names are alphabetically after the value of marker are returned.
@@ -19573,11 +30703,19 @@ type ListBucketAntiDDosInfoRequest struct {
 }
 
 func (s ListBucketAntiDDosInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketAntiDDosInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketAntiDDosInfoRequest) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListBucketAntiDDosInfoRequest) GetMaxKeys() *string {
+	return s.MaxKeys
 }
 
 func (s *ListBucketAntiDDosInfoRequest) SetMarker(v string) *ListBucketAntiDDosInfoRequest {
@@ -19590,22 +30728,35 @@ func (s *ListBucketAntiDDosInfoRequest) SetMaxKeys(v string) *ListBucketAntiDDos
 	return s
 }
 
+func (s *ListBucketAntiDDosInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketAntiDDosInfoResponseBody struct {
 	// The container that stores the protection list of an Anti-DDoS instance of a bucket.
 	AntiDDOSListConfiguration *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration `json:"AntiDDOSListConfiguration,omitempty" xml:"AntiDDOSListConfiguration,omitempty" type:"Struct"`
 }
 
 func (s ListBucketAntiDDosInfoResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketAntiDDosInfoResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListBucketAntiDDosInfoResponseBody) GetAntiDDOSListConfiguration() *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration {
+	return s.AntiDDOSListConfiguration
+}
+
 func (s *ListBucketAntiDDosInfoResponseBody) SetAntiDDOSListConfiguration(v *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) *ListBucketAntiDDosInfoResponseBody {
 	s.AntiDDOSListConfiguration = v
 	return s
+}
+
+func (s *ListBucketAntiDDosInfoResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration struct {
@@ -19630,11 +30781,23 @@ type ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration struct {
 }
 
 func (s ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) GetAntiDDOSConfiguration() []*BucketAntiDDOSInfo {
+	return s.AntiDDOSConfiguration
+}
+
+func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) GetMarker() *string {
+	return s.Marker
 }
 
 func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) SetAntiDDOSConfiguration(v []*BucketAntiDDOSInfo) *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration {
@@ -19652,6 +30815,11 @@ func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) SetMarker(
 	return s
 }
 
+func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketAntiDDosInfoResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                              `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19659,11 +30827,23 @@ type ListBucketAntiDDosInfoResponse struct {
 }
 
 func (s ListBucketAntiDDosInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketAntiDDosInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketAntiDDosInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListBucketAntiDDosInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListBucketAntiDDosInfoResponse) GetBody() *ListBucketAntiDDosInfoResponseBody {
+	return s.Body
 }
 
 func (s *ListBucketAntiDDosInfoResponse) SetHeaders(v map[string]*string) *ListBucketAntiDDosInfoResponse {
@@ -19681,17 +30861,26 @@ func (s *ListBucketAntiDDosInfoResponse) SetBody(v *ListBucketAntiDDosInfoRespon
 	return s
 }
 
+func (s *ListBucketAntiDDosInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketDataRedundancyTransitionResponseBody struct {
-	// The container for listed redundancy type change tasks.
+	// The container for listed redundancy type conversion tasks.
 	ListBucketDataRedundancyTransition *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition `json:"ListBucketDataRedundancyTransition,omitempty" xml:"ListBucketDataRedundancyTransition,omitempty" type:"Struct"`
 }
 
 func (s ListBucketDataRedundancyTransitionResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketDataRedundancyTransitionResponseBody) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketDataRedundancyTransitionResponseBody) GetListBucketDataRedundancyTransition() *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition {
+	return s.ListBucketDataRedundancyTransition
 }
 
 func (s *ListBucketDataRedundancyTransitionResponseBody) SetListBucketDataRedundancyTransition(v *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) *ListBucketDataRedundancyTransitionResponseBody {
@@ -19699,22 +30888,36 @@ func (s *ListBucketDataRedundancyTransitionResponseBody) SetListBucketDataRedund
 	return s
 }
 
+func (s *ListBucketDataRedundancyTransitionResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition struct {
+	// The information about the redundancy type conversion task.
 	BucketDataRedundancyTransition *BucketDataRedundancyTransition `json:"BucketDataRedundancyTransition,omitempty" xml:"BucketDataRedundancyTransition,omitempty"`
 }
 
 func (s ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) GoString() string {
 	return s.String()
 }
 
+func (s *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) GetBucketDataRedundancyTransition() *BucketDataRedundancyTransition {
+	return s.BucketDataRedundancyTransition
+}
+
 func (s *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) SetBucketDataRedundancyTransition(v *BucketDataRedundancyTransition) *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition {
 	s.BucketDataRedundancyTransition = v
 	return s
 }
+
+func (s *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19723,11 +30926,23 @@ type ListBucketDataRedundancyTransitionResponse struct {
 }
 
 func (s ListBucketDataRedundancyTransitionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketDataRedundancyTransitionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketDataRedundancyTransitionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListBucketDataRedundancyTransitionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListBucketDataRedundancyTransitionResponse) GetBody() *ListBucketDataRedundancyTransitionResponseBody {
+	return s.Body
 }
 
 func (s *ListBucketDataRedundancyTransitionResponse) SetHeaders(v map[string]*string) *ListBucketDataRedundancyTransitionResponse {
@@ -19745,6 +30960,11 @@ func (s *ListBucketDataRedundancyTransitionResponse) SetBody(v *ListBucketDataRe
 	return s
 }
 
+func (s *ListBucketDataRedundancyTransitionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketInventoryRequest struct {
 	// Specify the start position of the list operation. You can obtain this token from the NextContinuationToken field of last ListBucketInventory\\"s result.
 	//
@@ -19755,11 +30975,15 @@ type ListBucketInventoryRequest struct {
 }
 
 func (s ListBucketInventoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketInventoryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketInventoryRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
 }
 
 func (s *ListBucketInventoryRequest) SetContinuationToken(v string) *ListBucketInventoryRequest {
@@ -19767,22 +30991,35 @@ func (s *ListBucketInventoryRequest) SetContinuationToken(v string) *ListBucketI
 	return s
 }
 
+func (s *ListBucketInventoryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketInventoryResponseBody struct {
 	// The container that stores inventory configuration list.
 	ListInventoryConfigurationsResult *ListBucketInventoryResponseBodyListInventoryConfigurationsResult `json:"ListInventoryConfigurationsResult,omitempty" xml:"ListInventoryConfigurationsResult,omitempty" type:"Struct"`
 }
 
 func (s ListBucketInventoryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketInventoryResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListBucketInventoryResponseBody) GetListInventoryConfigurationsResult() *ListBucketInventoryResponseBodyListInventoryConfigurationsResult {
+	return s.ListInventoryConfigurationsResult
+}
+
 func (s *ListBucketInventoryResponseBody) SetListInventoryConfigurationsResult(v *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) *ListBucketInventoryResponseBody {
 	s.ListInventoryConfigurationsResult = v
 	return s
+}
+
+func (s *ListBucketInventoryResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListBucketInventoryResponseBodyListInventoryConfigurationsResult struct {
@@ -19809,11 +31046,23 @@ type ListBucketInventoryResponseBodyListInventoryConfigurationsResult struct {
 }
 
 func (s ListBucketInventoryResponseBodyListInventoryConfigurationsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketInventoryResponseBodyListInventoryConfigurationsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) GetInventoryConfigurations() []*InventoryConfiguration {
+	return s.InventoryConfigurations
+}
+
+func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
 }
 
 func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) SetInventoryConfigurations(v []*InventoryConfiguration) *ListBucketInventoryResponseBodyListInventoryConfigurationsResult {
@@ -19831,6 +31080,11 @@ func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) SetNe
 	return s
 }
 
+func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketInventoryResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                           `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19838,11 +31092,23 @@ type ListBucketInventoryResponse struct {
 }
 
 func (s ListBucketInventoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketInventoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketInventoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListBucketInventoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListBucketInventoryResponse) GetBody() *ListBucketInventoryResponseBody {
+	return s.Body
 }
 
 func (s *ListBucketInventoryResponse) SetHeaders(v map[string]*string) *ListBucketInventoryResponse {
@@ -19860,6 +31126,11 @@ func (s *ListBucketInventoryResponse) SetBody(v *ListBucketInventoryResponseBody
 	return s
 }
 
+func (s *ListBucketInventoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketRequesterQoSInfosRequest struct {
 	// example:
 	//
@@ -19872,11 +31143,19 @@ type ListBucketRequesterQoSInfosRequest struct {
 }
 
 func (s ListBucketRequesterQoSInfosRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketRequesterQoSInfosRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketRequesterQoSInfosRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListBucketRequesterQoSInfosRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
 }
 
 func (s *ListBucketRequesterQoSInfosRequest) SetContinuationToken(v string) *ListBucketRequesterQoSInfosRequest {
@@ -19889,22 +31168,36 @@ func (s *ListBucketRequesterQoSInfosRequest) SetMaxKeys(v int64) *ListBucketRequ
 	return s
 }
 
+func (s *ListBucketRequesterQoSInfosRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketRequesterQoSInfosResponseBody struct {
 	ListBucketRequesterQoSInfosResult *ListBucketRequesterQoSInfosResult `json:"ListBucketRequesterQoSInfosResult,omitempty" xml:"ListBucketRequesterQoSInfosResult,omitempty"`
 }
 
 func (s ListBucketRequesterQoSInfosResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketRequesterQoSInfosResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListBucketRequesterQoSInfosResponseBody) GetListBucketRequesterQoSInfosResult() *ListBucketRequesterQoSInfosResult {
+	return s.ListBucketRequesterQoSInfosResult
+}
+
 func (s *ListBucketRequesterQoSInfosResponseBody) SetListBucketRequesterQoSInfosResult(v *ListBucketRequesterQoSInfosResult) *ListBucketRequesterQoSInfosResponseBody {
 	s.ListBucketRequesterQoSInfosResult = v
 	return s
 }
+
+func (s *ListBucketRequesterQoSInfosResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListBucketRequesterQoSInfosResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19913,11 +31206,23 @@ type ListBucketRequesterQoSInfosResponse struct {
 }
 
 func (s ListBucketRequesterQoSInfosResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketRequesterQoSInfosResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketRequesterQoSInfosResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListBucketRequesterQoSInfosResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListBucketRequesterQoSInfosResponse) GetBody() *ListBucketRequesterQoSInfosResponseBody {
+	return s.Body
 }
 
 func (s *ListBucketRequesterQoSInfosResponse) SetHeaders(v map[string]*string) *ListBucketRequesterQoSInfosResponse {
@@ -19935,6 +31240,11 @@ func (s *ListBucketRequesterQoSInfosResponse) SetBody(v *ListBucketRequesterQoSI
 	return s
 }
 
+func (s *ListBucketRequesterQoSInfosResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketsHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The ID of the resource group to which the bucket belongs.
@@ -19942,11 +31252,19 @@ type ListBucketsHeaders struct {
 }
 
 func (s ListBucketsHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketsHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketsHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *ListBucketsHeaders) GetXOssResourceGroupId() *string {
+	return s.XOssResourceGroupId
 }
 
 func (s *ListBucketsHeaders) SetCommonHeaders(v map[string]*string) *ListBucketsHeaders {
@@ -19958,6 +31276,11 @@ func (s *ListBucketsHeaders) SetXOssResourceGroupId(v string) *ListBucketsHeader
 	s.XOssResourceGroupId = &v
 	return s
 }
+
+func (s *ListBucketsHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListBucketsRequest struct {
 	// The name of the bucket from which the buckets start to return. The buckets whose names are alphabetically after the value of marker are returned. If this parameter is not specified, all results are returned. By default, this parameter is left empty.
@@ -19977,18 +31300,57 @@ type ListBucketsRequest struct {
 	// example:
 	//
 	// my
-	Prefix   *string `json:"prefix,omitempty" xml:"prefix,omitempty"`
-	TagKey   *string `json:"tag-key,omitempty" xml:"tag-key,omitempty"`
+	Prefix *string `json:"prefix,omitempty" xml:"prefix,omitempty"`
+	// A tag key of target buckets. The listing results will only include Buckets that have been tagged with this key.
+	//
+	// example:
+	//
+	// test-key
+	TagKey *string `json:"tag-key,omitempty" xml:"tag-key,omitempty"`
+	// A tag value for the target buckets. If this parameter is specified in the request, the tag-key must also be specified. The listing results will only include Buckets that have been tagged with this key-value pair.
+	//
+	// example:
+	//
+	// test-value
 	TagValue *string `json:"tag-value,omitempty" xml:"tag-value,omitempty"`
-	Tagging  *string `json:"tagging,omitempty" xml:"tagging,omitempty"`
+	// Tag list of target buckets. Only Buckets that match all the key-value pairs in the list will added into the listing results. The tagging parameter cannot be used with the tag-key and tag-value parameters in a request.
+	//
+	// example:
+	//
+	// "test-key":"test-value"
+	Tagging *string `json:"tagging,omitempty" xml:"tagging,omitempty"`
 }
 
 func (s ListBucketsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketsRequest) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListBucketsRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListBucketsRequest) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListBucketsRequest) GetTagKey() *string {
+	return s.TagKey
+}
+
+func (s *ListBucketsRequest) GetTagValue() *string {
+	return s.TagValue
+}
+
+func (s *ListBucketsRequest) GetTagging() *string {
+	return s.Tagging
 }
 
 func (s *ListBucketsRequest) SetMarker(v string) *ListBucketsRequest {
@@ -20021,22 +31383,35 @@ func (s *ListBucketsRequest) SetTagging(v string) *ListBucketsRequest {
 	return s
 }
 
+func (s *ListBucketsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListBucketsResponseBody struct {
 	// The container that stores the result of ListBuckets(GetService) request.
 	ListAllMyBucketsResult *ListBucketsResponseBodyListAllMyBucketsResult `json:"ListAllMyBucketsResult,omitempty" xml:"ListAllMyBucketsResult,omitempty" type:"Struct"`
 }
 
 func (s ListBucketsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListBucketsResponseBody) GetListAllMyBucketsResult() *ListBucketsResponseBodyListAllMyBucketsResult {
+	return s.ListAllMyBucketsResult
+}
+
 func (s *ListBucketsResponseBody) SetListAllMyBucketsResult(v *ListBucketsResponseBodyListAllMyBucketsResult) *ListBucketsResponseBody {
 	s.ListAllMyBucketsResult = v
 	return s
+}
+
+func (s *ListBucketsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListBucketsResponseBodyListAllMyBucketsResult struct {
@@ -20081,11 +31456,39 @@ type ListBucketsResponseBodyListAllMyBucketsResult struct {
 }
 
 func (s ListBucketsResponseBodyListAllMyBucketsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketsResponseBodyListAllMyBucketsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetBuckets() *ListBucketsResponseBodyListAllMyBucketsResultBuckets {
+	return s.Buckets
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetNextMarker() *string {
+	return s.NextMarker
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetOwner() *Owner {
+	return s.Owner
+}
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListBucketsResponseBodyListAllMyBucketsResult) SetBuckets(v *ListBucketsResponseBodyListAllMyBucketsResultBuckets) *ListBucketsResponseBodyListAllMyBucketsResult {
@@ -20123,23 +31526,36 @@ func (s *ListBucketsResponseBodyListAllMyBucketsResult) SetPrefix(v string) *Lis
 	return s
 }
 
+func (s *ListBucketsResponseBodyListAllMyBucketsResult) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListBucketsResponseBodyListAllMyBucketsResultBuckets struct {
 	// The container that stores the information list of multiple buckets.
 	Bucket []*Bucket `json:"Bucket,omitempty" xml:"Bucket,omitempty" type:"Repeated"`
 }
 
 func (s ListBucketsResponseBodyListAllMyBucketsResultBuckets) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketsResponseBodyListAllMyBucketsResultBuckets) GoString() string {
 	return s.String()
 }
 
+func (s *ListBucketsResponseBodyListAllMyBucketsResultBuckets) GetBucket() []*Bucket {
+	return s.Bucket
+}
+
 func (s *ListBucketsResponseBodyListAllMyBucketsResultBuckets) SetBucket(v []*Bucket) *ListBucketsResponseBodyListAllMyBucketsResultBuckets {
 	s.Bucket = v
 	return s
 }
+
+func (s *ListBucketsResponseBodyListAllMyBucketsResultBuckets) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListBucketsResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20148,11 +31564,23 @@ type ListBucketsResponse struct {
 }
 
 func (s ListBucketsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListBucketsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListBucketsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListBucketsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListBucketsResponse) GetBody() *ListBucketsResponseBody {
+	return s.Body
 }
 
 func (s *ListBucketsResponse) SetHeaders(v map[string]*string) *ListBucketsResponse {
@@ -20170,6 +31598,11 @@ func (s *ListBucketsResponse) SetBody(v *ListBucketsResponseBody) *ListBucketsRe
 	return s
 }
 
+func (s *ListBucketsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListCacheRequest struct {
 	Marker  *string `json:"marker,omitempty" xml:"marker,omitempty"`
 	MaxKeys *int64  `json:"max-keys,omitempty" xml:"max-keys,omitempty"`
@@ -20177,11 +31610,23 @@ type ListCacheRequest struct {
 }
 
 func (s ListCacheRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListCacheRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListCacheRequest) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListCacheRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListCacheRequest) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListCacheRequest) SetMarker(v string) *ListCacheRequest {
@@ -20199,22 +31644,36 @@ func (s *ListCacheRequest) SetPrefix(v string) *ListCacheRequest {
 	return s
 }
 
+func (s *ListCacheRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListCacheResponseBody struct {
 	ListAllMyCacheResult *ListAllMyCacheResult `json:"ListAllMyCacheResult,omitempty" xml:"ListAllMyCacheResult,omitempty"`
 }
 
 func (s ListCacheResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListCacheResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListCacheResponseBody) GetListAllMyCacheResult() *ListAllMyCacheResult {
+	return s.ListAllMyCacheResult
+}
+
 func (s *ListCacheResponseBody) SetListAllMyCacheResult(v *ListAllMyCacheResult) *ListCacheResponseBody {
 	s.ListAllMyCacheResult = v
 	return s
 }
+
+func (s *ListCacheResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListCacheResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20223,11 +31682,23 @@ type ListCacheResponse struct {
 }
 
 func (s ListCacheResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListCacheResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListCacheResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListCacheResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListCacheResponse) GetBody() *ListCacheResponseBody {
+	return s.Body
 }
 
 func (s *ListCacheResponse) SetHeaders(v map[string]*string) *ListCacheResponse {
@@ -20245,22 +31716,35 @@ func (s *ListCacheResponse) SetBody(v *ListCacheResponseBody) *ListCacheResponse
 	return s
 }
 
+func (s *ListCacheResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListCnameResponseBody struct {
 	// The container that is used to query information about all CNAME records.
 	ListCnameResult *ListCnameResponseBodyListCnameResult `json:"ListCnameResult,omitempty" xml:"ListCnameResult,omitempty" type:"Struct"`
 }
 
 func (s ListCnameResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListCnameResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListCnameResponseBody) GetListCnameResult() *ListCnameResponseBodyListCnameResult {
+	return s.ListCnameResult
+}
+
 func (s *ListCnameResponseBody) SetListCnameResult(v *ListCnameResponseBodyListCnameResult) *ListCnameResponseBody {
 	s.ListCnameResult = v
 	return s
+}
+
+func (s *ListCnameResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListCnameResponseBodyListCnameResult struct {
@@ -20281,11 +31765,23 @@ type ListCnameResponseBodyListCnameResult struct {
 }
 
 func (s ListCnameResponseBodyListCnameResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListCnameResponseBodyListCnameResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListCnameResponseBodyListCnameResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *ListCnameResponseBodyListCnameResult) GetCname() []*CnameInfo {
+	return s.Cname
+}
+
+func (s *ListCnameResponseBodyListCnameResult) GetOwner() *string {
+	return s.Owner
 }
 
 func (s *ListCnameResponseBodyListCnameResult) SetBucket(v string) *ListCnameResponseBodyListCnameResult {
@@ -20303,6 +31799,11 @@ func (s *ListCnameResponseBodyListCnameResult) SetOwner(v string) *ListCnameResp
 	return s
 }
 
+func (s *ListCnameResponseBodyListCnameResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListCnameResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                 `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20310,11 +31811,23 @@ type ListCnameResponse struct {
 }
 
 func (s ListCnameResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListCnameResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListCnameResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListCnameResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListCnameResponse) GetBody() *ListCnameResponseBody {
+	return s.Body
 }
 
 func (s *ListCnameResponse) SetHeaders(v map[string]*string) *ListCnameResponse {
@@ -20332,21 +31845,34 @@ func (s *ListCnameResponse) SetBody(v *ListCnameResponseBody) *ListCnameResponse
 	return s
 }
 
+func (s *ListCnameResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeCachePrefetchJobResponseBody struct {
 	DataLakeCachePrefetchJobs *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs `json:"DataLakeCachePrefetchJobs,omitempty" xml:"DataLakeCachePrefetchJobs,omitempty" type:"Struct"`
 }
 
 func (s ListDataLakeCachePrefetchJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListDataLakeCachePrefetchJobResponseBody) GetDataLakeCachePrefetchJobs() *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs {
+	return s.DataLakeCachePrefetchJobs
+}
+
 func (s *ListDataLakeCachePrefetchJobResponseBody) SetDataLakeCachePrefetchJobs(v *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) *ListDataLakeCachePrefetchJobResponseBody {
 	s.DataLakeCachePrefetchJobs = v
 	return s
+}
+
+func (s *ListDataLakeCachePrefetchJobResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs struct {
@@ -20357,11 +31883,27 @@ type ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs struct {
 }
 
 func (s ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) GetDataLakeCachePrefetchJob() *DataLakeCachePrefetchJob {
+	return s.DataLakeCachePrefetchJob
+}
+
+func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) GetNextMarkerBucket() *string {
+	return s.NextMarkerBucket
+}
+
+func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) GetNextMarkerJobId() *string {
+	return s.NextMarkerJobId
+}
+
+func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) GetTruncated() *bool {
+	return s.Truncated
 }
 
 func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) SetDataLakeCachePrefetchJob(v *DataLakeCachePrefetchJob) *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs {
@@ -20384,6 +31926,11 @@ func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) SetT
 	return s
 }
 
+func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20391,11 +31938,23 @@ type ListDataLakeCachePrefetchJobResponse struct {
 }
 
 func (s ListDataLakeCachePrefetchJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeCachePrefetchJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListDataLakeCachePrefetchJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListDataLakeCachePrefetchJobResponse) GetBody() *ListDataLakeCachePrefetchJobResponseBody {
+	return s.Body
 }
 
 func (s *ListDataLakeCachePrefetchJobResponse) SetHeaders(v map[string]*string) *ListDataLakeCachePrefetchJobResponse {
@@ -20413,17 +31972,26 @@ func (s *ListDataLakeCachePrefetchJobResponse) SetBody(v *ListDataLakeCachePrefe
 	return s
 }
 
+func (s *ListDataLakeCachePrefetchJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeCachePrefetchJobHistoryRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s ListDataLakeCachePrefetchJobHistoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobHistoryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeCachePrefetchJobHistoryRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *ListDataLakeCachePrefetchJobHistoryRequest) SetXOssDatalakeJobId(v string) *ListDataLakeCachePrefetchJobHistoryRequest {
@@ -20431,22 +31999,36 @@ func (s *ListDataLakeCachePrefetchJobHistoryRequest) SetXOssDatalakeJobId(v stri
 	return s
 }
 
+func (s *ListDataLakeCachePrefetchJobHistoryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeCachePrefetchJobHistoryResponseBody struct {
 	ListDataLakeCachePrefetchJobHistory *ListDataLakeCachePrefetchJobHistory `json:"ListDataLakeCachePrefetchJobHistory,omitempty" xml:"ListDataLakeCachePrefetchJobHistory,omitempty"`
 }
 
 func (s ListDataLakeCachePrefetchJobHistoryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobHistoryResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListDataLakeCachePrefetchJobHistoryResponseBody) GetListDataLakeCachePrefetchJobHistory() *ListDataLakeCachePrefetchJobHistory {
+	return s.ListDataLakeCachePrefetchJobHistory
+}
+
 func (s *ListDataLakeCachePrefetchJobHistoryResponseBody) SetListDataLakeCachePrefetchJobHistory(v *ListDataLakeCachePrefetchJobHistory) *ListDataLakeCachePrefetchJobHistoryResponseBody {
 	s.ListDataLakeCachePrefetchJobHistory = v
 	return s
 }
+
+func (s *ListDataLakeCachePrefetchJobHistoryResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListDataLakeCachePrefetchJobHistoryResponse struct {
 	Headers    map[string]*string                               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20455,11 +32037,23 @@ type ListDataLakeCachePrefetchJobHistoryResponse struct {
 }
 
 func (s ListDataLakeCachePrefetchJobHistoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeCachePrefetchJobHistoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeCachePrefetchJobHistoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListDataLakeCachePrefetchJobHistoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListDataLakeCachePrefetchJobHistoryResponse) GetBody() *ListDataLakeCachePrefetchJobHistoryResponseBody {
+	return s.Body
 }
 
 func (s *ListDataLakeCachePrefetchJobHistoryResponse) SetHeaders(v map[string]*string) *ListDataLakeCachePrefetchJobHistoryResponse {
@@ -20477,22 +32071,36 @@ func (s *ListDataLakeCachePrefetchJobHistoryResponse) SetBody(v *ListDataLakeCac
 	return s
 }
 
+func (s *ListDataLakeCachePrefetchJobHistoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJobs *DataLakeStorageTransferJobs `json:"DataLakeStorageTransferJobs,omitempty" xml:"DataLakeStorageTransferJobs,omitempty"`
 }
 
 func (s ListDataLakeStorageTransferJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeStorageTransferJobResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListDataLakeStorageTransferJobResponseBody) GetDataLakeStorageTransferJobs() *DataLakeStorageTransferJobs {
+	return s.DataLakeStorageTransferJobs
+}
+
 func (s *ListDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJobs(v *DataLakeStorageTransferJobs) *ListDataLakeStorageTransferJobResponseBody {
 	s.DataLakeStorageTransferJobs = v
 	return s
 }
+
+func (s *ListDataLakeStorageTransferJobResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                          `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20501,11 +32109,23 @@ type ListDataLakeStorageTransferJobResponse struct {
 }
 
 func (s ListDataLakeStorageTransferJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeStorageTransferJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeStorageTransferJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListDataLakeStorageTransferJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListDataLakeStorageTransferJobResponse) GetBody() *ListDataLakeStorageTransferJobResponseBody {
+	return s.Body
 }
 
 func (s *ListDataLakeStorageTransferJobResponse) SetHeaders(v map[string]*string) *ListDataLakeStorageTransferJobResponse {
@@ -20523,17 +32143,26 @@ func (s *ListDataLakeStorageTransferJobResponse) SetBody(v *ListDataLakeStorageT
 	return s
 }
 
+func (s *ListDataLakeStorageTransferJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeStorageTransferJobHistoryRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s ListDataLakeStorageTransferJobHistoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeStorageTransferJobHistoryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeStorageTransferJobHistoryRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *ListDataLakeStorageTransferJobHistoryRequest) SetXOssDatalakeJobId(v string) *ListDataLakeStorageTransferJobHistoryRequest {
@@ -20541,22 +32170,36 @@ func (s *ListDataLakeStorageTransferJobHistoryRequest) SetXOssDatalakeJobId(v st
 	return s
 }
 
+func (s *ListDataLakeStorageTransferJobHistoryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListDataLakeStorageTransferJobHistoryResponseBody struct {
 	ListDataLakeStorageTransferJobHistory *ListDataLakeStorageTransferJobHistory `json:"ListDataLakeStorageTransferJobHistory,omitempty" xml:"ListDataLakeStorageTransferJobHistory,omitempty"`
 }
 
 func (s ListDataLakeStorageTransferJobHistoryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeStorageTransferJobHistoryResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListDataLakeStorageTransferJobHistoryResponseBody) GetListDataLakeStorageTransferJobHistory() *ListDataLakeStorageTransferJobHistory {
+	return s.ListDataLakeStorageTransferJobHistory
+}
+
 func (s *ListDataLakeStorageTransferJobHistoryResponseBody) SetListDataLakeStorageTransferJobHistory(v *ListDataLakeStorageTransferJobHistory) *ListDataLakeStorageTransferJobHistoryResponseBody {
 	s.ListDataLakeStorageTransferJobHistory = v
 	return s
 }
+
+func (s *ListDataLakeStorageTransferJobHistoryResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListDataLakeStorageTransferJobHistoryResponse struct {
 	Headers    map[string]*string                                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20565,11 +32208,23 @@ type ListDataLakeStorageTransferJobHistoryResponse struct {
 }
 
 func (s ListDataLakeStorageTransferJobHistoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListDataLakeStorageTransferJobHistoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListDataLakeStorageTransferJobHistoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListDataLakeStorageTransferJobHistoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListDataLakeStorageTransferJobHistoryResponse) GetBody() *ListDataLakeStorageTransferJobHistoryResponseBody {
+	return s.Body
 }
 
 func (s *ListDataLakeStorageTransferJobHistoryResponse) SetHeaders(v map[string]*string) *ListDataLakeStorageTransferJobHistoryResponse {
@@ -20586,6 +32241,11 @@ func (s *ListDataLakeStorageTransferJobHistoryResponse) SetBody(v *ListDataLakeS
 	s.Body = v
 	return s
 }
+
+func (s *ListDataLakeStorageTransferJobHistoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListLiveChannelRequest struct {
 	// The name of the LiveChannel from which the list operation starts. LiveChannels whose names are alphabetically after the value of the marker parameter are returned.
@@ -20611,11 +32271,23 @@ type ListLiveChannelRequest struct {
 }
 
 func (s ListLiveChannelRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListLiveChannelRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListLiveChannelRequest) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListLiveChannelRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListLiveChannelRequest) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListLiveChannelRequest) SetMarker(v string) *ListLiveChannelRequest {
@@ -20633,22 +32305,35 @@ func (s *ListLiveChannelRequest) SetPrefix(v string) *ListLiveChannelRequest {
 	return s
 }
 
+func (s *ListLiveChannelRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListLiveChannelResponseBody struct {
 	// The container that stores the results of the ListLiveChannel request.
 	ListLiveChannelResult *ListLiveChannelResponseBodyListLiveChannelResult `json:"ListLiveChannelResult,omitempty" xml:"ListLiveChannelResult,omitempty" type:"Struct"`
 }
 
 func (s ListLiveChannelResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListLiveChannelResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListLiveChannelResponseBody) GetListLiveChannelResult() *ListLiveChannelResponseBodyListLiveChannelResult {
+	return s.ListLiveChannelResult
+}
+
 func (s *ListLiveChannelResponseBody) SetListLiveChannelResult(v *ListLiveChannelResponseBodyListLiveChannelResult) *ListLiveChannelResponseBody {
 	s.ListLiveChannelResult = v
 	return s
+}
+
+func (s *ListLiveChannelResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListLiveChannelResponseBodyListLiveChannelResult struct {
@@ -20691,11 +32376,35 @@ type ListLiveChannelResponseBodyListLiveChannelResult struct {
 }
 
 func (s ListLiveChannelResponseBodyListLiveChannelResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListLiveChannelResponseBodyListLiveChannelResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) GetLiveChannels() []*LiveChannel {
+	return s.LiveChannels
+}
+
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) GetNextMarker() *string {
+	return s.NextMarker
+}
+
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListLiveChannelResponseBodyListLiveChannelResult) SetIsTruncated(v bool) *ListLiveChannelResponseBodyListLiveChannelResult {
@@ -20728,6 +32437,11 @@ func (s *ListLiveChannelResponseBodyListLiveChannelResult) SetPrefix(v string) *
 	return s
 }
 
+func (s *ListLiveChannelResponseBodyListLiveChannelResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListLiveChannelResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                       `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20735,11 +32449,23 @@ type ListLiveChannelResponse struct {
 }
 
 func (s ListLiveChannelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListLiveChannelResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListLiveChannelResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListLiveChannelResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListLiveChannelResponse) GetBody() *ListLiveChannelResponseBody {
+	return s.Body
 }
 
 func (s *ListLiveChannelResponse) SetHeaders(v map[string]*string) *ListLiveChannelResponse {
@@ -20756,6 +32482,11 @@ func (s *ListLiveChannelResponse) SetBody(v *ListLiveChannelResponseBody) *ListL
 	s.Body = v
 	return s
 }
+
+func (s *ListLiveChannelResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListMultipartUploadsRequest struct {
 	// The character used to group objects by name. Objects whose names contain the same string that ranges from the specified prefix to the delimiter that appears for the first time are grouped as a CommonPrefixes element.
@@ -20825,11 +32556,35 @@ type ListMultipartUploadsRequest struct {
 }
 
 func (s ListMultipartUploadsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListMultipartUploadsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListMultipartUploadsRequest) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListMultipartUploadsRequest) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListMultipartUploadsRequest) GetKeyMarker() *string {
+	return s.KeyMarker
+}
+
+func (s *ListMultipartUploadsRequest) GetMaxUploads() *int64 {
+	return s.MaxUploads
+}
+
+func (s *ListMultipartUploadsRequest) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListMultipartUploadsRequest) GetUploadIdMarker() *string {
+	return s.UploadIdMarker
 }
 
 func (s *ListMultipartUploadsRequest) SetDelimiter(v string) *ListMultipartUploadsRequest {
@@ -20862,22 +32617,35 @@ func (s *ListMultipartUploadsRequest) SetUploadIdMarker(v string) *ListMultipart
 	return s
 }
 
+func (s *ListMultipartUploadsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListMultipartUploadsResponseBody struct {
 	// The container that stores the response to the ListMultipartUpload request.
 	ListMultipartUploadsResult *ListMultipartUploadsResponseBodyListMultipartUploadsResult `json:"ListMultipartUploadsResult,omitempty" xml:"ListMultipartUploadsResult,omitempty" type:"Struct"`
 }
 
 func (s ListMultipartUploadsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListMultipartUploadsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListMultipartUploadsResponseBody) GetListMultipartUploadsResult() *ListMultipartUploadsResponseBodyListMultipartUploadsResult {
+	return s.ListMultipartUploadsResult
+}
+
 func (s *ListMultipartUploadsResponseBody) SetListMultipartUploadsResult(v *ListMultipartUploadsResponseBodyListMultipartUploadsResult) *ListMultipartUploadsResponseBody {
 	s.ListMultipartUploadsResult = v
 	return s
+}
+
+func (s *ListMultipartUploadsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListMultipartUploadsResponseBodyListMultipartUploadsResult struct {
@@ -20952,11 +32720,59 @@ type ListMultipartUploadsResponseBodyListMultipartUploadsResult struct {
 }
 
 func (s ListMultipartUploadsResponseBodyListMultipartUploadsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListMultipartUploadsResponseBodyListMultipartUploadsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetCommonPrefixes() []*CommonPrefix {
+	return s.CommonPrefixes
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetKeyMarker() *string {
+	return s.KeyMarker
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetMaxUploads() *int64 {
+	return s.MaxUploads
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetNextKeyMarker() *string {
+	return s.NextKeyMarker
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetNextUploadIdMarker() *string {
+	return s.NextUploadIdMarker
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetUploads() []*Upload {
+	return s.Uploads
+}
+
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) GetUploadIdMarker() *string {
+	return s.UploadIdMarker
 }
 
 func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) SetBucket(v string) *ListMultipartUploadsResponseBodyListMultipartUploadsResult {
@@ -21019,6 +32835,11 @@ func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) SetUploadId
 	return s
 }
 
+func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListMultipartUploadsResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                            `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21026,11 +32847,23 @@ type ListMultipartUploadsResponse struct {
 }
 
 func (s ListMultipartUploadsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListMultipartUploadsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListMultipartUploadsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListMultipartUploadsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListMultipartUploadsResponse) GetBody() *ListMultipartUploadsResponseBody {
+	return s.Body
 }
 
 func (s *ListMultipartUploadsResponse) SetHeaders(v map[string]*string) *ListMultipartUploadsResponse {
@@ -21047,6 +32880,11 @@ func (s *ListMultipartUploadsResponse) SetBody(v *ListMultipartUploadsResponseBo
 	s.Body = v
 	return s
 }
+
+func (s *ListMultipartUploadsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListObjectVersionsRequest struct {
 	// The character that is used to group objects by name. If you specify prefix and delimiter in the request, the response contains CommonPrefixes. The objects whose name contains the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes. If you specify prefix and set delimiter to a forward slash (/), only the objects in the directory are listed. The subdirectories in the directory are returned in CommonPrefixes. Objects and subdirectories in the subdirectories are not listed.
@@ -21104,11 +32942,35 @@ type ListObjectVersionsRequest struct {
 }
 
 func (s ListObjectVersionsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectVersionsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectVersionsRequest) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListObjectVersionsRequest) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListObjectVersionsRequest) GetKeyMarker() *string {
+	return s.KeyMarker
+}
+
+func (s *ListObjectVersionsRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListObjectVersionsRequest) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListObjectVersionsRequest) GetVersionIdMarker() *string {
+	return s.VersionIdMarker
 }
 
 func (s *ListObjectVersionsRequest) SetDelimiter(v string) *ListObjectVersionsRequest {
@@ -21141,22 +33003,35 @@ func (s *ListObjectVersionsRequest) SetVersionIdMarker(v string) *ListObjectVers
 	return s
 }
 
+func (s *ListObjectVersionsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListObjectVersionsResponseBody struct {
 	// The container that stores the results of the ListObjectVersions (GetBucketVersions) request.
 	ListVersionsResult *ListObjectVersionsResponseBodyListVersionsResult `json:"ListVersionsResult,omitempty" xml:"ListVersionsResult,omitempty" type:"Struct"`
 }
 
 func (s ListObjectVersionsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectVersionsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListObjectVersionsResponseBody) GetListVersionsResult() *ListObjectVersionsResponseBodyListVersionsResult {
+	return s.ListVersionsResult
+}
+
 func (s *ListObjectVersionsResponseBody) SetListVersionsResult(v *ListObjectVersionsResponseBodyListVersionsResult) *ListObjectVersionsResponseBody {
 	s.ListVersionsResult = v
 	return s
+}
+
+func (s *ListObjectVersionsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListObjectVersionsResponseBodyListVersionsResult struct {
@@ -21233,11 +33108,63 @@ type ListObjectVersionsResponseBodyListVersionsResult struct {
 }
 
 func (s ListObjectVersionsResponseBodyListVersionsResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectVersionsResponseBodyListVersionsResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetCommonPrefixes() []*CommonPrefix {
+	return s.CommonPrefixes
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetDeleteMarkers() []*DeleteMarkerEntry {
+	return s.DeleteMarkers
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetKeyMarker() *string {
+	return s.KeyMarker
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetName() *string {
+	return s.Name
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetNextKeyMarker() *string {
+	return s.NextKeyMarker
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetNextVersionIdMarker() *string {
+	return s.NextVersionIdMarker
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetVersions() []*ObjectVersion {
+	return s.Versions
+}
+
+func (s *ListObjectVersionsResponseBodyListVersionsResult) GetVersionIdMarker() *string {
+	return s.VersionIdMarker
 }
 
 func (s *ListObjectVersionsResponseBodyListVersionsResult) SetCommonPrefixes(v []*CommonPrefix) *ListObjectVersionsResponseBodyListVersionsResult {
@@ -21305,6 +33232,11 @@ func (s *ListObjectVersionsResponseBodyListVersionsResult) SetVersionIdMarker(v 
 	return s
 }
 
+func (s *ListObjectVersionsResponseBodyListVersionsResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListObjectVersionsResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21312,11 +33244,23 @@ type ListObjectVersionsResponse struct {
 }
 
 func (s ListObjectVersionsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectVersionsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectVersionsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListObjectVersionsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListObjectVersionsResponse) GetBody() *ListObjectVersionsResponseBody {
+	return s.Body
 }
 
 func (s *ListObjectVersionsResponse) SetHeaders(v map[string]*string) *ListObjectVersionsResponse {
@@ -21333,6 +33277,11 @@ func (s *ListObjectVersionsResponse) SetBody(v *ListObjectVersionsResponseBody) 
 	s.Body = v
 	return s
 }
+
+func (s *ListObjectVersionsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListObjectsRequest struct {
 	// The character that is used to group objects by name. If you specify delimiter in the request, the response contains CommonPrefixes. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
@@ -21384,11 +33333,31 @@ type ListObjectsRequest struct {
 }
 
 func (s ListObjectsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsRequest) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListObjectsRequest) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListObjectsRequest) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListObjectsRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListObjectsRequest) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListObjectsRequest) SetDelimiter(v string) *ListObjectsRequest {
@@ -21416,17 +33385,26 @@ func (s *ListObjectsRequest) SetPrefix(v string) *ListObjectsRequest {
 	return s
 }
 
+func (s *ListObjectsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListObjectsResponseBody struct {
-	// The container that stores the information about the returned objects.
+	// The container that stores the result of the GetBucket (ListObjects) request.
 	ListBucketResult *ListObjectsResponseBodyListBucketResult `json:"ListBucketResult,omitempty" xml:"ListBucketResult,omitempty" type:"Struct"`
 }
 
 func (s ListObjectsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsResponseBody) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsResponseBody) GetListBucketResult() *ListObjectsResponseBodyListBucketResult {
+	return s.ListBucketResult
 }
 
 func (s *ListObjectsResponseBody) SetListBucketResult(v *ListObjectsResponseBodyListBucketResult) *ListObjectsResponseBody {
@@ -21434,40 +33412,50 @@ func (s *ListObjectsResponseBody) SetListBucketResult(v *ListObjectsResponseBody
 	return s
 }
 
+func (s *ListObjectsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListObjectsResponseBodyListBucketResult struct {
-	// If delimiter is specified in the request, the response contains CommonPrefixes. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
+	// If the delimiter parameter is specified in the request, the response contains CommonPrefixes. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
 	CommonPrefixes []*CommonPrefix `json:"CommonPrefixes,omitempty" xml:"CommonPrefixes,omitempty" type:"Repeated"`
-	// The container that stores the metadata of the returned objects.
+	// The container that stores the metadata of each returned object.
 	Contents []*ObjectSummary `json:"Contents,omitempty" xml:"Contents,omitempty" type:"Repeated"`
-	// The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
+	// The delimiter used to group objects by name. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in the CommonPrefixes parameter.
 	//
 	// example:
 	//
 	// /
 	Delimiter *string `json:"Delimiter,omitempty" xml:"Delimiter,omitempty"`
-	// The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, Marker, Prefix, NextMarker, and Key are encoded in the response.
+	// The encoding type of the content in the response. If the encoding-type parameter is specified in the request, the values of Delimiter, Marker, Prefix, NextMarker, and Key in the response are encoded.
 	//
 	// example:
 	//
 	// url
 	EncodingType *string `json:"EncodingType,omitempty" xml:"EncodingType,omitempty"`
-	// Indicates whether the returned list in the result is truncated. Valid values:
+	// Indicates whether the returned results are truncated.
 	//
-	// - true
+	// Valid values: true and false
 	//
-	// - false
+	// true: indicates that not all of the results are returned for the request.
+	//
+	// false indicates that all of the results are returned this time.
+	//
+	// *
+	//
+	// *
 	//
 	// example:
 	//
 	// true
 	IsTruncated *bool `json:"IsTruncated,omitempty" xml:"IsTruncated,omitempty"`
-	// The name of the object after which the GetBucket (ListObjects) operation begins.
+	// The name of the object after which the list operation starts.
 	//
 	// example:
 	//
 	// abc
 	Marker *string `json:"Marker,omitempty" xml:"Marker,omitempty"`
-	// The maximum number of returned objects in the response.
+	// The maximum number of the returned objects in the response.
 	//
 	// example:
 	//
@@ -21479,7 +33467,7 @@ type ListObjectsResponseBodyListBucketResult struct {
 	//
 	// example-bucket
 	Name *string `json:"Name,omitempty" xml:"Name,omitempty"`
-	// If not all results are returned, NextMarker is included in the response to indicate the value of marker in the next request.
+	// The position from which the next list operation starts.
 	//
 	// example:
 	//
@@ -21494,11 +33482,51 @@ type ListObjectsResponseBodyListBucketResult struct {
 }
 
 func (s ListObjectsResponseBodyListBucketResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsResponseBodyListBucketResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetCommonPrefixes() []*CommonPrefix {
+	return s.CommonPrefixes
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetContents() []*ObjectSummary {
+	return s.Contents
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetMarker() *string {
+	return s.Marker
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetMaxKeys() *int32 {
+	return s.MaxKeys
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetName() *string {
+	return s.Name
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetNextMarker() *string {
+	return s.NextMarker
+}
+
+func (s *ListObjectsResponseBodyListBucketResult) GetPrefix() *string {
+	return s.Prefix
 }
 
 func (s *ListObjectsResponseBodyListBucketResult) SetCommonPrefixes(v []*CommonPrefix) *ListObjectsResponseBodyListBucketResult {
@@ -21551,6 +33579,11 @@ func (s *ListObjectsResponseBodyListBucketResult) SetPrefix(v string) *ListObjec
 	return s
 }
 
+func (s *ListObjectsResponseBodyListBucketResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListObjectsResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                   `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21558,11 +33591,23 @@ type ListObjectsResponse struct {
 }
 
 func (s ListObjectsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListObjectsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListObjectsResponse) GetBody() *ListObjectsResponseBody {
+	return s.Body
 }
 
 func (s *ListObjectsResponse) SetHeaders(v map[string]*string) *ListObjectsResponse {
@@ -21579,6 +33624,11 @@ func (s *ListObjectsResponse) SetBody(v *ListObjectsResponseBody) *ListObjectsRe
 	s.Body = v
 	return s
 }
+
+func (s *ListObjectsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListObjectsV2Request struct {
 	// The token from which the list operation starts. You can obtain the token from NextContinuationToken in the response of the ListObjectsV2 request.
@@ -21649,11 +33699,39 @@ type ListObjectsV2Request struct {
 }
 
 func (s ListObjectsV2Request) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsV2Request) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsV2Request) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListObjectsV2Request) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListObjectsV2Request) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListObjectsV2Request) GetFetchOwner() *bool {
+	return s.FetchOwner
+}
+
+func (s *ListObjectsV2Request) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListObjectsV2Request) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListObjectsV2Request) GetStartAfter() *string {
+	return s.StartAfter
 }
 
 func (s *ListObjectsV2Request) SetContinuationToken(v string) *ListObjectsV2Request {
@@ -21691,17 +33769,26 @@ func (s *ListObjectsV2Request) SetStartAfter(v string) *ListObjectsV2Request {
 	return s
 }
 
+func (s *ListObjectsV2Request) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListObjectsV2ResponseBody struct {
-	// The container that stores the metadata of returned objects.
+	// The container that stores the metadata of the returned objects.
 	ListBucketResult *ListObjectsV2ResponseBodyListBucketResult `json:"ListBucketResult,omitempty" xml:"ListBucketResult,omitempty" type:"Struct"`
 }
 
 func (s ListObjectsV2ResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsV2ResponseBody) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsV2ResponseBody) GetListBucketResult() *ListObjectsV2ResponseBodyListBucketResult {
+	return s.ListBucketResult
 }
 
 func (s *ListObjectsV2ResponseBody) SetListBucketResult(v *ListObjectsV2ResponseBodyListBucketResult) *ListObjectsV2ResponseBody {
@@ -21709,46 +33796,56 @@ func (s *ListObjectsV2ResponseBody) SetListBucketResult(v *ListObjectsV2Response
 	return s
 }
 
+func (s *ListObjectsV2ResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 type ListObjectsV2ResponseBodyListBucketResult struct {
-	// Objects whose names contain the same string that ranges from the prefix to the next occurrence of the delimiter are grouped as a single result element
+	// If the delimiter parameter is specified in the request, the response contains CommonPrefixes. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
 	CommonPrefixes []*CommonPrefix `json:"CommonPrefixes,omitempty" xml:"CommonPrefixes,omitempty" type:"Repeated"`
-	// The container that stores the metadata of the returned objects.
+	// The container that stores the metadata of each returned object.
 	Contents []*ObjectSummary `json:"Contents,omitempty" xml:"Contents,omitempty" type:"Repeated"`
-	// If continuation-token is specified in the request, the response contains ContinuationToken.
+	// If the continuation-token parameter is specified in the request, the response contains ContinuationToken.
 	//
 	// example:
 	//
 	// CgJiYw--
 	ContinuationToken *string `json:"ContinuationToken,omitempty" xml:"ContinuationToken,omitempty"`
-	// The character that is used to group objects by name. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
+	// The delimiter used to group objects by name. Objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in the CommonPrefixes parameter.
 	//
 	// example:
 	//
 	// /
 	Delimiter *string `json:"Delimiter,omitempty" xml:"Delimiter,omitempty"`
-	// The encoding type of the content in the response. If you specify encoding-type in the request, the values of Delimiter, StartAfter, Prefix, NextContinuationToken, and Key are encoded in the response.
+	// The encoding type of the object name in the response. If the encoding-type parameter is specified in the request, the values of Delimiter, StartAfter, Prefix, NextContinuationToken, and Key are encoded in the response.
 	//
 	// example:
 	//
 	// url
 	EncodingType *string `json:"EncodingType,omitempty" xml:"EncodingType,omitempty"`
-	// Indicates whether the returned results are truncated. Valid values:
+	// Indicates whether the returned results are truncated.
 	//
-	// - true
+	// Valid values: true and false
 	//
-	// - false
+	// true: indicates that not all of the results are returned for the request.
+	//
+	// false indicates that all of the results are returned this time.
+	//
+	// *
+	//
+	// *
 	//
 	// example:
 	//
 	// true
 	IsTruncated *bool `json:"IsTruncated,omitempty" xml:"IsTruncated,omitempty"`
-	// The number of objects returned for this request. If delimiter is specified in the request, the value of KeyCount is the sum of the values of Key and CommonPrefixes.
+	// The number of keys returned for this request. If Delimiter is specified, the KeyCount value is the sum of the Key and CommonPrefixes values.
 	//
 	// example:
 	//
 	// 6
 	KeyCount *int32 `json:"KeyCount,omitempty" xml:"KeyCount,omitempty"`
-	// The maximum number of returned objects in the response.
+	// The maximum number of the returned objects in the response.
 	//
 	// example:
 	//
@@ -21760,7 +33857,7 @@ type ListObjectsV2ResponseBodyListBucketResult struct {
 	//
 	// example-bucket
 	Name *string `json:"Name,omitempty" xml:"Name,omitempty"`
-	// The token from which the next list operation starts. Use the value of NextContinuationToken as the value of continuation-token in the next request.
+	// The token from which the next list operation starts. The NextContinuationToken value is used as the ContinuationToken value to query subsequent results.
 	//
 	// example:
 	//
@@ -21772,7 +33869,7 @@ type ListObjectsV2ResponseBodyListBucketResult struct {
 	//
 	// logs/
 	Prefix *string `json:"Prefix,omitempty" xml:"Prefix,omitempty"`
-	// If start-after is specified in the request, the response contains StartAfter.
+	// If the start-after parameter is specified in the request, the response contains StartAfter.
 	//
 	// example:
 	//
@@ -21781,11 +33878,59 @@ type ListObjectsV2ResponseBodyListBucketResult struct {
 }
 
 func (s ListObjectsV2ResponseBodyListBucketResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsV2ResponseBodyListBucketResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetCommonPrefixes() []*CommonPrefix {
+	return s.CommonPrefixes
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetContents() []*ObjectSummary {
+	return s.Contents
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetDelimiter() *string {
+	return s.Delimiter
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetKeyCount() *int32 {
+	return s.KeyCount
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetMaxKeys() *int32 {
+	return s.MaxKeys
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetName() *string {
+	return s.Name
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetPrefix() *string {
+	return s.Prefix
+}
+
+func (s *ListObjectsV2ResponseBodyListBucketResult) GetStartAfter() *string {
+	return s.StartAfter
 }
 
 func (s *ListObjectsV2ResponseBodyListBucketResult) SetCommonPrefixes(v []*CommonPrefix) *ListObjectsV2ResponseBodyListBucketResult {
@@ -21848,6 +33993,11 @@ func (s *ListObjectsV2ResponseBodyListBucketResult) SetStartAfter(v string) *Lis
 	return s
 }
 
+func (s *ListObjectsV2ResponseBodyListBucketResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListObjectsV2Response struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21855,11 +34005,23 @@ type ListObjectsV2Response struct {
 }
 
 func (s ListObjectsV2Response) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListObjectsV2Response) GoString() string {
 	return s.String()
+}
+
+func (s *ListObjectsV2Response) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListObjectsV2Response) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListObjectsV2Response) GetBody() *ListObjectsV2ResponseBody {
+	return s.Body
 }
 
 func (s *ListObjectsV2Response) SetHeaders(v map[string]*string) *ListObjectsV2Response {
@@ -21876,6 +34038,11 @@ func (s *ListObjectsV2Response) SetBody(v *ListObjectsV2ResponseBody) *ListObjec
 	s.Body = v
 	return s
 }
+
+func (s *ListObjectsV2Response) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListPartsRequest struct {
 	// The maximum number of parts that can be returned by OSS.
@@ -21915,11 +34082,27 @@ type ListPartsRequest struct {
 }
 
 func (s ListPartsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListPartsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListPartsRequest) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *ListPartsRequest) GetMaxParts() *int64 {
+	return s.MaxParts
+}
+
+func (s *ListPartsRequest) GetPartNumberMarker() *int64 {
+	return s.PartNumberMarker
+}
+
+func (s *ListPartsRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *ListPartsRequest) SetEncodingType(v string) *ListPartsRequest {
@@ -21941,6 +34124,11 @@ func (s *ListPartsRequest) SetUploadId(v string) *ListPartsRequest {
 	s.UploadId = &v
 	return s
 }
+
+func (s *ListPartsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListPartsShrinkRequest struct {
 	// The maximum number of parts that can be returned by OSS.
@@ -21980,11 +34168,27 @@ type ListPartsShrinkRequest struct {
 }
 
 func (s ListPartsShrinkRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListPartsShrinkRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListPartsShrinkRequest) GetEncodingTypeShrink() *string {
+	return s.EncodingTypeShrink
+}
+
+func (s *ListPartsShrinkRequest) GetMaxParts() *int64 {
+	return s.MaxParts
+}
+
+func (s *ListPartsShrinkRequest) GetPartNumberMarker() *int64 {
+	return s.PartNumberMarker
+}
+
+func (s *ListPartsShrinkRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *ListPartsShrinkRequest) SetEncodingTypeShrink(v string) *ListPartsShrinkRequest {
@@ -22007,22 +34211,35 @@ func (s *ListPartsShrinkRequest) SetUploadId(v string) *ListPartsShrinkRequest {
 	return s
 }
 
+func (s *ListPartsShrinkRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListPartsResponseBody struct {
 	// The container that stores the response of the ListParts request.
 	ListPartResult *ListPartsResponseBodyListPartResult `json:"ListPartResult,omitempty" xml:"ListPartResult,omitempty" type:"Struct"`
 }
 
 func (s ListPartsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListPartsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListPartsResponseBody) GetListPartResult() *ListPartsResponseBodyListPartResult {
+	return s.ListPartResult
+}
+
 func (s *ListPartsResponseBody) SetListPartResult(v *ListPartsResponseBodyListPartResult) *ListPartsResponseBody {
 	s.ListPartResult = v
 	return s
+}
+
+func (s *ListPartsResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListPartsResponseBodyListPartResult struct {
@@ -22075,11 +34292,43 @@ type ListPartsResponseBodyListPartResult struct {
 }
 
 func (s ListPartsResponseBodyListPartResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListPartsResponseBodyListPartResult) GoString() string {
 	return s.String()
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetBucket() *string {
+	return s.Bucket
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetKey() *string {
+	return s.Key
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetMaxParts() *int64 {
+	return s.MaxParts
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetNextPartNumberMarker() *int64 {
+	return s.NextPartNumberMarker
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetPart() []*Part {
+	return s.Part
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetPartNumberMarker() *int64 {
+	return s.PartNumberMarker
+}
+
+func (s *ListPartsResponseBodyListPartResult) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *ListPartsResponseBodyListPartResult) SetBucket(v string) *ListPartsResponseBodyListPartResult {
@@ -22122,6 +34371,11 @@ func (s *ListPartsResponseBodyListPartResult) SetUploadId(v string) *ListPartsRe
 	return s
 }
 
+func (s *ListPartsResponseBodyListPartResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListPartsResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                 `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -22129,11 +34383,23 @@ type ListPartsResponse struct {
 }
 
 func (s ListPartsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListPartsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListPartsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListPartsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListPartsResponse) GetBody() *ListPartsResponseBody {
+	return s.Body
 }
 
 func (s *ListPartsResponse) SetHeaders(v map[string]*string) *ListPartsResponse {
@@ -22151,22 +34417,36 @@ func (s *ListPartsResponse) SetBody(v *ListPartsResponseBody) *ListPartsResponse
 	return s
 }
 
+func (s *ListPartsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListReservedCapacityResponseBody struct {
 	ReservedCapacityRecordList *ReservedCapacityRecordList `json:"ReservedCapacityRecordList,omitempty" xml:"ReservedCapacityRecordList,omitempty"`
 }
 
 func (s ListReservedCapacityResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListReservedCapacityResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListReservedCapacityResponseBody) GetReservedCapacityRecordList() *ReservedCapacityRecordList {
+	return s.ReservedCapacityRecordList
+}
+
 func (s *ListReservedCapacityResponseBody) SetReservedCapacityRecordList(v *ReservedCapacityRecordList) *ListReservedCapacityResponseBody {
 	s.ReservedCapacityRecordList = v
 	return s
 }
+
+func (s *ListReservedCapacityResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListReservedCapacityResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22175,11 +34455,23 @@ type ListReservedCapacityResponse struct {
 }
 
 func (s ListReservedCapacityResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListReservedCapacityResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListReservedCapacityResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListReservedCapacityResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListReservedCapacityResponse) GetBody() *ListReservedCapacityResponseBody {
+	return s.Body
 }
 
 func (s *ListReservedCapacityResponse) SetHeaders(v map[string]*string) *ListReservedCapacityResponse {
@@ -22196,6 +34488,249 @@ func (s *ListReservedCapacityResponse) SetBody(v *ListReservedCapacityResponseBo
 	s.Body = v
 	return s
 }
+
+func (s *ListReservedCapacityResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupQoSInfosRequest struct {
+	ContinuationToken *string `json:"continuation-token,omitempty" xml:"continuation-token,omitempty"`
+	MaxKeys           *string `json:"max-keys,omitempty" xml:"max-keys,omitempty"`
+	// This parameter is required.
+	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosRequest) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosRequest) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) GetMaxKeys() *string {
+	return s.MaxKeys
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) SetContinuationToken(v string) *ListResourcePoolBucketGroupQoSInfosRequest {
+	s.ContinuationToken = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) SetMaxKeys(v string) *ListResourcePoolBucketGroupQoSInfosRequest {
+	s.MaxKeys = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) SetResourcePool(v string) *ListResourcePoolBucketGroupQoSInfosRequest {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupQoSInfosResponseBody struct {
+	ListResourcePoolBucketGroupQoSInfosResult *ListResourcePoolBucketGroupQoSInfosResult `json:"ListResourcePoolBucketGroupQoSInfosResult,omitempty" xml:"ListResourcePoolBucketGroupQoSInfosResult,omitempty"`
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosResponseBody) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosResponseBody) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponseBody) GetListResourcePoolBucketGroupQoSInfosResult() *ListResourcePoolBucketGroupQoSInfosResult {
+	return s.ListResourcePoolBucketGroupQoSInfosResult
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponseBody) SetListResourcePoolBucketGroupQoSInfosResult(v *ListResourcePoolBucketGroupQoSInfosResult) *ListResourcePoolBucketGroupQoSInfosResponseBody {
+	s.ListResourcePoolBucketGroupQoSInfosResult = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupQoSInfosResponse struct {
+	Headers    map[string]*string                               `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32                                           `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+	Body       *ListResourcePoolBucketGroupQoSInfosResponseBody `json:"body,omitempty" xml:"body,omitempty"`
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupQoSInfosResponse) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) GetBody() *ListResourcePoolBucketGroupQoSInfosResponseBody {
+	return s.Body
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) SetHeaders(v map[string]*string) *ListResourcePoolBucketGroupQoSInfosResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) SetStatusCode(v int32) *ListResourcePoolBucketGroupQoSInfosResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) SetBody(v *ListResourcePoolBucketGroupQoSInfosResponseBody) *ListResourcePoolBucketGroupQoSInfosResponse {
+	s.Body = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupQoSInfosResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupsRequest struct {
+	ContinuationToken *string `json:"continuation-token,omitempty" xml:"continuation-token,omitempty"`
+	MaxKeys           *string `json:"max-keys,omitempty" xml:"max-keys,omitempty"`
+	// This parameter is required.
+	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
+}
+
+func (s ListResourcePoolBucketGroupsRequest) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupsRequest) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) GetMaxKeys() *string {
+	return s.MaxKeys
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) SetContinuationToken(v string) *ListResourcePoolBucketGroupsRequest {
+	s.ContinuationToken = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) SetMaxKeys(v string) *ListResourcePoolBucketGroupsRequest {
+	s.MaxKeys = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) SetResourcePool(v string) *ListResourcePoolBucketGroupsRequest {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupsResponseBody struct {
+	ListResourcePoolBucketGroupsResult *ListResourcePoolBucketGroupsResult `json:"ListResourcePoolBucketGroupsResult,omitempty" xml:"ListResourcePoolBucketGroupsResult,omitempty"`
+}
+
+func (s ListResourcePoolBucketGroupsResponseBody) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupsResponseBody) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupsResponseBody) GetListResourcePoolBucketGroupsResult() *ListResourcePoolBucketGroupsResult {
+	return s.ListResourcePoolBucketGroupsResult
+}
+
+func (s *ListResourcePoolBucketGroupsResponseBody) SetListResourcePoolBucketGroupsResult(v *ListResourcePoolBucketGroupsResult) *ListResourcePoolBucketGroupsResponseBody {
+	s.ListResourcePoolBucketGroupsResult = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type ListResourcePoolBucketGroupsResponse struct {
+	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32                                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+	Body       *ListResourcePoolBucketGroupsResponseBody `json:"body,omitempty" xml:"body,omitempty"`
+}
+
+func (s ListResourcePoolBucketGroupsResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s ListResourcePoolBucketGroupsResponse) GoString() string {
+	return s.String()
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) GetBody() *ListResourcePoolBucketGroupsResponseBody {
+	return s.Body
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) SetHeaders(v map[string]*string) *ListResourcePoolBucketGroupsResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) SetStatusCode(v int32) *ListResourcePoolBucketGroupsResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) SetBody(v *ListResourcePoolBucketGroupsResponseBody) *ListResourcePoolBucketGroupsResponse {
+	s.Body = v
+	return s
+}
+
+func (s *ListResourcePoolBucketGroupsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListResourcePoolBucketsRequest struct {
 	// example:
@@ -22215,11 +34750,23 @@ type ListResourcePoolBucketsRequest struct {
 }
 
 func (s ListResourcePoolBucketsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolBucketsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolBucketsRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolBucketsRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListResourcePoolBucketsRequest) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *ListResourcePoolBucketsRequest) SetContinuationToken(v string) *ListResourcePoolBucketsRequest {
@@ -22237,22 +34784,36 @@ func (s *ListResourcePoolBucketsRequest) SetResourcePool(v string) *ListResource
 	return s
 }
 
+func (s *ListResourcePoolBucketsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListResourcePoolBucketsResponseBody struct {
 	ListResourcePoolBucketsResult *ListResourcePoolBucketsResult `json:"ListResourcePoolBucketsResult,omitempty" xml:"ListResourcePoolBucketsResult,omitempty"`
 }
 
 func (s ListResourcePoolBucketsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolBucketsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListResourcePoolBucketsResponseBody) GetListResourcePoolBucketsResult() *ListResourcePoolBucketsResult {
+	return s.ListResourcePoolBucketsResult
+}
+
 func (s *ListResourcePoolBucketsResponseBody) SetListResourcePoolBucketsResult(v *ListResourcePoolBucketsResult) *ListResourcePoolBucketsResponseBody {
 	s.ListResourcePoolBucketsResult = v
 	return s
 }
+
+func (s *ListResourcePoolBucketsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListResourcePoolBucketsResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22261,11 +34822,23 @@ type ListResourcePoolBucketsResponse struct {
 }
 
 func (s ListResourcePoolBucketsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolBucketsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolBucketsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListResourcePoolBucketsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListResourcePoolBucketsResponse) GetBody() *ListResourcePoolBucketsResponseBody {
+	return s.Body
 }
 
 func (s *ListResourcePoolBucketsResponse) SetHeaders(v map[string]*string) *ListResourcePoolBucketsResponse {
@@ -22282,6 +34855,11 @@ func (s *ListResourcePoolBucketsResponse) SetBody(v *ListResourcePoolBucketsResp
 	s.Body = v
 	return s
 }
+
+func (s *ListResourcePoolBucketsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListResourcePoolRequesterQoSInfosRequest struct {
 	// example:
@@ -22301,11 +34879,23 @@ type ListResourcePoolRequesterQoSInfosRequest struct {
 }
 
 func (s ListResourcePoolRequesterQoSInfosRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolRequesterQoSInfosRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolRequesterQoSInfosRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolRequesterQoSInfosRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
+}
+
+func (s *ListResourcePoolRequesterQoSInfosRequest) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *ListResourcePoolRequesterQoSInfosRequest) SetContinuationToken(v string) *ListResourcePoolRequesterQoSInfosRequest {
@@ -22323,22 +34913,36 @@ func (s *ListResourcePoolRequesterQoSInfosRequest) SetResourcePool(v string) *Li
 	return s
 }
 
+func (s *ListResourcePoolRequesterQoSInfosRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListResourcePoolRequesterQoSInfosResponseBody struct {
 	ListResourcePoolRequesterQoSInfosResult *ListResourcePoolRequesterQoSInfosResult `json:"ListResourcePoolRequesterQoSInfosResult,omitempty" xml:"ListResourcePoolRequesterQoSInfosResult,omitempty"`
 }
 
 func (s ListResourcePoolRequesterQoSInfosResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolRequesterQoSInfosResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListResourcePoolRequesterQoSInfosResponseBody) GetListResourcePoolRequesterQoSInfosResult() *ListResourcePoolRequesterQoSInfosResult {
+	return s.ListResourcePoolRequesterQoSInfosResult
+}
+
 func (s *ListResourcePoolRequesterQoSInfosResponseBody) SetListResourcePoolRequesterQoSInfosResult(v *ListResourcePoolRequesterQoSInfosResult) *ListResourcePoolRequesterQoSInfosResponseBody {
 	s.ListResourcePoolRequesterQoSInfosResult = v
 	return s
 }
+
+func (s *ListResourcePoolRequesterQoSInfosResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListResourcePoolRequesterQoSInfosResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22347,11 +34951,23 @@ type ListResourcePoolRequesterQoSInfosResponse struct {
 }
 
 func (s ListResourcePoolRequesterQoSInfosResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolRequesterQoSInfosResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListResourcePoolRequesterQoSInfosResponse) GetBody() *ListResourcePoolRequesterQoSInfosResponseBody {
+	return s.Body
 }
 
 func (s *ListResourcePoolRequesterQoSInfosResponse) SetHeaders(v map[string]*string) *ListResourcePoolRequesterQoSInfosResponse {
@@ -22369,6 +34985,11 @@ func (s *ListResourcePoolRequesterQoSInfosResponse) SetBody(v *ListResourcePoolR
 	return s
 }
 
+func (s *ListResourcePoolRequesterQoSInfosResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListResourcePoolsRequest struct {
 	// example:
 	//
@@ -22381,11 +35002,19 @@ type ListResourcePoolsRequest struct {
 }
 
 func (s ListResourcePoolsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolsRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListResourcePoolsRequest) GetMaxKeys() *int64 {
+	return s.MaxKeys
 }
 
 func (s *ListResourcePoolsRequest) SetContinuationToken(v string) *ListResourcePoolsRequest {
@@ -22398,22 +35027,36 @@ func (s *ListResourcePoolsRequest) SetMaxKeys(v int64) *ListResourcePoolsRequest
 	return s
 }
 
+func (s *ListResourcePoolsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListResourcePoolsResponseBody struct {
 	ListResourcePoolsResult *ListResourcePoolsResult `json:"ListResourcePoolsResult,omitempty" xml:"ListResourcePoolsResult,omitempty"`
 }
 
 func (s ListResourcePoolsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListResourcePoolsResponseBody) GetListResourcePoolsResult() *ListResourcePoolsResult {
+	return s.ListResourcePoolsResult
+}
+
 func (s *ListResourcePoolsResponseBody) SetListResourcePoolsResult(v *ListResourcePoolsResult) *ListResourcePoolsResponseBody {
 	s.ListResourcePoolsResult = v
 	return s
 }
+
+func (s *ListResourcePoolsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListResourcePoolsResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22422,11 +35065,23 @@ type ListResourcePoolsResponse struct {
 }
 
 func (s ListResourcePoolsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListResourcePoolsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListResourcePoolsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListResourcePoolsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListResourcePoolsResponse) GetBody() *ListResourcePoolsResponseBody {
+	return s.Body
 }
 
 func (s *ListResourcePoolsResponse) SetHeaders(v map[string]*string) *ListResourcePoolsResponse {
@@ -22444,22 +35099,35 @@ func (s *ListResourcePoolsResponse) SetBody(v *ListResourcePoolsResponseBody) *L
 	return s
 }
 
+func (s *ListResourcePoolsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListStyleResponseBody struct {
 	// The container that was used to query the information about image styles.
 	StyleList *ListStyleResponseBodyStyleList `json:"StyleList,omitempty" xml:"StyleList,omitempty" type:"Struct"`
 }
 
 func (s ListStyleResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListStyleResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListStyleResponseBody) GetStyleList() *ListStyleResponseBodyStyleList {
+	return s.StyleList
+}
+
 func (s *ListStyleResponseBody) SetStyleList(v *ListStyleResponseBodyStyleList) *ListStyleResponseBody {
 	s.StyleList = v
 	return s
+}
+
+func (s *ListStyleResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListStyleResponseBodyStyleList struct {
@@ -22468,17 +35136,26 @@ type ListStyleResponseBodyStyleList struct {
 }
 
 func (s ListStyleResponseBodyStyleList) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListStyleResponseBodyStyleList) GoString() string {
 	return s.String()
 }
 
+func (s *ListStyleResponseBodyStyleList) GetStyle() []*StyleInfo {
+	return s.Style
+}
+
 func (s *ListStyleResponseBodyStyleList) SetStyle(v []*StyleInfo) *ListStyleResponseBodyStyleList {
 	s.Style = v
 	return s
 }
+
+func (s *ListStyleResponseBodyStyleList) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListStyleResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22487,11 +35164,23 @@ type ListStyleResponse struct {
 }
 
 func (s ListStyleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListStyleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListStyleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListStyleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListStyleResponse) GetBody() *ListStyleResponseBody {
+	return s.Body
 }
 
 func (s *ListStyleResponse) SetHeaders(v map[string]*string) *ListStyleResponse {
@@ -22509,17 +35198,30 @@ func (s *ListStyleResponse) SetBody(v *ListStyleResponseBody) *ListStyleResponse
 	return s
 }
 
+func (s *ListStyleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListUserDataRedundancyTransitionRequest struct {
 	ContinuationToken *string `json:"continuation-token,omitempty" xml:"continuation-token,omitempty"`
 	MaxKeys           *int32  `json:"max-keys,omitempty" xml:"max-keys,omitempty"`
 }
 
 func (s ListUserDataRedundancyTransitionRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserDataRedundancyTransitionRequest) GoString() string {
 	return s.String()
+}
+
+func (s *ListUserDataRedundancyTransitionRequest) GetContinuationToken() *string {
+	return s.ContinuationToken
+}
+
+func (s *ListUserDataRedundancyTransitionRequest) GetMaxKeys() *int32 {
+	return s.MaxKeys
 }
 
 func (s *ListUserDataRedundancyTransitionRequest) SetContinuationToken(v string) *ListUserDataRedundancyTransitionRequest {
@@ -22532,21 +35234,34 @@ func (s *ListUserDataRedundancyTransitionRequest) SetMaxKeys(v int32) *ListUserD
 	return s
 }
 
+func (s *ListUserDataRedundancyTransitionRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListUserDataRedundancyTransitionResponseBody struct {
 	ListBucketDataRedundancyTransition *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition `json:"ListBucketDataRedundancyTransition,omitempty" xml:"ListBucketDataRedundancyTransition,omitempty" type:"Struct"`
 }
 
 func (s ListUserDataRedundancyTransitionResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserDataRedundancyTransitionResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListUserDataRedundancyTransitionResponseBody) GetListBucketDataRedundancyTransition() *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition {
+	return s.ListBucketDataRedundancyTransition
+}
+
 func (s *ListUserDataRedundancyTransitionResponseBody) SetListBucketDataRedundancyTransition(v *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) *ListUserDataRedundancyTransitionResponseBody {
 	s.ListBucketDataRedundancyTransition = v
 	return s
+}
+
+func (s *ListUserDataRedundancyTransitionResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition struct {
@@ -22556,11 +35271,23 @@ type ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransit
 }
 
 func (s ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) GoString() string {
 	return s.String()
+}
+
+func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) GetBucketDataRedundancyTransition() []*BucketDataRedundancyTransition {
+	return s.BucketDataRedundancyTransition
+}
+
+func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) GetIsTruncated() *bool {
+	return s.IsTruncated
+}
+
+func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) GetNextContinuationToken() *string {
+	return s.NextContinuationToken
 }
 
 func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) SetBucketDataRedundancyTransition(v []*BucketDataRedundancyTransition) *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition {
@@ -22578,6 +35305,11 @@ func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTra
 	return s
 }
 
+func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListUserDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                            `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                        `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -22585,11 +35317,23 @@ type ListUserDataRedundancyTransitionResponse struct {
 }
 
 func (s ListUserDataRedundancyTransitionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserDataRedundancyTransitionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListUserDataRedundancyTransitionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListUserDataRedundancyTransitionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListUserDataRedundancyTransitionResponse) GetBody() *ListUserDataRedundancyTransitionResponseBody {
+	return s.Body
 }
 
 func (s *ListUserDataRedundancyTransitionResponse) SetHeaders(v map[string]*string) *ListUserDataRedundancyTransitionResponse {
@@ -22607,22 +35351,36 @@ func (s *ListUserDataRedundancyTransitionResponse) SetBody(v *ListUserDataRedund
 	return s
 }
 
+func (s *ListUserDataRedundancyTransitionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListUserRegionsResponseBody struct {
 	ListUserRegionsResult *ListUserRegionsResult `json:"ListUserRegionsResult,omitempty" xml:"ListUserRegionsResult,omitempty"`
 }
 
 func (s ListUserRegionsResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserRegionsResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListUserRegionsResponseBody) GetListUserRegionsResult() *ListUserRegionsResult {
+	return s.ListUserRegionsResult
+}
+
 func (s *ListUserRegionsResponseBody) SetListUserRegionsResult(v *ListUserRegionsResult) *ListUserRegionsResponseBody {
 	s.ListUserRegionsResult = v
 	return s
 }
+
+func (s *ListUserRegionsResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListUserRegionsResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22631,11 +35389,23 @@ type ListUserRegionsResponse struct {
 }
 
 func (s ListUserRegionsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListUserRegionsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListUserRegionsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListUserRegionsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListUserRegionsResponse) GetBody() *ListUserRegionsResponseBody {
+	return s.Body
 }
 
 func (s *ListUserRegionsResponse) SetHeaders(v map[string]*string) *ListUserRegionsResponse {
@@ -22653,22 +35423,36 @@ func (s *ListUserRegionsResponse) SetBody(v *ListUserRegionsResponseBody) *ListU
 	return s
 }
 
+func (s *ListUserRegionsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type ListVirtualBucketResponseBody struct {
 	ListVirtualBucketResult *ListVirtualBucketResult `json:"ListVirtualBucketResult,omitempty" xml:"ListVirtualBucketResult,omitempty"`
 }
 
 func (s ListVirtualBucketResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListVirtualBucketResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *ListVirtualBucketResponseBody) GetListVirtualBucketResult() *ListVirtualBucketResult {
+	return s.ListVirtualBucketResult
+}
+
 func (s *ListVirtualBucketResponseBody) SetListVirtualBucketResult(v *ListVirtualBucketResult) *ListVirtualBucketResponseBody {
 	s.ListVirtualBucketResult = v
 	return s
 }
+
+func (s *ListVirtualBucketResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type ListVirtualBucketResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22677,11 +35461,23 @@ type ListVirtualBucketResponse struct {
 }
 
 func (s ListVirtualBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListVirtualBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *ListVirtualBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *ListVirtualBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *ListVirtualBucketResponse) GetBody() *ListVirtualBucketResponseBody {
+	return s.Body
 }
 
 func (s *ListVirtualBucketResponse) SetHeaders(v map[string]*string) *ListVirtualBucketResponse {
@@ -22699,16 +35495,25 @@ func (s *ListVirtualBucketResponse) SetBody(v *ListVirtualBucketResponseBody) *L
 	return s
 }
 
+func (s *ListVirtualBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type OpenMetaQueryRequest struct {
 	Mode *string `json:"mode,omitempty" xml:"mode,omitempty"`
 }
 
 func (s OpenMetaQueryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s OpenMetaQueryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *OpenMetaQueryRequest) GetMode() *string {
+	return s.Mode
 }
 
 func (s *OpenMetaQueryRequest) SetMode(v string) *OpenMetaQueryRequest {
@@ -22716,17 +35521,30 @@ func (s *OpenMetaQueryRequest) SetMode(v string) *OpenMetaQueryRequest {
 	return s
 }
 
+func (s *OpenMetaQueryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type OpenMetaQueryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s OpenMetaQueryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s OpenMetaQueryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *OpenMetaQueryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *OpenMetaQueryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *OpenMetaQueryResponse) SetHeaders(v map[string]*string) *OpenMetaQueryResponse {
@@ -22738,6 +35556,11 @@ func (s *OpenMetaQueryResponse) SetStatusCode(v int32) *OpenMetaQueryResponse {
 	s.StatusCode = &v
 	return s
 }
+
+func (s *OpenMetaQueryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type OptionObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -22762,11 +35585,27 @@ type OptionObjectHeaders struct {
 }
 
 func (s OptionObjectHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s OptionObjectHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *OptionObjectHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *OptionObjectHeaders) GetAccessControlRequestHeaders() *string {
+	return s.AccessControlRequestHeaders
+}
+
+func (s *OptionObjectHeaders) GetAccessControlRequestMethod() *string {
+	return s.AccessControlRequestMethod
+}
+
+func (s *OptionObjectHeaders) GetOrigin() *string {
+	return s.Origin
 }
 
 func (s *OptionObjectHeaders) SetCommonHeaders(v map[string]*string) *OptionObjectHeaders {
@@ -22789,17 +35628,30 @@ func (s *OptionObjectHeaders) SetOrigin(v string) *OptionObjectHeaders {
 	return s
 }
 
+func (s *OptionObjectHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type OptionObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s OptionObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s OptionObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *OptionObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *OptionObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *OptionObjectResponse) SetHeaders(v map[string]*string) *OptionObjectResponse {
@@ -22812,16 +35664,25 @@ func (s *OptionObjectResponse) SetStatusCode(v int32) *OptionObjectResponse {
 	return s
 }
 
+func (s *OptionObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostAsyncFetchTaskRequest struct {
 	AsyncFetchTaskConfiguration *AsyncFetchTaskConfiguration `json:"AsyncFetchTaskConfiguration,omitempty" xml:"AsyncFetchTaskConfiguration,omitempty"`
 }
 
 func (s PostAsyncFetchTaskRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostAsyncFetchTaskRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PostAsyncFetchTaskRequest) GetAsyncFetchTaskConfiguration() *AsyncFetchTaskConfiguration {
+	return s.AsyncFetchTaskConfiguration
 }
 
 func (s *PostAsyncFetchTaskRequest) SetAsyncFetchTaskConfiguration(v *AsyncFetchTaskConfiguration) *PostAsyncFetchTaskRequest {
@@ -22829,22 +35690,36 @@ func (s *PostAsyncFetchTaskRequest) SetAsyncFetchTaskConfiguration(v *AsyncFetch
 	return s
 }
 
+func (s *PostAsyncFetchTaskRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostAsyncFetchTaskResponseBody struct {
 	AsyncFetchTaskResult *AsyncFetchTaskResult `json:"AsyncFetchTaskResult,omitempty" xml:"AsyncFetchTaskResult,omitempty"`
 }
 
 func (s PostAsyncFetchTaskResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostAsyncFetchTaskResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *PostAsyncFetchTaskResponseBody) GetAsyncFetchTaskResult() *AsyncFetchTaskResult {
+	return s.AsyncFetchTaskResult
+}
+
 func (s *PostAsyncFetchTaskResponseBody) SetAsyncFetchTaskResult(v *AsyncFetchTaskResult) *PostAsyncFetchTaskResponseBody {
 	s.AsyncFetchTaskResult = v
 	return s
 }
+
+func (s *PostAsyncFetchTaskResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostAsyncFetchTaskResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22853,11 +35728,23 @@ type PostAsyncFetchTaskResponse struct {
 }
 
 func (s PostAsyncFetchTaskResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostAsyncFetchTaskResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostAsyncFetchTaskResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostAsyncFetchTaskResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PostAsyncFetchTaskResponse) GetBody() *PostAsyncFetchTaskResponseBody {
+	return s.Body
 }
 
 func (s *PostAsyncFetchTaskResponse) SetHeaders(v map[string]*string) *PostAsyncFetchTaskResponse {
@@ -22875,22 +35762,36 @@ func (s *PostAsyncFetchTaskResponse) SetBody(v *PostAsyncFetchTaskResponseBody) 
 	return s
 }
 
+func (s *PostAsyncFetchTaskResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostDataLakeStorageAdminOperationRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
 
 func (s PostDataLakeStorageAdminOperationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostDataLakeStorageAdminOperationRequest) GoString() string {
 	return s.String()
 }
 
+func (s *PostDataLakeStorageAdminOperationRequest) GetBody() *string {
+	return s.Body
+}
+
 func (s *PostDataLakeStorageAdminOperationRequest) SetBody(v string) *PostDataLakeStorageAdminOperationRequest {
 	s.Body = &v
 	return s
 }
+
+func (s *PostDataLakeStorageAdminOperationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostDataLakeStorageAdminOperationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22899,11 +35800,23 @@ type PostDataLakeStorageAdminOperationResponse struct {
 }
 
 func (s PostDataLakeStorageAdminOperationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostDataLakeStorageAdminOperationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostDataLakeStorageAdminOperationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostDataLakeStorageAdminOperationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PostDataLakeStorageAdminOperationResponse) GetBody() *string {
+	return s.Body
 }
 
 func (s *PostDataLakeStorageAdminOperationResponse) SetHeaders(v map[string]*string) *PostDataLakeStorageAdminOperationResponse {
@@ -22921,22 +35834,36 @@ func (s *PostDataLakeStorageAdminOperationResponse) SetBody(v string) *PostDataL
 	return s
 }
 
+func (s *PostDataLakeStorageAdminOperationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostDataLakeStorageFileOperationRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
 
 func (s PostDataLakeStorageFileOperationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostDataLakeStorageFileOperationRequest) GoString() string {
 	return s.String()
 }
 
+func (s *PostDataLakeStorageFileOperationRequest) GetBody() *string {
+	return s.Body
+}
+
 func (s *PostDataLakeStorageFileOperationRequest) SetBody(v string) *PostDataLakeStorageFileOperationRequest {
 	s.Body = &v
 	return s
 }
+
+func (s *PostDataLakeStorageFileOperationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostDataLakeStorageFileOperationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22945,11 +35872,23 @@ type PostDataLakeStorageFileOperationResponse struct {
 }
 
 func (s PostDataLakeStorageFileOperationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostDataLakeStorageFileOperationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostDataLakeStorageFileOperationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostDataLakeStorageFileOperationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PostDataLakeStorageFileOperationResponse) GetBody() *string {
+	return s.Body
 }
 
 func (s *PostDataLakeStorageFileOperationResponse) SetHeaders(v map[string]*string) *PostDataLakeStorageFileOperationResponse {
@@ -22967,22 +35906,36 @@ func (s *PostDataLakeStorageFileOperationResponse) SetBody(v string) *PostDataLa
 	return s
 }
 
+func (s *PostDataLakeStorageFileOperationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostDataLakeStorageSecurityOperationRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
 
 func (s PostDataLakeStorageSecurityOperationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostDataLakeStorageSecurityOperationRequest) GoString() string {
 	return s.String()
 }
 
+func (s *PostDataLakeStorageSecurityOperationRequest) GetBody() *string {
+	return s.Body
+}
+
 func (s *PostDataLakeStorageSecurityOperationRequest) SetBody(v string) *PostDataLakeStorageSecurityOperationRequest {
 	s.Body = &v
 	return s
 }
+
+func (s *PostDataLakeStorageSecurityOperationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostDataLakeStorageSecurityOperationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22991,11 +35944,23 @@ type PostDataLakeStorageSecurityOperationResponse struct {
 }
 
 func (s PostDataLakeStorageSecurityOperationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostDataLakeStorageSecurityOperationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostDataLakeStorageSecurityOperationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostDataLakeStorageSecurityOperationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PostDataLakeStorageSecurityOperationResponse) GetBody() *string {
+	return s.Body
 }
 
 func (s *PostDataLakeStorageSecurityOperationResponse) SetHeaders(v map[string]*string) *PostDataLakeStorageSecurityOperationResponse {
@@ -23013,80 +35978,25 @@ func (s *PostDataLakeStorageSecurityOperationResponse) SetBody(v string) *PostDa
 	return s
 }
 
-type PostObjectRequest struct {
-	Key *string `json:"key,omitempty" xml:"key,omitempty"`
+func (s *PostDataLakeStorageSecurityOperationResponse) Validate() error {
+	return dara.Validate(s)
 }
 
-func (s PostObjectRequest) String() string {
-	return tea.Prettify(s)
-}
-
-func (s PostObjectRequest) GoString() string {
-	return s.String()
-}
-
-func (s *PostObjectRequest) SetKey(v string) *PostObjectRequest {
-	s.Key = &v
-	return s
-}
-
-type PostObjectResponse struct {
-	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
-	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
-}
-
-func (s PostObjectResponse) String() string {
-	return tea.Prettify(s)
-}
-
-func (s PostObjectResponse) GoString() string {
-	return s.String()
-}
-
-func (s *PostObjectResponse) SetHeaders(v map[string]*string) *PostObjectResponse {
-	s.Headers = v
-	return s
-}
-
-func (s *PostObjectResponse) SetStatusCode(v int32) *PostObjectResponse {
-	s.StatusCode = &v
-	return s
-}
-
-type PostObjectGroupHeaders struct {
-	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
-	// This parameter is required.
-	XOssFileGroup *string `json:"x-oss-file-group,omitempty" xml:"x-oss-file-group,omitempty"`
-}
-
-func (s PostObjectGroupHeaders) String() string {
-	return tea.Prettify(s)
-}
-
-func (s PostObjectGroupHeaders) GoString() string {
-	return s.String()
-}
-
-func (s *PostObjectGroupHeaders) SetCommonHeaders(v map[string]*string) *PostObjectGroupHeaders {
-	s.CommonHeaders = v
-	return s
-}
-
-func (s *PostObjectGroupHeaders) SetXOssFileGroup(v string) *PostObjectGroupHeaders {
-	s.XOssFileGroup = &v
-	return s
-}
 
 type PostObjectGroupRequest struct {
 	CreateFileGroup *CreateFileGroup `json:"CreateFileGroup,omitempty" xml:"CreateFileGroup,omitempty"`
 }
 
 func (s PostObjectGroupRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostObjectGroupRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PostObjectGroupRequest) GetCreateFileGroup() *CreateFileGroup {
+	return s.CreateFileGroup
 }
 
 func (s *PostObjectGroupRequest) SetCreateFileGroup(v *CreateFileGroup) *PostObjectGroupRequest {
@@ -23094,22 +36004,36 @@ func (s *PostObjectGroupRequest) SetCreateFileGroup(v *CreateFileGroup) *PostObj
 	return s
 }
 
+func (s *PostObjectGroupRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostObjectGroupResponseBody struct {
 	CreateFileGroup *CreateFileGroupResult `json:"CreateFileGroup,omitempty" xml:"CreateFileGroup,omitempty"`
 }
 
 func (s PostObjectGroupResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostObjectGroupResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *PostObjectGroupResponseBody) GetCreateFileGroup() *CreateFileGroupResult {
+	return s.CreateFileGroup
+}
+
 func (s *PostObjectGroupResponseBody) SetCreateFileGroup(v *CreateFileGroupResult) *PostObjectGroupResponseBody {
 	s.CreateFileGroup = v
 	return s
 }
+
+func (s *PostObjectGroupResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostObjectGroupResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23118,11 +36042,23 @@ type PostObjectGroupResponse struct {
 }
 
 func (s PostObjectGroupResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostObjectGroupResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostObjectGroupResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostObjectGroupResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PostObjectGroupResponse) GetBody() *PostObjectGroupResponseBody {
+	return s.Body
 }
 
 func (s *PostObjectGroupResponse) SetHeaders(v map[string]*string) *PostObjectGroupResponse {
@@ -23140,22 +36076,36 @@ func (s *PostObjectGroupResponse) SetBody(v *PostObjectGroupResponseBody) *PostO
 	return s
 }
 
+func (s *PostObjectGroupResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostProcessTaskRequest struct {
-	Body io.Reader `json:"body,omitempty" xml:"body,omitempty"`
+	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
 
 func (s PostProcessTaskRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostProcessTaskRequest) GoString() string {
 	return s.String()
 }
 
-func (s *PostProcessTaskRequest) SetBody(v io.Reader) *PostProcessTaskRequest {
-	s.Body = v
+func (s *PostProcessTaskRequest) GetBody() *string {
+	return s.Body
+}
+
+func (s *PostProcessTaskRequest) SetBody(v string) *PostProcessTaskRequest {
+	s.Body = &v
 	return s
 }
+
+func (s *PostProcessTaskRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostProcessTaskResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23163,11 +36113,19 @@ type PostProcessTaskResponse struct {
 }
 
 func (s PostProcessTaskResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostProcessTaskResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostProcessTaskResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostProcessTaskResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PostProcessTaskResponse) SetHeaders(v map[string]*string) *PostProcessTaskResponse {
@@ -23179,6 +36137,11 @@ func (s *PostProcessTaskResponse) SetStatusCode(v int32) *PostProcessTaskRespons
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PostProcessTaskResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PostVodPlaylistRequest struct {
 	// The end time of the time range during which the TS files that you want to query are generated,
@@ -23204,11 +36167,19 @@ type PostVodPlaylistRequest struct {
 }
 
 func (s PostVodPlaylistRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostVodPlaylistRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PostVodPlaylistRequest) GetEndTime() *string {
+	return s.EndTime
+}
+
+func (s *PostVodPlaylistRequest) GetStartTime() *string {
+	return s.StartTime
 }
 
 func (s *PostVodPlaylistRequest) SetEndTime(v string) *PostVodPlaylistRequest {
@@ -23221,17 +36192,30 @@ func (s *PostVodPlaylistRequest) SetStartTime(v string) *PostVodPlaylistRequest 
 	return s
 }
 
+func (s *PostVodPlaylistRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PostVodPlaylistResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PostVodPlaylistResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PostVodPlaylistResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PostVodPlaylistResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PostVodPlaylistResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PostVodPlaylistResponse) SetHeaders(v map[string]*string) *PostVodPlaylistResponse {
@@ -23244,16 +36228,25 @@ func (s *PostVodPlaylistResponse) SetStatusCode(v int32) *PostVodPlaylistRespons
 	return s
 }
 
+func (s *PostVodPlaylistResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PromoteDataLakeCacheRequest struct {
 	PromoteDataLakeCacheRequest *PromoteDataLakeCacheReq `json:"PromoteDataLakeCacheRequest,omitempty" xml:"PromoteDataLakeCacheRequest,omitempty"`
 }
 
 func (s PromoteDataLakeCacheRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PromoteDataLakeCacheRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PromoteDataLakeCacheRequest) GetPromoteDataLakeCacheRequest() *PromoteDataLakeCacheReq {
+	return s.PromoteDataLakeCacheRequest
 }
 
 func (s *PromoteDataLakeCacheRequest) SetPromoteDataLakeCacheRequest(v *PromoteDataLakeCacheReq) *PromoteDataLakeCacheRequest {
@@ -23261,17 +36254,30 @@ func (s *PromoteDataLakeCacheRequest) SetPromoteDataLakeCacheRequest(v *PromoteD
 	return s
 }
 
+func (s *PromoteDataLakeCacheRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PromoteDataLakeCacheResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PromoteDataLakeCacheResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PromoteDataLakeCacheResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PromoteDataLakeCacheResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PromoteDataLakeCacheResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PromoteDataLakeCacheResponse) SetHeaders(v map[string]*string) *PromoteDataLakeCacheResponse {
@@ -23283,6 +36289,11 @@ func (s *PromoteDataLakeCacheResponse) SetStatusCode(v int32) *PromoteDataLakeCa
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PromoteDataLakeCacheResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutAccessPointConfigForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -23303,11 +36314,19 @@ type PutAccessPointConfigForObjectProcessHeaders struct {
 }
 
 func (s PutAccessPointConfigForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointConfigForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointConfigForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutAccessPointConfigForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *PutAccessPointConfigForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *PutAccessPointConfigForObjectProcessHeaders {
@@ -23320,22 +36339,35 @@ func (s *PutAccessPointConfigForObjectProcessHeaders) SetXOssAccessPointForObjec
 	return s
 }
 
+func (s *PutAccessPointConfigForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutAccessPointConfigForObjectProcessRequest struct {
 	// The container that stores information about the Object FC Access Point.
 	PutAccessPointConfigForObjectProcessConfiguration *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration `json:"PutAccessPointConfigForObjectProcessConfiguration,omitempty" xml:"PutAccessPointConfigForObjectProcessConfiguration,omitempty" type:"Struct"`
 }
 
 func (s PutAccessPointConfigForObjectProcessRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointConfigForObjectProcessRequest) GoString() string {
 	return s.String()
 }
 
+func (s *PutAccessPointConfigForObjectProcessRequest) GetPutAccessPointConfigForObjectProcessConfiguration() *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration {
+	return s.PutAccessPointConfigForObjectProcessConfiguration
+}
+
 func (s *PutAccessPointConfigForObjectProcessRequest) SetPutAccessPointConfigForObjectProcessConfiguration(v *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) *PutAccessPointConfigForObjectProcessRequest {
 	s.PutAccessPointConfigForObjectProcessConfiguration = v
 	return s
+}
+
+func (s *PutAccessPointConfigForObjectProcessRequest) Validate() error {
+	return dara.Validate(s)
 }
 
 type PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration struct {
@@ -23352,11 +36384,23 @@ type PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectPro
 }
 
 func (s PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) GetAllowAnonymousAccessForObjectProcess() *string {
+	return s.AllowAnonymousAccessForObjectProcess
+}
+
+func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) GetObjectProcessConfiguration() *ObjectProcessConfiguration {
+	return s.ObjectProcessConfiguration
+}
+
+func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
 }
 
 func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) SetAllowAnonymousAccessForObjectProcess(v string) *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration {
@@ -23374,17 +36418,30 @@ func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjec
 	return s
 }
 
+func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjectProcessConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutAccessPointConfigForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutAccessPointConfigForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointConfigForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointConfigForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutAccessPointConfigForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutAccessPointConfigForObjectProcessResponse) SetHeaders(v map[string]*string) *PutAccessPointConfigForObjectProcessResponse {
@@ -23397,6 +36454,11 @@ func (s *PutAccessPointConfigForObjectProcessResponse) SetStatusCode(v int32) *P
 	return s
 }
 
+func (s *PutAccessPointConfigForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutAccessPointPolicyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the access point.
@@ -23408,11 +36470,19 @@ type PutAccessPointPolicyHeaders struct {
 }
 
 func (s PutAccessPointPolicyHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPolicyHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPolicyHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutAccessPointPolicyHeaders) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *PutAccessPointPolicyHeaders) SetCommonHeaders(v map[string]*string) *PutAccessPointPolicyHeaders {
@@ -23424,6 +36494,11 @@ func (s *PutAccessPointPolicyHeaders) SetXOssAccessPointName(v string) *PutAcces
 	s.XOssAccessPointName = &v
 	return s
 }
+
+func (s *PutAccessPointPolicyHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutAccessPointPolicyRequest struct {
 	// The configurations of the access point policy.
@@ -23467,11 +36542,15 @@ type PutAccessPointPolicyRequest struct {
 }
 
 func (s PutAccessPointPolicyRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPolicyRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPolicyRequest) GetBody() *string {
+	return s.Body
 }
 
 func (s *PutAccessPointPolicyRequest) SetBody(v string) *PutAccessPointPolicyRequest {
@@ -23479,17 +36558,30 @@ func (s *PutAccessPointPolicyRequest) SetBody(v string) *PutAccessPointPolicyReq
 	return s
 }
 
+func (s *PutAccessPointPolicyRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutAccessPointPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutAccessPointPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutAccessPointPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutAccessPointPolicyResponse) SetHeaders(v map[string]*string) *PutAccessPointPolicyResponse {
@@ -23501,6 +36593,11 @@ func (s *PutAccessPointPolicyResponse) SetStatusCode(v int32) *PutAccessPointPol
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutAccessPointPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutAccessPointPolicyForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -23515,11 +36612,19 @@ type PutAccessPointPolicyForObjectProcessHeaders struct {
 }
 
 func (s PutAccessPointPolicyForObjectProcessHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPolicyForObjectProcessHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPolicyForObjectProcessHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutAccessPointPolicyForObjectProcessHeaders) GetXOssAccessPointForObjectProcessName() *string {
+	return s.XOssAccessPointForObjectProcessName
 }
 
 func (s *PutAccessPointPolicyForObjectProcessHeaders) SetCommonHeaders(v map[string]*string) *PutAccessPointPolicyForObjectProcessHeaders {
@@ -23531,6 +36636,11 @@ func (s *PutAccessPointPolicyForObjectProcessHeaders) SetXOssAccessPointForObjec
 	s.XOssAccessPointForObjectProcessName = &v
 	return s
 }
+
+func (s *PutAccessPointPolicyForObjectProcessHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutAccessPointPolicyForObjectProcessRequest struct {
 	// The json format permission policies for an Object FC Access Point.
@@ -23570,11 +36680,15 @@ type PutAccessPointPolicyForObjectProcessRequest struct {
 }
 
 func (s PutAccessPointPolicyForObjectProcessRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPolicyForObjectProcessRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPolicyForObjectProcessRequest) GetBody() *string {
+	return s.Body
 }
 
 func (s *PutAccessPointPolicyForObjectProcessRequest) SetBody(v string) *PutAccessPointPolicyForObjectProcessRequest {
@@ -23582,17 +36696,30 @@ func (s *PutAccessPointPolicyForObjectProcessRequest) SetBody(v string) *PutAcce
 	return s
 }
 
+func (s *PutAccessPointPolicyForObjectProcessRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutAccessPointPolicyForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutAccessPointPolicyForObjectProcessResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPolicyForObjectProcessResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPolicyForObjectProcessResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutAccessPointPolicyForObjectProcessResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutAccessPointPolicyForObjectProcessResponse) SetHeaders(v map[string]*string) *PutAccessPointPolicyForObjectProcessResponse {
@@ -23604,6 +36731,11 @@ func (s *PutAccessPointPolicyForObjectProcessResponse) SetStatusCode(v int32) *P
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutAccessPointPolicyForObjectProcessResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutAccessPointPublicAccessBlockRequest struct {
 	// The container in which the Block Public Access configurations are stored.
@@ -23619,11 +36751,19 @@ type PutAccessPointPublicAccessBlockRequest struct {
 }
 
 func (s PutAccessPointPublicAccessBlockRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPublicAccessBlockRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPublicAccessBlockRequest) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
+}
+
+func (s *PutAccessPointPublicAccessBlockRequest) GetXOssAccessPointName() *string {
+	return s.XOssAccessPointName
 }
 
 func (s *PutAccessPointPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v *PublicAccessBlockConfiguration) *PutAccessPointPublicAccessBlockRequest {
@@ -23636,17 +36776,30 @@ func (s *PutAccessPointPublicAccessBlockRequest) SetXOssAccessPointName(v string
 	return s
 }
 
+func (s *PutAccessPointPublicAccessBlockRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutAccessPointPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutAccessPointPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutAccessPointPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutAccessPointPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutAccessPointPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutAccessPointPublicAccessBlockResponse) SetHeaders(v map[string]*string) *PutAccessPointPublicAccessBlockResponse {
@@ -23658,6 +36811,11 @@ func (s *PutAccessPointPublicAccessBlockResponse) SetStatusCode(v int32) *PutAcc
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutAccessPointPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutBucketHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -23685,11 +36843,27 @@ type PutBucketHeaders struct {
 }
 
 func (s PutBucketHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutBucketHeaders) GetAcl() *string {
+	return s.Acl
+}
+
+func (s *PutBucketHeaders) GetXOssBucketTagging() *string {
+	return s.XOssBucketTagging
+}
+
+func (s *PutBucketHeaders) GetXOssResourceGroupId() *string {
+	return s.XOssResourceGroupId
 }
 
 func (s *PutBucketHeaders) SetCommonHeaders(v map[string]*string) *PutBucketHeaders {
@@ -23712,17 +36886,26 @@ func (s *PutBucketHeaders) SetXOssResourceGroupId(v string) *PutBucketHeaders {
 	return s
 }
 
+func (s *PutBucketHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRequest struct {
 	// The container that stores the information about the bucket to be created.
 	CreateBucketConfiguration *CreateBucketConfiguration `json:"CreateBucketConfiguration,omitempty" xml:"CreateBucketConfiguration,omitempty"`
 }
 
 func (s PutBucketRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRequest) GetCreateBucketConfiguration() *CreateBucketConfiguration {
+	return s.CreateBucketConfiguration
 }
 
 func (s *PutBucketRequest) SetCreateBucketConfiguration(v *CreateBucketConfiguration) *PutBucketRequest {
@@ -23730,17 +36913,30 @@ func (s *PutBucketRequest) SetCreateBucketConfiguration(v *CreateBucketConfigura
 	return s
 }
 
+func (s *PutBucketRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketResponse) SetHeaders(v map[string]*string) *PutBucketResponse {
@@ -23753,17 +36949,26 @@ func (s *PutBucketResponse) SetStatusCode(v int32) *PutBucketResponse {
 	return s
 }
 
+func (s *PutBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketAccessMonitorRequest struct {
 	// The access tracking configurations of the bucket.
 	AccessMonitorConfiguration *AccessMonitorConfiguration `json:"AccessMonitorConfiguration,omitempty" xml:"AccessMonitorConfiguration,omitempty"`
 }
 
 func (s PutBucketAccessMonitorRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketAccessMonitorRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketAccessMonitorRequest) GetAccessMonitorConfiguration() *AccessMonitorConfiguration {
+	return s.AccessMonitorConfiguration
 }
 
 func (s *PutBucketAccessMonitorRequest) SetAccessMonitorConfiguration(v *AccessMonitorConfiguration) *PutBucketAccessMonitorRequest {
@@ -23771,17 +36976,30 @@ func (s *PutBucketAccessMonitorRequest) SetAccessMonitorConfiguration(v *AccessM
 	return s
 }
 
+func (s *PutBucketAccessMonitorRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketAccessMonitorResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketAccessMonitorResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketAccessMonitorResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketAccessMonitorResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketAccessMonitorResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketAccessMonitorResponse) SetHeaders(v map[string]*string) *PutBucketAccessMonitorResponse {
@@ -23793,6 +37011,11 @@ func (s *PutBucketAccessMonitorResponse) SetStatusCode(v int32) *PutBucketAccess
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutBucketAccessMonitorResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutBucketAclHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -23811,11 +37034,19 @@ type PutBucketAclHeaders struct {
 }
 
 func (s PutBucketAclHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketAclHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketAclHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutBucketAclHeaders) GetAcl() *string {
+	return s.Acl
 }
 
 func (s *PutBucketAclHeaders) SetCommonHeaders(v map[string]*string) *PutBucketAclHeaders {
@@ -23828,17 +37059,30 @@ func (s *PutBucketAclHeaders) SetAcl(v string) *PutBucketAclHeaders {
 	return s
 }
 
+func (s *PutBucketAclHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketAclResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketAclResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketAclResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketAclResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketAclResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketAclResponse) SetHeaders(v map[string]*string) *PutBucketAclResponse {
@@ -23851,17 +37095,26 @@ func (s *PutBucketAclResponse) SetStatusCode(v int32) *PutBucketAclResponse {
 	return s
 }
 
+func (s *PutBucketAclResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketArchiveDirectReadRequest struct {
 	// The container that stores the configurations for real-time access of Archive objects.
 	ArchiveDirectReadConfiguration *ArchiveDirectReadConfiguration `json:"ArchiveDirectReadConfiguration,omitempty" xml:"ArchiveDirectReadConfiguration,omitempty"`
 }
 
 func (s PutBucketArchiveDirectReadRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketArchiveDirectReadRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketArchiveDirectReadRequest) GetArchiveDirectReadConfiguration() *ArchiveDirectReadConfiguration {
+	return s.ArchiveDirectReadConfiguration
 }
 
 func (s *PutBucketArchiveDirectReadRequest) SetArchiveDirectReadConfiguration(v *ArchiveDirectReadConfiguration) *PutBucketArchiveDirectReadRequest {
@@ -23869,17 +37122,30 @@ func (s *PutBucketArchiveDirectReadRequest) SetArchiveDirectReadConfiguration(v 
 	return s
 }
 
+func (s *PutBucketArchiveDirectReadRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketArchiveDirectReadResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketArchiveDirectReadResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketArchiveDirectReadResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketArchiveDirectReadResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketArchiveDirectReadResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketArchiveDirectReadResponse) SetHeaders(v map[string]*string) *PutBucketArchiveDirectReadResponse {
@@ -23892,16 +37158,25 @@ func (s *PutBucketArchiveDirectReadResponse) SetStatusCode(v int32) *PutBucketAr
 	return s
 }
 
+func (s *PutBucketArchiveDirectReadResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCacheConfigurationRequest struct {
 	CacheConfiguration *CacheConfiguration `json:"CacheConfiguration,omitempty" xml:"CacheConfiguration,omitempty"`
 }
 
 func (s PutBucketCacheConfigurationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCacheConfigurationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCacheConfigurationRequest) GetCacheConfiguration() *CacheConfiguration {
+	return s.CacheConfiguration
 }
 
 func (s *PutBucketCacheConfigurationRequest) SetCacheConfiguration(v *CacheConfiguration) *PutBucketCacheConfigurationRequest {
@@ -23909,17 +37184,30 @@ func (s *PutBucketCacheConfigurationRequest) SetCacheConfiguration(v *CacheConfi
 	return s
 }
 
+func (s *PutBucketCacheConfigurationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCacheConfigurationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketCacheConfigurationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCacheConfigurationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCacheConfigurationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketCacheConfigurationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketCacheConfigurationResponse) SetHeaders(v map[string]*string) *PutBucketCacheConfigurationResponse {
@@ -23932,16 +37220,25 @@ func (s *PutBucketCacheConfigurationResponse) SetStatusCode(v int32) *PutBucketC
 	return s
 }
 
+func (s *PutBucketCacheConfigurationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCallbackPolicyRequest struct {
 	BucketCallbackPolicy *CallbackPolicy `json:"BucketCallbackPolicy,omitempty" xml:"BucketCallbackPolicy,omitempty"`
 }
 
 func (s PutBucketCallbackPolicyRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCallbackPolicyRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCallbackPolicyRequest) GetBucketCallbackPolicy() *CallbackPolicy {
+	return s.BucketCallbackPolicy
 }
 
 func (s *PutBucketCallbackPolicyRequest) SetBucketCallbackPolicy(v *CallbackPolicy) *PutBucketCallbackPolicyRequest {
@@ -23949,17 +37246,30 @@ func (s *PutBucketCallbackPolicyRequest) SetBucketCallbackPolicy(v *CallbackPoli
 	return s
 }
 
+func (s *PutBucketCallbackPolicyRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCallbackPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketCallbackPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCallbackPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCallbackPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketCallbackPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketCallbackPolicyResponse) SetHeaders(v map[string]*string) *PutBucketCallbackPolicyResponse {
@@ -23972,16 +37282,25 @@ func (s *PutBucketCallbackPolicyResponse) SetStatusCode(v int32) *PutBucketCallb
 	return s
 }
 
+func (s *PutBucketCallbackPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCommentRequest struct {
 	CommentConfiguration *CommentConfiguration `json:"CommentConfiguration,omitempty" xml:"CommentConfiguration,omitempty"`
 }
 
 func (s PutBucketCommentRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCommentRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCommentRequest) GetCommentConfiguration() *CommentConfiguration {
+	return s.CommentConfiguration
 }
 
 func (s *PutBucketCommentRequest) SetCommentConfiguration(v *CommentConfiguration) *PutBucketCommentRequest {
@@ -23989,17 +37308,30 @@ func (s *PutBucketCommentRequest) SetCommentConfiguration(v *CommentConfiguratio
 	return s
 }
 
+func (s *PutBucketCommentRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCommentResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketCommentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCommentResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCommentResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketCommentResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketCommentResponse) SetHeaders(v map[string]*string) *PutBucketCommentResponse {
@@ -24012,16 +37344,26 @@ func (s *PutBucketCommentResponse) SetStatusCode(v int32) *PutBucketCommentRespo
 	return s
 }
 
+func (s *PutBucketCommentResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCommonHeaderRequest struct {
+	// User-defined response headers configuration
 	CommonHeaders *CommonHeaders `json:"CommonHeaders,omitempty" xml:"CommonHeaders,omitempty"`
 }
 
 func (s PutBucketCommonHeaderRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCommonHeaderRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCommonHeaderRequest) GetCommonHeaders() *CommonHeaders {
+	return s.CommonHeaders
 }
 
 func (s *PutBucketCommonHeaderRequest) SetCommonHeaders(v *CommonHeaders) *PutBucketCommonHeaderRequest {
@@ -24029,17 +37371,30 @@ func (s *PutBucketCommonHeaderRequest) SetCommonHeaders(v *CommonHeaders) *PutBu
 	return s
 }
 
+func (s *PutBucketCommonHeaderRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCommonHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketCommonHeaderResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCommonHeaderResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCommonHeaderResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketCommonHeaderResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketCommonHeaderResponse) SetHeaders(v map[string]*string) *PutBucketCommonHeaderResponse {
@@ -24052,6 +37407,11 @@ func (s *PutBucketCommonHeaderResponse) SetStatusCode(v int32) *PutBucketCommonH
 	return s
 }
 
+func (s *PutBucketCommonHeaderResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCorsRequest struct {
 	// The container that stores CORS rules.
 	//
@@ -24060,11 +37420,15 @@ type PutBucketCorsRequest struct {
 }
 
 func (s PutBucketCorsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCorsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCorsRequest) GetCORSConfiguration() *CORSConfiguration {
+	return s.CORSConfiguration
 }
 
 func (s *PutBucketCorsRequest) SetCORSConfiguration(v *CORSConfiguration) *PutBucketCorsRequest {
@@ -24072,17 +37436,30 @@ func (s *PutBucketCorsRequest) SetCORSConfiguration(v *CORSConfiguration) *PutBu
 	return s
 }
 
+func (s *PutBucketCorsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketCorsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketCorsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketCorsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketCorsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketCorsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketCorsResponse) SetHeaders(v map[string]*string) *PutBucketCorsResponse {
@@ -24095,16 +37472,25 @@ func (s *PutBucketCorsResponse) SetStatusCode(v int32) *PutBucketCorsResponse {
 	return s
 }
 
+func (s *PutBucketCorsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketDataAcceleratorRequest struct {
 	DataAcceleratorConfiguration *DataAcceleratorConfiguration `json:"DataAcceleratorConfiguration,omitempty" xml:"DataAcceleratorConfiguration,omitempty"`
 }
 
 func (s PutBucketDataAcceleratorRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketDataAcceleratorRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketDataAcceleratorRequest) GetDataAcceleratorConfiguration() *DataAcceleratorConfiguration {
+	return s.DataAcceleratorConfiguration
 }
 
 func (s *PutBucketDataAcceleratorRequest) SetDataAcceleratorConfiguration(v *DataAcceleratorConfiguration) *PutBucketDataAcceleratorRequest {
@@ -24112,17 +37498,30 @@ func (s *PutBucketDataAcceleratorRequest) SetDataAcceleratorConfiguration(v *Dat
 	return s
 }
 
+func (s *PutBucketDataAcceleratorRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketDataAcceleratorResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketDataAcceleratorResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketDataAcceleratorResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketDataAcceleratorResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketDataAcceleratorResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketDataAcceleratorResponse) SetHeaders(v map[string]*string) *PutBucketDataAcceleratorResponse {
@@ -24135,6 +37534,11 @@ func (s *PutBucketDataAcceleratorResponse) SetStatusCode(v int32) *PutBucketData
 	return s
 }
 
+func (s *PutBucketDataAcceleratorResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketDataLakeStorageHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// This parameter is required.
@@ -24142,11 +37546,19 @@ type PutBucketDataLakeStorageHeaders struct {
 }
 
 func (s PutBucketDataLakeStorageHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketDataLakeStorageHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketDataLakeStorageHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutBucketDataLakeStorageHeaders) GetXOssDlsStatus() *string {
+	return s.XOssDlsStatus
 }
 
 func (s *PutBucketDataLakeStorageHeaders) SetCommonHeaders(v map[string]*string) *PutBucketDataLakeStorageHeaders {
@@ -24159,17 +37571,30 @@ func (s *PutBucketDataLakeStorageHeaders) SetXOssDlsStatus(v string) *PutBucketD
 	return s
 }
 
+func (s *PutBucketDataLakeStorageHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketDataLakeStorageResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketDataLakeStorageResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketDataLakeStorageResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketDataLakeStorageResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketDataLakeStorageResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketDataLakeStorageResponse) SetHeaders(v map[string]*string) *PutBucketDataLakeStorageResponse {
@@ -24182,17 +37607,26 @@ func (s *PutBucketDataLakeStorageResponse) SetStatusCode(v int32) *PutBucketData
 	return s
 }
 
+func (s *PutBucketDataLakeStorageResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketEncryptionRequest struct {
 	// The container that stores server-side encryption rules.
 	ServerSideEncryptionRule *ServerSideEncryptionRule `json:"ServerSideEncryptionRule,omitempty" xml:"ServerSideEncryptionRule,omitempty"`
 }
 
 func (s PutBucketEncryptionRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketEncryptionRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketEncryptionRequest) GetServerSideEncryptionRule() *ServerSideEncryptionRule {
+	return s.ServerSideEncryptionRule
 }
 
 func (s *PutBucketEncryptionRequest) SetServerSideEncryptionRule(v *ServerSideEncryptionRule) *PutBucketEncryptionRequest {
@@ -24200,17 +37634,30 @@ func (s *PutBucketEncryptionRequest) SetServerSideEncryptionRule(v *ServerSideEn
 	return s
 }
 
+func (s *PutBucketEncryptionRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketEncryptionResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketEncryptionResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketEncryptionResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketEncryptionResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketEncryptionResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketEncryptionResponse) SetHeaders(v map[string]*string) *PutBucketEncryptionResponse {
@@ -24223,16 +37670,25 @@ func (s *PutBucketEncryptionResponse) SetStatusCode(v int32) *PutBucketEncryptio
 	return s
 }
 
+func (s *PutBucketEncryptionResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketEventNotificationRequest struct {
 	NotificationConfiguration *EventNotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
 
 func (s PutBucketEventNotificationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketEventNotificationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketEventNotificationRequest) GetNotificationConfiguration() *EventNotificationConfiguration {
+	return s.NotificationConfiguration
 }
 
 func (s *PutBucketEventNotificationRequest) SetNotificationConfiguration(v *EventNotificationConfiguration) *PutBucketEventNotificationRequest {
@@ -24240,17 +37696,30 @@ func (s *PutBucketEventNotificationRequest) SetNotificationConfiguration(v *Even
 	return s
 }
 
+func (s *PutBucketEventNotificationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketEventNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketEventNotificationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketEventNotificationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketEventNotificationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketEventNotificationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketEventNotificationResponse) SetHeaders(v map[string]*string) *PutBucketEventNotificationResponse {
@@ -24263,16 +37732,26 @@ func (s *PutBucketEventNotificationResponse) SetStatusCode(v int32) *PutBucketEv
 	return s
 }
 
+func (s *PutBucketEventNotificationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketHashRequest struct {
+	// Object Hash Algorithm Configuration
 	ObjectHashConfiguration *ObjectHashConfiguration `json:"ObjectHashConfiguration,omitempty" xml:"ObjectHashConfiguration,omitempty"`
 }
 
 func (s PutBucketHashRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketHashRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketHashRequest) GetObjectHashConfiguration() *ObjectHashConfiguration {
+	return s.ObjectHashConfiguration
 }
 
 func (s *PutBucketHashRequest) SetObjectHashConfiguration(v *ObjectHashConfiguration) *PutBucketHashRequest {
@@ -24280,17 +37759,30 @@ func (s *PutBucketHashRequest) SetObjectHashConfiguration(v *ObjectHashConfigura
 	return s
 }
 
+func (s *PutBucketHashRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketHashResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketHashResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketHashResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketHashResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketHashResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketHashResponse) SetHeaders(v map[string]*string) *PutBucketHashResponse {
@@ -24303,17 +37795,26 @@ func (s *PutBucketHashResponse) SetStatusCode(v int32) *PutBucketHashResponse {
 	return s
 }
 
+func (s *PutBucketHashResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketHttpsConfigRequest struct {
 	// The container that stores HTTPS configurations.
 	HttpsConfiguration *HttpsConfiguration `json:"HttpsConfiguration,omitempty" xml:"HttpsConfiguration,omitempty"`
 }
 
 func (s PutBucketHttpsConfigRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketHttpsConfigRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketHttpsConfigRequest) GetHttpsConfiguration() *HttpsConfiguration {
+	return s.HttpsConfiguration
 }
 
 func (s *PutBucketHttpsConfigRequest) SetHttpsConfiguration(v *HttpsConfiguration) *PutBucketHttpsConfigRequest {
@@ -24321,17 +37822,30 @@ func (s *PutBucketHttpsConfigRequest) SetHttpsConfiguration(v *HttpsConfiguratio
 	return s
 }
 
+func (s *PutBucketHttpsConfigRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketHttpsConfigResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketHttpsConfigResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketHttpsConfigResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketHttpsConfigResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketHttpsConfigResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketHttpsConfigResponse) SetHeaders(v map[string]*string) *PutBucketHttpsConfigResponse {
@@ -24343,6 +37857,11 @@ func (s *PutBucketHttpsConfigResponse) SetStatusCode(v int32) *PutBucketHttpsCon
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutBucketHttpsConfigResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutBucketInventoryRequest struct {
 	// The container that stores the Inventory configuration.
@@ -24358,11 +37877,19 @@ type PutBucketInventoryRequest struct {
 }
 
 func (s PutBucketInventoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketInventoryRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketInventoryRequest) GetInventoryConfiguration() *InventoryConfiguration {
+	return s.InventoryConfiguration
+}
+
+func (s *PutBucketInventoryRequest) GetInventoryId() *string {
+	return s.InventoryId
 }
 
 func (s *PutBucketInventoryRequest) SetInventoryConfiguration(v *InventoryConfiguration) *PutBucketInventoryRequest {
@@ -24375,17 +37902,30 @@ func (s *PutBucketInventoryRequest) SetInventoryId(v string) *PutBucketInventory
 	return s
 }
 
+func (s *PutBucketInventoryRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketInventoryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketInventoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketInventoryResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketInventoryResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketInventoryResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketInventoryResponse) SetHeaders(v map[string]*string) *PutBucketInventoryResponse {
@@ -24397,6 +37937,11 @@ func (s *PutBucketInventoryResponse) SetStatusCode(v int32) *PutBucketInventoryR
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutBucketInventoryResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutBucketLifecycleHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -24413,11 +37958,19 @@ type PutBucketLifecycleHeaders struct {
 }
 
 func (s PutBucketLifecycleHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketLifecycleHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketLifecycleHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutBucketLifecycleHeaders) GetXOssAllowSameActionOverlap() *string {
+	return s.XOssAllowSameActionOverlap
 }
 
 func (s *PutBucketLifecycleHeaders) SetCommonHeaders(v map[string]*string) *PutBucketLifecycleHeaders {
@@ -24430,17 +37983,26 @@ func (s *PutBucketLifecycleHeaders) SetXOssAllowSameActionOverlap(v string) *Put
 	return s
 }
 
+func (s *PutBucketLifecycleHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketLifecycleRequest struct {
 	// The container that stores the lifecycle configuration.
 	LifecycleConfiguration *LifecycleConfiguration `json:"LifecycleConfiguration,omitempty" xml:"LifecycleConfiguration,omitempty"`
 }
 
 func (s PutBucketLifecycleRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketLifecycleRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketLifecycleRequest) GetLifecycleConfiguration() *LifecycleConfiguration {
+	return s.LifecycleConfiguration
 }
 
 func (s *PutBucketLifecycleRequest) SetLifecycleConfiguration(v *LifecycleConfiguration) *PutBucketLifecycleRequest {
@@ -24448,17 +38010,30 @@ func (s *PutBucketLifecycleRequest) SetLifecycleConfiguration(v *LifecycleConfig
 	return s
 }
 
+func (s *PutBucketLifecycleRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketLifecycleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketLifecycleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketLifecycleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketLifecycleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketLifecycleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketLifecycleResponse) SetHeaders(v map[string]*string) *PutBucketLifecycleResponse {
@@ -24471,17 +38046,26 @@ func (s *PutBucketLifecycleResponse) SetStatusCode(v int32) *PutBucketLifecycleR
 	return s
 }
 
+func (s *PutBucketLifecycleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketLoggingRequest struct {
 	// The container that stores the logging status information.
 	BucketLoggingStatus *BucketLoggingStatus `json:"BucketLoggingStatus,omitempty" xml:"BucketLoggingStatus,omitempty"`
 }
 
 func (s PutBucketLoggingRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketLoggingRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketLoggingRequest) GetBucketLoggingStatus() *BucketLoggingStatus {
+	return s.BucketLoggingStatus
 }
 
 func (s *PutBucketLoggingRequest) SetBucketLoggingStatus(v *BucketLoggingStatus) *PutBucketLoggingRequest {
@@ -24489,17 +38073,30 @@ func (s *PutBucketLoggingRequest) SetBucketLoggingStatus(v *BucketLoggingStatus)
 	return s
 }
 
+func (s *PutBucketLoggingRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketLoggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketLoggingResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketLoggingResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketLoggingResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketLoggingResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketLoggingResponse) SetHeaders(v map[string]*string) *PutBucketLoggingResponse {
@@ -24512,16 +38109,25 @@ func (s *PutBucketLoggingResponse) SetStatusCode(v int32) *PutBucketLoggingRespo
 	return s
 }
 
+func (s *PutBucketLoggingResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketNotificationRequest struct {
 	NotificationConfiguration *NotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
 
 func (s PutBucketNotificationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketNotificationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketNotificationRequest) GetNotificationConfiguration() *NotificationConfiguration {
+	return s.NotificationConfiguration
 }
 
 func (s *PutBucketNotificationRequest) SetNotificationConfiguration(v *NotificationConfiguration) *PutBucketNotificationRequest {
@@ -24529,17 +38135,30 @@ func (s *PutBucketNotificationRequest) SetNotificationConfiguration(v *Notificat
 	return s
 }
 
+func (s *PutBucketNotificationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketNotificationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketNotificationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketNotificationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketNotificationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketNotificationResponse) SetHeaders(v map[string]*string) *PutBucketNotificationResponse {
@@ -24552,6 +38171,11 @@ func (s *PutBucketNotificationResponse) SetStatusCode(v int32) *PutBucketNotific
 	return s
 }
 
+func (s *PutBucketNotificationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketPolicyRequest struct {
 	// The request parameters.
 	//
@@ -24560,11 +38184,15 @@ type PutBucketPolicyRequest struct {
 }
 
 func (s PutBucketPolicyRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketPolicyRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketPolicyRequest) GetPolicy() *string {
+	return s.Policy
 }
 
 func (s *PutBucketPolicyRequest) SetPolicy(v string) *PutBucketPolicyRequest {
@@ -24572,17 +38200,30 @@ func (s *PutBucketPolicyRequest) SetPolicy(v string) *PutBucketPolicyRequest {
 	return s
 }
 
+func (s *PutBucketPolicyRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketPolicyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketPolicyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketPolicyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketPolicyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketPolicyResponse) SetHeaders(v map[string]*string) *PutBucketPolicyResponse {
@@ -24595,17 +38236,26 @@ func (s *PutBucketPolicyResponse) SetStatusCode(v int32) *PutBucketPolicyRespons
 	return s
 }
 
+func (s *PutBucketPolicyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketPublicAccessBlockRequest struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
 }
 
 func (s PutBucketPublicAccessBlockRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketPublicAccessBlockRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketPublicAccessBlockRequest) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
 }
 
 func (s *PutBucketPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v *PublicAccessBlockConfiguration) *PutBucketPublicAccessBlockRequest {
@@ -24613,17 +38263,30 @@ func (s *PutBucketPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v 
 	return s
 }
 
+func (s *PutBucketPublicAccessBlockRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketPublicAccessBlockResponse) SetHeaders(v map[string]*string) *PutBucketPublicAccessBlockResponse {
@@ -24636,16 +38299,25 @@ func (s *PutBucketPublicAccessBlockResponse) SetStatusCode(v int32) *PutBucketPu
 	return s
 }
 
+func (s *PutBucketPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketQoSInfoRequest struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 }
 
 func (s PutBucketQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketQoSInfoRequest) GetQoSConfiguration() *QoSConfiguration {
+	return s.QoSConfiguration
 }
 
 func (s *PutBucketQoSInfoRequest) SetQoSConfiguration(v *QoSConfiguration) *PutBucketQoSInfoRequest {
@@ -24653,17 +38325,30 @@ func (s *PutBucketQoSInfoRequest) SetQoSConfiguration(v *QoSConfiguration) *PutB
 	return s
 }
 
+func (s *PutBucketQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketQoSInfoResponse) SetHeaders(v map[string]*string) *PutBucketQoSInfoResponse {
@@ -24676,16 +38361,25 @@ func (s *PutBucketQoSInfoResponse) SetStatusCode(v int32) *PutBucketQoSInfoRespo
 	return s
 }
 
+func (s *PutBucketQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRedundancyTypeRequest struct {
 	DataRedundancyTypeConfiguration *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration `json:"DataRedundancyTypeConfiguration,omitempty" xml:"DataRedundancyTypeConfiguration,omitempty" type:"Struct"`
 }
 
 func (s PutBucketRedundancyTypeRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRedundancyTypeRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRedundancyTypeRequest) GetDataRedundancyTypeConfiguration() *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration {
+	return s.DataRedundancyTypeConfiguration
 }
 
 func (s *PutBucketRedundancyTypeRequest) SetDataRedundancyTypeConfiguration(v *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) *PutBucketRedundancyTypeRequest {
@@ -24693,16 +38387,24 @@ func (s *PutBucketRedundancyTypeRequest) SetDataRedundancyTypeConfiguration(v *P
 	return s
 }
 
+func (s *PutBucketRedundancyTypeRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 type PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration struct {
 	Type *string `json:"Type,omitempty" xml:"Type,omitempty"`
 }
 
 func (s PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) GetType() *string {
+	return s.Type
 }
 
 func (s *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) SetType(v string) *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration {
@@ -24710,17 +38412,30 @@ func (s *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) SetType(
 	return s
 }
 
+func (s *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRedundancyTypeResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketRedundancyTypeResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRedundancyTypeResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRedundancyTypeResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketRedundancyTypeResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketRedundancyTypeResponse) SetHeaders(v map[string]*string) *PutBucketRedundancyTypeResponse {
@@ -24733,17 +38448,26 @@ func (s *PutBucketRedundancyTypeResponse) SetStatusCode(v int32) *PutBucketRedun
 	return s
 }
 
+func (s *PutBucketRedundancyTypeResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRefererRequest struct {
 	// The container that stores the hotlink protection configurations.
 	RefererConfiguration *RefererConfiguration `json:"RefererConfiguration,omitempty" xml:"RefererConfiguration,omitempty"`
 }
 
 func (s PutBucketRefererRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRefererRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRefererRequest) GetRefererConfiguration() *RefererConfiguration {
+	return s.RefererConfiguration
 }
 
 func (s *PutBucketRefererRequest) SetRefererConfiguration(v *RefererConfiguration) *PutBucketRefererRequest {
@@ -24751,17 +38475,30 @@ func (s *PutBucketRefererRequest) SetRefererConfiguration(v *RefererConfiguratio
 	return s
 }
 
+func (s *PutBucketRefererRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRefererResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketRefererResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRefererResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRefererResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketRefererResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketRefererResponse) SetHeaders(v map[string]*string) *PutBucketRefererResponse {
@@ -24774,17 +38511,26 @@ func (s *PutBucketRefererResponse) SetStatusCode(v int32) *PutBucketRefererRespo
 	return s
 }
 
+func (s *PutBucketRefererResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketReplicationRequest struct {
 	// The container that stores data replication configurations.
 	ReplicationConfiguration *ReplicationConfiguration `json:"ReplicationConfiguration,omitempty" xml:"ReplicationConfiguration,omitempty"`
 }
 
 func (s PutBucketReplicationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketReplicationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketReplicationRequest) GetReplicationConfiguration() *ReplicationConfiguration {
+	return s.ReplicationConfiguration
 }
 
 func (s *PutBucketReplicationRequest) SetReplicationConfiguration(v *ReplicationConfiguration) *PutBucketReplicationRequest {
@@ -24792,17 +38538,30 @@ func (s *PutBucketReplicationRequest) SetReplicationConfiguration(v *Replication
 	return s
 }
 
+func (s *PutBucketReplicationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketReplicationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketReplicationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketReplicationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketReplicationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketReplicationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketReplicationResponse) SetHeaders(v map[string]*string) *PutBucketReplicationResponse {
@@ -24815,17 +38574,26 @@ func (s *PutBucketReplicationResponse) SetStatusCode(v int32) *PutBucketReplicat
 	return s
 }
 
+func (s *PutBucketReplicationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRequestPaymentRequest struct {
 	// The container that stores pay-by-requester configurations.
 	RequestPaymentConfiguration *RequestPaymentConfiguration `json:"RequestPaymentConfiguration,omitempty" xml:"RequestPaymentConfiguration,omitempty"`
 }
 
 func (s PutBucketRequestPaymentRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRequestPaymentRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRequestPaymentRequest) GetRequestPaymentConfiguration() *RequestPaymentConfiguration {
+	return s.RequestPaymentConfiguration
 }
 
 func (s *PutBucketRequestPaymentRequest) SetRequestPaymentConfiguration(v *RequestPaymentConfiguration) *PutBucketRequestPaymentRequest {
@@ -24833,17 +38601,30 @@ func (s *PutBucketRequestPaymentRequest) SetRequestPaymentConfiguration(v *Reque
 	return s
 }
 
+func (s *PutBucketRequestPaymentRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRequestPaymentResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketRequestPaymentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRequestPaymentResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRequestPaymentResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketRequestPaymentResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketRequestPaymentResponse) SetHeaders(v map[string]*string) *PutBucketRequestPaymentResponse {
@@ -24856,6 +38637,11 @@ func (s *PutBucketRequestPaymentResponse) SetStatusCode(v int32) *PutBucketReque
 	return s
 }
 
+func (s *PutBucketRequestPaymentResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRequesterQoSInfoRequest struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 	// This parameter is required.
@@ -24867,11 +38653,19 @@ type PutBucketRequesterQoSInfoRequest struct {
 }
 
 func (s PutBucketRequesterQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRequesterQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRequesterQoSInfoRequest) GetQoSConfiguration() *QoSConfiguration {
+	return s.QoSConfiguration
+}
+
+func (s *PutBucketRequesterQoSInfoRequest) GetQosRequester() *string {
+	return s.QosRequester
 }
 
 func (s *PutBucketRequesterQoSInfoRequest) SetQoSConfiguration(v *QoSConfiguration) *PutBucketRequesterQoSInfoRequest {
@@ -24884,17 +38678,30 @@ func (s *PutBucketRequesterQoSInfoRequest) SetQosRequester(v string) *PutBucketR
 	return s
 }
 
+func (s *PutBucketRequesterQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketRequesterQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRequesterQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRequesterQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketRequesterQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketRequesterQoSInfoResponse) SetHeaders(v map[string]*string) *PutBucketRequesterQoSInfoResponse {
@@ -24907,17 +38714,26 @@ func (s *PutBucketRequesterQoSInfoResponse) SetStatusCode(v int32) *PutBucketReq
 	return s
 }
 
+func (s *PutBucketRequesterQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketResourceGroupRequest struct {
 	// The container that contains the ID of the resource group.
 	BucketResourceGroupConfiguration *BucketResourceGroupConfiguration `json:"BucketResourceGroupConfiguration,omitempty" xml:"BucketResourceGroupConfiguration,omitempty"`
 }
 
 func (s PutBucketResourceGroupRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketResourceGroupRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketResourceGroupRequest) GetBucketResourceGroupConfiguration() *BucketResourceGroupConfiguration {
+	return s.BucketResourceGroupConfiguration
 }
 
 func (s *PutBucketResourceGroupRequest) SetBucketResourceGroupConfiguration(v *BucketResourceGroupConfiguration) *PutBucketResourceGroupRequest {
@@ -24925,17 +38741,30 @@ func (s *PutBucketResourceGroupRequest) SetBucketResourceGroupConfiguration(v *B
 	return s
 }
 
+func (s *PutBucketResourceGroupRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketResourceGroupResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketResourceGroupResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketResourceGroupResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketResourceGroupResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketResourceGroupResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketResourceGroupResponse) SetHeaders(v map[string]*string) *PutBucketResourceGroupResponse {
@@ -24948,16 +38777,99 @@ func (s *PutBucketResourceGroupResponse) SetStatusCode(v int32) *PutBucketResour
 	return s
 }
 
+func (s *PutBucketResourceGroupResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type PutBucketResourcePoolBucketGroupRequest struct {
+	// This parameter is required.
+	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
+	// This parameter is required.
+	ResourcePoolBucketGroup *string `json:"resourcePoolBucketGroup,omitempty" xml:"resourcePoolBucketGroup,omitempty"`
+}
+
+func (s PutBucketResourcePoolBucketGroupRequest) String() string {
+	return dara.Prettify(s)
+}
+
+func (s PutBucketResourcePoolBucketGroupRequest) GoString() string {
+	return s.String()
+}
+
+func (s *PutBucketResourcePoolBucketGroupRequest) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *PutBucketResourcePoolBucketGroupRequest) GetResourcePoolBucketGroup() *string {
+	return s.ResourcePoolBucketGroup
+}
+
+func (s *PutBucketResourcePoolBucketGroupRequest) SetResourcePool(v string) *PutBucketResourcePoolBucketGroupRequest {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *PutBucketResourcePoolBucketGroupRequest) SetResourcePoolBucketGroup(v string) *PutBucketResourcePoolBucketGroupRequest {
+	s.ResourcePoolBucketGroup = &v
+	return s
+}
+
+func (s *PutBucketResourcePoolBucketGroupRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type PutBucketResourcePoolBucketGroupResponse struct {
+	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+}
+
+func (s PutBucketResourcePoolBucketGroupResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s PutBucketResourcePoolBucketGroupResponse) GoString() string {
+	return s.String()
+}
+
+func (s *PutBucketResourcePoolBucketGroupResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketResourcePoolBucketGroupResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PutBucketResourcePoolBucketGroupResponse) SetHeaders(v map[string]*string) *PutBucketResourcePoolBucketGroupResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *PutBucketResourcePoolBucketGroupResponse) SetStatusCode(v int32) *PutBucketResourcePoolBucketGroupResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *PutBucketResourcePoolBucketGroupResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketResponseHeaderRequest struct {
 	ResponseHeaderConfiguration *ResponseHeaderConfiguration `json:"ResponseHeaderConfiguration,omitempty" xml:"ResponseHeaderConfiguration,omitempty"`
 }
 
 func (s PutBucketResponseHeaderRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketResponseHeaderRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketResponseHeaderRequest) GetResponseHeaderConfiguration() *ResponseHeaderConfiguration {
+	return s.ResponseHeaderConfiguration
 }
 
 func (s *PutBucketResponseHeaderRequest) SetResponseHeaderConfiguration(v *ResponseHeaderConfiguration) *PutBucketResponseHeaderRequest {
@@ -24965,17 +38877,30 @@ func (s *PutBucketResponseHeaderRequest) SetResponseHeaderConfiguration(v *Respo
 	return s
 }
 
+func (s *PutBucketResponseHeaderRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketResponseHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketResponseHeaderResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketResponseHeaderResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketResponseHeaderResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketResponseHeaderResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketResponseHeaderResponse) SetHeaders(v map[string]*string) *PutBucketResponseHeaderResponse {
@@ -24988,17 +38913,26 @@ func (s *PutBucketResponseHeaderResponse) SetStatusCode(v int32) *PutBucketRespo
 	return s
 }
 
+func (s *PutBucketResponseHeaderResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRtcRequest struct {
 	// The container that stores the RTC configurations.
 	ReplicationRule *RtcConfiguration `json:"ReplicationRule,omitempty" xml:"ReplicationRule,omitempty"`
 }
 
 func (s PutBucketRtcRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRtcRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRtcRequest) GetReplicationRule() *RtcConfiguration {
+	return s.ReplicationRule
 }
 
 func (s *PutBucketRtcRequest) SetReplicationRule(v *RtcConfiguration) *PutBucketRtcRequest {
@@ -25006,17 +38940,30 @@ func (s *PutBucketRtcRequest) SetReplicationRule(v *RtcConfiguration) *PutBucket
 	return s
 }
 
+func (s *PutBucketRtcRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketRtcResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketRtcResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketRtcResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketRtcResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketRtcResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketRtcResponse) SetHeaders(v map[string]*string) *PutBucketRtcResponse {
@@ -25029,17 +38976,26 @@ func (s *PutBucketRtcResponse) SetStatusCode(v int32) *PutBucketRtcResponse {
 	return s
 }
 
+func (s *PutBucketRtcResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketTagsRequest struct {
 	// The container used to store TagSet.
 	Tagging *Tagging `json:"Tagging,omitempty" xml:"Tagging,omitempty"`
 }
 
 func (s PutBucketTagsRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketTagsRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketTagsRequest) GetTagging() *Tagging {
+	return s.Tagging
 }
 
 func (s *PutBucketTagsRequest) SetTagging(v *Tagging) *PutBucketTagsRequest {
@@ -25047,17 +39003,30 @@ func (s *PutBucketTagsRequest) SetTagging(v *Tagging) *PutBucketTagsRequest {
 	return s
 }
 
+func (s *PutBucketTagsRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketTagsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketTagsResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketTagsResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketTagsResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketTagsResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketTagsResponse) SetHeaders(v map[string]*string) *PutBucketTagsResponse {
@@ -25070,17 +39039,26 @@ func (s *PutBucketTagsResponse) SetStatusCode(v int32) *PutBucketTagsResponse {
 	return s
 }
 
+func (s *PutBucketTagsResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketTransferAccelerationRequest struct {
 	// The container that stores the transfer acceleration configurations.
 	TransferAccelerationConfiguration *TransferAccelerationConfiguration `json:"TransferAccelerationConfiguration,omitempty" xml:"TransferAccelerationConfiguration,omitempty"`
 }
 
 func (s PutBucketTransferAccelerationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketTransferAccelerationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketTransferAccelerationRequest) GetTransferAccelerationConfiguration() *TransferAccelerationConfiguration {
+	return s.TransferAccelerationConfiguration
 }
 
 func (s *PutBucketTransferAccelerationRequest) SetTransferAccelerationConfiguration(v *TransferAccelerationConfiguration) *PutBucketTransferAccelerationRequest {
@@ -25088,17 +39066,30 @@ func (s *PutBucketTransferAccelerationRequest) SetTransferAccelerationConfigurat
 	return s
 }
 
+func (s *PutBucketTransferAccelerationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketTransferAccelerationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketTransferAccelerationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketTransferAccelerationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketTransferAccelerationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketTransferAccelerationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketTransferAccelerationResponse) SetHeaders(v map[string]*string) *PutBucketTransferAccelerationResponse {
@@ -25111,17 +39102,26 @@ func (s *PutBucketTransferAccelerationResponse) SetStatusCode(v int32) *PutBucke
 	return s
 }
 
+func (s *PutBucketTransferAccelerationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketVersioningRequest struct {
 	// The container that stores the versioning state of the bucket.
 	VersioningConfiguration *VersioningConfiguration `json:"VersioningConfiguration,omitempty" xml:"VersioningConfiguration,omitempty"`
 }
 
 func (s PutBucketVersioningRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketVersioningRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketVersioningRequest) GetVersioningConfiguration() *VersioningConfiguration {
+	return s.VersioningConfiguration
 }
 
 func (s *PutBucketVersioningRequest) SetVersioningConfiguration(v *VersioningConfiguration) *PutBucketVersioningRequest {
@@ -25129,17 +39129,30 @@ func (s *PutBucketVersioningRequest) SetVersioningConfiguration(v *VersioningCon
 	return s
 }
 
+func (s *PutBucketVersioningRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketVersioningResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketVersioningResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketVersioningResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketVersioningResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketVersioningResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketVersioningResponse) SetHeaders(v map[string]*string) *PutBucketVersioningResponse {
@@ -25152,17 +39165,26 @@ func (s *PutBucketVersioningResponse) SetStatusCode(v int32) *PutBucketVersionin
 	return s
 }
 
+func (s *PutBucketVersioningResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketWebsiteRequest struct {
 	// The container that stores the website configuration.
 	WebsiteConfiguration *WebsiteConfiguration `json:"WebsiteConfiguration,omitempty" xml:"WebsiteConfiguration,omitempty"`
 }
 
 func (s PutBucketWebsiteRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketWebsiteRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketWebsiteRequest) GetWebsiteConfiguration() *WebsiteConfiguration {
+	return s.WebsiteConfiguration
 }
 
 func (s *PutBucketWebsiteRequest) SetWebsiteConfiguration(v *WebsiteConfiguration) *PutBucketWebsiteRequest {
@@ -25170,17 +39192,30 @@ func (s *PutBucketWebsiteRequest) SetWebsiteConfiguration(v *WebsiteConfiguratio
 	return s
 }
 
+func (s *PutBucketWebsiteRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutBucketWebsiteResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutBucketWebsiteResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutBucketWebsiteResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutBucketWebsiteResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutBucketWebsiteResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutBucketWebsiteResponse) SetHeaders(v map[string]*string) *PutBucketWebsiteResponse {
@@ -25193,16 +39228,25 @@ func (s *PutBucketWebsiteResponse) SetStatusCode(v int32) *PutBucketWebsiteRespo
 	return s
 }
 
+func (s *PutBucketWebsiteResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutCacheRequest struct {
 	CreateCacheConfiguration *CreateCacheConfiguration `json:"CreateCacheConfiguration,omitempty" xml:"CreateCacheConfiguration,omitempty"`
 }
 
 func (s PutCacheRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutCacheRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutCacheRequest) GetCreateCacheConfiguration() *CreateCacheConfiguration {
+	return s.CreateCacheConfiguration
 }
 
 func (s *PutCacheRequest) SetCreateCacheConfiguration(v *CreateCacheConfiguration) *PutCacheRequest {
@@ -25210,17 +39254,30 @@ func (s *PutCacheRequest) SetCreateCacheConfiguration(v *CreateCacheConfiguratio
 	return s
 }
 
+func (s *PutCacheRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutCacheResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutCacheResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutCacheResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutCacheResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutCacheResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutCacheResponse) SetHeaders(v map[string]*string) *PutCacheResponse {
@@ -25233,40 +39290,26 @@ func (s *PutCacheResponse) SetStatusCode(v int32) *PutCacheResponse {
 	return s
 }
 
-type PutChannelHeaders struct {
-	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
-	// This parameter is required.
-	Bucket *string `json:"bucket,omitempty" xml:"bucket,omitempty"`
+func (s *PutCacheResponse) Validate() error {
+	return dara.Validate(s)
 }
 
-func (s PutChannelHeaders) String() string {
-	return tea.Prettify(s)
-}
-
-func (s PutChannelHeaders) GoString() string {
-	return s.String()
-}
-
-func (s *PutChannelHeaders) SetCommonHeaders(v map[string]*string) *PutChannelHeaders {
-	s.CommonHeaders = v
-	return s
-}
-
-func (s *PutChannelHeaders) SetBucket(v string) *PutChannelHeaders {
-	s.Bucket = &v
-	return s
-}
 
 type PutChannelRequest struct {
+	// Container for storing image processing channel configuration
 	Channel *Channel `json:"Channel,omitempty" xml:"Channel,omitempty"`
 }
 
 func (s PutChannelRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutChannelRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutChannelRequest) GetChannel() *Channel {
+	return s.Channel
 }
 
 func (s *PutChannelRequest) SetChannel(v *Channel) *PutChannelRequest {
@@ -25274,17 +39317,30 @@ func (s *PutChannelRequest) SetChannel(v *Channel) *PutChannelRequest {
 	return s
 }
 
+func (s *PutChannelRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutChannelResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutChannelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutChannelResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutChannelResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutChannelResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutChannelResponse) SetHeaders(v map[string]*string) *PutChannelResponse {
@@ -25297,17 +39353,26 @@ func (s *PutChannelResponse) SetStatusCode(v int32) *PutChannelResponse {
 	return s
 }
 
+func (s *PutChannelResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutCnameRequest struct {
 	// The container that stores the CNAME record.
 	BucketCnameConfiguration *BucketCnameConfiguration `json:"BucketCnameConfiguration,omitempty" xml:"BucketCnameConfiguration,omitempty"`
 }
 
 func (s PutCnameRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutCnameRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutCnameRequest) GetBucketCnameConfiguration() *BucketCnameConfiguration {
+	return s.BucketCnameConfiguration
 }
 
 func (s *PutCnameRequest) SetBucketCnameConfiguration(v *BucketCnameConfiguration) *PutCnameRequest {
@@ -25315,17 +39380,30 @@ func (s *PutCnameRequest) SetBucketCnameConfiguration(v *BucketCnameConfiguratio
 	return s
 }
 
+func (s *PutCnameRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutCnameResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutCnameResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutCnameResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutCnameResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutCnameResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutCnameResponse) SetHeaders(v map[string]*string) *PutCnameResponse {
@@ -25338,17 +39416,30 @@ func (s *PutCnameResponse) SetStatusCode(v int32) *PutCnameResponse {
 	return s
 }
 
+func (s *PutCnameResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutDataLakeCachePrefetchJobRequest struct {
 	CreateDataLakeCachePrefetchJob *CreateDataLakeCachePrefetchJob `json:"CreateDataLakeCachePrefetchJob,omitempty" xml:"CreateDataLakeCachePrefetchJob,omitempty"`
 	XOssDatalakeJobId              *string                         `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s PutDataLakeCachePrefetchJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeCachePrefetchJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutDataLakeCachePrefetchJobRequest) GetCreateDataLakeCachePrefetchJob() *CreateDataLakeCachePrefetchJob {
+	return s.CreateDataLakeCachePrefetchJob
+}
+
+func (s *PutDataLakeCachePrefetchJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *PutDataLakeCachePrefetchJobRequest) SetCreateDataLakeCachePrefetchJob(v *CreateDataLakeCachePrefetchJob) *PutDataLakeCachePrefetchJobRequest {
@@ -25361,16 +39452,25 @@ func (s *PutDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *Put
 	return s
 }
 
+func (s *PutDataLakeCachePrefetchJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutDataLakeCachePrefetchJobResponseBody struct {
 	DataLakeCachePrefetchJobID *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID `json:"DataLakeCachePrefetchJobID,omitempty" xml:"DataLakeCachePrefetchJobID,omitempty" type:"Struct"`
 }
 
 func (s PutDataLakeCachePrefetchJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeCachePrefetchJobResponseBody) GoString() string {
 	return s.String()
+}
+
+func (s *PutDataLakeCachePrefetchJobResponseBody) GetDataLakeCachePrefetchJobID() *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID {
+	return s.DataLakeCachePrefetchJobID
 }
 
 func (s *PutDataLakeCachePrefetchJobResponseBody) SetDataLakeCachePrefetchJobID(v *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) *PutDataLakeCachePrefetchJobResponseBody {
@@ -25378,22 +39478,35 @@ func (s *PutDataLakeCachePrefetchJobResponseBody) SetDataLakeCachePrefetchJobID(
 	return s
 }
 
+func (s *PutDataLakeCachePrefetchJobResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 type PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID struct {
 	ID *string `json:"ID,omitempty" xml:"ID,omitempty"`
 }
 
 func (s PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) GoString() string {
 	return s.String()
 }
 
+func (s *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) GetID() *string {
+	return s.ID
+}
+
 func (s *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) SetID(v string) *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID {
 	s.ID = &v
 	return s
 }
+
+func (s *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25402,11 +39515,23 @@ type PutDataLakeCachePrefetchJobResponse struct {
 }
 
 func (s PutDataLakeCachePrefetchJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeCachePrefetchJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutDataLakeCachePrefetchJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutDataLakeCachePrefetchJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PutDataLakeCachePrefetchJobResponse) GetBody() *PutDataLakeCachePrefetchJobResponseBody {
+	return s.Body
 }
 
 func (s *PutDataLakeCachePrefetchJobResponse) SetHeaders(v map[string]*string) *PutDataLakeCachePrefetchJobResponse {
@@ -25424,6 +39549,11 @@ func (s *PutDataLakeCachePrefetchJobResponse) SetBody(v *PutDataLakeCachePrefetc
 	return s
 }
 
+func (s *PutDataLakeCachePrefetchJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	CreateDataLakeStorageTransferJob *CreateDataLakeStorageTransferJob `json:"CreateDataLakeStorageTransferJob,omitempty" xml:"CreateDataLakeStorageTransferJob,omitempty"`
@@ -25431,11 +39561,19 @@ type PutDataLakeStorageTransferJobRequest struct {
 }
 
 func (s PutDataLakeStorageTransferJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeStorageTransferJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutDataLakeStorageTransferJobRequest) GetCreateDataLakeStorageTransferJob() *CreateDataLakeStorageTransferJob {
+	return s.CreateDataLakeStorageTransferJob
+}
+
+func (s *PutDataLakeStorageTransferJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *PutDataLakeStorageTransferJobRequest) SetCreateDataLakeStorageTransferJob(v *CreateDataLakeStorageTransferJob) *PutDataLakeStorageTransferJobRequest {
@@ -25448,22 +39586,36 @@ func (s *PutDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *P
 	return s
 }
 
+func (s *PutDataLakeStorageTransferJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJobId *DataLakeStorageTransferJobId `json:"DataLakeStorageTransferJobId,omitempty" xml:"DataLakeStorageTransferJobId,omitempty"`
 }
 
 func (s PutDataLakeStorageTransferJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeStorageTransferJobResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *PutDataLakeStorageTransferJobResponseBody) GetDataLakeStorageTransferJobId() *DataLakeStorageTransferJobId {
+	return s.DataLakeStorageTransferJobId
+}
+
 func (s *PutDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJobId(v *DataLakeStorageTransferJobId) *PutDataLakeStorageTransferJobResponseBody {
 	s.DataLakeStorageTransferJobId = v
 	return s
 }
+
+func (s *PutDataLakeStorageTransferJobResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25472,11 +39624,23 @@ type PutDataLakeStorageTransferJobResponse struct {
 }
 
 func (s PutDataLakeStorageTransferJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutDataLakeStorageTransferJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutDataLakeStorageTransferJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutDataLakeStorageTransferJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PutDataLakeStorageTransferJobResponse) GetBody() *PutDataLakeStorageTransferJobResponseBody {
+	return s.Body
 }
 
 func (s *PutDataLakeStorageTransferJobResponse) SetHeaders(v map[string]*string) *PutDataLakeStorageTransferJobResponse {
@@ -25494,17 +39658,26 @@ func (s *PutDataLakeStorageTransferJobResponse) SetBody(v *PutDataLakeStorageTra
 	return s
 }
 
+func (s *PutDataLakeStorageTransferJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutLiveChannelRequest struct {
 	// The container that stores the configurations of the LiveChannel.
 	LiveChannelConfiguration *LiveChannelConfiguration `json:"LiveChannelConfiguration,omitempty" xml:"LiveChannelConfiguration,omitempty"`
 }
 
 func (s PutLiveChannelRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutLiveChannelRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutLiveChannelRequest) GetLiveChannelConfiguration() *LiveChannelConfiguration {
+	return s.LiveChannelConfiguration
 }
 
 func (s *PutLiveChannelRequest) SetLiveChannelConfiguration(v *LiveChannelConfiguration) *PutLiveChannelRequest {
@@ -25512,22 +39685,35 @@ func (s *PutLiveChannelRequest) SetLiveChannelConfiguration(v *LiveChannelConfig
 	return s
 }
 
+func (s *PutLiveChannelRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutLiveChannelResponseBody struct {
 	// The container that stores the result of the CreateLiveChannel request.
 	CreateLiveChannelResult *PutLiveChannelResponseBodyCreateLiveChannelResult `json:"CreateLiveChannelResult,omitempty" xml:"CreateLiveChannelResult,omitempty" type:"Struct"`
 }
 
 func (s PutLiveChannelResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutLiveChannelResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *PutLiveChannelResponseBody) GetCreateLiveChannelResult() *PutLiveChannelResponseBodyCreateLiveChannelResult {
+	return s.CreateLiveChannelResult
+}
+
 func (s *PutLiveChannelResponseBody) SetCreateLiveChannelResult(v *PutLiveChannelResponseBodyCreateLiveChannelResult) *PutLiveChannelResponseBody {
 	s.CreateLiveChannelResult = v
 	return s
+}
+
+func (s *PutLiveChannelResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type PutLiveChannelResponseBodyCreateLiveChannelResult struct {
@@ -25538,11 +39724,19 @@ type PutLiveChannelResponseBodyCreateLiveChannelResult struct {
 }
 
 func (s PutLiveChannelResponseBodyCreateLiveChannelResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutLiveChannelResponseBodyCreateLiveChannelResult) GoString() string {
 	return s.String()
+}
+
+func (s *PutLiveChannelResponseBodyCreateLiveChannelResult) GetPlayUrls() *LiveChannelPlayUrls {
+	return s.PlayUrls
+}
+
+func (s *PutLiveChannelResponseBodyCreateLiveChannelResult) GetPublishUrls() *LiveChannelPublishUrls {
+	return s.PublishUrls
 }
 
 func (s *PutLiveChannelResponseBodyCreateLiveChannelResult) SetPlayUrls(v *LiveChannelPlayUrls) *PutLiveChannelResponseBodyCreateLiveChannelResult {
@@ -25555,6 +39749,11 @@ func (s *PutLiveChannelResponseBodyCreateLiveChannelResult) SetPublishUrls(v *Li
 	return s
 }
 
+func (s *PutLiveChannelResponseBodyCreateLiveChannelResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutLiveChannelResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                      `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25562,11 +39761,23 @@ type PutLiveChannelResponse struct {
 }
 
 func (s PutLiveChannelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutLiveChannelResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutLiveChannelResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutLiveChannelResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PutLiveChannelResponse) GetBody() *PutLiveChannelResponseBody {
+	return s.Body
 }
 
 func (s *PutLiveChannelResponse) SetHeaders(v map[string]*string) *PutLiveChannelResponse {
@@ -25583,6 +39794,11 @@ func (s *PutLiveChannelResponse) SetBody(v *PutLiveChannelResponseBody) *PutLive
 	s.Body = v
 	return s
 }
+
+func (s *PutLiveChannelResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutLiveChannelStatusRequest struct {
 	// The status of the LiveChannel.
@@ -25602,11 +39818,15 @@ type PutLiveChannelStatusRequest struct {
 }
 
 func (s PutLiveChannelStatusRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutLiveChannelStatusRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutLiveChannelStatusRequest) GetStatus() *string {
+	return s.Status
 }
 
 func (s *PutLiveChannelStatusRequest) SetStatus(v string) *PutLiveChannelStatusRequest {
@@ -25614,17 +39834,30 @@ func (s *PutLiveChannelStatusRequest) SetStatus(v string) *PutLiveChannelStatusR
 	return s
 }
 
+func (s *PutLiveChannelStatusRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutLiveChannelStatusResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutLiveChannelStatusResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutLiveChannelStatusResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutLiveChannelStatusResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutLiveChannelStatusResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutLiveChannelStatusResponse) SetHeaders(v map[string]*string) *PutLiveChannelStatusResponse {
@@ -25636,6 +39869,11 @@ func (s *PutLiveChannelStatusResponse) SetStatusCode(v int32) *PutLiveChannelSta
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutLiveChannelStatusResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -25738,11 +39976,47 @@ type PutObjectHeaders struct {
 }
 
 func (s PutObjectHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutObjectHeaders) GetForbidOverwrite() *bool {
+	return s.ForbidOverwrite
+}
+
+func (s *PutObjectHeaders) GetMetaData() map[string]*string {
+	return s.MetaData
+}
+
+func (s *PutObjectHeaders) GetAcl() *string {
+	return s.Acl
+}
+
+func (s *PutObjectHeaders) GetSseDataEncryption() *string {
+	return s.SseDataEncryption
+}
+
+func (s *PutObjectHeaders) GetServerSideEncryption() *string {
+	return s.ServerSideEncryption
+}
+
+func (s *PutObjectHeaders) GetSseKeyId() *string {
+	return s.SseKeyId
+}
+
+func (s *PutObjectHeaders) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *PutObjectHeaders) GetTagging() *string {
+	return s.Tagging
 }
 
 func (s *PutObjectHeaders) SetCommonHeaders(v map[string]*string) *PutObjectHeaders {
@@ -25790,6 +40064,11 @@ func (s *PutObjectHeaders) SetTagging(v string) *PutObjectHeaders {
 	return s
 }
 
+func (s *PutObjectHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectRequest struct {
 	// The body of the request.
 	//
@@ -25800,11 +40079,15 @@ type PutObjectRequest struct {
 }
 
 func (s PutObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectRequest) GetBody() io.Reader {
+	return s.Body
 }
 
 func (s *PutObjectRequest) SetBody(v io.Reader) *PutObjectRequest {
@@ -25812,17 +40095,30 @@ func (s *PutObjectRequest) SetBody(v io.Reader) *PutObjectRequest {
 	return s
 }
 
+func (s *PutObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutObjectResponse) SetHeaders(v map[string]*string) *PutObjectResponse {
@@ -25835,6 +40131,11 @@ func (s *PutObjectResponse) SetStatusCode(v int32) *PutObjectResponse {
 	return s
 }
 
+func (s *PutObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectAclHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The access control list (ACL) of the object.
@@ -25844,11 +40145,19 @@ type PutObjectAclHeaders struct {
 }
 
 func (s PutObjectAclHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectAclHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectAclHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutObjectAclHeaders) GetAcl() *string {
+	return s.Acl
 }
 
 func (s *PutObjectAclHeaders) SetCommonHeaders(v map[string]*string) *PutObjectAclHeaders {
@@ -25861,6 +40170,11 @@ func (s *PutObjectAclHeaders) SetAcl(v string) *PutObjectAclHeaders {
 	return s
 }
 
+func (s *PutObjectAclHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectAclRequest struct {
 	// The version id of the object.
 	//
@@ -25871,11 +40185,15 @@ type PutObjectAclRequest struct {
 }
 
 func (s PutObjectAclRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectAclRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectAclRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *PutObjectAclRequest) SetVersionId(v string) *PutObjectAclRequest {
@@ -25883,17 +40201,30 @@ func (s *PutObjectAclRequest) SetVersionId(v string) *PutObjectAclRequest {
 	return s
 }
 
+func (s *PutObjectAclRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectAclResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutObjectAclResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectAclResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectAclResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutObjectAclResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutObjectAclResponse) SetHeaders(v map[string]*string) *PutObjectAclResponse {
@@ -25906,16 +40237,25 @@ func (s *PutObjectAclResponse) SetStatusCode(v int32) *PutObjectAclResponse {
 	return s
 }
 
+func (s *PutObjectAclResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectLinkRequest struct {
 	CreateObjectLink *ObjectLinkInfo `json:"CreateObjectLink,omitempty" xml:"CreateObjectLink,omitempty"`
 }
 
 func (s PutObjectLinkRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectLinkRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectLinkRequest) GetCreateObjectLink() *ObjectLinkInfo {
+	return s.CreateObjectLink
 }
 
 func (s *PutObjectLinkRequest) SetCreateObjectLink(v *ObjectLinkInfo) *PutObjectLinkRequest {
@@ -25923,22 +40263,36 @@ func (s *PutObjectLinkRequest) SetCreateObjectLink(v *ObjectLinkInfo) *PutObject
 	return s
 }
 
+func (s *PutObjectLinkRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectLinkResponseBody struct {
 	CreateObjectLink *CreateObjectLinkResult `json:"CreateObjectLink,omitempty" xml:"CreateObjectLink,omitempty"`
 }
 
 func (s PutObjectLinkResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectLinkResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *PutObjectLinkResponseBody) GetCreateObjectLink() *CreateObjectLinkResult {
+	return s.CreateObjectLink
+}
+
 func (s *PutObjectLinkResponseBody) SetCreateObjectLink(v *CreateObjectLinkResult) *PutObjectLinkResponseBody {
 	s.CreateObjectLink = v
 	return s
 }
+
+func (s *PutObjectLinkResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutObjectLinkResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25947,11 +40301,23 @@ type PutObjectLinkResponse struct {
 }
 
 func (s PutObjectLinkResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectLinkResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectLinkResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutObjectLinkResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PutObjectLinkResponse) GetBody() *PutObjectLinkResponseBody {
+	return s.Body
 }
 
 func (s *PutObjectLinkResponse) SetHeaders(v map[string]*string) *PutObjectLinkResponse {
@@ -25969,6 +40335,11 @@ func (s *PutObjectLinkResponse) SetBody(v *PutObjectLinkResponseBody) *PutObject
 	return s
 }
 
+func (s *PutObjectLinkResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectTaggingRequest struct {
 	// The container of the tag set.
 	Tagging *Tagging `json:"Tagging,omitempty" xml:"Tagging,omitempty"`
@@ -25981,11 +40352,19 @@ type PutObjectTaggingRequest struct {
 }
 
 func (s PutObjectTaggingRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectTaggingRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectTaggingRequest) GetTagging() *Tagging {
+	return s.Tagging
+}
+
+func (s *PutObjectTaggingRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *PutObjectTaggingRequest) SetTagging(v *Tagging) *PutObjectTaggingRequest {
@@ -25998,17 +40377,30 @@ func (s *PutObjectTaggingRequest) SetVersionId(v string) *PutObjectTaggingReques
 	return s
 }
 
+func (s *PutObjectTaggingRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutObjectTaggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutObjectTaggingResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutObjectTaggingResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutObjectTaggingResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutObjectTaggingResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutObjectTaggingResponse) SetHeaders(v map[string]*string) *PutObjectTaggingResponse {
@@ -26021,17 +40413,28 @@ func (s *PutObjectTaggingResponse) SetStatusCode(v int32) *PutObjectTaggingRespo
 	return s
 }
 
+func (s *PutObjectTaggingResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutProcessConfigurationRequest struct {
+	// Bucket Image Processing Configuration
+	//
 	// This parameter is required.
 	BucketProcessConfiguration *BucketProcessConfiguration `json:"BucketProcessConfiguration,omitempty" xml:"BucketProcessConfiguration,omitempty"`
 }
 
 func (s PutProcessConfigurationRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutProcessConfigurationRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutProcessConfigurationRequest) GetBucketProcessConfiguration() *BucketProcessConfiguration {
+	return s.BucketProcessConfiguration
 }
 
 func (s *PutProcessConfigurationRequest) SetBucketProcessConfiguration(v *BucketProcessConfiguration) *PutProcessConfigurationRequest {
@@ -26039,17 +40442,30 @@ func (s *PutProcessConfigurationRequest) SetBucketProcessConfiguration(v *Bucket
 	return s
 }
 
+func (s *PutProcessConfigurationRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutProcessConfigurationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutProcessConfigurationResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutProcessConfigurationResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutProcessConfigurationResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutProcessConfigurationResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutProcessConfigurationResponse) SetHeaders(v map[string]*string) *PutProcessConfigurationResponse {
@@ -26062,17 +40478,26 @@ func (s *PutProcessConfigurationResponse) SetStatusCode(v int32) *PutProcessConf
 	return s
 }
 
+func (s *PutProcessConfigurationResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutPublicAccessBlockRequest struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
 }
 
 func (s PutPublicAccessBlockRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutPublicAccessBlockRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutPublicAccessBlockRequest) GetPublicAccessBlockConfiguration() *PublicAccessBlockConfiguration {
+	return s.PublicAccessBlockConfiguration
 }
 
 func (s *PutPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v *PublicAccessBlockConfiguration) *PutPublicAccessBlockRequest {
@@ -26080,17 +40505,30 @@ func (s *PutPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v *Publi
 	return s
 }
 
+func (s *PutPublicAccessBlockRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutPublicAccessBlockResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutPublicAccessBlockResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutPublicAccessBlockResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutPublicAccessBlockResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutPublicAccessBlockResponse) SetHeaders(v map[string]*string) *PutPublicAccessBlockResponse {
@@ -26103,6 +40541,95 @@ func (s *PutPublicAccessBlockResponse) SetStatusCode(v int32) *PutPublicAccessBl
 	return s
 }
 
+func (s *PutPublicAccessBlockResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type PutResourcePoolBucketGroupQoSInfoRequest struct {
+	ResourcePoolBucketGroupQoSInfo *ResourcePoolBucketGroupQoSInfo `json:"ResourcePoolBucketGroupQoSInfo,omitempty" xml:"ResourcePoolBucketGroupQoSInfo,omitempty"`
+	// This parameter is required.
+	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
+	// This parameter is required.
+	ResourcePoolBucketGroup *string `json:"resourcePoolBucketGroup,omitempty" xml:"resourcePoolBucketGroup,omitempty"`
+}
+
+func (s PutResourcePoolBucketGroupQoSInfoRequest) String() string {
+	return dara.Prettify(s)
+}
+
+func (s PutResourcePoolBucketGroupQoSInfoRequest) GoString() string {
+	return s.String()
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) GetResourcePoolBucketGroupQoSInfo() *ResourcePoolBucketGroupQoSInfo {
+	return s.ResourcePoolBucketGroupQoSInfo
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) GetResourcePoolBucketGroup() *string {
+	return s.ResourcePoolBucketGroup
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) SetResourcePoolBucketGroupQoSInfo(v *ResourcePoolBucketGroupQoSInfo) *PutResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePoolBucketGroupQoSInfo = v
+	return s
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) SetResourcePool(v string) *PutResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePool = &v
+	return s
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) SetResourcePoolBucketGroup(v string) *PutResourcePoolBucketGroupQoSInfoRequest {
+	s.ResourcePoolBucketGroup = &v
+	return s
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type PutResourcePoolBucketGroupQoSInfoResponse struct {
+	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+}
+
+func (s PutResourcePoolBucketGroupQoSInfoResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s PutResourcePoolBucketGroupQoSInfoResponse) GoString() string {
+	return s.String()
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoResponse) SetHeaders(v map[string]*string) *PutResourcePoolBucketGroupQoSInfoResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoResponse) SetStatusCode(v int32) *PutResourcePoolBucketGroupQoSInfoResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *PutResourcePoolBucketGroupQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutResourcePoolRequesterQoSInfoRequest struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 	// This parameter is required.
@@ -26112,11 +40639,23 @@ type PutResourcePoolRequesterQoSInfoRequest struct {
 }
 
 func (s PutResourcePoolRequesterQoSInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutResourcePoolRequesterQoSInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutResourcePoolRequesterQoSInfoRequest) GetQoSConfiguration() *QoSConfiguration {
+	return s.QoSConfiguration
+}
+
+func (s *PutResourcePoolRequesterQoSInfoRequest) GetQosRequester() *string {
+	return s.QosRequester
+}
+
+func (s *PutResourcePoolRequesterQoSInfoRequest) GetResourcePool() *string {
+	return s.ResourcePool
 }
 
 func (s *PutResourcePoolRequesterQoSInfoRequest) SetQoSConfiguration(v *QoSConfiguration) *PutResourcePoolRequesterQoSInfoRequest {
@@ -26134,17 +40673,30 @@ func (s *PutResourcePoolRequesterQoSInfoRequest) SetResourcePool(v string) *PutR
 	return s
 }
 
+func (s *PutResourcePoolRequesterQoSInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutResourcePoolRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutResourcePoolRequesterQoSInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutResourcePoolRequesterQoSInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutResourcePoolRequesterQoSInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutResourcePoolRequesterQoSInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutResourcePoolRequesterQoSInfoResponse) SetHeaders(v map[string]*string) *PutResourcePoolRequesterQoSInfoResponse {
@@ -26156,6 +40708,11 @@ func (s *PutResourcePoolRequesterQoSInfoResponse) SetStatusCode(v int32) *PutRes
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutResourcePoolRequesterQoSInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutStyleRequest struct {
 	// The style content.
@@ -26177,11 +40734,23 @@ type PutStyleRequest struct {
 }
 
 func (s PutStyleRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutStyleRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutStyleRequest) GetStyle() *Style {
+	return s.Style
+}
+
+func (s *PutStyleRequest) GetCategory() *string {
+	return s.Category
+}
+
+func (s *PutStyleRequest) GetStyleName() *string {
+	return s.StyleName
 }
 
 func (s *PutStyleRequest) SetStyle(v *Style) *PutStyleRequest {
@@ -26199,17 +40768,30 @@ func (s *PutStyleRequest) SetStyleName(v string) *PutStyleRequest {
 	return s
 }
 
+func (s *PutStyleRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutStyleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutStyleResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutStyleResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutStyleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutStyleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutStyleResponse) SetHeaders(v map[string]*string) *PutStyleResponse {
@@ -26221,6 +40803,11 @@ func (s *PutStyleResponse) SetStatusCode(v int32) *PutStyleResponse {
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutStyleResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type PutSymlinkHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -26285,11 +40872,31 @@ type PutSymlinkHeaders struct {
 }
 
 func (s PutSymlinkHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutSymlinkHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *PutSymlinkHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *PutSymlinkHeaders) GetForbidOverwrite() *string {
+	return s.ForbidOverwrite
+}
+
+func (s *PutSymlinkHeaders) GetAcl() *string {
+	return s.Acl
+}
+
+func (s *PutSymlinkHeaders) GetStorageClass() *string {
+	return s.StorageClass
+}
+
+func (s *PutSymlinkHeaders) GetSymlinkTargetKey() *string {
+	return s.SymlinkTargetKey
 }
 
 func (s *PutSymlinkHeaders) SetCommonHeaders(v map[string]*string) *PutSymlinkHeaders {
@@ -26317,17 +40924,30 @@ func (s *PutSymlinkHeaders) SetSymlinkTargetKey(v string) *PutSymlinkHeaders {
 	return s
 }
 
+func (s *PutSymlinkHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutSymlinkResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutSymlinkResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutSymlinkResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutSymlinkResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutSymlinkResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutSymlinkResponse) SetHeaders(v map[string]*string) *PutSymlinkResponse {
@@ -26340,17 +40960,26 @@ func (s *PutSymlinkResponse) SetStatusCode(v int32) *PutSymlinkResponse {
 	return s
 }
 
+func (s *PutSymlinkResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutUserDefinedLogFieldsConfigRequest struct {
 	// The container for the user-defined logging configuration.
 	UserDefinedLogFieldsConfiguration *UserDefinedLogFieldsConfiguration `json:"UserDefinedLogFieldsConfiguration,omitempty" xml:"UserDefinedLogFieldsConfiguration,omitempty"`
 }
 
 func (s PutUserDefinedLogFieldsConfigRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutUserDefinedLogFieldsConfigRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutUserDefinedLogFieldsConfigRequest) GetUserDefinedLogFieldsConfiguration() *UserDefinedLogFieldsConfiguration {
+	return s.UserDefinedLogFieldsConfiguration
 }
 
 func (s *PutUserDefinedLogFieldsConfigRequest) SetUserDefinedLogFieldsConfiguration(v *UserDefinedLogFieldsConfiguration) *PutUserDefinedLogFieldsConfigRequest {
@@ -26358,17 +40987,30 @@ func (s *PutUserDefinedLogFieldsConfigRequest) SetUserDefinedLogFieldsConfigurat
 	return s
 }
 
+func (s *PutUserDefinedLogFieldsConfigRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutUserDefinedLogFieldsConfigResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutUserDefinedLogFieldsConfigResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutUserDefinedLogFieldsConfigResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutUserDefinedLogFieldsConfigResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutUserDefinedLogFieldsConfigResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutUserDefinedLogFieldsConfigResponse) SetHeaders(v map[string]*string) *PutUserDefinedLogFieldsConfigResponse {
@@ -26381,16 +41023,25 @@ func (s *PutUserDefinedLogFieldsConfigResponse) SetStatusCode(v int32) *PutUserD
 	return s
 }
 
+func (s *PutUserDefinedLogFieldsConfigResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutVirtualBucketRequest struct {
 	VirtualBucketConfiguration *VirtualBucketConfiguration `json:"VirtualBucketConfiguration,omitempty" xml:"VirtualBucketConfiguration,omitempty"`
 }
 
 func (s PutVirtualBucketRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutVirtualBucketRequest) GoString() string {
 	return s.String()
+}
+
+func (s *PutVirtualBucketRequest) GetVirtualBucketConfiguration() *VirtualBucketConfiguration {
+	return s.VirtualBucketConfiguration
 }
 
 func (s *PutVirtualBucketRequest) SetVirtualBucketConfiguration(v *VirtualBucketConfiguration) *PutVirtualBucketRequest {
@@ -26398,17 +41049,30 @@ func (s *PutVirtualBucketRequest) SetVirtualBucketConfiguration(v *VirtualBucket
 	return s
 }
 
+func (s *PutVirtualBucketRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type PutVirtualBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s PutVirtualBucketResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s PutVirtualBucketResponse) GoString() string {
 	return s.String()
+}
+
+func (s *PutVirtualBucketResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *PutVirtualBucketResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *PutVirtualBucketResponse) SetHeaders(v map[string]*string) *PutVirtualBucketResponse {
@@ -26420,6 +41084,11 @@ func (s *PutVirtualBucketResponse) SetStatusCode(v int32) *PutVirtualBucketRespo
 	s.StatusCode = &v
 	return s
 }
+
+func (s *PutVirtualBucketResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type RestoreObjectRequest struct {
 	// The container that stores information about the RestoreObject request.
@@ -26433,11 +41102,19 @@ type RestoreObjectRequest struct {
 }
 
 func (s RestoreObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RestoreObjectRequest) GoString() string {
 	return s.String()
+}
+
+func (s *RestoreObjectRequest) GetRestoreRequest() *RestoreRequest {
+	return s.RestoreRequest
+}
+
+func (s *RestoreObjectRequest) GetVersionId() *string {
+	return s.VersionId
 }
 
 func (s *RestoreObjectRequest) SetRestoreRequest(v *RestoreRequest) *RestoreObjectRequest {
@@ -26450,17 +41127,30 @@ func (s *RestoreObjectRequest) SetVersionId(v string) *RestoreObjectRequest {
 	return s
 }
 
+func (s *RestoreObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type RestoreObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s RestoreObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s RestoreObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *RestoreObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *RestoreObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *RestoreObjectResponse) SetHeaders(v map[string]*string) *RestoreObjectResponse {
@@ -26473,25 +41163,90 @@ func (s *RestoreObjectResponse) SetStatusCode(v int32) *RestoreObjectResponse {
 	return s
 }
 
+func (s *RestoreObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
+type SealAppendObjectResponse struct {
+	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+}
+
+func (s SealAppendObjectResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s SealAppendObjectResponse) GoString() string {
+	return s.String()
+}
+
+func (s *SealAppendObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *SealAppendObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *SealAppendObjectResponse) SetHeaders(v map[string]*string) *SealAppendObjectResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *SealAppendObjectResponse) SetStatusCode(v int32) *SealAppendObjectResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *SealAppendObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type SelectObjectRequest struct {
-	// The container that stores the SelectObject request.
+	// Container for saving Select request.
+	SelectRequest *SelectRequest `json:"SelectRequest,omitempty" xml:"SelectRequest,omitempty"`
+	// If it is a CSV file, this value should be set to csv/select; if it is a JSON file, it should be set to json/select.
 	//
 	// This parameter is required.
-	SelectRequest *SelectRequest `json:"SelectRequest,omitempty" xml:"SelectRequest,omitempty"`
+	//
+	// example:
+	//
+	// csv/select
+	XOssProcess *string `json:"x-oss-process,omitempty" xml:"x-oss-process,omitempty"`
 }
 
 func (s SelectObjectRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SelectObjectRequest) GoString() string {
 	return s.String()
 }
 
+func (s *SelectObjectRequest) GetSelectRequest() *SelectRequest {
+	return s.SelectRequest
+}
+
+func (s *SelectObjectRequest) GetXOssProcess() *string {
+	return s.XOssProcess
+}
+
 func (s *SelectObjectRequest) SetSelectRequest(v *SelectRequest) *SelectObjectRequest {
 	s.SelectRequest = v
 	return s
 }
+
+func (s *SelectObjectRequest) SetXOssProcess(v string) *SelectObjectRequest {
+	s.XOssProcess = &v
+	return s
+}
+
+func (s *SelectObjectRequest) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type SelectObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26500,11 +41255,23 @@ type SelectObjectResponse struct {
 }
 
 func (s SelectObjectResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s SelectObjectResponse) GoString() string {
 	return s.String()
+}
+
+func (s *SelectObjectResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *SelectObjectResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *SelectObjectResponse) GetBody() io.Reader {
+	return s.Body
 }
 
 func (s *SelectObjectResponse) SetHeaders(v map[string]*string) *SelectObjectResponse {
@@ -26522,17 +41289,26 @@ func (s *SelectObjectResponse) SetBody(v io.Reader) *SelectObjectResponse {
 	return s
 }
 
+func (s *SelectObjectResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StartDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s StartDataLakeCachePrefetchJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartDataLakeCachePrefetchJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *StartDataLakeCachePrefetchJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *StartDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *StartDataLakeCachePrefetchJobRequest {
@@ -26540,17 +41316,30 @@ func (s *StartDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *S
 	return s
 }
 
+func (s *StartDataLakeCachePrefetchJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StartDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s StartDataLakeCachePrefetchJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartDataLakeCachePrefetchJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *StartDataLakeCachePrefetchJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *StartDataLakeCachePrefetchJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *StartDataLakeCachePrefetchJobResponse) SetHeaders(v map[string]*string) *StartDataLakeCachePrefetchJobResponse {
@@ -26563,17 +41352,26 @@ func (s *StartDataLakeCachePrefetchJobResponse) SetStatusCode(v int32) *StartDat
 	return s
 }
 
+func (s *StartDataLakeCachePrefetchJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StartDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s StartDataLakeStorageTransferJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartDataLakeStorageTransferJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *StartDataLakeStorageTransferJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *StartDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *StartDataLakeStorageTransferJobRequest {
@@ -26581,22 +41379,36 @@ func (s *StartDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) 
 	return s
 }
 
+func (s *StartDataLakeStorageTransferJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StartDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJobHistoryId *DataLakeStorageTransferJobHistoryId `json:"DataLakeStorageTransferJobHistoryId,omitempty" xml:"DataLakeStorageTransferJobHistoryId,omitempty"`
 }
 
 func (s StartDataLakeStorageTransferJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartDataLakeStorageTransferJobResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *StartDataLakeStorageTransferJobResponseBody) GetDataLakeStorageTransferJobHistoryId() *DataLakeStorageTransferJobHistoryId {
+	return s.DataLakeStorageTransferJobHistoryId
+}
+
 func (s *StartDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJobHistoryId(v *DataLakeStorageTransferJobHistoryId) *StartDataLakeStorageTransferJobResponseBody {
 	s.DataLakeStorageTransferJobHistoryId = v
 	return s
 }
+
+func (s *StartDataLakeStorageTransferJobResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type StartDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26605,11 +41417,23 @@ type StartDataLakeStorageTransferJobResponse struct {
 }
 
 func (s StartDataLakeStorageTransferJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartDataLakeStorageTransferJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *StartDataLakeStorageTransferJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *StartDataLakeStorageTransferJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *StartDataLakeStorageTransferJobResponse) GetBody() *StartDataLakeStorageTransferJobResponseBody {
+	return s.Body
 }
 
 func (s *StartDataLakeStorageTransferJobResponse) SetHeaders(v map[string]*string) *StartDataLakeStorageTransferJobResponse {
@@ -26627,6 +41451,11 @@ func (s *StartDataLakeStorageTransferJobResponse) SetBody(v *StartDataLakeStorag
 	return s
 }
 
+func (s *StartDataLakeStorageTransferJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StartPartUploadRequest struct {
 	// This parameter is required.
 	ChunkSize    *int64  `json:"chunkSize,omitempty" xml:"chunkSize,omitempty"`
@@ -26640,11 +41469,31 @@ type StartPartUploadRequest struct {
 }
 
 func (s StartPartUploadRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartPartUploadRequest) GoString() string {
 	return s.String()
+}
+
+func (s *StartPartUploadRequest) GetChunkSize() *int64 {
+	return s.ChunkSize
+}
+
+func (s *StartPartUploadRequest) GetEncodingType() *string {
+	return s.EncodingType
+}
+
+func (s *StartPartUploadRequest) GetPartNumber() *int64 {
+	return s.PartNumber
+}
+
+func (s *StartPartUploadRequest) GetPartSize() *int64 {
+	return s.PartSize
+}
+
+func (s *StartPartUploadRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *StartPartUploadRequest) SetChunkSize(v int64) *StartPartUploadRequest {
@@ -26672,22 +41521,36 @@ func (s *StartPartUploadRequest) SetUploadId(v string) *StartPartUploadRequest {
 	return s
 }
 
+func (s *StartPartUploadRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StartPartUploadResponseBody struct {
 	StartPartUploadResult *StartPartUploadResult `json:"StartPartUploadResult,omitempty" xml:"StartPartUploadResult,omitempty"`
 }
 
 func (s StartPartUploadResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartPartUploadResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *StartPartUploadResponseBody) GetStartPartUploadResult() *StartPartUploadResult {
+	return s.StartPartUploadResult
+}
+
 func (s *StartPartUploadResponseBody) SetStartPartUploadResult(v *StartPartUploadResult) *StartPartUploadResponseBody {
 	s.StartPartUploadResult = v
 	return s
 }
+
+func (s *StartPartUploadResponseBody) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type StartPartUploadResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26696,11 +41559,23 @@ type StartPartUploadResponse struct {
 }
 
 func (s StartPartUploadResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StartPartUploadResponse) GoString() string {
 	return s.String()
+}
+
+func (s *StartPartUploadResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *StartPartUploadResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *StartPartUploadResponse) GetBody() *StartPartUploadResponseBody {
+	return s.Body
 }
 
 func (s *StartPartUploadResponse) SetHeaders(v map[string]*string) *StartPartUploadResponse {
@@ -26718,17 +41593,26 @@ func (s *StartPartUploadResponse) SetBody(v *StartPartUploadResponseBody) *Start
 	return s
 }
 
+func (s *StartPartUploadResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StopDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s StopDataLakeCachePrefetchJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StopDataLakeCachePrefetchJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *StopDataLakeCachePrefetchJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *StopDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *StopDataLakeCachePrefetchJobRequest {
@@ -26736,17 +41620,30 @@ func (s *StopDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *St
 	return s
 }
 
+func (s *StopDataLakeCachePrefetchJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StopDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s StopDataLakeCachePrefetchJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StopDataLakeCachePrefetchJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *StopDataLakeCachePrefetchJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *StopDataLakeCachePrefetchJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *StopDataLakeCachePrefetchJobResponse) SetHeaders(v map[string]*string) *StopDataLakeCachePrefetchJobResponse {
@@ -26759,17 +41656,26 @@ func (s *StopDataLakeCachePrefetchJobResponse) SetStatusCode(v int32) *StopDataL
 	return s
 }
 
+func (s *StopDataLakeCachePrefetchJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StopDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
 }
 
 func (s StopDataLakeStorageTransferJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StopDataLakeStorageTransferJobRequest) GoString() string {
 	return s.String()
+}
+
+func (s *StopDataLakeStorageTransferJobRequest) GetXOssDatalakeJobId() *string {
+	return s.XOssDatalakeJobId
 }
 
 func (s *StopDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *StopDataLakeStorageTransferJobRequest {
@@ -26777,17 +41683,30 @@ func (s *StopDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *
 	return s
 }
 
+func (s *StopDataLakeStorageTransferJobRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type StopDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s StopDataLakeStorageTransferJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s StopDataLakeStorageTransferJobResponse) GoString() string {
 	return s.String()
+}
+
+func (s *StopDataLakeStorageTransferJobResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *StopDataLakeStorageTransferJobResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *StopDataLakeStorageTransferJobResponse) SetHeaders(v map[string]*string) *StopDataLakeStorageTransferJobResponse {
@@ -26799,6 +41718,11 @@ func (s *StopDataLakeStorageTransferJobResponse) SetStatusCode(v int32) *StopDat
 	s.StatusCode = &v
 	return s
 }
+
+func (s *StopDataLakeStorageTransferJobResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type UpdateBucketAntiDDosInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -26827,11 +41751,23 @@ type UpdateBucketAntiDDosInfoHeaders struct {
 }
 
 func (s UpdateBucketAntiDDosInfoHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateBucketAntiDDosInfoHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateBucketAntiDDosInfoHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *UpdateBucketAntiDDosInfoHeaders) GetDefenderInstance() *string {
+	return s.DefenderInstance
+}
+
+func (s *UpdateBucketAntiDDosInfoHeaders) GetDefenderStatus() *string {
+	return s.DefenderStatus
 }
 
 func (s *UpdateBucketAntiDDosInfoHeaders) SetCommonHeaders(v map[string]*string) *UpdateBucketAntiDDosInfoHeaders {
@@ -26849,17 +41785,26 @@ func (s *UpdateBucketAntiDDosInfoHeaders) SetDefenderStatus(v string) *UpdateBuc
 	return s
 }
 
+func (s *UpdateBucketAntiDDosInfoHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UpdateBucketAntiDDosInfoRequest struct {
 	// The container that stores the configurations of Anti-DDoS instances.
 	AntiDDOSConfiguration *BucketAntiDDOSConfiguration `json:"AntiDDOSConfiguration,omitempty" xml:"AntiDDOSConfiguration,omitempty"`
 }
 
 func (s UpdateBucketAntiDDosInfoRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateBucketAntiDDosInfoRequest) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateBucketAntiDDosInfoRequest) GetAntiDDOSConfiguration() *BucketAntiDDOSConfiguration {
+	return s.AntiDDOSConfiguration
 }
 
 func (s *UpdateBucketAntiDDosInfoRequest) SetAntiDDOSConfiguration(v *BucketAntiDDOSConfiguration) *UpdateBucketAntiDDosInfoRequest {
@@ -26867,17 +41812,30 @@ func (s *UpdateBucketAntiDDosInfoRequest) SetAntiDDOSConfiguration(v *BucketAnti
 	return s
 }
 
+func (s *UpdateBucketAntiDDosInfoRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UpdateBucketAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s UpdateBucketAntiDDosInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateBucketAntiDDosInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateBucketAntiDDosInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *UpdateBucketAntiDDosInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *UpdateBucketAntiDDosInfoResponse) SetHeaders(v map[string]*string) *UpdateBucketAntiDDosInfoResponse {
@@ -26890,6 +41848,11 @@ func (s *UpdateBucketAntiDDosInfoResponse) SetStatusCode(v int32) *UpdateBucketA
 	return s
 }
 
+func (s *UpdateBucketAntiDDosInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UpdateReservedCapacityRequest struct {
 	ReservedCapacityUpdateConfiguration *ReservedCapacityUpdateConfiguration `json:"ReservedCapacityUpdateConfiguration,omitempty" xml:"ReservedCapacityUpdateConfiguration,omitempty"`
 	// This parameter is required.
@@ -26897,11 +41860,19 @@ type UpdateReservedCapacityRequest struct {
 }
 
 func (s UpdateReservedCapacityRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateReservedCapacityRequest) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateReservedCapacityRequest) GetReservedCapacityUpdateConfiguration() *ReservedCapacityUpdateConfiguration {
+	return s.ReservedCapacityUpdateConfiguration
+}
+
+func (s *UpdateReservedCapacityRequest) GetXOssReservedCapacityId() *string {
+	return s.XOssReservedCapacityId
 }
 
 func (s *UpdateReservedCapacityRequest) SetReservedCapacityUpdateConfiguration(v *ReservedCapacityUpdateConfiguration) *UpdateReservedCapacityRequest {
@@ -26914,17 +41885,30 @@ func (s *UpdateReservedCapacityRequest) SetXOssReservedCapacityId(v string) *Upd
 	return s
 }
 
+func (s *UpdateReservedCapacityRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UpdateReservedCapacityResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s UpdateReservedCapacityResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateReservedCapacityResponse) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateReservedCapacityResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *UpdateReservedCapacityResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *UpdateReservedCapacityResponse) SetHeaders(v map[string]*string) *UpdateReservedCapacityResponse {
@@ -26936,6 +41920,11 @@ func (s *UpdateReservedCapacityResponse) SetStatusCode(v int32) *UpdateReservedC
 	s.StatusCode = &v
 	return s
 }
+
+func (s *UpdateReservedCapacityResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type UpdateUserAntiDDosInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -26958,11 +41947,23 @@ type UpdateUserAntiDDosInfoHeaders struct {
 }
 
 func (s UpdateUserAntiDDosInfoHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateUserAntiDDosInfoHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateUserAntiDDosInfoHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *UpdateUserAntiDDosInfoHeaders) GetDefenderInstance() *string {
+	return s.DefenderInstance
+}
+
+func (s *UpdateUserAntiDDosInfoHeaders) GetDefenderStatus() *string {
+	return s.DefenderStatus
 }
 
 func (s *UpdateUserAntiDDosInfoHeaders) SetCommonHeaders(v map[string]*string) *UpdateUserAntiDDosInfoHeaders {
@@ -26980,17 +41981,30 @@ func (s *UpdateUserAntiDDosInfoHeaders) SetDefenderStatus(v string) *UpdateUserA
 	return s
 }
 
+func (s *UpdateUserAntiDDosInfoHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UpdateUserAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s UpdateUserAntiDDosInfoResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateUserAntiDDosInfoResponse) GoString() string {
 	return s.String()
+}
+
+func (s *UpdateUserAntiDDosInfoResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *UpdateUserAntiDDosInfoResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *UpdateUserAntiDDosInfoResponse) SetHeaders(v map[string]*string) *UpdateUserAntiDDosInfoResponse {
@@ -27002,6 +42016,11 @@ func (s *UpdateUserAntiDDosInfoResponse) SetStatusCode(v int32) *UpdateUserAntiD
 	s.StatusCode = &v
 	return s
 }
+
+func (s *UpdateUserAntiDDosInfoResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type UploadPartRequest struct {
 	// The request body.
@@ -27035,11 +42054,23 @@ type UploadPartRequest struct {
 }
 
 func (s UploadPartRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartRequest) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartRequest) GetBody() io.Reader {
+	return s.Body
+}
+
+func (s *UploadPartRequest) GetPartNumber() *int64 {
+	return s.PartNumber
+}
+
+func (s *UploadPartRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *UploadPartRequest) SetBody(v io.Reader) *UploadPartRequest {
@@ -27057,17 +42088,30 @@ func (s *UploadPartRequest) SetUploadId(v string) *UploadPartRequest {
 	return s
 }
 
+func (s *UploadPartRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UploadPartResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s UploadPartResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartResponse) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *UploadPartResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *UploadPartResponse) SetHeaders(v map[string]*string) *UploadPartResponse {
@@ -27080,6 +42124,11 @@ func (s *UploadPartResponse) SetStatusCode(v int32) *UploadPartResponse {
 	return s
 }
 
+func (s *UploadPartResponse) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UploadPartChunkRequest struct {
 	Body io.Reader `json:"body,omitempty" xml:"body,omitempty"`
 	// This parameter is required.
@@ -27091,11 +42140,27 @@ type UploadPartChunkRequest struct {
 }
 
 func (s UploadPartChunkRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartChunkRequest) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartChunkRequest) GetBody() io.Reader {
+	return s.Body
+}
+
+func (s *UploadPartChunkRequest) GetChunkNumber() *int64 {
+	return s.ChunkNumber
+}
+
+func (s *UploadPartChunkRequest) GetPartUploadId() *string {
+	return s.PartUploadId
+}
+
+func (s *UploadPartChunkRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *UploadPartChunkRequest) SetBody(v io.Reader) *UploadPartChunkRequest {
@@ -27118,17 +42183,30 @@ func (s *UploadPartChunkRequest) SetUploadId(v string) *UploadPartChunkRequest {
 	return s
 }
 
+func (s *UploadPartChunkRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UploadPartChunkResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s UploadPartChunkResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartChunkResponse) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartChunkResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *UploadPartChunkResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *UploadPartChunkResponse) SetHeaders(v map[string]*string) *UploadPartChunkResponse {
@@ -27140,6 +42218,11 @@ func (s *UploadPartChunkResponse) SetStatusCode(v int32) *UploadPartChunkRespons
 	s.StatusCode = &v
 	return s
 }
+
+func (s *UploadPartChunkResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type UploadPartCopyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -27204,11 +42287,39 @@ type UploadPartCopyHeaders struct {
 }
 
 func (s UploadPartCopyHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartCopyHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartCopyHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *UploadPartCopyHeaders) GetCopySource() *string {
+	return s.CopySource
+}
+
+func (s *UploadPartCopyHeaders) GetCopySourceIfMatch() *string {
+	return s.CopySourceIfMatch
+}
+
+func (s *UploadPartCopyHeaders) GetCopySourceIfModifiedSince() *string {
+	return s.CopySourceIfModifiedSince
+}
+
+func (s *UploadPartCopyHeaders) GetCopySourceIfNoneMatch() *string {
+	return s.CopySourceIfNoneMatch
+}
+
+func (s *UploadPartCopyHeaders) GetCopySourceIfUnmodifiedSince() *string {
+	return s.CopySourceIfUnmodifiedSince
+}
+
+func (s *UploadPartCopyHeaders) GetCopySourceRange() *string {
+	return s.CopySourceRange
 }
 
 func (s *UploadPartCopyHeaders) SetCommonHeaders(v map[string]*string) *UploadPartCopyHeaders {
@@ -27246,6 +42357,11 @@ func (s *UploadPartCopyHeaders) SetCopySourceRange(v string) *UploadPartCopyHead
 	return s
 }
 
+func (s *UploadPartCopyHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UploadPartCopyRequest struct {
 	// The number of parts.
 	//
@@ -27266,11 +42382,19 @@ type UploadPartCopyRequest struct {
 }
 
 func (s UploadPartCopyRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartCopyRequest) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartCopyRequest) GetPartNumber() *int64 {
+	return s.PartNumber
+}
+
+func (s *UploadPartCopyRequest) GetUploadId() *string {
+	return s.UploadId
 }
 
 func (s *UploadPartCopyRequest) SetPartNumber(v int64) *UploadPartCopyRequest {
@@ -27283,22 +42407,35 @@ func (s *UploadPartCopyRequest) SetUploadId(v string) *UploadPartCopyRequest {
 	return s
 }
 
+func (s *UploadPartCopyRequest) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UploadPartCopyResponseBody struct {
 	// The container that stores the copy result.
 	CopyPartResult *UploadPartCopyResponseBodyCopyPartResult `json:"CopyPartResult,omitempty" xml:"CopyPartResult,omitempty" type:"Struct"`
 }
 
 func (s UploadPartCopyResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartCopyResponseBody) GoString() string {
 	return s.String()
 }
 
+func (s *UploadPartCopyResponseBody) GetCopyPartResult() *UploadPartCopyResponseBodyCopyPartResult {
+	return s.CopyPartResult
+}
+
 func (s *UploadPartCopyResponseBody) SetCopyPartResult(v *UploadPartCopyResponseBodyCopyPartResult) *UploadPartCopyResponseBody {
 	s.CopyPartResult = v
 	return s
+}
+
+func (s *UploadPartCopyResponseBody) Validate() error {
+	return dara.Validate(s)
 }
 
 type UploadPartCopyResponseBodyCopyPartResult struct {
@@ -27319,11 +42456,19 @@ type UploadPartCopyResponseBodyCopyPartResult struct {
 }
 
 func (s UploadPartCopyResponseBodyCopyPartResult) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartCopyResponseBodyCopyPartResult) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartCopyResponseBodyCopyPartResult) GetETag() *string {
+	return s.ETag
+}
+
+func (s *UploadPartCopyResponseBodyCopyPartResult) GetLastModified() *string {
+	return s.LastModified
 }
 
 func (s *UploadPartCopyResponseBodyCopyPartResult) SetETag(v string) *UploadPartCopyResponseBodyCopyPartResult {
@@ -27336,6 +42481,11 @@ func (s *UploadPartCopyResponseBodyCopyPartResult) SetLastModified(v string) *Up
 	return s
 }
 
+func (s *UploadPartCopyResponseBodyCopyPartResult) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type UploadPartCopyResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                      `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -27343,11 +42493,23 @@ type UploadPartCopyResponse struct {
 }
 
 func (s UploadPartCopyResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UploadPartCopyResponse) GoString() string {
 	return s.String()
+}
+
+func (s *UploadPartCopyResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *UploadPartCopyResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *UploadPartCopyResponse) GetBody() *UploadPartCopyResponseBody {
+	return s.Body
 }
 
 func (s *UploadPartCopyResponse) SetHeaders(v map[string]*string) *UploadPartCopyResponse {
@@ -27364,6 +42526,11 @@ func (s *UploadPartCopyResponse) SetBody(v *UploadPartCopyResponseBody) *UploadP
 	s.Body = v
 	return s
 }
+
+func (s *UploadPartCopyResponse) Validate() error {
+	return dara.Validate(s)
+}
+
 
 type WriteGetObjectResponseHeaders struct {
 	CommonHeaders                   map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -27384,11 +42551,71 @@ type WriteGetObjectResponseHeaders struct {
 }
 
 func (s WriteGetObjectResponseHeaders) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s WriteGetObjectResponseHeaders) GoString() string {
 	return s.String()
+}
+
+func (s *WriteGetObjectResponseHeaders) GetCommonHeaders() map[string]*string {
+	return s.CommonHeaders
+}
+
+func (s *WriteGetObjectResponseHeaders) GetContentLength() *int64 {
+	return s.ContentLength
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderAcceptRanges() *string {
+	return s.XOssFwdHeaderAcceptRanges
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderCacheControl() *string {
+	return s.XOssFwdHeaderCacheControl
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderContentDisposition() *string {
+	return s.XOssFwdHeaderContentDisposition
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderContentEncoding() *string {
+	return s.XOssFwdHeaderContentEncoding
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderContentLanguage() *string {
+	return s.XOssFwdHeaderContentLanguage
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderContentRange() *string {
+	return s.XOssFwdHeaderContentRange
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderContentType() *string {
+	return s.XOssFwdHeaderContentType
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderETag() *string {
+	return s.XOssFwdHeaderETag
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderExpires() *string {
+	return s.XOssFwdHeaderExpires
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdHeaderLastModified() *string {
+	return s.XOssFwdHeaderLastModified
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssFwdStatus() *string {
+	return s.XOssFwdStatus
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssRequestRoute() *string {
+	return s.XOssRequestRoute
+}
+
+func (s *WriteGetObjectResponseHeaders) GetXOssRequestToken() *string {
+	return s.XOssRequestToken
 }
 
 func (s *WriteGetObjectResponseHeaders) SetCommonHeaders(v map[string]*string) *WriteGetObjectResponseHeaders {
@@ -27466,17 +42693,30 @@ func (s *WriteGetObjectResponseHeaders) SetXOssRequestToken(v string) *WriteGetO
 	return s
 }
 
+func (s *WriteGetObjectResponseHeaders) Validate() error {
+	return dara.Validate(s)
+}
+
+
 type WriteGetObjectResponseResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
 }
 
 func (s WriteGetObjectResponseResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s WriteGetObjectResponseResponse) GoString() string {
 	return s.String()
+}
+
+func (s *WriteGetObjectResponseResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *WriteGetObjectResponseResponse) GetStatusCode() *int32 {
+	return s.StatusCode
 }
 
 func (s *WriteGetObjectResponseResponse) SetHeaders(v map[string]*string) *WriteGetObjectResponseResponse {
@@ -27487,6 +42727,10 @@ func (s *WriteGetObjectResponseResponse) SetHeaders(v map[string]*string) *Write
 func (s *WriteGetObjectResponseResponse) SetStatusCode(v int32) *WriteGetObjectResponseResponse {
 	s.StatusCode = &v
 	return s
+}
+
+func (s *WriteGetObjectResponseResponse) Validate() error {
+	return dara.Validate(s)
 }
 
 // ================================================================== for hcs-mgw ===========================================================
