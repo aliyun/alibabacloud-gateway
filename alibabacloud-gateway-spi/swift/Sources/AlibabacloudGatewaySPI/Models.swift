@@ -127,63 +127,64 @@ public class InterceptorContext : Tea.TeaModel {
             return map
         }
 
-        public override func fromMap(_ dict: [String: Any]) -> Void {
-            if dict.keys.contains("headers") && dict["headers"] != nil {
-                self.headers = dict["headers"] as! [String: String]
+        public override func fromMap(_ dict: [String: Any?]?) -> Void {
+            guard let dict else { return }
+            if let value = dict["headers"] as? [String: String] {
+                self.headers = value
             }
-            if dict.keys.contains("query") && dict["query"] != nil {
-                self.query = dict["query"] as! [String: String]
+            if let value = dict["query"] as? [String: String] {
+                self.query = value
             }
-            if dict.keys.contains("body") && dict["body"] != nil {
-                self.body = dict["body"] as! Any
+            if let value = dict["body"] as? Any {
+                self.body = value
             }
-            if dict.keys.contains("stream") && dict["stream"] != nil {
-                self.stream = dict["stream"] as! InputStream
+            if let value = dict["stream"] as? InputStream {
+                self.stream = value
             }
-            if dict.keys.contains("hostMap") && dict["hostMap"] != nil {
-                self.hostMap = dict["hostMap"] as! [String: String]
+            if let value = dict["hostMap"] as? [String: String] {
+                self.hostMap = value
             }
-            if dict.keys.contains("pathname") && dict["pathname"] != nil {
-                self.pathname = dict["pathname"] as! String
+            if let value = dict["pathname"] as? String {
+                self.pathname = value
             }
-            if dict.keys.contains("productId") && dict["productId"] != nil {
-                self.productId = dict["productId"] as! String
+            if let value = dict["productId"] as? String {
+                self.productId = value
             }
-            if dict.keys.contains("action") && dict["action"] != nil {
-                self.action = dict["action"] as! String
+            if let value = dict["action"] as? String {
+                self.action = value
             }
-            if dict.keys.contains("version") && dict["version"] != nil {
-                self.version = dict["version"] as! String
+            if let value = dict["version"] as? String {
+                self.version = value
             }
-            if dict.keys.contains("protocol") && dict["protocol"] != nil {
-                self.protocol_ = dict["protocol"] as! String
+            if let value = dict["protocol"] as? String {
+                self.protocol_ = value
             }
-            if dict.keys.contains("method") && dict["method"] != nil {
-                self.method = dict["method"] as! String
+            if let value = dict["method"] as? String {
+                self.method = value
             }
-            if dict.keys.contains("authType") && dict["authType"] != nil {
-                self.authType = dict["authType"] as! String
+            if let value = dict["authType"] as? String {
+                self.authType = value
             }
-            if dict.keys.contains("bodyType") && dict["bodyType"] != nil {
-                self.bodyType = dict["bodyType"] as! String
+            if let value = dict["bodyType"] as? String {
+                self.bodyType = value
             }
-            if dict.keys.contains("reqBodyType") && dict["reqBodyType"] != nil {
-                self.reqBodyType = dict["reqBodyType"] as! String
+            if let value = dict["reqBodyType"] as? String {
+                self.reqBodyType = value
             }
-            if dict.keys.contains("style") && dict["style"] != nil {
-                self.style = dict["style"] as! String
+            if let value = dict["style"] as? String {
+                self.style = value
             }
-            if dict.keys.contains("credential") && dict["credential"] != nil {
-                self.credential = dict["credential"] as! AlibabaCloudCredentials.Client
+            if let value = dict["credential"] as? AlibabaCloudCredentials.Client {
+                self.credential = value
             }
-            if dict.keys.contains("signatureVersion") && dict["signatureVersion"] != nil {
-                self.signatureVersion = dict["signatureVersion"] as! String
+            if let value = dict["signatureVersion"] as? String {
+                self.signatureVersion = value
             }
-            if dict.keys.contains("signatureAlgorithm") && dict["signatureAlgorithm"] != nil {
-                self.signatureAlgorithm = dict["signatureAlgorithm"] as! String
+            if let value = dict["signatureAlgorithm"] as? String {
+                self.signatureAlgorithm = value
             }
-            if dict.keys.contains("userAgent") && dict["userAgent"] != nil {
-                self.userAgent = dict["userAgent"] as! String
+            if let value = dict["userAgent"] as? String {
+                self.userAgent = value
             }
         }
     }
@@ -241,27 +242,28 @@ public class InterceptorContext : Tea.TeaModel {
             return map
         }
 
-        public override func fromMap(_ dict: [String: Any]) -> Void {
-            if dict.keys.contains("regionId") && dict["regionId"] != nil {
-                self.regionId = dict["regionId"] as! String
+        public override func fromMap(_ dict: [String: Any?]?) -> Void {
+            guard let dict else { return }
+            if let value = dict["regionId"] as? String {
+                self.regionId = value
             }
-            if dict.keys.contains("endpoint") && dict["endpoint"] != nil {
-                self.endpoint = dict["endpoint"] as! String
+            if let value = dict["endpoint"] as? String {
+                self.endpoint = value
             }
-            if dict.keys.contains("endpointRule") && dict["endpointRule"] != nil {
-                self.endpointRule = dict["endpointRule"] as! String
+            if let value = dict["endpointRule"] as? String {
+                self.endpointRule = value
             }
-            if dict.keys.contains("endpointMap") && dict["endpointMap"] != nil {
-                self.endpointMap = dict["endpointMap"] as! [String: String]
+            if let value = dict["endpointMap"] as? [String: String] {
+                self.endpointMap = value
             }
-            if dict.keys.contains("endpointType") && dict["endpointType"] != nil {
-                self.endpointType = dict["endpointType"] as! String
+            if let value = dict["endpointType"] as? String {
+                self.endpointType = value
             }
-            if dict.keys.contains("network") && dict["network"] != nil {
-                self.network = dict["network"] as! String
+            if let value = dict["network"] as? String {
+                self.network = value
             }
-            if dict.keys.contains("suffix") && dict["suffix"] != nil {
-                self.suffix = dict["suffix"] as! String
+            if let value = dict["suffix"] as? String {
+                self.suffix = value
             }
         }
     }
@@ -303,18 +305,19 @@ public class InterceptorContext : Tea.TeaModel {
             return map
         }
 
-        public override func fromMap(_ dict: [String: Any]) -> Void {
-            if dict.keys.contains("statusCode") && dict["statusCode"] != nil {
-                self.statusCode = dict["statusCode"] as! Int
+        public override func fromMap(_ dict: [String: Any?]?) -> Void {
+            guard let dict else { return }
+            if let value = dict["statusCode"] as? Int {
+                self.statusCode = value
             }
-            if dict.keys.contains("headers") && dict["headers"] != nil {
-                self.headers = dict["headers"] as! [String: String]
+            if let value = dict["headers"] as? [String: String] {
+                self.headers = value
             }
-            if dict.keys.contains("body") && dict["body"] != nil {
-                self.body = dict["body"] as! InputStream
+            if let value = dict["body"] as? InputStream {
+                self.body = value
             }
-            if dict.keys.contains("deserializedBody") && dict["deserializedBody"] != nil {
-                self.deserializedBody = dict["deserializedBody"] as! Any
+            if let value = dict["deserializedBody"] as? Any {
+                self.deserializedBody = value
             }
         }
     }
@@ -356,20 +359,21 @@ public class InterceptorContext : Tea.TeaModel {
         return map
     }
 
-    public override func fromMap(_ dict: [String: Any]) -> Void {
-        if dict.keys.contains("request") && dict["request"] != nil {
+    public override func fromMap(_ dict: [String: Any?]?) -> Void {
+        guard let dict else { return }
+        if let value = dict["request"] as? [String: Any?] {
             var model = InterceptorContext.Request()
-            model.fromMap(dict["request"] as! [String: Any])
+            model.fromMap(value)
             self.request = model
         }
-        if dict.keys.contains("configuration") && dict["configuration"] != nil {
+        if let value = dict["configuration"] as? [String: Any?] {
             var model = InterceptorContext.Configuration()
-            model.fromMap(dict["configuration"] as! [String: Any])
+            model.fromMap(value)
             self.configuration = model
         }
-        if dict.keys.contains("response") && dict["response"] != nil {
+        if let value = dict["response"] as? [String: Any?] {
             var model = InterceptorContext.Response()
-            model.fromMap(dict["response"] as! [String: Any])
+            model.fromMap(value)
             self.response = model
         }
     }
@@ -405,12 +409,13 @@ public class AttributeMap : Tea.TeaModel {
         return map
     }
 
-    public override func fromMap(_ dict: [String: Any]) -> Void {
-        if dict.keys.contains("attributes") && dict["attributes"] != nil {
-            self.attributes = dict["attributes"] as! [String: Any]
+    public override func fromMap(_ dict: [String: Any?]?) -> Void {
+        guard let dict else { return }
+        if let value = dict["attributes"] as? [String: Any] {
+            self.attributes = value
         }
-        if dict.keys.contains("key") && dict["key"] != nil {
-            self.key = dict["key"] as! [String: String]
+        if let value = dict["key"] as? [String: String] {
+            self.key = value
         }
     }
 }
