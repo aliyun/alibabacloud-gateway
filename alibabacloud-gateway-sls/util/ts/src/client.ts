@@ -10,6 +10,56 @@ import { Readable } from 'stream';
 
 import {gzipCompress, isCompressorAvailable, lz4Compress} from './compress';
 import {lz4Decompress, gzipDecompress, DecompressFunc, isDecompressorAvailable} from './decompress';
+const zlib = require('zlib');
+import * as po_protobuf from 'pomelo-protobuf';
+import * as $tea from '@alicloud/tea-typescript';
+
+// 定义 proto_json 对象类型
+interface ProtoJson {
+  [key: string]: any;
+}
+
+const proto_json: ProtoJson = {
+  "message Log": {
+    "required uInt32 time": 1,
+    "message Content": {
+      "required string key": 1,
+      "required string value": 2,
+    },
+    "repeated Content contents": 2,
+  },
+  "message LogTag": {
+    "required string Key": 1,
+    "required string Value": 2,
+  },
+  "LogGroup": {
+    "repeated Log logs": 1,
+    "optional string category": 2,
+    "optional string topic": 3,
+    "optional string source": 4,
+    "optional string MachineUUID": 5,
+    "repeated LogTag LogTags": 6,
+  },
+  "LogStore": {
+    "repeated Log logs": 1,
+    "optional string category": 2,
+    "optional string topic": 3,
+    "optional string source": 4,
+  },
+  "LogGroupList": {
+    "message LogGroup": {
+      "repeated Log logs": 1,
+      "optional string category": 2,
+      "optional string topic": 3,
+      "optional string source": 4,
+      "optional string MachineUUID": 5,
+      "repeated LogTag LogTags": 6,
+    },
+    "repeated LogGroup logGroupList": 1,
+  },
+};
+
+const protos = po_protobuf.parse(proto_json);
 
 export default class Client {
 
@@ -72,6 +122,61 @@ export default class Client {
 
   static async bytesLength(src: Buffer): Promise<number> {
     return src.length;
+  }
+
+  static serializeToPbBytes(request: any): Buffer {
+    po_protobuf.init({
+      encoderProtos: protos,
+      decoderProtos: protos,
+    });
+    const logGroup = JSON.parse(request.body);
+
+    if (!logGroup.logs) {
+      throw $tea.newError({
+        code: 'ContentError',
+        message: 'Logitems is empty.',
+      });
+    }
+
+    if (logGroup.logs.length > 4096) {
+      throw $tea.newError({
+        code: 'ContentError',
+        message: 'Logitems length exceed 4096.',
+      });
+    }
+
+    const pb = po_protobuf.encode('LogGroup', logGroup);
+
+    if (pb.length > 3 * 1024 * 1024) {
+      throw $tea.newError({
+        code: 'ContentError',
+        message: 'Logitems size exceed 5MB',
+      });
+    }
+
+    return pb;
+  }
+
+  static deserializeFromPbBytes(data: Buffer, statusCode: number, headers: { [key: string]: string }): any {
+    try {
+      po_protobuf.init({
+        encoderProtos: protos,
+        decoderProtos: protos,
+      });
+  
+      const pb = po_protobuf.decode("LogGroupList", data);
+      return pb;
+    } catch (error) {
+      var requestId = headers['x-log-requestid'];
+      throw $tea.newError({
+        code: 'ContentError',
+        message: 'Protobuf parse failed.',
+        data: {
+          requestId: requestId,
+          statusCode: statusCode,
+        },
+      });
+    }
   }
 
 }
