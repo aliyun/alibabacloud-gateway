@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
-  "name": "GatewayPOP",
-  "version": "0.0.9",
+  "name": "GatewayPOPV2",
+  "version": "0.1.0",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -11,15 +11,9 @@
   ],
   "libraries": {
     "SPI": "alibabacloud:GatewaySPI:*",
-    "EndpointUtil": "alibabacloud:EndpointUtil:*",
-    "Util": "darabonba:Util:*",
-    "OpenApiUtil": "alibabacloud:OpenApiUtil:*",
+    "OpenApi": "alibabacloud:OpenApiV2:*",
     "Credential": "alibabacloud:Credential:*",
-    "EncodeUtil": "darabonba:EncodeUtil:*",
-    "SignatureUtil": "darabonba:SignatureUtil:*",
-    "String": "darabonba:String:*",
-    "Map": "darabonba:Map:*",
-    "Array": "darabonba:Array:*"
+    "SignatureUtil": "darabonba:SignatureUtil:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-pop:^0.0.8",
@@ -29,6 +23,7 @@
     "python2": "alibabacloud_gateway_pop_py2:0.0.4",
     "csharp": "AlibabaCloud.GatewayPop:0.0.8",
     "php": "alibabacloud/gateway-pop:^0.0.8",
+    "cpp": "alibabacloud-open-api-v2:master",
     "swift": "alibabacloud-sdk-swift/alibabacloud-gateway-pop:0.0.1"
   },
   "csharp": {
@@ -84,12 +79,9 @@
     }
   },
   "cpp": {
-    "packageInfo": {
-      "git": {
-        "scope": "alibabacloud-sdk-cpp",
-        "project": "gateway-pop"
-      }
-    }
+    "className": "POP",
+    "namespace": "AlibabaCloud::Gateway",
+    "header": "alibabacloud/gateway/POP.hpp"
   },
   "swift": {
     "clientName": "Client",

@@ -1,13 +1,7 @@
 import SPI;
 import Credential;
-import Util;
-import OpenApiUtil;
-import EndpointUtil;
-import EncodeUtil;
+import OpenApi.OpenApiUtil;
 import SignatureUtil;
-import String;
-import Map;
-import Array;
 
 extends SPI;
 
@@ -32,7 +26,7 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
   var request = context.request;
   var config = context.configuration;
   var attributes = attributeMap.key;
-  if (!Util.isUnset(attributes)) {
+  if (!$isNull(attributes)) {
     @signatureTypePrefix = attributes.signatureTypePrefix;
     @signPrefix = attributes.signPrefix;
     @endpointSuffix = attributes.endpointSuffix;
@@ -53,45 +47,45 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     x-acs-action = request.action,
     user-agent = request.userAgent,
     x-acs-date = date,
-    x-acs-signature-nonce = Util.getNonce(),
+    x-acs-signature-nonce = OpenApiUtil.getNonce(),
     accept = 'application/json',
     ...request.headers
   };
-  var signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, @sha256);
-  var hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(''), signatureAlgorithm));
+  var signatureAlgorithm : string = $string($default(request.signatureAlgorithm, @sha256));
+  var hashedRequestPayload = OpenApiUtil.hash($Bytes.from('', 'utf8'), signatureAlgorithm);
 
-  if (!Util.isUnset(request.stream)) {
-    var tmp = Util.readAsBytes(request.stream);
-    hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(tmp, signatureAlgorithm));
+  if (!$isNull(request.stream)) {
+    var tmp = $Stream.readAsBytes(request.stream);
+    hashedRequestPayload = OpenApiUtil.hash(tmp, signatureAlgorithm);
     request.stream = tmp;
     request.headers.content-type = 'application/octet-stream';
   } else {
-    if (!Util.isUnset(request.body)) {
-      if (Util.equalString(request.reqBodyType, 'json')) {
-        var jsonObj = Util.toJSONString(request.body);
-        hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(jsonObj), signatureAlgorithm));
+    if (!$isNull(request.body)) {
+      if (request.reqBodyType == 'json') {
+        var jsonObj = $JSON.stringify(request.body);
+        hashedRequestPayload = OpenApiUtil.hash($Bytes.from(jsonObj, 'utf8'), signatureAlgorithm);
         request.stream = jsonObj;
         request.headers.content-type = 'application/json; charset=utf-8';
       } else {
-        var m = Util.assertAsMap(request.body);
+        var m = $object(request.body);
         var formObj = OpenApiUtil.toForm(m);
-        hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(formObj), signatureAlgorithm));
+        hashedRequestPayload = OpenApiUtil.hash($Bytes.from(formObj, 'utf8'), signatureAlgorithm);
         request.stream = formObj;
         request.headers.content-type = 'application/x-www-form-urlencoded';
       }
     }
   }
 
-  if (Util.equalString(signatureAlgorithm, @sm3)) {
-    request.headers.x-acs-content-sm3 = hashedRequestPayload;
+  if (signatureAlgorithm == @sm3) {
+    request.headers.x-acs-content-sm3 = hashedRequestPayload.toHex();
   } else {
-    request.headers.x-acs-content-sha256 = hashedRequestPayload;
+    request.headers.x-acs-content-sha256 = hashedRequestPayload.toHex();
   }
   
 
-  if (!Util.equalString(request.authType, 'Anonymous')) {
+  if (request.authType != 'Anonymous') {
     var credential : Credential = request.credential;
-    if (Util.isUnset(credential)) {
+    if ($isNull(credential)) {
       throw {
         code = 'ParameterMissing',
         message = '\'config.credential\' can not be unset'
@@ -99,16 +93,16 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     }
 
     var credentialModel = credential.getCredential();
-    if (!Util.empty(credentialModel.providerName)) {
+    if ($isNull(credentialModel.providerName) && credentialModel.providerName != '') {
       request.headers.x-acs-credentials-provider = credentialModel.providerName;
     }
     var authType = credentialModel.type;
-    if (Util.equalString(authType, 'bearer')) {
+    if (authType == 'bearer') {
       var bearerToken = credential.getBearerToken();
       request.headers.x-acs-bearer-token = bearerToken;
       request.headers.x-acs-signature-type = 'BEARERTOKEN';
       request.headers.Authorization = `Bearer ${bearerToken}`;
-    } else if (Util.equalString(authType, 'id_token')) {
+    } else if (authType == 'id_token') {
       var idToken = credentialModel.securityToken;
       request.headers.x-acs-zero-trust-idtoken = idToken;
     } else {
@@ -116,15 +110,15 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       var accessKeySecret = credentialModel.accessKeySecret;
       var securityToken = credentialModel.securityToken;
 
-      if (!Util.empty(securityToken)) {
+      if (!$isNull(securityToken) && securityToken != "") {
         request.headers.x-acs-accesskey-id = accessKeyId;
         request.headers.x-acs-security-token = securityToken;
       }
-      var dateNew = String.subString(date, 0, 10);
-      dateNew = String.replace(dateNew, '-', '', null);
+      var dateNew = date.subString(0, 10);
+      dateNew = dateNew.replace('/-/g', '');
       var region = getRegion(request.productId, config.endpoint, config.regionId);
       var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-      request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+      request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload.toHex(), accessKeyId, signingkey, request.productId, region, dateNew);
     }
     
   }
@@ -133,133 +127,126 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
 async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var response = context.response;
-  if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
-    var _res = Util.readAsJSON(response.body);
-    var err = Util.assertAsMap(_res);
-    var requestId = defaultAny(err.RequestId, err.requestId);
-    if (!Util.isUnset(response.headers.x-acs-request-id)) {
+  if ((response.statusCode >= 400) && (response.statusCode < 600)) {
+    var _res = $Stream.readAsJSON(response.body);
+    var err = $object(_res);
+    var requestId = $default(err.RequestId, err.requestId);
+    if (!$isNull(response.headers.x-acs-request-id)) {
       requestId = response.headers.x-acs-request-id;
     }
     err.statusCode = response.statusCode;
     throw {
-      code = `${defaultAny(err.Code, err.code)}`,
-      message = `code: ${response.statusCode}, ${defaultAny(err.Message, err.message)} request id: ${requestId}`,
+      code = `${$default(err.Code, err.code)}`,
+      message = `code: ${response.statusCode}, ${$default(err.Message, err.message)} request id: ${requestId}`,
       data = err,
-      description = `${defaultAny(err.Description, err.description)}`,
-      accessDeniedDetail = defaultAny(err.AccessDeniedDetail, err.accessDeniedDetail),
+      description = `${$default(err.Description, err.description)}`,
+      accessDeniedDetail = $default(err.AccessDeniedDetail, err.accessDeniedDetail),
     };
   }
-  if (Util.equalNumber(response.statusCode, 204)) {
-      Util.readAsString(response.body);
-  } else if (Util.equalString(request.bodyType, 'binary')) {
+  if (response.statusCode == 204) {
+      $Stream.readAsString(response.body);
+  } else if (request.bodyType == 'binary') {
     response.deserializedBody = response.body;
-  } else if (Util.equalString(request.bodyType, 'byte')) {
-    var byt = Util.readAsBytes(response.body);
+  } else if (request.bodyType == 'byte') {
+    var byt = $Stream.readAsBytes(response.body);
     response.deserializedBody = byt;
-  } else if (Util.equalString(request.bodyType, 'string')) {
-    var str = Util.readAsString(response.body);
+  } else if (request.bodyType == 'string') {
+    var str = $Stream.readAsString(response.body);
     response.deserializedBody = str;
-  } else if (Util.equalString(request.bodyType, 'json')) {
-    var obj = Util.readAsJSON(response.body);
-    var res = Util.assertAsMap(obj);
+  } else if (request.bodyType == 'json') {
+    var obj = $Stream.readAsJSON(response.body);
+    var res = $object(obj);
     response.deserializedBody = res;
-  } else if (Util.equalString(request.bodyType, 'array')) {
-    var arr = Util.readAsJSON(response.body);
+  } else if (request.bodyType == 'array') {
+    var arr = $Stream.readAsJSON(response.body);
     response.deserializedBody = arr;
   } else {
-    response.deserializedBody = Util.readAsString(response.body);
+    response.deserializedBody = $Stream.readAsString(response.body);
   }
 }
 
 function getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string) throws: string{
-  if (!Util.empty(endpoint)) {
+  if (!$isNull(endpoint) && endpoint != '') {
     return endpoint;
   }
 
-  if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
+  if (!$isNull(endpointMap) && !$isNull(endpointMap[regionId]) && endpointMap[regionId] != '') {
     return endpointMap[regionId];
   }
-  return EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
-}
-
-function defaultAny(inputValue: any, defaultValue: any): any {
-  if (Util.isUnset(inputValue)) {
-    return defaultValue;
-  }
-  return inputValue;
+  return OpenApiUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
 }
 
 async function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, signingkey: bytes, product: string, region: string, date: string): string {
   var signature = getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
   var signedHeaders = getSignedHeaders(headers);
-  var signedHeadersStr = Array.join(signedHeaders, ';');
+  var signedHeadersStr = signedHeaders.join(';');
   return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${@signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
 }
 
 async function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, signingkey: bytes): string {
   var canonicalURI : string = '/';
-  if (!Util.empty(pathname)) {
+  if (!$isNull(pathname) && pathname != '') {
     canonicalURI = pathname;
   }
   var stringToSign : string = '';
   var canonicalizedResource = buildCanonicalizedResource(query);
   var canonicalizedHeaders = buildCanonicalizedHeaders(headers);
   var signedHeaders = getSignedHeaders(headers);
-  var signedHeadersStr = Array.join(signedHeaders, ';');
+  var signedHeadersStr = signedHeaders.join(';');
   stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
-  var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
-  stringToSign = `${signatureAlgorithm}\n${hex}`;
-  var signature = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  var hex = OpenApiUtil.hash($Bytes.from(stringToSign, 'utf8'), signatureAlgorithm);
+  stringToSign = `${signatureAlgorithm}\n${hex.toHex()}`;
+  var signature = $Bytes.from('', 'utf8');
+  if (signatureAlgorithm == @sha256) {
     signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (signatureAlgorithm == @sm3) {
     signature = SignatureUtil.HmacSM3SignByBytes(stringToSign, signingkey);
   }
-  return EncodeUtil.hexEncode(signature);
+  return signature.toHex();
 }
 
 async function getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): bytes {
   var sc1 = `${@signPrefix}${secret}`;
-  var sc2 = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  var sc2 = $Bytes.from('', 'utf8');
+  if (signatureAlgorithm == @sha256) {
     sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (signatureAlgorithm == @sm3) {
     sc2 = SignatureUtil.HmacSM3Sign(date, sc1);
   }
-  var sc3 = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  var sc3 = $Bytes.from('', 'utf8');
+  if (signatureAlgorithm == @sha256) {
     sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (signatureAlgorithm == @sm3) {
     sc3 = SignatureUtil.HmacSM3SignByBytes(region, sc2);
   }
-  var sc4 = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  var sc4 = $Bytes.from('', 'utf8');
+  if (signatureAlgorithm == @sha256) {
     sc4 = SignatureUtil.HmacSHA256SignByBytes(product, sc3);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (signatureAlgorithm == @sm3) {
     sc4 = SignatureUtil.HmacSM3SignByBytes(product, sc3);
   }
-  var hmac = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  var hmac = $Bytes.from('', 'utf8');
+  if (signatureAlgorithm == @sha256) {
     hmac = SignatureUtil.HmacSHA256SignByBytes(`${@signPrefix}_request`, sc4);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (signatureAlgorithm == @sm3) {
     hmac = SignatureUtil.HmacSM3SignByBytes(`${@signPrefix}_request`, sc4);
   }
   return hmac;
 }
 
 function getRegion(product: string, endpoint: string, regionId: string): string {
-  if (!Util.empty(regionId)) {
+  if (!$isNull(regionId) && regionId != '') {
     return regionId;
   }
   var region = 'center';
-  if (Util.empty(product) || Util.empty(endpoint)) {
+  if ((product == '') || (endpoint == '')) {
     return region;
   }
-  var strs : [string] = String.split(endpoint, ':', null);
+  var strs : [string] = endpoint.split(':');
   var withoutPort : string = strs[0];
-  var preRegion: string = String.replace(withoutPort, `.${@endpointSuffix}`, '', null);
-  var nodes = String.split(preRegion, '.', null);
-  if (Util.equalNumber(Array.size(nodes), 2)) {
+  var preRegion: string = withoutPort.replace(`.${@endpointSuffix}`, '');
+  var nodes = preRegion.split('.');
+  if (nodes.length() == 2) {
     region = nodes[1];
   }
   return region;
@@ -267,14 +254,14 @@ function getRegion(product: string, endpoint: string, regionId: string): string 
 
 async function buildCanonicalizedResource(query: map[string]string): string {
   var canonicalizedResource : string = '';
-  if (!Util.isUnset(query)) {
-    var queryArray : [string] = Map.keySet(query);
-    var sortedQueryArray = Array.ascSort(queryArray);
+  if (!$isNull(query)) {
+    var queryArray : [string] = query.keySet();
+    var sortedQueryArray = queryArray.sort('asc');
     var separator : string = '';
     for(var key : sortedQueryArray) {
-      canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
-      if (!Util.empty(query[key])) {
-        canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+      canonicalizedResource = `${canonicalizedResource}${separator}${$URL.percentEncode(key)}`;
+      if (!$isNull(query[key]) && query[key] != '') {
+        canonicalizedResource = `${canonicalizedResource}=${$URL.percentEncode(query[key])}`;
       }
       separator = '&';
     }
@@ -286,25 +273,26 @@ async function buildCanonicalizedHeaders(headers: map[string]string): string {
   var canonicalizedHeaders : string = '';
   var sortedHeaders : [string] = getSignedHeaders(headers);
   for(var header : sortedHeaders) {
-    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
+    var headerValue = headers[header];
+    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${headerValue.trim()}\n`;
   }
   return canonicalizedHeaders;
 }
 
 async function getSignedHeaders(headers: map[string]string): [string] {
-  var headersArray : [string] = Map.keySet(headers);
-  var sortedHeadersArray = Array.ascSort(headersArray);
+  var headersArray : [string] = headers.keySet();
+  var sortedHeadersArray = headersArray.sort('asc');
   var tmp : string = '';
   var separator : string = '';
   for(var key : sortedHeadersArray) {
-    var lowerKey = String.toLower(key);
-    if (String.hasPrefix(lowerKey, 'x-acs-') || String.equals(lowerKey, 'host')
-            || String.equals(lowerKey, 'content-type')) {
-      if (!String.contains(tmp, lowerKey)) {
+    var lowerKey = key.toLower();
+    if (lowerKey.hasPrefix('x-acs-') || (lowerKey == 'host')
+            || (lowerKey == 'content-type')) {
+      if (!tmp.contains(lowerKey)) {
         tmp = `${tmp}${separator}${lowerKey}`;
         separator = ';';
       }
     }
   }
-  return String.split(tmp, ';', null);
+  return tmp.split(';');
 }
