@@ -76,12 +76,14 @@ class Client extends DarabonbaGatewaySpiClient
         $request->headers = Tea::merge([
             "host" => $config->endpoint,
             "x-acs-version" => $request->version,
-            "x-acs-action" => $request->action,
             "user-agent" => $request->userAgent,
             "x-acs-date" => $date,
             "x-acs-signature-nonce" => Utils::getNonce(),
             "accept" => "application/json"
         ], $request->headers);
+        if (!Utils::empty_($request->action)) {
+            $request->headers["x-acs-action"] = $request->action;
+        }
         $signatureAlgorithm = Utils::defaultString($request->signatureAlgorithm, $this->_sha256);
         $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes(""), $signatureAlgorithm));
         if (!Utils::isUnset($request->stream)) {
@@ -91,7 +93,11 @@ class Client extends DarabonbaGatewaySpiClient
             $request->headers["content-type"] = "application/octet-stream";
         } else {
             if (!Utils::isUnset($request->body)) {
-                if (Utils::equalString($request->reqBodyType, "json")) {
+                if (Utils::equalString($request->reqBodyType, "byte")) {
+                    $byteObj = Utils::assertAsBytes($request->body);
+                    $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash($byteObj, $signatureAlgorithm));
+                    $request->stream = $byteObj;
+                } else if (Utils::equalString($request->reqBodyType, "json")) {
                     $jsonObj = Utils::toJSONString($request->body);
                     $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($jsonObj), $signatureAlgorithm));
                     $request->stream = $jsonObj;
@@ -360,9 +366,9 @@ class Client extends DarabonbaGatewaySpiClient
             $sortedQueryArray = ArrayUtil::ascSort($queryArray);
             $separator = "";
             foreach ($sortedQueryArray as $key) {
-                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . EncodeUtil::percentEncode($key) . "";
+                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . EncodeUtil::percentEncode($key) . "=";
                 if (!Utils::empty_(@$query[$key])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "=" . EncodeUtil::percentEncode(@$query[$key]) . "";
+                    $canonicalizedResource = "" . $canonicalizedResource . "" . EncodeUtil::percentEncode(@$query[$key]) . "";
                 }
                 $separator = "&";
             }

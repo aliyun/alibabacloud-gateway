@@ -53,13 +53,16 @@ export default class Client extends SPI {
     request.headers = {
       host: config.endpoint,
       'x-acs-version': request.version,
-      'x-acs-action': request.action,
       'user-agent': request.userAgent,
       'x-acs-date': date,
       'x-acs-signature-nonce': Util.getNonce(),
       accept: "application/json",
       ...request.headers,
     };
+    if (!Util.empty(request.action)) {
+      request.headers["x-acs-action"] = request.action;
+    }
+
     let signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, this._sha256);
     let hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(""), signatureAlgorithm));
     if (!Util.isUnset(request.stream)) {
@@ -69,7 +72,11 @@ export default class Client extends SPI {
       request.headers["content-type"] = "application/octet-stream";
     } else {
       if (!Util.isUnset(request.body)) {
-        if (Util.equalString(request.reqBodyType, "json")) {
+        if (Util.equalString(request.reqBodyType, "byte")) {
+          let byteObj = Util.assertAsBytes(request.body);
+          hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(byteObj, signatureAlgorithm));
+          request.stream = new $tea.BytesReadable(byteObj);
+        } else if (Util.equalString(request.reqBodyType, "json")) {
           let jsonObj = Util.toJSONString(request.body);
           hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(jsonObj), signatureAlgorithm));
           request.stream = new $tea.BytesReadable(jsonObj);
@@ -108,7 +115,7 @@ export default class Client extends SPI {
 
       let authType = credentialModel.type;
       if (Util.equalString(authType, "bearer")) {
-        let bearerToken = credential.getBearerToken();
+        let bearerToken = credentialModel.bearerToken;
         request.headers["x-acs-bearer-token"] = bearerToken;
         request.headers["x-acs-signature-type"] = "BEARERTOKEN";
         request.headers["Authorization"] = `Bearer ${bearerToken}`;
@@ -127,8 +134,8 @@ export default class Client extends SPI {
         let dateNew = String.subString(date, 0, 10);
         dateNew = String.replace(dateNew, "-", "", null);
         let region = this.getRegion(request.productId, config.endpoint, config.regionId);
-        let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-        request.headers["Authorization"] = await this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+        let signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
+        request.headers["Authorization"] = this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
       }
 
     }
@@ -199,23 +206,23 @@ export default class Client extends SPI {
     return inputValue;
   }
 
-  async getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, signingkey: Buffer, product: string, region: string, date: string): Promise<string> {
-    let signature = await this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
-    let signedHeaders = await this.getSignedHeaders(headers);
+  getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, signingkey: Buffer, product: string, region: string, date: string): string {
+    let signature = this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
+    let signedHeaders = this.getSignedHeaders(headers);
     let signedHeadersStr = Array.join(signedHeaders, ";");
     return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${this._signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
-  async getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer): Promise<string> {
+  getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer): string {
     let canonicalURI : string = "/";
     if (!Util.empty(pathname)) {
       canonicalURI = pathname;
     }
 
     let stringToSign : string = "";
-    let canonicalizedResource = await this.buildCanonicalizedResource(query);
-    let canonicalizedHeaders = await this.buildCanonicalizedHeaders(headers);
-    let signedHeaders = await this.getSignedHeaders(headers);
+    let canonicalizedResource = this.buildCanonicalizedResource(query);
+    let canonicalizedHeaders = this.buildCanonicalizedHeaders(headers);
+    let signedHeaders = this.getSignedHeaders(headers);
     let signedHeadersStr = Array.join(signedHeaders, ";");
     stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
     let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
@@ -230,7 +237,7 @@ export default class Client extends SPI {
     return EncodeUtil.hexEncode(signature);
   }
 
-  async getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Promise<Buffer> {
+  getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Buffer {
     let sc1 = `${this._signPrefix}${secret}`;
     let sc2 = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
@@ -284,7 +291,7 @@ export default class Client extends SPI {
     return region;
   }
 
-  async buildCanonicalizedResource(query: {[key: string ]: string}): Promise<string> {
+  buildCanonicalizedResource(query: {[key: string ]: string}): string {
     let canonicalizedResource : string = "";
     if (!Util.isUnset(query)) {
       let queryArray : string[] = Map.keySet(query);
@@ -292,9 +299,9 @@ export default class Client extends SPI {
       let separator : string = "";
 
       for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}`;
+        canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}=`;
         if (!Util.empty(query[key])) {
-          canonicalizedResource = `${canonicalizedResource}=${EncodeUtil.percentEncode(query[key])}`;
+          canonicalizedResource = `${canonicalizedResource}${EncodeUtil.percentEncode(query[key])}`;
         }
 
         separator = "&";
@@ -304,9 +311,9 @@ export default class Client extends SPI {
     return canonicalizedResource;
   }
 
-  async buildCanonicalizedHeaders(headers: {[key: string ]: string}): Promise<string> {
+  buildCanonicalizedHeaders(headers: {[key: string ]: string}): string {
     let canonicalizedHeaders : string = "";
-    let sortedHeaders : string[] = await this.getSignedHeaders(headers);
+    let sortedHeaders : string[] = this.getSignedHeaders(headers);
 
     for (let header of sortedHeaders) {
       canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
@@ -314,7 +321,7 @@ export default class Client extends SPI {
     return canonicalizedHeaders;
   }
 
-  async getSignedHeaders(headers: {[key: string ]: string}): Promise<string[]> {
+  getSignedHeaders(headers: {[key: string ]: string}): string[] {
     let headersArray : string[] = Map.keySet(headers);
     let sortedHeadersArray = Array.ascSort(headersArray);
     let tmp : string = "";

@@ -71,12 +71,15 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	request.Headers = tea.Merge(map[string]*string{
 		"host":                  config.Endpoint,
 		"x-acs-version":         request.Version,
-		"x-acs-action":          request.Action,
 		"user-agent":            request.UserAgent,
 		"x-acs-date":            date,
 		"x-acs-signature-nonce": util.GetNonce(),
 		"accept":                tea.String("application/json"),
 	}, request.Headers)
+	if !tea.BoolValue(util.Empty(request.Action)) {
+		request.Headers["x-acs-action"] = request.Action
+	}
+
 	signatureAlgorithm := util.DefaultString(request.SignatureAlgorithm, client.Sha256)
 	hashedRequestPayload := encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(tea.String("")), signatureAlgorithm))
 	if !tea.BoolValue(util.IsUnset(request.Stream)) {
@@ -90,7 +93,15 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		request.Headers["content-type"] = tea.String("application/octet-stream")
 	} else {
 		if !tea.BoolValue(util.IsUnset(request.Body)) {
-			if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("json"))) {
+			if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("byte"))) {
+				byteObj, _err := util.AssertAsBytes(request.Body)
+				if _err != nil {
+					return _err
+				}
+
+				hashedRequestPayload = encodeutil.HexEncode(encodeutil.Hash(byteObj, signatureAlgorithm))
+				request.Stream = tea.ToReader(byteObj)
+			} else if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("json"))) {
 				jsonObj := util.ToJSONString(request.Body)
 				hashedRequestPayload = encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(jsonObj), signatureAlgorithm))
 				request.Stream = tea.ToReader(jsonObj)
@@ -138,7 +149,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 		authType := credentialModel.Type
 		if tea.BoolValue(util.EqualString(authType, tea.String("bearer"))) {
-			bearerToken := credential.GetBearerToken()
+			bearerToken := credentialModel.BearerToken
 			request.Headers["x-acs-bearer-token"] = bearerToken
 			request.Headers["x-acs-signature-type"] = tea.String("BEARERTOKEN")
 			request.Headers["Authorization"] = tea.String("Bearer " + tea.StringValue(bearerToken))
@@ -157,16 +168,8 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
 			dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
 			region := client.GetRegion(request.ProductId, config.Endpoint, config.RegionId)
-			signingkey, _err := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
-			if _err != nil {
-				return _err
-			}
-
-			request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
-			if _err != nil {
-				return _err
-			}
-
+			signingkey := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
+			request.Headers["Authorization"] = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
 		}
 
 	}
@@ -284,44 +287,24 @@ func (client *Client) DefaultAny(inputValue interface{}, defaultValue interface{
 	return _result
 }
 
-func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string) (_result *string, _err error) {
-	signature, _err := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey)
-	if _err != nil {
-		return _result, _err
-	}
-
-	signedHeaders, _err := client.GetSignedHeaders(headers)
-	if _err != nil {
-		return _result, _err
-	}
-
+func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string) (_result *string) {
+	signature := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey)
+	signedHeaders := client.GetSignedHeaders(headers)
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
 	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + "/" + tea.StringValue(date) + "/" + tea.StringValue(region) + "/" + tea.StringValue(product) + "/" + tea.StringValue(client.SignPrefix) + "_request,SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
-	return _result, _err
+	return _result
 }
 
-func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string, _err error) {
+func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string) {
 	canonicalURI := tea.String("/")
 	if !tea.BoolValue(util.Empty(pathname)) {
 		canonicalURI = pathname
 	}
 
 	stringToSign := tea.String("")
-	canonicalizedResource, _err := client.BuildCanonicalizedResource(query)
-	if _err != nil {
-		return _result, _err
-	}
-
-	canonicalizedHeaders, _err := client.BuildCanonicalizedHeaders(headers)
-	if _err != nil {
-		return _result, _err
-	}
-
-	signedHeaders, _err := client.GetSignedHeaders(headers)
-	if _err != nil {
-		return _result, _err
-	}
-
+	canonicalizedResource := client.BuildCanonicalizedResource(query)
+	canonicalizedHeaders := client.BuildCanonicalizedHeaders(headers)
+	signedHeaders := client.GetSignedHeaders(headers)
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
 	stringToSign = tea.String(tea.StringValue(method) + "\n" + tea.StringValue(canonicalURI) + "\n" + tea.StringValue(canonicalizedResource) + "\n" + tea.StringValue(canonicalizedHeaders) + "\n" + tea.StringValue(signedHeadersStr) + "\n" + tea.StringValue(payload))
 	hex := encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(stringToSign), signatureAlgorithm))
@@ -335,10 +318,10 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 
 	_body := encodeutil.HexEncode(signature)
 	_result = _body
-	return _result, _err
+	return _result
 }
 
-func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte, _err error) {
+func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte) {
 	sc1 := tea.String(tea.StringValue(client.SignPrefix) + tea.StringValue(secret))
 	sc2 := util.ToBytes(tea.String(""))
 	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
@@ -369,7 +352,7 @@ func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, 
 	}
 
 	_result = hmac
-	return _result, _err
+	return _result
 }
 
 func (client *Client) GetRegion(product *string, endpoint *string, regionId *string) (_result *string) {
@@ -396,16 +379,16 @@ func (client *Client) GetRegion(product *string, endpoint *string, regionId *str
 	return _result
 }
 
-func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_result *string, _err error) {
+func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_result *string) {
 	canonicalizedResource := tea.String("")
 	if !tea.BoolValue(util.IsUnset(query)) {
 		queryArray := map_.KeySet(query)
 		sortedQueryArray := array.AscSort(queryArray)
 		separator := tea.String("")
 		for _, key := range sortedQueryArray {
-			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(encodeutil.PercentEncode(key)))
+			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(encodeutil.PercentEncode(key)) + "=")
 			if !tea.BoolValue(util.Empty(query[tea.StringValue(key)])) {
-				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + "=" + tea.StringValue(encodeutil.PercentEncode(query[tea.StringValue(key)])))
+				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(encodeutil.PercentEncode(query[tea.StringValue(key)])))
 			}
 
 			separator = tea.String("&")
@@ -413,24 +396,20 @@ func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_res
 	}
 
 	_result = canonicalizedResource
-	return _result, _err
+	return _result
 }
 
-func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_result *string, _err error) {
+func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_result *string) {
 	canonicalizedHeaders := tea.String("")
-	sortedHeaders, _err := client.GetSignedHeaders(headers)
-	if _err != nil {
-		return _result, _err
-	}
-
+	sortedHeaders := client.GetSignedHeaders(headers)
 	for _, header := range sortedHeaders {
 		canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(header) + ":" + tea.StringValue(string_.Trim(headers[tea.StringValue(header)])) + "\n")
 	}
 	_result = canonicalizedHeaders
-	return _result, _err
+	return _result
 }
 
-func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*string, _err error) {
+func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*string) {
 	headersArray := map_.KeySet(headers)
 	sortedHeadersArray := array.AscSort(headersArray)
 	tmp := tea.String("")
@@ -449,5 +428,5 @@ func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*s
 	_result = make([]*string, 0)
 	_body := string_.Split(tmp, tea.String(";"), nil)
 	_result = _body
-	return _result, _err
+	return _result
 }

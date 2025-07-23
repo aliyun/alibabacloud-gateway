@@ -26,7 +26,7 @@
     "@alicloud/credentials": "^2.4.2",
     "@alicloud/tea-util": "^1.4.9",
     "@alicloud/openapi-util": "^0.3.2",
-    "@alicloud/endpoint-util": "^0.0.1",
+    "@alicloud/endpoint-util": "^0.0.2",
     "@alicloud/darabonba-encode-util": "^0.0.2",
     "@alicloud/darabonba-signature-util": "^0.0.4",
     "@alicloud/darabonba-string": "^1.0.2",

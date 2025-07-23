@@ -45,7 +45,6 @@ public class Client extends com.aliyun.gateway.spi.Client {
             TeaConverter.buildMap(
                 new TeaPair("host", config.endpoint),
                 new TeaPair("x-acs-version", request.version),
-                new TeaPair("x-acs-action", request.action),
                 new TeaPair("user-agent", request.userAgent),
                 new TeaPair("x-acs-date", date),
                 new TeaPair("x-acs-signature-nonce", com.aliyun.teautil.Common.getNonce()),
@@ -53,6 +52,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ),
             request.headers
         );
+        if (!com.aliyun.teautil.Common.empty(request.action)) {
+            request.headers.put("x-acs-action", request.action);
+        }
+
         String signatureAlgorithm = com.aliyun.teautil.Common.defaultString(request.signatureAlgorithm, _sha256);
         String hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(""), signatureAlgorithm));
         if (!com.aliyun.teautil.Common.isUnset(request.stream)) {
@@ -62,7 +65,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
             request.headers.put("content-type", "application/octet-stream");
         } else {
             if (!com.aliyun.teautil.Common.isUnset(request.body)) {
-                if (com.aliyun.teautil.Common.equalString(request.reqBodyType, "json")) {
+                if (com.aliyun.teautil.Common.equalString(request.reqBodyType, "byte")) {
+                    byte[] byteObj = com.aliyun.teautil.Common.assertAsBytes(request.body);
+                    hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(byteObj, signatureAlgorithm));
+                    request.stream = Tea.toReadable(byteObj);
+                } else if (com.aliyun.teautil.Common.equalString(request.reqBodyType, "json")) {
                     String jsonObj = com.aliyun.teautil.Common.toJSONString(request.body);
                     hashedRequestPayload = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(jsonObj), signatureAlgorithm));
                     request.stream = Tea.toReadable(jsonObj);
@@ -101,7 +108,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
             String authType = credentialModel.type;
             if (com.aliyun.teautil.Common.equalString(authType, "bearer")) {
-                String bearerToken = credential.getBearerToken();
+                String bearerToken = credentialModel.bearerToken;
                 request.headers.put("x-acs-bearer-token", bearerToken);
                 request.headers.put("x-acs-signature-type", "BEARERTOKEN");
                 request.headers.put("Authorization", "Bearer " + bearerToken + "");
@@ -284,9 +291,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
             java.util.List<String> sortedQueryArray = com.aliyun.darabonba.array.Client.ascSort(queryArray);
             String separator = "";
             for (String key : sortedQueryArray) {
-                canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + com.aliyun.darabonba.encode.Encoder.percentEncode(key) + "";
+                canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + com.aliyun.darabonba.encode.Encoder.percentEncode(key) + "=";
                 if (!com.aliyun.teautil.Common.empty(query.get(key))) {
-                    canonicalizedResource = "" + canonicalizedResource + "=" + com.aliyun.darabonba.encode.Encoder.percentEncode(query.get(key)) + "";
+                    canonicalizedResource = "" + canonicalizedResource + "" + com.aliyun.darabonba.encode.Encoder.percentEncode(query.get(key)) + "";
                 }
 
                 separator = "&";
