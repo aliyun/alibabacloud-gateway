@@ -76,12 +76,13 @@ class Client(SPIClient):
         request.headers = TeaCore.merge({
             'host': config.endpoint,
             'x-acs-version': request.version,
-            'x-acs-action': request.action,
             'user-agent': request.user_agent,
             'x-acs-date': date,
             'x-acs-signature-nonce': UtilClient.get_nonce(),
             'accept': 'application/json'
         }, request.headers)
+        if not UtilClient.empty(request.action):
+            request.headers['x-acs-action'] = request.action
         signature_algorithm = UtilClient.default_string(request.signature_algorithm, self._sha_256)
         hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(''), signature_algorithm))
         if not UtilClient.is_unset(request.stream):
@@ -91,7 +92,11 @@ class Client(SPIClient):
             request.headers['content-type'] = 'application/octet-stream'
         else:
             if not UtilClient.is_unset(request.body):
-                if UtilClient.equal_string(request.req_body_type, 'json'):
+                if UtilClient.equal_string(request.req_body_type, 'byte'):
+                    byte_obj = UtilClient.assert_as_bytes(request.body)
+                    hashed_request_payload = Encoder.hex_encode(Encoder.hash(byte_obj, signature_algorithm))
+                    request.stream = byte_obj
+                elif UtilClient.equal_string(request.req_body_type, 'json'):
                     json_obj = UtilClient.to_jsonstring(request.body)
                     hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(json_obj), signature_algorithm))
                     request.stream = json_obj
@@ -118,7 +123,7 @@ class Client(SPIClient):
                 request.headers['x-acs-credentials-provider'] = credential_model.provider_name
             auth_type = credential_model.type
             if UtilClient.equal_string(auth_type, 'bearer'):
-                bearer_token = credential.get_bearer_token()
+                bearer_token = credential_model.bearer_token
                 request.headers['x-acs-bearer-token'] = bearer_token
                 request.headers['x-acs-signature-type'] = 'BEARERTOKEN'
                 request.headers['Authorization'] = f'Bearer {bearer_token}'
@@ -149,12 +154,13 @@ class Client(SPIClient):
         request.headers = TeaCore.merge({
             'host': config.endpoint,
             'x-acs-version': request.version,
-            'x-acs-action': request.action,
             'user-agent': request.user_agent,
             'x-acs-date': date,
             'x-acs-signature-nonce': UtilClient.get_nonce(),
             'accept': 'application/json'
         }, request.headers)
+        if not UtilClient.empty(request.action):
+            request.headers['x-acs-action'] = request.action
         signature_algorithm = UtilClient.default_string(request.signature_algorithm, self._sha_256)
         hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(''), signature_algorithm))
         if not UtilClient.is_unset(request.stream):
@@ -164,7 +170,11 @@ class Client(SPIClient):
             request.headers['content-type'] = 'application/octet-stream'
         else:
             if not UtilClient.is_unset(request.body):
-                if UtilClient.equal_string(request.req_body_type, 'json'):
+                if UtilClient.equal_string(request.req_body_type, 'byte'):
+                    byte_obj = UtilClient.assert_as_bytes(request.body)
+                    hashed_request_payload = Encoder.hex_encode(Encoder.hash(byte_obj, signature_algorithm))
+                    request.stream = byte_obj
+                elif UtilClient.equal_string(request.req_body_type, 'json'):
                     json_obj = UtilClient.to_jsonstring(request.body)
                     hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(json_obj), signature_algorithm))
                     request.stream = json_obj
@@ -191,7 +201,7 @@ class Client(SPIClient):
                 request.headers['x-acs-credentials-provider'] = credential_model.provider_name
             auth_type = credential_model.type
             if UtilClient.equal_string(auth_type, 'bearer'):
-                bearer_token = credential.get_bearer_token()
+                bearer_token = credential_model.bearer_token
                 request.headers['x-acs-bearer-token'] = bearer_token
                 request.headers['x-acs-signature-type'] = 'BEARERTOKEN'
                 request.headers['Authorization'] = f'Bearer {bearer_token}'
@@ -208,8 +218,8 @@ class Client(SPIClient):
                 date_new = StringClient.sub_string(date, 0, 10)
                 date_new = StringClient.replace(date_new, '-', '', None)
                 region = self.get_region(request.product_id, config.endpoint, config.region_id)
-                signingkey = await self.get_signingkey_async(signature_algorithm, access_key_secret, request.product_id, region, date_new)
-                request.headers['Authorization'] = await self.get_authorization_async(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
+                signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
+                request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
     def modify_response(
         self,
@@ -337,25 +347,6 @@ class Client(SPIClient):
         signed_headers_str = ArrayClient.join(signed_headers, ';')
         return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/{self._sign_prefix}_request,SignedHeaders={signed_headers_str},Signature={signature}'
 
-    async def get_authorization_async(
-        self,
-        pathname: str,
-        method: str,
-        query: Dict[str, str],
-        headers: Dict[str, str],
-        signature_algorithm: str,
-        payload: str,
-        ak: str,
-        signingkey: bytes,
-        product: str,
-        region: str,
-        date: str,
-    ) -> str:
-        signature = await self.get_signature_async(pathname, method, query, headers, signature_algorithm, payload, signingkey)
-        signed_headers = await self.get_signed_headers_async(headers)
-        signed_headers_str = ArrayClient.join(signed_headers, ';')
-        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/{self._sign_prefix}_request,SignedHeaders={signed_headers_str},Signature={signature}'
-
     def get_signature(
         self,
         pathname: str,
@@ -384,66 +375,7 @@ class Client(SPIClient):
             signature = Signer.hmac_sm3sign_by_bytes(string_to_sign, signingkey)
         return Encoder.hex_encode(signature)
 
-    async def get_signature_async(
-        self,
-        pathname: str,
-        method: str,
-        query: Dict[str, str],
-        headers: Dict[str, str],
-        signature_algorithm: str,
-        payload: str,
-        signingkey: bytes,
-    ) -> str:
-        canonical_uri = '/'
-        if not UtilClient.empty(pathname):
-            canonical_uri = pathname
-        string_to_sign = ''
-        canonicalized_resource = await self.build_canonicalized_resource_async(query)
-        canonicalized_headers = await self.build_canonicalized_headers_async(headers)
-        signed_headers = await self.get_signed_headers_async(headers)
-        signed_headers_str = ArrayClient.join(signed_headers, ';')
-        string_to_sign = f'{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
-        hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
-        string_to_sign = f'{signature_algorithm}\n{hex}'
-        signature = UtilClient.to_bytes('')
-        if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            signature = Signer.hmac_sha256sign_by_bytes(string_to_sign, signingkey)
-        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            signature = Signer.hmac_sm3sign_by_bytes(string_to_sign, signingkey)
-        return Encoder.hex_encode(signature)
-
     def get_signingkey(
-        self,
-        signature_algorithm: str,
-        secret: str,
-        product: str,
-        region: str,
-        date: str,
-    ) -> bytes:
-        sc_1 = f'{self._sign_prefix}{secret}'
-        sc_2 = UtilClient.to_bytes('')
-        if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            sc_2 = Signer.hmac_sha256sign(date, sc_1)
-        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            sc_2 = Signer.hmac_sm3sign(date, sc_1)
-        sc_3 = UtilClient.to_bytes('')
-        if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            sc_3 = Signer.hmac_sha256sign_by_bytes(region, sc_2)
-        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            sc_3 = Signer.hmac_sm3sign_by_bytes(region, sc_2)
-        sc_4 = UtilClient.to_bytes('')
-        if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            sc_4 = Signer.hmac_sha256sign_by_bytes(product, sc_3)
-        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            sc_4 = Signer.hmac_sm3sign_by_bytes(product, sc_3)
-        hmac = UtilClient.to_bytes('')
-        if UtilClient.equal_string(signature_algorithm, self._sha_256):
-            hmac = Signer.hmac_sha256sign_by_bytes(f'{self._sign_prefix}_request', sc_4)
-        elif UtilClient.equal_string(signature_algorithm, self._sm_3):
-            hmac = Signer.hmac_sm3sign_by_bytes(f'{self._sign_prefix}_request', sc_4)
-        return hmac
-
-    async def get_signingkey_async(
         self,
         signature_algorithm: str,
         secret: str,
@@ -503,25 +435,9 @@ class Client(SPIClient):
             sorted_query_array = ArrayClient.asc_sort(query_array)
             separator = ''
             for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}'
+                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}='
                 if not UtilClient.empty(query.get(key)):
-                    canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
-                separator = '&'
-        return canonicalized_resource
-
-    async def build_canonicalized_resource_async(
-        self,
-        query: Dict[str, str],
-    ) -> str:
-        canonicalized_resource = ''
-        if not UtilClient.is_unset(query):
-            query_array = MapClient.key_set(query)
-            sorted_query_array = ArrayClient.asc_sort(query_array)
-            separator = ''
-            for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}{separator}{Encoder.percent_encode(key)}'
-                if not UtilClient.empty(query.get(key)):
-                    canonicalized_resource = f'{canonicalized_resource}={Encoder.percent_encode(query.get(key))}'
+                    canonicalized_resource = f'{canonicalized_resource}{Encoder.percent_encode(query.get(key))}'
                 separator = '&'
         return canonicalized_resource
 
@@ -535,33 +451,7 @@ class Client(SPIClient):
             canonicalized_headers = f'{canonicalized_headers}{header}:{StringClient.trim(headers.get(header))}\n'
         return canonicalized_headers
 
-    async def build_canonicalized_headers_async(
-        self,
-        headers: Dict[str, str],
-    ) -> str:
-        canonicalized_headers = ''
-        sorted_headers = await self.get_signed_headers_async(headers)
-        for header in sorted_headers:
-            canonicalized_headers = f'{canonicalized_headers}{header}:{StringClient.trim(headers.get(header))}\n'
-        return canonicalized_headers
-
     def get_signed_headers(
-        self,
-        headers: Dict[str, str],
-    ) -> List[str]:
-        headers_array = MapClient.key_set(headers)
-        sorted_headers_array = ArrayClient.asc_sort(headers_array)
-        tmp = ''
-        separator = ''
-        for key in sorted_headers_array:
-            lower_key = StringClient.to_lower(key)
-            if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
-                    tmp = f'{tmp}{separator}{lower_key}'
-                    separator = ';'
-        return StringClient.split(tmp, ';', None)
-
-    async def get_signed_headers_async(
         self,
         headers: Dict[str, str],
     ) -> List[str]:
