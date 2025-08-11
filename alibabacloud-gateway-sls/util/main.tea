@@ -19,3 +19,5 @@ static async function isCompressorAvailable(compressType: string): boolean
 static async function isDecompressorAvailable(compressType: string): boolean
 
 static async function bytesLength(src: bytes): int64
+static function serializeToPbBytes(request: any) : bytes;
+static function deserializeFromPbBytes(data: bytes, statusCode: integer, headers: map[string]string) : any;
