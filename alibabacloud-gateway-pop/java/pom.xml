@@ -41,9 +41,9 @@
     </repository>
   </distributionManagement>
   <scm>
-    <connection/>
-    <developerConnection/>
-    <url/>
+    <connection>scm:git:git://github.com/aliyun/alibabacloud-gateway.git</connection>
+        <developerConnection>scm:git:git@github.com:aliyun/alibabacloud-gateway.git</developerConnection>
+        <url>https://github.com/aliyun/alibabacloud-gateway</url>
   </scm>
   <dependencies>
     <dependency>
