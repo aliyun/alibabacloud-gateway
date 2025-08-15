@@ -19,7 +19,8 @@
     "SignatureUtil": "darabonba:SignatureUtil:*",
     "String": "darabonba:String:*",
     "Map": "darabonba:Map:*",
-    "Array": "darabonba:Array:*"
+    "Array": "darabonba:Array:*",
+    "XML": "darabonba:XML:*"
   },
   "releases": {
     "ts": "@alicloud/gateway-pop:^0.0.9",

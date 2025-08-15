@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_pop.
 
-Created on 23/07/2025
+Created on 15/08/2025
 
 @author: Alibaba Cloud SDK
 """
@@ -38,7 +38,7 @@ URL = "https://github.com/aliyun/alibabacloud-gateway"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
     "alibabacloud_gateway_spi>=0.0.2, <1.0.0",
-    "alibabacloud_credentials>=0.3.6",
+    "alibabacloud_credentials>=1.0.2, <2.0.0",
     "alibabacloud_tea_util>=0.3.13, <1.0.0",
     "alibabacloud_openapi_util>=0.2.2, <1.0.0",
     "alibabacloud_endpoint_util>=0.0.4, <1.0.0",
@@ -46,7 +46,8 @@ REQUIRES = [
     "alibabacloud_darabonba_signature_util>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_string>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map>=0.0.1, <1.0.0",
-    "alibabacloud_darabonba_array>=0.1.0, <1.0.0"
+    "alibabacloud_darabonba_array>=0.1.0, <1.0.0",
+    "alibabacloud_tea_xml>=0.0.3, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''
@@ -69,17 +70,19 @@ setup(
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     classifiers=(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         "Topic :: Software Development"
     )
 )

@@ -10,6 +10,7 @@ use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\Darabonba\String\StringUtil;
+use AlibabaCloud\Tea\XML\XML;
 use AlibabaCloud\Endpoint\Endpoint;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
@@ -130,7 +131,7 @@ class Client extends DarabonbaGatewaySpiClient
             }
             $authType = $credentialModel->type;
             if (Utils::equalString($authType, "bearer")) {
-                $bearerToken = $credential->getBearerToken();
+                $bearerToken = $credentialModel->bearerToken;
                 $request->headers["x-acs-bearer-token"] = $bearerToken;
                 $request->headers["x-acs-signature-type"] = "BEARERTOKEN";
                 $request->headers["Authorization"] = "Bearer " . $bearerToken . "";
@@ -165,8 +166,15 @@ class Client extends DarabonbaGatewaySpiClient
         $request = $context->request;
         $response = $context->response;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
-            $_res = Utils::readAsJSON($response->body);
-            $err = Utils::assertAsMap($_res);
+            $err = [];
+            if (!Utils::isUnset(@$response->headers["content-type"]) && StringUtil::contains(@$response->headers["content-type"], "text/xml")) {
+                $_str = Utils::readAsString($response->body);
+                $respMap = XML::parseXml($_str, null);
+                $err = Utils::assertAsMap(@$respMap["Error"]);
+            } else {
+                $_res = Utils::readAsJSON($response->body);
+                $err = Utils::assertAsMap($_res);
+            }
             $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
             if (!Utils::isUnset(@$response->headers["x-acs-request-id"])) {
                 $requestId = @$response->headers["x-acs-request-id"];
@@ -382,10 +390,23 @@ class Client extends DarabonbaGatewaySpiClient
      */
     public function buildCanonicalizedHeaders($headers)
     {
+        // lower header key
+        $headersArray = MapUtil::keySet($headers);
+        $newHeaders = [];
+        $tmp = "";
+        foreach ($headersArray as $key) {
+            $lowerKey = StringUtil::toLower($key);
+            if (!StringUtil::contains($tmp, $lowerKey)) {
+                $tmp = "" . $tmp . "," . $lowerKey . "";
+                $newHeaders[$lowerKey] = StringUtil::trim(@$headers[$key]);
+            } else {
+                $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . StringUtil::trim(@$headers[$key]) . "";
+            }
+        }
         $canonicalizedHeaders = "";
         $sortedHeaders = $this->getSignedHeaders($headers);
         foreach ($sortedHeaders as $header) {
-            $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $header . ":" . StringUtil::trim(@$headers[$header]) . "\n";
+            $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $header . ":" . @$newHeaders[$header] . "\n";
         }
         return $canonicalizedHeaders;
     }

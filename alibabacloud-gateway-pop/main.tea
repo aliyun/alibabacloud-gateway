@@ -8,6 +8,7 @@ import SignatureUtil;
 import String;
 import Map;
 import Array;
+import XML;
 
 extends SPI;
 
@@ -140,8 +141,15 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
   var request = context.request;
   var response = context.response;
   if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
-    var _res = Util.readAsJSON(response.body);
-    var err = Util.assertAsMap(_res);
+    var err : map[string]any = {};
+    if (!Util.isUnset(response.headers.content-type) && String.contains(response.headers.content-type, 'text/xml')) {
+      var _str = Util.readAsString(response.body);
+      var respMap = XML.parseXml(_str, null);
+      err = Util.assertAsMap(respMap.Error);
+    } else {
+      var _res = Util.readAsJSON(response.body);
+      err = Util.assertAsMap(_res);
+    }
     var requestId = defaultAny(err.RequestId, err.requestId);
     if (!Util.isUnset(response.headers.x-acs-request-id)) {
       requestId = response.headers.x-acs-request-id;
@@ -289,10 +297,24 @@ function buildCanonicalizedResource(query: map[string]string): string {
 }
 
 function buildCanonicalizedHeaders(headers: map[string]string): string {
+  // lower header key
+  var headersArray : [string] = Map.keySet(headers);
+  var newHeaders : map[string]string = {};
+  var tmp : string = '';
+  for(var key : headersArray) {
+    var lowerKey = String.toLower(key);
+    if (!String.contains(tmp, lowerKey)) {
+      tmp = `${tmp},${lowerKey}`;
+      newHeaders[lowerKey] = String.trim(headers[key]);
+    } else {
+      newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(headers[key])}`;
+    }
+  }
+
   var canonicalizedHeaders : string = '';
   var sortedHeaders : [string] = getSignedHeaders(headers);
   for(var header : sortedHeaders) {
-    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
+    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${newHeaders[header]}\n`;
   }
   return canonicalizedHeaders;
 }
