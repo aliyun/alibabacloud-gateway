@@ -11,6 +11,7 @@ from alibabacloud_gateway_spi import models as spi_models
 from alibabacloud_tea_util.client import Client as UtilClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
+from alibabacloud_tea_xml.client import Client as XMLClient
 from alibabacloud_endpoint_util.client import Client as EndpointUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_darabonba_map.client import Client as MapClient
@@ -229,8 +230,14 @@ class Client(SPIClient):
         request = context.request
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
-            _res = UtilClient.read_as_json(response.body)
-            err = UtilClient.assert_as_map(_res)
+            err = {}
+            if not UtilClient.is_unset(response.headers.get('content-type')) and StringClient.contains(response.headers.get('content-type'), 'text/xml'):
+                _str = UtilClient.read_as_string(response.body)
+                resp_map = XMLClient.parse_xml(_str, None)
+                err = UtilClient.assert_as_map(resp_map.get('Error'))
+            else:
+                _res = UtilClient.read_as_json(response.body)
+                err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
             if not UtilClient.is_unset(response.headers.get('x-acs-request-id')):
                 request_id = response.headers.get('x-acs-request-id')
@@ -270,8 +277,14 @@ class Client(SPIClient):
         request = context.request
         response = context.response
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
-            _res = await UtilClient.read_as_json_async(response.body)
-            err = UtilClient.assert_as_map(_res)
+            err = {}
+            if not UtilClient.is_unset(response.headers.get('content-type')) and StringClient.contains(response.headers.get('content-type'), 'text/xml'):
+                _str = await UtilClient.read_as_string_async(response.body)
+                resp_map = XMLClient.parse_xml(_str, None)
+                err = UtilClient.assert_as_map(resp_map.get('Error'))
+            else:
+                _res = await UtilClient.read_as_json_async(response.body)
+                err = UtilClient.assert_as_map(_res)
             request_id = self.default_any(err.get('RequestId'), err.get('requestId'))
             if not UtilClient.is_unset(response.headers.get('x-acs-request-id')):
                 request_id = response.headers.get('x-acs-request-id')
@@ -445,10 +458,21 @@ class Client(SPIClient):
         self,
         headers: Dict[str, str],
     ) -> str:
+        # lower header key
+        headers_array = MapClient.key_set(headers)
+        new_headers = {}
+        tmp = ''
+        for key in headers_array:
+            lower_key = StringClient.to_lower(key)
+            if not StringClient.contains(tmp, lower_key):
+                tmp = f'{tmp},{lower_key}'
+                new_headers[lower_key] = StringClient.trim(headers.get(key))
+            else:
+                new_headers[lower_key] = f'{new_headers.get(lower_key)},{StringClient.trim(headers.get(key))}'
         canonicalized_headers = ''
         sorted_headers = self.get_signed_headers(headers)
         for header in sorted_headers:
-            canonicalized_headers = f'{canonicalized_headers}{header}:{StringClient.trim(headers.get(header))}\n'
+            canonicalized_headers = f'{canonicalized_headers}{header}:{new_headers.get(header)}\n'
         return canonicalized_headers
 
     def get_signed_headers(

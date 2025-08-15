@@ -42,8 +42,8 @@
   </distributionManagement>
   <scm>
     <connection>scm:git:git://github.com/aliyun/alibabacloud-gateway.git</connection>
-        <developerConnection>scm:git:git@github.com:aliyun/alibabacloud-gateway.git</developerConnection>
-        <url>https://github.com/aliyun/alibabacloud-gateway</url>
+    <developerConnection>scm:git:git@github.com:aliyun/alibabacloud-gateway.git</developerConnection>
+    <url>https://github.com/aliyun/alibabacloud-gateway</url>
   </scm>
   <dependencies>
     <dependency>
@@ -107,6 +107,11 @@
       <artifactId>junit</artifactId>
       <version>4.13.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.aliyun</groupId>
+      <artifactId>tea-xml</artifactId>
+      <version>0.1.6</version>
     </dependency>
   </dependencies>
   <build>

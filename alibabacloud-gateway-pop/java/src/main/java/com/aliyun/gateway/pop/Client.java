@@ -139,8 +139,16 @@ public class Client extends com.aliyun.gateway.spi.Client {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextResponse response = context.response;
         if (com.aliyun.teautil.Common.is4xx(response.statusCode) || com.aliyun.teautil.Common.is5xx(response.statusCode)) {
-            Object _res = com.aliyun.teautil.Common.readAsJSON(response.body);
-            java.util.Map<String, Object> err = com.aliyun.teautil.Common.assertAsMap(_res);
+            java.util.Map<String, Object> err = new java.util.HashMap<>();
+            if (!com.aliyun.teautil.Common.isUnset(response.headers.get("content-type")) && com.aliyun.darabonbastring.Client.contains(response.headers.get("content-type"), "text/xml")) {
+                String _str = com.aliyun.teautil.Common.readAsString(response.body);
+                java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(_str, null);
+                err = com.aliyun.teautil.Common.assertAsMap(respMap.get("Error"));
+            } else {
+                Object _res = com.aliyun.teautil.Common.readAsJSON(response.body);
+                err = com.aliyun.teautil.Common.assertAsMap(_res);
+            }
+
             Object requestId = this.defaultAny(err.get("RequestId"), err.get("requestId"));
             if (!com.aliyun.teautil.Common.isUnset(response.headers.get("x-acs-request-id"))) {
                 requestId = response.headers.get("x-acs-request-id");
@@ -304,10 +312,24 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String buildCanonicalizedHeaders(java.util.Map<String, String> headers) throws Exception {
+        // lower header key
+        java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(headers);
+        java.util.Map<String, String> newHeaders = new java.util.HashMap<>();
+        String tmp = "";
+        for (String key : headersArray) {
+            String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
+            if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
+                tmp = "" + tmp + "," + lowerKey + "";
+                newHeaders.put(lowerKey, com.aliyun.darabonbastring.Client.trim(headers.get(key)));
+            } else {
+                newHeaders.put(lowerKey, "" + newHeaders.get(lowerKey) + "," + com.aliyun.darabonbastring.Client.trim(headers.get(key)) + "");
+            }
+
+        }
         String canonicalizedHeaders = "";
         java.util.List<String> sortedHeaders = this.getSignedHeaders(headers);
         for (String header : sortedHeaders) {
-            canonicalizedHeaders = "" + canonicalizedHeaders + "" + header + ":" + com.aliyun.darabonbastring.Client.trim(headers.get(header)) + "\n";
+            canonicalizedHeaders = "" + canonicalizedHeaders + "" + header + ":" + newHeaders.get(header) + "\n";
         }
         return canonicalizedHeaders;
     }

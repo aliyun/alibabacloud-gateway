@@ -11,6 +11,7 @@ import (
 	endpointutil "github.com/alibabacloud-go/endpoint-util/service"
 	openapiutil "github.com/alibabacloud-go/openapi-util/service"
 	util "github.com/alibabacloud-go/tea-utils/v2/service"
+	xml "github.com/alibabacloud-go/tea-xml/service"
 	"github.com/alibabacloud-go/tea/tea"
 )
 
@@ -181,14 +182,30 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 	request := context.Request
 	response := context.Response
 	if tea.BoolValue(util.Is4xx(response.StatusCode)) || tea.BoolValue(util.Is5xx(response.StatusCode)) {
-		_res, _err := util.ReadAsJSON(response.Body)
-		if _err != nil {
-			return _err
-		}
+		err := map[string]interface{}{}
+		if !tea.BoolValue(util.IsUnset(response.Headers["content-type"])) && tea.BoolValue(string_.Contains(response.Headers["content-type"], tea.String("text/xml"))) {
+			_str, _err := util.ReadAsString(response.Body)
+			if _err != nil {
+				return _err
+			}
 
-		err, _err := util.AssertAsMap(_res)
-		if _err != nil {
-			return _err
+			respMap := xml.ParseXml(_str, nil)
+			err, _err = util.AssertAsMap(respMap["Error"])
+			if _err != nil {
+				return _err
+			}
+
+		} else {
+			_res, _err := util.ReadAsJSON(response.Body)
+			if _err != nil {
+				return _err
+			}
+
+			err, _err = util.AssertAsMap(_res)
+			if _err != nil {
+				return _err
+			}
+
 		}
 
 		requestId := client.DefaultAny(err["RequestId"], err["requestId"])
@@ -400,10 +417,24 @@ func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_res
 }
 
 func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_result *string) {
+	// lower header key
+	headersArray := map_.KeySet(headers)
+	newHeaders := make(map[string]*string)
+	tmp := tea.String("")
+	for _, key := range headersArray {
+		lowerKey := string_.ToLower(key)
+		if !tea.BoolValue(string_.Contains(tmp, lowerKey)) {
+			tmp = tea.String(tea.StringValue(tmp) + "," + tea.StringValue(lowerKey))
+			newHeaders[tea.StringValue(lowerKey)] = string_.Trim(headers[tea.StringValue(key)])
+		} else {
+			newHeaders[tea.StringValue(lowerKey)] = tea.String(tea.StringValue(newHeaders[tea.StringValue(lowerKey)]) + "," + tea.StringValue(string_.Trim(headers[tea.StringValue(key)])))
+		}
+
+	}
 	canonicalizedHeaders := tea.String("")
 	sortedHeaders := client.GetSignedHeaders(headers)
 	for _, header := range sortedHeaders {
-		canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(header) + ":" + tea.StringValue(string_.Trim(headers[tea.StringValue(header)])) + "\n")
+		canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(header) + ":" + tea.StringValue(newHeaders[tea.StringValue(header)]) + "\n")
 	}
 	_result = canonicalizedHeaders
 	return _result

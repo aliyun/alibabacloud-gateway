@@ -298,8 +298,18 @@ namespace AlibabaCloud.GatewayPop
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
-                object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
+                Dictionary<string, object> err = new Dictionary<string, object>(){};
+                if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Headers.Get("content-type")) && AlibabaCloud.DarabonbaString.StringUtil.Contains(response.Headers.Get("content-type"), "text/xml"))
+                {
+                    string _str = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(_str, null);
+                    err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
+                }
+                else
+                {
+                    object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
+                }
                 object requestId = DefaultAny(err.Get("RequestId"), err.Get("requestId"));
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Headers.Get("x-acs-request-id")))
                 {
@@ -356,8 +366,18 @@ namespace AlibabaCloud.GatewayPop
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextResponse response = context.Response;
             if (AlibabaCloud.TeaUtil.Common.Is4xx(response.StatusCode) || AlibabaCloud.TeaUtil.Common.Is5xx(response.StatusCode))
             {
-                object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
-                Dictionary<string, object> err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
+                Dictionary<string, object> err = new Dictionary<string, object>(){};
+                if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Headers.Get("content-type")) && AlibabaCloud.DarabonbaString.StringUtil.Contains(response.Headers.Get("content-type"), "text/xml"))
+                {
+                    string _str = AlibabaCloud.TeaUtil.Common.ReadAsString(response.Body);
+                    Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(_str, null);
+                    err = AlibabaCloud.TeaUtil.Common.AssertAsMap(respMap.Get("Error"));
+                }
+                else
+                {
+                    object _res = AlibabaCloud.TeaUtil.Common.ReadAsJSON(response.Body);
+                    err = AlibabaCloud.TeaUtil.Common.AssertAsMap(_res);
+                }
                 object requestId = DefaultAny(err.Get("RequestId"), err.Get("requestId"));
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(response.Headers.Get("x-acs-request-id")))
                 {
@@ -552,11 +572,28 @@ namespace AlibabaCloud.GatewayPop
 
         public string BuildCanonicalizedHeaders(Dictionary<string, string> headers)
         {
+            // lower header key
+            List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
+            Dictionary<string, string> newHeaders = new Dictionary<string, string>(){};
+            string tmp = "";
+
+            foreach (var key in headersArray) {
+                string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
+                if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                {
+                    tmp = "" + tmp + "," + lowerKey;
+                    newHeaders[lowerKey] = AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(key));
+                }
+                else
+                {
+                    newHeaders[lowerKey] = "" + newHeaders.Get(lowerKey) + "," + AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(key));
+                }
+            }
             string canonicalizedHeaders = "";
             List<string> sortedHeaders = GetSignedHeaders(headers);
 
             foreach (var header in sortedHeaders) {
-                canonicalizedHeaders = "" + canonicalizedHeaders + header + ":" + AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(header)) + "\n";
+                canonicalizedHeaders = "" + canonicalizedHeaders + header + ":" + newHeaders.Get(header) + "\n";
             }
             return canonicalizedHeaders;
         }

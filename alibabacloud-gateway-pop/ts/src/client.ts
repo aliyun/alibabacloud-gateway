@@ -9,6 +9,7 @@ import SignatureUtil from '@alicloud/darabonba-signature-util';
 import String from '@alicloud/darabonba-string';
 import Map from '@alicloud/darabonba-map';
 import Array from '@alicloud/darabonba-array';
+import XML from '@alicloud/tea-xml';
 import * as $tea from '@alicloud/tea-typescript';
 
 
@@ -146,8 +147,16 @@ export default class Client extends SPI {
     let request = context.request;
     let response = context.response;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
-      let _res = await Util.readAsJSON(response.body);
-      let err = Util.assertAsMap(_res);
+      let err : {[key: string ]: any} = { };
+      if (!Util.isUnset(response.headers["content-type"]) && String.contains(response.headers["content-type"], "text/xml")) {
+        let _str = await Util.readAsString(response.body);
+        let respMap = XML.parseXml(_str, null);
+        err = Util.assertAsMap(respMap["Error"]);
+      } else {
+        let _res = await Util.readAsJSON(response.body);
+        err = Util.assertAsMap(_res);
+      }
+
       let requestId = this.defaultAny(err["RequestId"], err["requestId"]);
       if (!Util.isUnset(response.headers["x-acs-request-id"])) {
         requestId = response.headers["x-acs-request-id"];
@@ -312,11 +321,26 @@ export default class Client extends SPI {
   }
 
   buildCanonicalizedHeaders(headers: {[key: string ]: string}): string {
+    // lower header key
+    let headersArray : string[] = Map.keySet(headers);
+    let newHeaders : {[key: string ]: string} = { };
+    let tmp : string = "";
+
+    for (let key of headersArray) {
+      let lowerKey = String.toLower(key);
+      if (!String.contains(tmp, lowerKey)) {
+        tmp = `${tmp},${lowerKey}`;
+        newHeaders[lowerKey] = String.trim(headers[key]);
+      } else {
+        newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(headers[key])}`;
+      }
+
+    }
     let canonicalizedHeaders : string = "";
     let sortedHeaders : string[] = this.getSignedHeaders(headers);
 
     for (let header of sortedHeaders) {
-      canonicalizedHeaders = `${canonicalizedHeaders}${header}:${String.trim(headers[header])}\n`;
+      canonicalizedHeaders = `${canonicalizedHeaders}${header}:${newHeaders[header]}\n`;
     }
     return canonicalizedHeaders;
   }
