@@ -20,7 +20,10 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "lz4": "^0.6.5"
+    "lz4": "^0.6.5",
+    "@alicloud/tea-typescript": "^1.7.1",
+    "zlib": "^1.0.5",
+    "pomelo-protobuf": "^0.4.0"
   },
   "files": [
     "dist",
