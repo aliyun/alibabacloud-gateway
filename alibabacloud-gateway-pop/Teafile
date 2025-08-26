@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayPOP",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -23,7 +23,7 @@
     "XML": "darabonba:XML:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-pop:^0.1.0",
+    "ts": "@alicloud/gateway-pop:^0.1.2",
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-pop/client:v0.1.0",
     "java": "com.aliyun:alibabacloud-gateway-pop:0.1.0",
     "python": "alibabacloud_gateway_pop:0.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "@alicloud/gateway-pop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "main": "dist/client.js",
   "scripts": {
@@ -31,7 +31,7 @@
     "@alicloud/darabonba-signature-util": "^0.0.5",
     "@alicloud/darabonba-string": "^1.0.2",
     "@alicloud/darabonba-map": "^0.0.1",
-    "@alicloud/darabonba-array": "^0.1.0",
+    "@alicloud/darabonba-array": "^0.1.2",
     "@alicloud/tea-xml": "0.0.3"
   },
   "files": [
