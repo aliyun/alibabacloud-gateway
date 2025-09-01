@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+package com.aliyun.gateway.sls.util.model;
+
+message LogContent
+{
+    required string Key = 1;
+    required string Value = 2;
+}  
+
+message Log
+{
+    required uint32 Time = 1;
+    repeated LogContent Contents= 2;
+    optional fixed32 TimeNs = 4;
+}
+
+message LogTag
+{
+    required string Key = 1;
+    required string Value = 2;
+}
+
+message LogGroup
+{
+    repeated Log Logs= 1;
+    optional string Topic = 3;
+    optional string Source = 4;
+    repeated LogTag LogTags = 6;
+}
