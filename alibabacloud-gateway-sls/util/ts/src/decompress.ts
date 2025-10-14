@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { readableStreamToBuffer } from './common';
-import lz4 from 'lz4';
+import {uncompress as napiLz4Uncompress} from 'lz4-napi';
 import zlib from 'zlib';
 
 const supportedDecompressor = ['lz4', 'gzip', 'deflate']
@@ -10,12 +10,11 @@ export async function isDecompressorAvailable(compressType: string): Promise<boo
 }
 
 export async function lz4Decompress(input: Readable, bodyRawSize: number): Promise<Buffer> {
-    const output = Buffer.alloc(bodyRawSize);
-    const n = lz4.decodeBlock(await readableStreamToBuffer(input), output);
-    if (n !== bodyRawSize) {
-        return Buffer.from(output.slice(0, n));
+    const napiOutput = await napiLz4Uncompress(await readableStreamToBuffer(input));
+    if (napiOutput.length !== bodyRawSize) {
+        return Buffer.from(napiOutput.slice(0, bodyRawSize));
     }
-    return output;
+    return napiOutput;
 }
 
 export async function gzipDecompress(input: Readable, bodyRawSize: number): Promise<Buffer> {

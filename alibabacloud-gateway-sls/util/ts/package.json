@@ -1,6 +1,6 @@
 {
   "name": "@alicloud/gateway-sls-util",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "dist/client.js",
   "scripts": {
@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/lz4": "^0.6.4",
     "@types/node": "^12.12.26",
     "nyc": "^15.0.0",
     "source-map-support": "^0.5.16",
@@ -20,7 +19,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "lz4": "^0.6.5"
+    "lz4-napi": "^2.9.0"
   },
   "files": [
     "dist",
