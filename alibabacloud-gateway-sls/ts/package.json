@@ -1,6 +1,6 @@
 {
   "name": "@alicloud/gateway-sls",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "dist/client.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "@alicloud/darabonba-array": "^0.1.0",
     "@alicloud/darabonba-encode-util": "^0.0.2",
     "@alicloud/darabonba-signature-util": "^0.0.4",
-    "@alicloud/gateway-sls-util": "^0.3.0"
+    "@alicloud/gateway-sls-util": "^0.3.1"
   },
   "files": [
     "dist",

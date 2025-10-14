@@ -1,12 +1,10 @@
-import lz4 from 'lz4';
+import {compress as napiLz4Compress} from 'lz4-napi';
 import zlib from 'zlib';
 
 const supportedCompressor = ['lz4', 'gzip', 'deflate']
 
 export async function lz4Compress(data: Buffer): Promise<Buffer> {
-    const output = Buffer.alloc(lz4.encodeBound(data.length));
-    const n = lz4.encodeBlock(data, output);
-    return Buffer.from(output.slice(0, n));
+    return await napiLz4Compress(data);
 }
 
 export async function gzipCompress(data: Buffer): Promise<Buffer> {
