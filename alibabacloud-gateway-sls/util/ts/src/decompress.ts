@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
-import { readableStreamToBuffer } from './common';
+import { readableStreamToBuffer, readableStreamWithPrependBuffer } from './common';
 import {uncompress as napiLz4Uncompress} from 'lz4-napi';
 import zlib from 'zlib';
-
+import fs from 'fs';
 const supportedDecompressor = ['lz4', 'gzip', 'deflate']
 
 export async function isDecompressorAvailable(compressType: string): Promise<boolean> {
@@ -10,9 +10,13 @@ export async function isDecompressorAvailable(compressType: string): Promise<boo
 }
 
 export async function lz4Decompress(input: Readable, bodyRawSize: number): Promise<Buffer> {
-    const napiOutput = await napiLz4Uncompress(await readableStreamToBuffer(input));
+    // prepend 4 bytes size to the buffer
+    const sizeBuffer = Buffer.alloc(4);
+    sizeBuffer.writeUInt32LE(bodyRawSize, 0);
+    let compressedBuffer = await readableStreamWithPrependBuffer(input, sizeBuffer);
+    const napiOutput = await napiLz4Uncompress(compressedBuffer);
     if (napiOutput.length !== bodyRawSize) {
-        return Buffer.from(napiOutput.slice(0, bodyRawSize));
+        throw new Error(`unexpected uncompressed size: ${napiOutput.length}, expected: ${bodyRawSize}`);
     }
     return napiOutput;
 }

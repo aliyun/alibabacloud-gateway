@@ -4,7 +4,8 @@ import zlib from 'zlib';
 const supportedCompressor = ['lz4', 'gzip', 'deflate']
 
 export async function lz4Compress(data: Buffer): Promise<Buffer> {
-    return await napiLz4Compress(data);
+    // eliminate 4 bytes prepended size
+    return (await napiLz4Compress(data)).slice(4);
 }
 
 export async function gzipCompress(data: Buffer): Promise<Buffer> {
