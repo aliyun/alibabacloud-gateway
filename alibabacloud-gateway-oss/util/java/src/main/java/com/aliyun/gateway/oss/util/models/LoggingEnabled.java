@@ -13,6 +13,9 @@ public class LoggingEnabled extends TeaModel {
     @NameInMap("TargetPrefix")
     public String targetPrefix;
 
+    @NameInMap("LoggingRole")
+    public String loggingRole;
+
     public static LoggingEnabled build(java.util.Map<String, ?> map) throws Exception {
         LoggingEnabled self = new LoggingEnabled();
         return TeaModel.build(map, self);
@@ -32,6 +35,14 @@ public class LoggingEnabled extends TeaModel {
     }
     public String getTargetPrefix() {
         return this.targetPrefix;
+    }
+
+    public LoggingEnabled setLoggingRole(String loggingRole) {
+        this.loggingRole = loggingRole;
+        return this;
+    }
+    public String getLoggingRole() {
+        return this.loggingRole;
     }
 
 }

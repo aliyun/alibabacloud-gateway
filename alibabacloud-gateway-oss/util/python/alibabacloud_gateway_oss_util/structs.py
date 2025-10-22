@@ -1262,10 +1262,12 @@ class LoggingEnabled(TeaModel):
         self,
         target_bucket: str = None,
         target_prefix: str = None,
+        logging_role:  str = None,
     ):
         # This parameter is required.
         self.target_bucket = target_bucket
         self.target_prefix = target_prefix
+        self.logging_role = logging_role
 
     def validate(self):
         pass
@@ -1280,6 +1282,8 @@ class LoggingEnabled(TeaModel):
             result['TargetBucket'] = self.target_bucket
         if self.target_prefix is not None:
             result['TargetPrefix'] = self.target_prefix
+        if self.logging_role is not None:
+            result['LoggingRole'] = self.logging_role
         return result
 
     def from_map(self, m: dict = None):
@@ -1288,6 +1292,8 @@ class LoggingEnabled(TeaModel):
             self.target_bucket = m.get('TargetBucket')
         if m.get('TargetPrefix') is not None:
             self.target_prefix = m.get('TargetPrefix')
+        if m.get('LoggingRole') is not None:
+            self.logging_role = m.get('LoggingRole')
         return self
 
 
