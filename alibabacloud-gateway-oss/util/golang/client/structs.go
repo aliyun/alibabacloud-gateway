@@ -9648,6 +9648,7 @@ type LoggingEnabled struct {
 	// This parameter is required.
 	TargetBucket *string `json:"TargetBucket,omitempty" xml:"TargetBucket,omitempty"`
 	TargetPrefix *string `json:"TargetPrefix,omitempty" xml:"TargetPrefix,omitempty"`
+	LoggingRole  *string `json:"LoggingRole,omitempty" xml:"LoggingRole,omitempty"`
 }
 
 func (s LoggingEnabled) String() string {
@@ -9666,6 +9667,10 @@ func (s *LoggingEnabled) GetTargetPrefix() *string {
 	return s.TargetPrefix
 }
 
+func (s *LoggingEnabled) GetLoggingRole() *string {
+	return s.LoggingRole
+}
+
 func (s *LoggingEnabled) SetTargetBucket(v string) *LoggingEnabled {
 	s.TargetBucket = &v
 	return s
@@ -9673,6 +9678,11 @@ func (s *LoggingEnabled) SetTargetBucket(v string) *LoggingEnabled {
 
 func (s *LoggingEnabled) SetTargetPrefix(v string) *LoggingEnabled {
 	s.TargetPrefix = &v
+	return s
+}
+
+func (s *LoggingEnabled) SetLoggingRole(v string) *LoggingEnabled {
+	s.LoggingRole = &v
 	return s
 }
 
