@@ -88,7 +88,6 @@ func (s *AcceleratePathsPath) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AccessControlList struct {
 	Grant *string `json:"Grant,omitempty" xml:"Grant,omitempty"`
 }
@@ -113,7 +112,6 @@ func (s *AccessControlList) SetGrant(v string) *AccessControlList {
 func (s *AccessControlList) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type AccessControlPolicy struct {
 	AccessControlList *AccessControlList `json:"AccessControlList,omitempty" xml:"AccessControlList,omitempty"`
@@ -150,7 +148,6 @@ func (s *AccessControlPolicy) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AccessMonitorConfiguration struct {
 	Status *string `json:"Status,omitempty" xml:"Status,omitempty"`
 }
@@ -175,7 +172,6 @@ func (s *AccessMonitorConfiguration) SetStatus(v string) *AccessMonitorConfigura
 func (s *AccessMonitorConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type AccessPoint struct {
 	AccessPointName  *string                      `json:"AccessPointName,omitempty" xml:"AccessPointName,omitempty"`
@@ -252,7 +248,6 @@ func (s *AccessPoint) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AccessPointVpcConfiguration struct {
 	// example:
 	//
@@ -280,7 +275,6 @@ func (s *AccessPointVpcConfiguration) SetVpcId(v string) *AccessPointVpcConfigur
 func (s *AccessPointVpcConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ApplyServerSideEncryptionByDefault struct {
 	KMSDataEncryption *string `json:"KMSDataEncryption,omitempty" xml:"KMSDataEncryption,omitempty"`
@@ -327,7 +321,6 @@ func (s *ApplyServerSideEncryptionByDefault) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ArchiveDirectReadConfiguration struct {
 	// example:
 	//
@@ -355,7 +348,6 @@ func (s *ArchiveDirectReadConfiguration) SetEnabled(v bool) *ArchiveDirectReadCo
 func (s *ArchiveDirectReadConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type AsyncFetchTaskConfiguration struct {
 	// example:
@@ -463,7 +455,6 @@ func (s *AsyncFetchTaskConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AsyncFetchTaskInfo struct {
 	// example:
 	//
@@ -528,7 +519,6 @@ func (s *AsyncFetchTaskInfo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AsyncFetchTaskResult struct {
 	// example:
 	//
@@ -556,7 +546,6 @@ func (s *AsyncFetchTaskResult) SetTaskId(v string) *AsyncFetchTaskResult {
 func (s *AsyncFetchTaskResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type Bucket struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -644,7 +633,6 @@ func (s *Bucket) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type BucketAntiDDOSConfiguration struct {
 	Cnames *BucketAntiDDOSConfigurationCnames `json:"Cnames,omitempty" xml:"Cnames,omitempty" type:"Struct"`
 }
@@ -694,7 +682,6 @@ func (s *BucketAntiDDOSConfigurationCnames) SetDomain(v []*string) *BucketAntiDD
 func (s *BucketAntiDDOSConfigurationCnames) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type BucketAntiDDOSInfo struct {
 	ActiveTime *int64                    `json:"ActiveTime,omitempty" xml:"ActiveTime,omitempty"`
@@ -826,7 +813,6 @@ func (s *BucketAntiDDOSInfoCnames) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type BucketChannelConfig struct {
 	// example:
 	//
@@ -957,7 +943,6 @@ func (s *BucketChannelConfigRuleListRule) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type BucketCnameConfiguration struct {
 	Cname *BucketCnameConfigurationCname `json:"Cname,omitempty" xml:"Cname,omitempty" type:"Struct"`
 }
@@ -1017,7 +1002,6 @@ func (s *BucketCnameConfigurationCname) SetDomain(v string) *BucketCnameConfigur
 func (s *BucketCnameConfigurationCname) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type BucketDataRedundancyTransition struct {
 	// example:
@@ -1137,7 +1121,6 @@ func (s *BucketDataRedundancyTransition) SetTaskId(v string) *BucketDataRedundan
 func (s *BucketDataRedundancyTransition) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type BucketInfo struct {
 	Bucket *BucketInfoBucket `json:"Bucket,omitempty" xml:"Bucket,omitempty" type:"Struct"`
@@ -1480,7 +1463,6 @@ func (s *BucketInfoBucketServerSideEncryptionRule) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type BucketLoggingStatus struct {
 	// This parameter is required.
 	LoggingEnabled *LoggingEnabled `json:"LoggingEnabled,omitempty" xml:"LoggingEnabled,omitempty"`
@@ -1506,7 +1488,6 @@ func (s *BucketLoggingStatus) SetLoggingEnabled(v *LoggingEnabled) *BucketLoggin
 func (s *BucketLoggingStatus) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type BucketProcessConfiguration struct {
 	BucketChannelConfig *BucketChannelConfig `json:"BucketChannelConfig,omitempty" xml:"BucketChannelConfig,omitempty"`
@@ -1597,7 +1578,6 @@ func (s *BucketProcessConfiguration) SetStyleDelimiters(v string) *BucketProcess
 func (s *BucketProcessConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type BucketQoSConfiguration struct {
 	// example:
@@ -1744,7 +1724,6 @@ func (s *BucketQoSConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type BucketResourceGroupConfiguration struct {
 	ResourceGroupId *string `json:"ResourceGroupId,omitempty" xml:"ResourceGroupId,omitempty"`
 }
@@ -1769,7 +1748,6 @@ func (s *BucketResourceGroupConfiguration) SetResourceGroupId(v string) *BucketR
 func (s *BucketResourceGroupConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type BucketStat struct {
 	// example:
@@ -2059,7 +2037,6 @@ func (s *BucketStat) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CORSConfiguration struct {
 	CORSRule     []*CORSRule `json:"CORSRule,omitempty" xml:"CORSRule,omitempty" type:"Repeated"`
 	ResponseVary *bool       `json:"ResponseVary,omitempty" xml:"ResponseVary,omitempty"`
@@ -2094,7 +2071,6 @@ func (s *CORSConfiguration) SetResponseVary(v bool) *CORSConfiguration {
 func (s *CORSConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CORSRule struct {
 	AllowedHeader []*string `json:"AllowedHeader,omitempty" xml:"AllowedHeader,omitempty" type:"Repeated"`
@@ -2163,7 +2139,6 @@ func (s *CORSRule) SetMaxAgeSeconds(v int64) *CORSRule {
 func (s *CORSRule) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CSVInput struct {
 	AllowQuotedRecordDelimiter *bool   `json:"AllowQuotedRecordDelimiter,omitempty" xml:"AllowQuotedRecordDelimiter,omitempty"`
@@ -2250,7 +2225,6 @@ func (s *CSVInput) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CSVOutput struct {
 	FieldDelimiter  *string `json:"FieldDelimiter,omitempty" xml:"FieldDelimiter,omitempty"`
 	RecordDelimiter *string `json:"RecordDelimiter,omitempty" xml:"RecordDelimiter,omitempty"`
@@ -2285,7 +2259,6 @@ func (s *CSVOutput) SetRecordDelimiter(v string) *CSVOutput {
 func (s *CSVOutput) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CacheBaseInfo struct {
 	// example:
@@ -2351,7 +2324,6 @@ func (s *CacheBaseInfo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CacheBucketInfo struct {
 	AcceleratePaths *AcceleratePaths `json:"AcceleratePaths,omitempty" xml:"AcceleratePaths,omitempty"`
 	// example:
@@ -2402,7 +2374,6 @@ func (s *CacheBucketInfo) SetName(v string) *CacheBucketInfo {
 func (s *CacheBucketInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CacheConfiguration struct {
 	Caches *CacheConfigurationCaches `json:"Caches,omitempty" xml:"Caches,omitempty" type:"Struct"`
@@ -2518,7 +2489,6 @@ func (s *CacheConfigurationCachesCache) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CacheDetailInfo struct {
 	// example:
 	//
@@ -2618,7 +2588,6 @@ func (s *CacheDetailInfoBuckets) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CacheQuotaConfiguration struct {
 	QuotaDesc *CacheQuotaConfigurationQuotaDesc `json:"QuotaDesc,omitempty" xml:"QuotaDesc,omitempty" type:"Struct"`
 }
@@ -2671,7 +2640,6 @@ func (s *CacheQuotaConfigurationQuotaDesc) SetQuota(v int64) *CacheQuotaConfigur
 func (s *CacheQuotaConfigurationQuotaDesc) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CallbackPolicy struct {
 	PolicyItem []*CallbackPolicyPolicyItem `json:"PolicyItem,omitempty" xml:"PolicyItem,omitempty" type:"Repeated"`
@@ -2751,7 +2719,6 @@ func (s *CallbackPolicyPolicyItem) SetPolicyName(v string) *CallbackPolicyPolicy
 func (s *CallbackPolicyPolicyItem) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CertificateConfiguration struct {
 	// example:
@@ -2845,7 +2812,6 @@ func (s *CertificateConfiguration) SetPrivateKey(v string) *CertificateConfigura
 func (s *CertificateConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type Channel struct {
 	// example:
@@ -2966,7 +2932,6 @@ func (s *Channel) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ChannelInfo struct {
 	// example:
 	//
@@ -3086,7 +3051,6 @@ func (s *ChannelInfo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CnameCertificate struct {
 	CertId         *string `json:"CertId,omitempty" xml:"CertId,omitempty"`
 	CreationDate   *string `json:"CreationDate,omitempty" xml:"CreationDate,omitempty"`
@@ -3172,7 +3136,6 @@ func (s *CnameCertificate) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CnameInfo struct {
 	Certificate  *CnameCertificate `json:"Certificate,omitempty" xml:"Certificate,omitempty"`
 	Domain       *string           `json:"Domain,omitempty" xml:"Domain,omitempty"`
@@ -3227,7 +3190,6 @@ func (s *CnameInfo) SetStatus(v string) *CnameInfo {
 func (s *CnameInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CnameSummary struct {
 	Certificate  *CnameCertificate `json:"Certificate,omitempty" xml:"Certificate,omitempty"`
@@ -3284,7 +3246,6 @@ func (s *CnameSummary) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CnameToken struct {
 	Bucket     *string `json:"Bucket,omitempty" xml:"Bucket,omitempty"`
 	Cname      *string `json:"Cname,omitempty" xml:"Cname,omitempty"`
@@ -3340,7 +3301,6 @@ func (s *CnameToken) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CommentConfiguration struct {
 	// example:
 	//
@@ -3368,7 +3328,6 @@ func (s *CommentConfiguration) SetComment(v string) *CommentConfiguration {
 func (s *CommentConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CommonHeaders struct {
 	Header []*CommonHeadersHeader `json:"Header,omitempty" xml:"Header,omitempty" type:"Repeated"`
@@ -3436,7 +3395,6 @@ func (s *CommonHeadersHeader) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CommonPrefix struct {
 	Prefix *string `json:"Prefix,omitempty" xml:"Prefix,omitempty"`
 }
@@ -3461,7 +3419,6 @@ func (s *CommonPrefix) SetPrefix(v string) *CommonPrefix {
 func (s *CommonPrefix) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CompleteMultipartUpload struct {
 	Part []*CompleteMultipartUploadPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
@@ -3523,7 +3480,6 @@ func (s *CompleteMultipartUploadPart) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyObjectResult struct {
 	ETag         *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
 	LastModified *string `json:"LastModified,omitempty" xml:"LastModified,omitempty"`
@@ -3558,7 +3514,6 @@ func (s *CopyObjectResult) SetLastModified(v string) *CopyObjectResult {
 func (s *CopyObjectResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CopyObjectsCopy struct {
 	Object []*CopyObjectsCopyObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
@@ -3625,7 +3580,6 @@ func (s *CopyObjectsCopyObject) SetTargetKey(v string) *CopyObjectsCopyObject {
 func (s *CopyObjectsCopyObject) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CopyObjectsResult struct {
 	Failed  *CopyObjectsResultFailed  `json:"Failed,omitempty" xml:"Failed,omitempty" type:"Struct"`
@@ -3712,7 +3666,6 @@ func (s *CopyObjectsResultSuccess) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyObjectsResultFailedObject struct {
 	// example:
 	//
@@ -3766,7 +3719,6 @@ func (s *CopyObjectsResultFailedObject) SetTargetKey(v string) *CopyObjectsResul
 func (s *CopyObjectsResultFailedObject) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CopyObjectsResultSuccessObject struct {
 	// example:
@@ -3822,7 +3774,6 @@ func (s *CopyObjectsResultSuccessObject) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyPartResult struct {
 	ETag *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -3858,7 +3809,6 @@ func (s *CopyPartResult) SetLastModified(v string) *CopyPartResult {
 func (s *CopyPartResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateAccessPointConfiguration struct {
 	AccessPointName  *string                      `json:"AccessPointName,omitempty" xml:"AccessPointName,omitempty"`
@@ -3905,7 +3855,6 @@ func (s *CreateAccessPointConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateAccessPointResult struct {
 	AccessPointArn *string `json:"AccessPointArn,omitempty" xml:"AccessPointArn,omitempty"`
 	Alias          *string `json:"Alias,omitempty" xml:"Alias,omitempty"`
@@ -3941,7 +3890,6 @@ func (s *CreateAccessPointResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateBucketConfiguration struct {
 	DataRedundancyType *string `json:"DataRedundancyType,omitempty" xml:"DataRedundancyType,omitempty"`
 	StorageClass       *string `json:"StorageClass,omitempty" xml:"StorageClass,omitempty"`
@@ -3976,7 +3924,6 @@ func (s *CreateBucketConfiguration) SetStorageClass(v string) *CreateBucketConfi
 func (s *CreateBucketConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateCacheConfiguration struct {
 	// example:
@@ -4029,7 +3976,6 @@ func (s *CreateCacheConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateDataLakeCachePrefetchJob struct {
 	Excludes []*string `json:"Excludes,omitempty" xml:"Excludes,omitempty" type:"Repeated"`
 	Includes []*string `json:"Includes,omitempty" xml:"Includes,omitempty" type:"Repeated"`
@@ -4077,7 +4023,6 @@ func (s *CreateDataLakeCachePrefetchJob) SetTag(v string) *CreateDataLakeCachePr
 func (s *CreateDataLakeCachePrefetchJob) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateDataLakeStorageTransferJob struct {
 	// example:
@@ -4155,7 +4100,6 @@ func (s *CreateDataLakeStorageTransferJob) SetTag(v string) *CreateDataLakeStora
 func (s *CreateDataLakeStorageTransferJob) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateFileGroup struct {
 	Part []*CreateFileGroupPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
@@ -4236,7 +4180,6 @@ func (s *CreateFileGroupPart) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateFileGroupResult struct {
 	// example:
 	//
@@ -4304,7 +4247,6 @@ func (s *CreateFileGroupResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateLargeReservedCapacityResult struct {
 	// example:
 	//
@@ -4369,7 +4311,6 @@ func (s *CreateLargeReservedCapacityResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateObjectLinkResult struct {
 	// example:
 	//
@@ -4423,7 +4364,6 @@ func (s *CreateObjectLinkResult) SetKey(v string) *CreateObjectLinkResult {
 func (s *CreateObjectLinkResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DataAccelerator struct {
 	BasicInfomation *DataAcceleratorBasicInfomation `json:"BasicInfomation,omitempty" xml:"BasicInfomation,omitempty" type:"Struct"`
@@ -4566,7 +4506,6 @@ func (s *DataAcceleratorBasicInfomation) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DataAcceleratorConfiguration struct {
 	AcceleratePaths *AcceleratePaths `json:"AcceleratePaths,omitempty" xml:"AcceleratePaths,omitempty"`
 	// example:
@@ -4604,7 +4543,6 @@ func (s *DataAcceleratorConfiguration) SetQuota(v string) *DataAcceleratorConfig
 func (s *DataAcceleratorConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DataLakeCachePrefetchJob struct {
 	// example:
@@ -4722,7 +4660,6 @@ func (s *DataLakeCachePrefetchJob) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DataLakeCachePrefetchJobHistory struct {
 	// example:
 	//
@@ -4828,7 +4765,6 @@ func (s *DataLakeCachePrefetchJobHistory) SetTotalCount(v int64) *DataLakeCacheP
 func (s *DataLakeCachePrefetchJobHistory) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DataLakeCachePrefetchJobRule struct {
 	PrefixFilter *DataLakeCachePrefetchJobRulePrefixFilter `json:"PrefixFilter,omitempty" xml:"PrefixFilter,omitempty" type:"Struct"`
@@ -4949,7 +4885,6 @@ func (s *DataLakeCachePrefetchJobRulePrefixFilterIncludes) SetInclude(v []*strin
 func (s *DataLakeCachePrefetchJobRulePrefixFilterIncludes) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DataLakeStorageTransferJob struct {
 	// example:
@@ -5104,7 +5039,6 @@ func (s *DataLakeStorageTransferJobProgressInfo) SetPercent(v int64) *DataLakeSt
 func (s *DataLakeStorageTransferJobProgressInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DataLakeStorageTransferJobHistory struct {
 	DetailInfo *DataLakeStorageTransferJobHistoryDetailInfo `json:"DetailInfo,omitempty" xml:"DetailInfo,omitempty" type:"Struct"`
@@ -5367,7 +5301,6 @@ func (s *DataLakeStorageTransferJobHistoryDetailInfo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DataLakeStorageTransferJobHistoryId struct {
 	// example:
 	//
@@ -5396,7 +5329,6 @@ func (s *DataLakeStorageTransferJobHistoryId) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DataLakeStorageTransferJobId struct {
 	// example:
 	//
@@ -5424,7 +5356,6 @@ func (s *DataLakeStorageTransferJobId) SetId(v string) *DataLakeStorageTransferJ
 func (s *DataLakeStorageTransferJobId) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DataLakeStorageTransferJobRule struct {
 	// example:
@@ -5553,7 +5484,6 @@ func (s *DataLakeStorageTransferJobRulePrefixFilterIncludes) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DataLakeStorageTransferJobs struct {
 	DataLakeStorageTransferJob []*DataLakeStorageTransferJob `json:"DataLakeStorageTransferJob,omitempty" xml:"DataLakeStorageTransferJob,omitempty" type:"Repeated"`
 	// example:
@@ -5618,7 +5548,6 @@ func (s *DataLakeStorageTransferJobs) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type Delete struct {
 	Objects []*ObjectIdentifier `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 	Quiet   *bool               `json:"Quiet,omitempty" xml:"Quiet,omitempty"`
@@ -5653,7 +5582,6 @@ func (s *Delete) SetQuiet(v bool) *Delete {
 func (s *Delete) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteMarkerEntry struct {
 	IsLatest *bool   `json:"IsLatest,omitempty" xml:"IsLatest,omitempty"`
@@ -5721,7 +5649,6 @@ func (s *DeleteMarkerEntry) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeletedObject struct {
 	DeleteMarker          *bool   `json:"DeleteMarker,omitempty" xml:"DeleteMarker,omitempty"`
 	DeleteMarkerVersionId *string `json:"DeleteMarkerVersionId,omitempty" xml:"DeleteMarkerVersionId,omitempty"`
@@ -5776,7 +5703,6 @@ func (s *DeletedObject) SetVersionId(v string) *DeletedObject {
 func (s *DeletedObject) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type Error struct {
 	Code      *string `json:"Code,omitempty" xml:"Code,omitempty"`
@@ -5833,7 +5759,6 @@ func (s *Error) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ErrorDocument struct {
 	// example:
 	//
@@ -5875,7 +5800,6 @@ func (s *ErrorDocument) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type EventNotificationConfiguration struct {
 	FunctionComputeConfiguration []*FunctionComputeConfiguration `json:"FunctionComputeConfiguration,omitempty" xml:"FunctionComputeConfiguration,omitempty" type:"Repeated"`
 }
@@ -5901,7 +5825,6 @@ func (s *EventNotificationConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ExtendWormConfiguration struct {
 	RetentionPeriodInDays *int32 `json:"RetentionPeriodInDays,omitempty" xml:"RetentionPeriodInDays,omitempty"`
 }
@@ -5926,7 +5849,6 @@ func (s *ExtendWormConfiguration) SetRetentionPeriodInDays(v int32) *ExtendWormC
 func (s *ExtendWormConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type FileGroupInfo struct {
 	// example:
@@ -6098,7 +6020,6 @@ func (s *FileGroupInfoFilePartPart) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type FunctionComputeConfiguration struct {
 	Event    []*string                             `json:"Event,omitempty" xml:"Event,omitempty" type:"Repeated"`
 	Filter   *FunctionComputeConfigurationFilter   `json:"Filter,omitempty" xml:"Filter,omitempty" type:"Struct"`
@@ -6251,7 +6172,6 @@ func (s *FunctionComputeConfigurationFunction) SetAssumeRole(v string) *Function
 func (s *FunctionComputeConfigurationFunction) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointResult struct {
 	AccessPointArn  *string `json:"AccessPointArn,omitempty" xml:"AccessPointArn,omitempty"`
@@ -6422,7 +6342,6 @@ func (s *GetAccessPointResultEndpoints) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketProcessConfiguration struct {
 	BucketChannelConfig *BucketChannelConfig `json:"BucketChannelConfig,omitempty" xml:"BucketChannelConfig,omitempty"`
 	// example:
@@ -6525,7 +6444,6 @@ func (s *GetBucketProcessConfiguration) SetVersion(v int32) *GetBucketProcessCon
 func (s *GetBucketProcessConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetChannelResult struct {
 	// example:
@@ -6684,7 +6602,6 @@ func (s *GetChannelResult) SetUseStyleOnly(v bool) *GetChannelResult {
 func (s *GetChannelResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectInfoResult struct {
 	// example:
@@ -6846,7 +6763,6 @@ func (s *GetObjectInfoResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectsReq struct {
 	Object []*GetObjectsReqObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Repeated"`
 }
@@ -6925,7 +6841,6 @@ func (s *GetObjectsReqObject) SetRefId(v int32) *GetObjectsReqObject {
 func (s *GetObjectsReqObject) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetResourcePoolInfoResp struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -7006,7 +6921,6 @@ func (s *GetResourcePoolInfoResp) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GroupBucketInfo struct {
 	// example:
 	//
@@ -7034,7 +6948,6 @@ func (s *GroupBucketInfo) SetBucketName(v string) *GroupBucketInfo {
 func (s *GroupBucketInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type HttpsConfiguration struct {
 	TLS *HttpsConfigurationTLS `json:"TLS,omitempty" xml:"TLS,omitempty" type:"Struct"`
@@ -7101,7 +7014,6 @@ func (s *HttpsConfigurationTLS) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type IndexDocument struct {
 	// example:
 	//
@@ -7156,7 +7068,6 @@ func (s *IndexDocument) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InitiateWormConfiguration struct {
 	// This parameter is required.
 	RetentionPeriodInDays *int32 `json:"RetentionPeriodInDays,omitempty" xml:"RetentionPeriodInDays,omitempty"`
@@ -7182,7 +7093,6 @@ func (s *InitiateWormConfiguration) SetRetentionPeriodInDays(v int32) *InitiateW
 func (s *InitiateWormConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InputSerialization struct {
 	Csv             *CSVInput  `json:"CSV,omitempty" xml:"CSV,omitempty"`
@@ -7228,7 +7138,6 @@ func (s *InputSerialization) SetJson(v *JSONInput) *InputSerialization {
 func (s *InputSerialization) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InventoryConfiguration struct {
 	Destination *InventoryDestination `json:"Destination,omitempty" xml:"Destination,omitempty"`
@@ -7349,7 +7258,6 @@ func (s *InventoryConfigurationOptionalFields) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InventoryDestination struct {
 	OSSBucketDestination *InventoryOSSBucketDestination `json:"OSSBucketDestination,omitempty" xml:"OSSBucketDestination,omitempty"`
 }
@@ -7374,7 +7282,6 @@ func (s *InventoryDestination) SetOSSBucketDestination(v *InventoryOSSBucketDest
 func (s *InventoryDestination) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InventoryEncryption struct {
 	SSEKMS *SSEKMS `json:"SSE-KMS,omitempty" xml:"SSE-KMS,omitempty"`
@@ -7410,7 +7317,6 @@ func (s *InventoryEncryption) SetSSEOSS(v string) *InventoryEncryption {
 func (s *InventoryEncryption) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InventoryFilter struct {
 	// example:
@@ -7531,7 +7437,6 @@ func (s *InventoryFilter) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InventoryOSSBucketDestination struct {
 	// example:
 	//
@@ -7619,7 +7524,6 @@ func (s *InventoryOSSBucketDestination) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InventorySchedule struct {
 	Frequency *string `json:"Frequency,omitempty" xml:"Frequency,omitempty"`
 }
@@ -7644,7 +7548,6 @@ func (s *InventorySchedule) SetFrequency(v string) *InventorySchedule {
 func (s *InventorySchedule) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type JSONInput struct {
 	ParseJsonNumberAsString *bool   `json:"ParseJsonNumberAsString,omitempty" xml:"ParseJsonNumberAsString,omitempty"`
@@ -7691,7 +7594,6 @@ func (s *JSONInput) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type JSONOutput struct {
 	RecordDelimiter *string `json:"RecordDelimiter,omitempty" xml:"RecordDelimiter,omitempty"`
 }
@@ -7717,7 +7619,6 @@ func (s *JSONOutput) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LifecycleConfiguration struct {
 	Rule []*LifecycleRule `json:"Rule,omitempty" xml:"Rule,omitempty" type:"Repeated"`
 }
@@ -7742,7 +7643,6 @@ func (s *LifecycleConfiguration) SetRule(v []*LifecycleRule) *LifecycleConfigura
 func (s *LifecycleConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type LifecycleRule struct {
 	LifecycleAbortMultipartUpload *LifecycleRuleLifecycleAbortMultipartUpload `json:"AbortMultipartUpload,omitempty" xml:"AbortMultipartUpload,omitempty" type:"Struct"`
@@ -8285,7 +8185,6 @@ func (s *LifecycleRuleLifecycleTransition) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListAccessPointsResult struct {
 	AccessPoints *ListAccessPointsResultAccessPoints `json:"AccessPoints,omitempty" xml:"AccessPoints,omitempty" type:"Struct"`
 	// example:
@@ -8387,7 +8286,6 @@ func (s *ListAccessPointsResultAccessPoints) SetAccessPoint(v []*AccessPoint) *L
 func (s *ListAccessPointsResultAccessPoints) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListAllMyCacheResult struct {
 	Caches *ListAllMyCacheResultCaches `json:"Caches,omitempty" xml:"Caches,omitempty" type:"Struct"`
@@ -8514,7 +8412,6 @@ func (s *ListAllMyCacheResultCaches) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListBucketRequesterQoSInfosResult struct {
 	// example:
 	//
@@ -8592,7 +8489,6 @@ func (s *ListBucketRequesterQoSInfosResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeCachePrefetchJobHistory struct {
 	DataLakeCachePrefetchJobHistory []*DataLakeCachePrefetchJobHistory `json:"DataLakeCachePrefetchJobHistory,omitempty" xml:"DataLakeCachePrefetchJobHistory,omitempty" type:"Repeated"`
 }
@@ -8618,7 +8514,6 @@ func (s *ListDataLakeCachePrefetchJobHistory) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeStorageTransferJobHistory struct {
 	DataLakeStorageTransferJobHistory []*DataLakeStorageTransferJobHistory `json:"DataLakeStorageTransferJobHistory,omitempty" xml:"DataLakeStorageTransferJobHistory,omitempty" type:"Repeated"`
 }
@@ -8643,7 +8538,6 @@ func (s *ListDataLakeStorageTransferJobHistory) SetDataLakeStorageTransferJobHis
 func (s *ListDataLakeStorageTransferJobHistory) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketGroupQoSInfosResult struct {
 	// example:
@@ -8722,7 +8616,6 @@ func (s *ListResourcePoolBucketGroupQoSInfosResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolBucketGroupsResult struct {
 	// example:
 	//
@@ -8799,7 +8692,6 @@ func (s *ListResourcePoolBucketGroupsResult) SetResourcePoolBucketGroup(v []*Res
 func (s *ListResourcePoolBucketGroupsResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketsResult struct {
 	// example:
@@ -8878,7 +8770,6 @@ func (s *ListResourcePoolBucketsResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolRequesterQoSInfosResult struct {
 	// example:
 	//
@@ -8955,7 +8846,6 @@ func (s *ListResourcePoolRequesterQoSInfosResult) SetResourcePool(v string) *Lis
 func (s *ListResourcePoolRequesterQoSInfosResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolsResult struct {
 	// example:
@@ -9047,7 +8937,6 @@ func (s *ListResourcePoolsResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListUserRegionsResult struct {
 	Regions *ListUserRegionsResultRegions `json:"Regions,omitempty" xml:"Regions,omitempty" type:"Struct"`
 }
@@ -9098,7 +8987,6 @@ func (s *ListUserRegionsResultRegions) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListVirtualBucketResult struct {
 	VirtualBucket []*VirtualBucket `json:"VirtualBucket,omitempty" xml:"VirtualBucket,omitempty" type:"Repeated"`
 }
@@ -9123,7 +9011,6 @@ func (s *ListVirtualBucketResult) SetVirtualBucket(v []*VirtualBucket) *ListVirt
 func (s *ListVirtualBucketResult) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type LiveChannel struct {
 	Description *string `json:"Description,omitempty" xml:"Description,omitempty"`
@@ -9201,7 +9088,6 @@ func (s *LiveChannel) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LiveChannelAudio struct {
 	Bandwidth  *int64  `json:"Bandwidth,omitempty" xml:"Bandwidth,omitempty"`
 	Codec      *string `json:"Codec,omitempty" xml:"Codec,omitempty"`
@@ -9246,7 +9132,6 @@ func (s *LiveChannelAudio) SetSampleRate(v int64) *LiveChannelAudio {
 func (s *LiveChannelAudio) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type LiveChannelConfiguration struct {
 	Description *string              `json:"Description,omitempty" xml:"Description,omitempty"`
@@ -9303,7 +9188,6 @@ func (s *LiveChannelConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LiveChannelPlayUrls struct {
 	Url *string `json:"Url,omitempty" xml:"Url,omitempty"`
 }
@@ -9329,7 +9213,6 @@ func (s *LiveChannelPlayUrls) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LiveChannelPublishUrls struct {
 	Url *string `json:"Url,omitempty" xml:"Url,omitempty"`
 }
@@ -9354,7 +9237,6 @@ func (s *LiveChannelPublishUrls) SetUrl(v string) *LiveChannelPublishUrls {
 func (s *LiveChannelPublishUrls) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type LiveChannelSnapshot struct {
 	DestBucket  *string `json:"DestBucket,omitempty" xml:"DestBucket,omitempty"`
@@ -9411,7 +9293,6 @@ func (s *LiveChannelSnapshot) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LiveChannelTarget struct {
 	FragCount    *int64  `json:"FragCount,omitempty" xml:"FragCount,omitempty"`
 	FragDuration *int64  `json:"FragDuration,omitempty" xml:"FragDuration,omitempty"`
@@ -9466,7 +9347,6 @@ func (s *LiveChannelTarget) SetType(v string) *LiveChannelTarget {
 func (s *LiveChannelTarget) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type LiveChannelVideo struct {
 	Bandwidth *int64  `json:"Bandwidth,omitempty" xml:"Bandwidth,omitempty"`
@@ -9533,7 +9413,6 @@ func (s *LiveChannelVideo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LiveRecord struct {
 	EndTime    *string `json:"EndTime,omitempty" xml:"EndTime,omitempty"`
 	RemoteAddr *string `json:"RemoteAddr,omitempty" xml:"RemoteAddr,omitempty"`
@@ -9578,7 +9457,6 @@ func (s *LiveRecord) SetStartTime(v string) *LiveRecord {
 func (s *LiveRecord) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type LocationTransferType struct {
 	// example:
@@ -9643,7 +9521,6 @@ func (s *LocationTransferTypeTransferTypes) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type LoggingEnabled struct {
 	// This parameter is required.
 	TargetBucket *string `json:"TargetBucket,omitempty" xml:"TargetBucket,omitempty"`
@@ -9689,7 +9566,6 @@ func (s *LoggingEnabled) SetLoggingRole(v string) *LoggingEnabled {
 func (s *LoggingEnabled) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type MetaQuery struct {
 	Aggregations *MetaQueryAggregations `json:"Aggregations,omitempty" xml:"Aggregations,omitempty" type:"Struct"`
@@ -9851,7 +9727,6 @@ func (s *MetaQueryMediaTypes) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type MetaQueryAggregation struct {
 	Field     *string `json:"Field,omitempty" xml:"Field,omitempty"`
 	Operation *string `json:"Operation,omitempty" xml:"Operation,omitempty"`
@@ -9886,7 +9761,6 @@ func (s *MetaQueryAggregation) SetOperation(v string) *MetaQueryAggregation {
 func (s *MetaQueryAggregation) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type MetaQueryAggregationsResult struct {
 	// example:
@@ -10017,7 +9891,6 @@ func (s *MetaQueryAggregationsResultGroupsGroup) SetValue(v string) *MetaQueryAg
 func (s *MetaQueryAggregationsResultGroupsGroup) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type MetaQueryFile struct {
 	// example:
@@ -10725,7 +10598,6 @@ func (s *MetaQueryFileVideoStreams) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type MetaQueryResp struct {
 	Aggregations *MetaQueryRespAggregations `json:"Aggregations,omitempty" xml:"Aggregations,omitempty" type:"Struct"`
 	Files        *MetaQueryRespFiles        `json:"Files,omitempty" xml:"Files,omitempty" type:"Struct"`
@@ -10824,7 +10696,6 @@ func (s *MetaQueryRespFiles) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type MetaQueryRespAddress struct {
 	// example:
 	//
@@ -10917,7 +10788,6 @@ func (s *MetaQueryRespAddress) SetTownship(v string) *MetaQueryRespAddress {
 func (s *MetaQueryRespAddress) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type MetaQueryRespAudioStream struct {
 	// example:
@@ -11025,7 +10895,6 @@ func (s *MetaQueryRespAudioStream) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type MetaQueryRespSubtitle struct {
 	// example:
 	//
@@ -11092,7 +10961,6 @@ func (s *MetaQueryRespSubtitle) SetStartTime(v float64) *MetaQueryRespSubtitle {
 func (s *MetaQueryRespSubtitle) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type MetaQueryRespVideoStream struct {
 	// example:
@@ -11265,7 +11133,6 @@ func (s *MetaQueryRespVideoStream) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type MetaQueryTagging struct {
 	Key   *string `json:"Key,omitempty" xml:"Key,omitempty"`
 	Value *string `json:"Value,omitempty" xml:"Value,omitempty"`
@@ -11301,7 +11168,6 @@ func (s *MetaQueryTagging) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type MetaQueryUserMeta struct {
 	Key   *string `json:"Key,omitempty" xml:"Key,omitempty"`
 	Value *string `json:"Value,omitempty" xml:"Value,omitempty"`
@@ -11336,7 +11202,6 @@ func (s *MetaQueryUserMeta) SetValue(v string) *MetaQueryUserMeta {
 func (s *MetaQueryUserMeta) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type NotificationConfiguration struct {
 	TopicConfiguration []*NotificationConfigurationTopicConfiguration `json:"TopicConfiguration,omitempty" xml:"TopicConfiguration,omitempty" type:"Repeated"`
@@ -11391,7 +11256,6 @@ func (s *NotificationConfigurationTopicConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ObjectHashConfiguration struct {
 	// example:
 	//
@@ -11433,7 +11297,6 @@ func (s *ObjectHashConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ObjectIdentifier struct {
 	// This parameter is required.
 	Key       *string `json:"Key,omitempty" xml:"Key,omitempty"`
@@ -11469,7 +11332,6 @@ func (s *ObjectIdentifier) SetVersionId(v string) *ObjectIdentifier {
 func (s *ObjectIdentifier) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ObjectLinkInfo struct {
 	Part []*ObjectLinkInfoPart `json:"Part,omitempty" xml:"Part,omitempty" type:"Repeated"`
@@ -11536,7 +11398,6 @@ func (s *ObjectLinkInfoPart) SetPartNumber(v int64) *ObjectLinkInfoPart {
 func (s *ObjectLinkInfoPart) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ObjectProcessConfiguration struct {
 	AllowedFeatures              *ObjectProcessConfigurationAllowedFeatures              `json:"AllowedFeatures,omitempty" xml:"AllowedFeatures,omitempty" type:"Struct"`
@@ -11809,7 +11670,6 @@ func (s *ObjectProcessConfigurationTransformationConfigurationsTransformationCon
 	return dara.Validate(s)
 }
 
-
 type ObjectSummary struct {
 	// example:
 	//
@@ -11939,7 +11799,6 @@ func (s *ObjectSummary) SetType(v string) *ObjectSummary {
 func (s *ObjectSummary) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ObjectVersion struct {
 	// example:
@@ -12084,7 +11943,6 @@ func (s *ObjectVersion) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type OutputSerialization struct {
 	Csv              *CSVOutput  `json:"CSV,omitempty" xml:"CSV,omitempty"`
 	EnablePayloadCrc *bool       `json:"EnablePayloadCrc,omitempty" xml:"EnablePayloadCrc,omitempty"`
@@ -12160,7 +12018,6 @@ func (s *OutputSerialization) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type Owner struct {
 	DisplayName *string `json:"DisplayName,omitempty" xml:"DisplayName,omitempty"`
 	ID          *string `json:"ID,omitempty" xml:"ID,omitempty"`
@@ -12195,7 +12052,6 @@ func (s *Owner) SetID(v string) *Owner {
 func (s *Owner) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type Part struct {
 	ETag *string `json:"ETag,omitempty" xml:"ETag,omitempty"`
@@ -12252,7 +12108,6 @@ func (s *Part) SetSize(v int64) *Part {
 func (s *Part) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PromoteDataLakeCacheReq struct {
 	Object *PromoteDataLakeCacheReqObject `json:"Object,omitempty" xml:"Object,omitempty" type:"Struct"`
@@ -12320,7 +12175,6 @@ func (s *PromoteDataLakeCacheReqObject) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PublicAccessBlockConfiguration struct {
 	// example:
 	//
@@ -12348,7 +12202,6 @@ func (s *PublicAccessBlockConfiguration) SetBlockPublicAccess(v bool) *PublicAcc
 func (s *PublicAccessBlockConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutChannelConfiguration struct {
 	// example:
@@ -12469,7 +12322,6 @@ func (s *PutChannelConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutReplicationRule struct {
 	// example:
 	//
@@ -12586,7 +12438,6 @@ func (s *PutReplicationRule) SetSyncRole(v string) *PutReplicationRule {
 func (s *PutReplicationRule) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type QoSConfiguration struct {
 	// example:
@@ -12719,7 +12570,6 @@ func (s *QoSConfiguration) SetTotalUploadBandwidth(v int64) *QoSConfiguration {
 func (s *QoSConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type QoSConfigurationWithRemark struct {
 	// example:
@@ -12866,7 +12716,6 @@ func (s *QoSConfigurationWithRemark) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RTC struct {
 	// example:
 	//
@@ -12894,7 +12743,6 @@ func (s *RTC) SetStatus(v string) *RTC {
 func (s *RTC) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type RefererConfiguration struct {
 	// This parameter is required.
@@ -13023,7 +12871,6 @@ func (s *RefererConfigurationRefererList) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RegionInfo struct {
 	AccelerateEndpoint *string `json:"AccelerateEndpoint,omitempty" xml:"AccelerateEndpoint,omitempty"`
 	InternalEndpoint   *string `json:"InternalEndpoint,omitempty" xml:"InternalEndpoint,omitempty"`
@@ -13079,7 +12926,6 @@ func (s *RegionInfo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReplicationConfiguration struct {
 	Rule *PutReplicationRule `json:"Rule,omitempty" xml:"Rule,omitempty"`
 }
@@ -13104,7 +12950,6 @@ func (s *ReplicationConfiguration) SetRule(v *PutReplicationRule) *ReplicationCo
 func (s *ReplicationConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ReplicationDestination struct {
 	// example:
@@ -13160,7 +13005,6 @@ func (s *ReplicationDestination) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReplicationEncryptionConfiguration struct {
 	// example:
 	//
@@ -13189,7 +13033,6 @@ func (s *ReplicationEncryptionConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReplicationPrefixSet struct {
 	Prefixs []*string `json:"Prefix,omitempty" xml:"Prefix,omitempty" type:"Repeated"`
 }
@@ -13214,7 +13057,6 @@ func (s *ReplicationPrefixSet) SetPrefixs(v []*string) *ReplicationPrefixSet {
 func (s *ReplicationPrefixSet) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ReplicationProgressRule struct {
 	// example:
@@ -13354,7 +13196,6 @@ func (s *ReplicationProgressRuleProgress) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReplicationRule struct {
 	// example:
 	//
@@ -13485,7 +13326,6 @@ func (s *ReplicationRule) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReplicationRuleProgress struct {
 	Action    *string               `json:"Action,omitempty" xml:"Action,omitempty"`
 	ID        *string               `json:"ID,omitempty" xml:"ID,omitempty"`
@@ -13531,7 +13371,6 @@ func (s *ReplicationRuleProgress) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReplicationRules struct {
 	Ids []*string `json:"ID,omitempty" xml:"ID,omitempty" type:"Repeated"`
 }
@@ -13556,7 +13395,6 @@ func (s *ReplicationRules) SetIds(v []*string) *ReplicationRules {
 func (s *ReplicationRules) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ReplicationSourceSelectionCriteria struct {
 	SseKmsEncryptedObjects *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects `json:"SseKmsEncryptedObjects,omitempty" xml:"SseKmsEncryptedObjects,omitempty" type:"Struct"`
@@ -13611,7 +13449,6 @@ func (s *ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects) Validate() er
 	return dara.Validate(s)
 }
 
-
 type RequestPaymentConfiguration struct {
 	Payer *string `json:"Payer,omitempty" xml:"Payer,omitempty"`
 }
@@ -13636,7 +13473,6 @@ func (s *RequestPaymentConfiguration) SetPayer(v string) *RequestPaymentConfigur
 func (s *RequestPaymentConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type RequesterQoSInfo struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
@@ -13675,7 +13511,6 @@ func (s *RequesterQoSInfo) SetRequester(v string) *RequesterQoSInfo {
 func (s *RequesterQoSInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ReservedCapacityCreateConfiguration struct {
 	// example:
@@ -13756,7 +13591,6 @@ func (s *ReservedCapacityCreateConfiguration) SetYears(v int64) *ReservedCapacit
 func (s *ReservedCapacityCreateConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ReservedCapacityRecord struct {
 	// example:
@@ -13965,7 +13799,6 @@ func (s *ReservedCapacityRecord) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ReservedCapacityRecordList struct {
 	ReservedCapacityRecord []*ReservedCapacityRecord `json:"ReservedCapacityRecord,omitempty" xml:"ReservedCapacityRecord,omitempty" type:"Repeated"`
 }
@@ -13990,7 +13823,6 @@ func (s *ReservedCapacityRecordList) SetReservedCapacityRecord(v []*ReservedCapa
 func (s *ReservedCapacityRecordList) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ReservedCapacityUpdateConfiguration struct {
 	// example:
@@ -14046,7 +13878,6 @@ func (s *ReservedCapacityUpdateConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ResourcePoolBucket struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
 	//
@@ -14090,7 +13921,6 @@ func (s *ResourcePoolBucket) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ResourcePoolBucketGroup struct {
 	GroupBucketInfo []*GroupBucketInfo `json:"GroupBucketInfo,omitempty" xml:"GroupBucketInfo,omitempty" type:"Repeated"`
 	// example:
@@ -14129,7 +13959,6 @@ func (s *ResourcePoolBucketGroup) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ResourcePoolBucketGroupQoSInfo struct {
 	// example:
 	//
@@ -14167,7 +13996,6 @@ func (s *ResourcePoolBucketGroupQoSInfo) SetQoSConfiguration(v *QoSConfiguration
 func (s *ResourcePoolBucketGroupQoSInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ResourcePoolSimpleInfo struct {
 	// example:
@@ -14209,7 +14037,6 @@ func (s *ResourcePoolSimpleInfo) SetName(v string) *ResourcePoolSimpleInfo {
 func (s *ResourcePoolSimpleInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ResponseHeaderConfiguration struct {
 	Rule []*ResponseHeaderConfigurationRule `json:"Rule,omitempty" xml:"Rule,omitempty" type:"Repeated"`
@@ -14334,7 +14161,6 @@ func (s *ResponseHeaderConfigurationRuleHideHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RestoreRequest struct {
 	Days          *int64                       `json:"Days,omitempty" xml:"Days,omitempty"`
 	JobParameters *RestoreRequestJobParameters `json:"JobParameters,omitempty" xml:"JobParameters,omitempty" type:"Struct"`
@@ -14395,7 +14221,6 @@ func (s *RestoreRequestJobParameters) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RoutingRule struct {
 	Condition *RoutingRuleCondition `json:"Condition,omitempty" xml:"Condition,omitempty"`
 	LuaConfig *RoutingRuleLuaConfig `json:"LuaConfig,omitempty" xml:"LuaConfig,omitempty"`
@@ -14453,7 +14278,6 @@ func (s *RoutingRule) SetRuleNumber(v int64) *RoutingRule {
 func (s *RoutingRule) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type RoutingRuleCondition struct {
 	// example:
@@ -14586,7 +14410,6 @@ func (s *RoutingRuleConditionIncludeHeader) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RoutingRuleLuaConfig struct {
 	// example:
 	//
@@ -14614,7 +14437,6 @@ func (s *RoutingRuleLuaConfig) SetScript(v string) *RoutingRuleLuaConfig {
 func (s *RoutingRuleLuaConfig) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type RoutingRuleRedirect struct {
 	// example:
@@ -15487,7 +15309,6 @@ func (s *RoutingRuleRedirectMirrorTaggingsTaggings) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RtcConfiguration struct {
 	// example:
 	//
@@ -15526,7 +15347,6 @@ func (s *RtcConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type SSEKMS struct {
 	// if can be null:
 	// true
@@ -15557,7 +15377,6 @@ func (s *SSEKMS) SetKeyId(v string) *SSEKMS {
 func (s *SSEKMS) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type SelectMetaRequest struct {
 	InputSerialization *InputSerialization `json:"InputSerialization,omitempty" xml:"InputSerialization,omitempty"`
@@ -15593,7 +15412,6 @@ func (s *SelectMetaRequest) SetOverwriteIfExists(v bool) *SelectMetaRequest {
 func (s *SelectMetaRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type SelectMetaStatus struct {
 	ColsCount         *int64  `json:"ColsCount,omitempty" xml:"ColsCount,omitempty"`
@@ -15680,7 +15498,6 @@ func (s *SelectMetaStatus) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type SelectRequest struct {
 	Expression          *string               `json:"Expression,omitempty" xml:"Expression,omitempty"`
 	InputSerialization  *InputSerialization   `json:"InputSerialization,omitempty" xml:"InputSerialization,omitempty"`
@@ -15736,7 +15553,6 @@ func (s *SelectRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type SelectRequestOptions struct {
 	MaxSkippedRecordsAllowed *int64 `json:"MaxSkippedRecordsAllowed,omitempty" xml:"MaxSkippedRecordsAllowed,omitempty"`
 	SkipPartialDataRecord    *bool  `json:"SkipPartialDataRecord,omitempty" xml:"SkipPartialDataRecord,omitempty"`
@@ -15772,7 +15588,6 @@ func (s *SelectRequestOptions) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ServerSideEncryptionRule struct {
 	ApplyServerSideEncryptionByDefault *ApplyServerSideEncryptionByDefault `json:"ApplyServerSideEncryptionByDefault,omitempty" xml:"ApplyServerSideEncryptionByDefault,omitempty"`
 }
@@ -15797,7 +15612,6 @@ func (s *ServerSideEncryptionRule) SetApplyServerSideEncryptionByDefault(v *Appl
 func (s *ServerSideEncryptionRule) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StartPartUploadResult struct {
 	// example:
@@ -15879,7 +15693,6 @@ func (s *StartPartUploadResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type Style struct {
 	Content *string `json:"Content,omitempty" xml:"Content,omitempty"`
 }
@@ -15904,7 +15717,6 @@ func (s *Style) SetContent(v string) *Style {
 func (s *Style) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StyleInfo struct {
 	// example:
@@ -15986,7 +15798,6 @@ func (s *StyleInfo) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type Tag struct {
 	// This parameter is required.
 	Key   *string `json:"Key,omitempty" xml:"Key,omitempty"`
@@ -16023,7 +15834,6 @@ func (s *Tag) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type TagSet struct {
 	Tags []*Tag `json:"Tag,omitempty" xml:"Tag,omitempty" type:"Repeated"`
 }
@@ -16048,7 +15858,6 @@ func (s *TagSet) SetTags(v []*Tag) *TagSet {
 func (s *TagSet) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type Tagging struct {
 	TagSet *TagSet `json:"TagSet,omitempty" xml:"TagSet,omitempty"`
@@ -16075,7 +15884,6 @@ func (s *Tagging) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type TransferAccelerationConfiguration struct {
 	Enabled *bool `json:"Enabled,omitempty" xml:"Enabled,omitempty"`
 }
@@ -16100,7 +15908,6 @@ func (s *TransferAccelerationConfiguration) SetEnabled(v bool) *TransferAccelera
 func (s *TransferAccelerationConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type Upload struct {
 	// Use the UTC time format: yyyy-MM-ddTHH:mmZ
@@ -16147,7 +15954,6 @@ func (s *Upload) SetUploadId(v string) *Upload {
 func (s *Upload) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UserAntiDDOSInfo struct {
 	ActiveTime *int64  `json:"ActiveTime,omitempty" xml:"ActiveTime,omitempty"`
@@ -16223,7 +16029,6 @@ func (s *UserAntiDDOSInfo) SetStatus(v string) *UserAntiDDOSInfo {
 func (s *UserAntiDDOSInfo) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UserDefinedLogFieldsConfiguration struct {
 	HeaderSet *UserDefinedLogFieldsConfigurationHeaderSet `json:"HeaderSet,omitempty" xml:"HeaderSet,omitempty" type:"Struct"`
@@ -16312,7 +16117,6 @@ func (s *UserDefinedLogFieldsConfigurationParamSet) SetParameter(v []*string) *U
 func (s *UserDefinedLogFieldsConfigurationParamSet) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UserQosConfiguration struct {
 	DefaultQoSConfiguration *QoSConfigurationWithRemark `json:"DefaultQoSConfiguration,omitempty" xml:"DefaultQoSConfiguration,omitempty"`
@@ -16482,7 +16286,6 @@ func (s *UserQosConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type VersioningConfiguration struct {
 	Status *string `json:"Status,omitempty" xml:"Status,omitempty"`
 }
@@ -16507,7 +16310,6 @@ func (s *VersioningConfiguration) SetStatus(v string) *VersioningConfiguration {
 func (s *VersioningConfiguration) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type VirtualBucket struct {
 	// example:
@@ -16588,7 +16390,6 @@ func (s *VirtualBucketRealBucket) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type VirtualBucketConfiguration struct {
 	RealBucket []*VirtualBucketConfigurationRealBucket `json:"RealBucket,omitempty" xml:"RealBucket,omitempty" type:"Repeated"`
 }
@@ -16641,7 +16442,6 @@ func (s *VirtualBucketConfigurationRealBucket) SetName(v string) *VirtualBucketC
 func (s *VirtualBucketConfigurationRealBucket) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type WebsiteConfiguration struct {
 	ErrorDocument *ErrorDocument                    `json:"ErrorDocument,omitempty" xml:"ErrorDocument,omitempty"`
@@ -16713,7 +16513,6 @@ func (s *WebsiteConfigurationRoutingRules) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AbortBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -16749,7 +16548,6 @@ func (s *AbortBucketWormResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AbortMultipartUploadRequest struct {
 	// The ID of the multipart upload task.
 	//
@@ -16781,7 +16579,6 @@ func (s *AbortMultipartUploadRequest) SetUploadId(v string) *AbortMultipartUploa
 func (s *AbortMultipartUploadRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type AbortMultipartUploadResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -16817,7 +16614,6 @@ func (s *AbortMultipartUploadResponse) SetStatusCode(v int32) *AbortMultipartUpl
 func (s *AbortMultipartUploadResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type AppendObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -17037,7 +16833,6 @@ func (s *AppendObjectHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AppendObjectRequest struct {
 	// The request body.
 	//
@@ -17091,7 +16886,6 @@ func (s *AppendObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type AppendObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17126,7 +16920,6 @@ func (s *AppendObjectResponse) SetStatusCode(v int32) *AppendObjectResponse {
 func (s *AppendObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CleanRestoredObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17163,7 +16956,6 @@ func (s *CleanRestoredObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CloseMetaQueryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17198,7 +16990,6 @@ func (s *CloseMetaQueryResponse) SetStatusCode(v int32) *CloseMetaQueryResponse 
 func (s *CloseMetaQueryResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CommitPartRequest struct {
 	// This parameter is required.
@@ -17237,7 +17028,6 @@ func (s *CommitPartRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CommitPartResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17273,7 +17063,6 @@ func (s *CommitPartResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CompleteBucketWormRequest struct {
 	// The ID of the retention policy.
 	//
@@ -17305,7 +17094,6 @@ func (s *CompleteBucketWormRequest) SetWormId(v string) *CompleteBucketWormReque
 func (s *CompleteBucketWormRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CompleteBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -17341,7 +17129,6 @@ func (s *CompleteBucketWormResponse) SetStatusCode(v int32) *CompleteBucketWormR
 func (s *CompleteBucketWormResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CompleteMultipartUploadHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -17414,7 +17201,6 @@ func (s *CompleteMultipartUploadHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CompleteMultipartUploadRequest struct {
 	// The container that stores the content of the CompleteMultipartUpload request.
 	CompleteMultipartUpload *CompleteMultipartUpload `json:"CompleteMultipartUpload,omitempty" xml:"CompleteMultipartUpload,omitempty"`
@@ -17470,7 +17256,6 @@ func (s *CompleteMultipartUploadRequest) SetUploadId(v string) *CompleteMultipar
 func (s *CompleteMultipartUploadRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CompleteMultipartUploadResponseBody struct {
 	// The container that stores the results of the CompleteMultipartUpload request.
@@ -17592,7 +17377,6 @@ func (s *CompleteMultipartUploadResponseBodyCompleteMultipartUploadResult) Valid
 	return dara.Validate(s)
 }
 
-
 type CompleteMultipartUploadResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                               `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -17637,7 +17421,6 @@ func (s *CompleteMultipartUploadResponse) SetBody(v *CompleteMultipartUploadResp
 func (s *CompleteMultipartUploadResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CopyObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -17925,7 +17708,6 @@ func (s *CopyObjectHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyObjectResponseBody struct {
 	// The results of the CopyObject operation.
 	CopyObjectResult *CopyObjectResponseBodyCopyObjectResult `json:"CopyObjectResult,omitempty" xml:"CopyObjectResult,omitempty" type:"Struct"`
@@ -17997,7 +17779,6 @@ func (s *CopyObjectResponseBodyCopyObjectResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyObjectResponse struct {
 	Headers    map[string]*string      `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                  `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -18043,7 +17824,6 @@ func (s *CopyObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyObjectsRequest struct {
 	Copy *CopyObjectsCopy `json:"Copy,omitempty" xml:"Copy,omitempty"`
 }
@@ -18069,7 +17849,6 @@ func (s *CopyObjectsRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CopyObjectsResponseBody struct {
 	CopyObjectsResult *CopyObjectsResult `json:"CopyObjectsResult,omitempty" xml:"CopyObjectsResult,omitempty"`
 }
@@ -18094,7 +17873,6 @@ func (s *CopyObjectsResponseBody) SetCopyObjectsResult(v *CopyObjectsResult) *Co
 func (s *CopyObjectsResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CopyObjectsResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18141,7 +17919,6 @@ func (s *CopyObjectsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateAccessPointRequest struct {
 	// The container that stores the information about the access point.
 	CreateAccessPointConfiguration *CreateAccessPointConfiguration `json:"CreateAccessPointConfiguration,omitempty" xml:"CreateAccessPointConfiguration,omitempty"`
@@ -18168,7 +17945,6 @@ func (s *CreateAccessPointRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateAccessPointResponseBody struct {
 	// The container that stores the information about the access point.
 	CreateAccessPointResult *CreateAccessPointResult `json:"CreateAccessPointResult,omitempty" xml:"CreateAccessPointResult,omitempty"`
@@ -18194,7 +17970,6 @@ func (s *CreateAccessPointResponseBody) SetCreateAccessPointResult(v *CreateAcce
 func (s *CreateAccessPointResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateAccessPointResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18241,7 +18016,6 @@ func (s *CreateAccessPointResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateAccessPointForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the Object FC Access Point.
@@ -18283,7 +18057,6 @@ func (s *CreateAccessPointForObjectProcessHeaders) SetXOssAccessPointForObjectPr
 func (s *CreateAccessPointForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateAccessPointForObjectProcessRequest struct {
 	// The container that stores information about the Object FC Access Point.
@@ -18367,7 +18140,6 @@ func (s *CreateAccessPointForObjectProcessRequestCreateAccessPointForObjectProce
 	return dara.Validate(s)
 }
 
-
 type CreateAccessPointForObjectProcessResponseBody struct {
 	// The container that stores information about the Object FC Access Point.
 	CreateAccessPointForObjectProcessResult *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObjectProcessResult `json:"CreateAccessPointForObjectProcessResult,omitempty" xml:"CreateAccessPointForObjectProcessResult,omitempty" type:"Struct"`
@@ -18439,7 +18211,6 @@ func (s *CreateAccessPointForObjectProcessResponseBodyCreateAccessPointForObject
 	return dara.Validate(s)
 }
 
-
 type CreateAccessPointForObjectProcessResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                         `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -18485,7 +18256,6 @@ func (s *CreateAccessPointForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateBucketDataRedundancyTransitionRequest struct {
 	// The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of a bucket from LRS to ZRS.
 	//
@@ -18517,7 +18287,6 @@ func (s *CreateBucketDataRedundancyTransitionRequest) SetXOssTargetRedundancyTyp
 func (s *CreateBucketDataRedundancyTransitionRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateBucketDataRedundancyTransitionResponseBody struct {
 	// The container in which the redundancy type conversion task is stored.
@@ -18575,7 +18344,6 @@ func (s *CreateBucketDataRedundancyTransitionResponseBodyBucketDataRedundancyTra
 	return dara.Validate(s)
 }
 
-
 type CreateBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                                `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                            `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -18620,7 +18388,6 @@ func (s *CreateBucketDataRedundancyTransitionResponse) SetBody(v *CreateBucketDa
 func (s *CreateBucketDataRedundancyTransitionResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateCnameTokenRequest struct {
 	// The container that stores the CNAME record.
@@ -18704,7 +18471,6 @@ func (s *CreateCnameTokenRequestBucketCnameConfigurationCname) Validate() error 
 	return dara.Validate(s)
 }
 
-
 type CreateCnameTokenResponseBody struct {
 	// The container in which the CNAME token is stored.
 	CnameToken *CnameToken `json:"CnameToken,omitempty" xml:"CnameToken,omitempty"`
@@ -18730,7 +18496,6 @@ func (s *CreateCnameTokenResponseBody) SetCnameToken(v *CnameToken) *CreateCname
 func (s *CreateCnameTokenResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateCnameTokenResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18777,7 +18542,6 @@ func (s *CreateCnameTokenResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateReservedCapacityRequest struct {
 	ReservedCapacityCreateConfiguration *ReservedCapacityCreateConfiguration `json:"ReservedCapacityCreateConfiguration,omitempty" xml:"ReservedCapacityCreateConfiguration,omitempty"`
 }
@@ -18803,7 +18567,6 @@ func (s *CreateReservedCapacityRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateReservedCapacityResponseBody struct {
 	CreateLargeReservedCapacityResult *CreateLargeReservedCapacityResult `json:"CreateLargeReservedCapacityResult,omitempty" xml:"CreateLargeReservedCapacityResult,omitempty"`
 }
@@ -18828,7 +18591,6 @@ func (s *CreateReservedCapacityResponseBody) SetCreateLargeReservedCapacityResul
 func (s *CreateReservedCapacityResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateReservedCapacityResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18875,7 +18637,6 @@ func (s *CreateReservedCapacityResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type CreateSelectObjectMetaRequest struct {
 	// The request body used to create select meta.
 	CsvMetaRequest *SelectMetaRequest `json:"CsvMetaRequest,omitempty" xml:"CsvMetaRequest,omitempty"`
@@ -18918,7 +18679,6 @@ func (s *CreateSelectObjectMetaRequest) SetXOssProcess(v string) *CreateSelectOb
 func (s *CreateSelectObjectMetaRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type CreateSelectObjectMetaResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -18965,7 +18725,6 @@ func (s *CreateSelectObjectMetaResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteAccessPointHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the access point.
@@ -19008,7 +18767,6 @@ func (s *DeleteAccessPointHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteAccessPointResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19043,7 +18801,6 @@ func (s *DeleteAccessPointResponse) SetStatusCode(v int32) *DeleteAccessPointRes
 func (s *DeleteAccessPointResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteAccessPointForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -19087,7 +18844,6 @@ func (s *DeleteAccessPointForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteAccessPointForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19122,7 +18878,6 @@ func (s *DeleteAccessPointForObjectProcessResponse) SetStatusCode(v int32) *Dele
 func (s *DeleteAccessPointForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteAccessPointPolicyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -19166,7 +18921,6 @@ func (s *DeleteAccessPointPolicyHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteAccessPointPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19201,7 +18955,6 @@ func (s *DeleteAccessPointPolicyResponse) SetStatusCode(v int32) *DeleteAccessPo
 func (s *DeleteAccessPointPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteAccessPointPolicyForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -19245,7 +18998,6 @@ func (s *DeleteAccessPointPolicyForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteAccessPointPolicyForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19281,7 +19033,6 @@ func (s *DeleteAccessPointPolicyForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteAccessPointPublicAccessBlockRequest struct {
 	// The name of the access point.
 	//
@@ -19311,7 +19062,6 @@ func (s *DeleteAccessPointPublicAccessBlockRequest) SetXOssAccessPointName(v str
 func (s *DeleteAccessPointPublicAccessBlockRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteAccessPointPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19348,7 +19098,6 @@ func (s *DeleteAccessPointPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19383,7 +19132,6 @@ func (s *DeleteBucketResponse) SetStatusCode(v int32) *DeleteBucketResponse {
 func (s *DeleteBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketCacheConfigurationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19420,7 +19168,6 @@ func (s *DeleteBucketCacheConfigurationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketCallbackPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19455,7 +19202,6 @@ func (s *DeleteBucketCallbackPolicyResponse) SetStatusCode(v int32) *DeleteBucke
 func (s *DeleteBucketCallbackPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketCommonHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19492,7 +19238,6 @@ func (s *DeleteBucketCommonHeaderResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketCorsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19527,7 +19272,6 @@ func (s *DeleteBucketCorsResponse) SetStatusCode(v int32) *DeleteBucketCorsRespo
 func (s *DeleteBucketCorsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketDataAcceleratorResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19564,7 +19308,6 @@ func (s *DeleteBucketDataAcceleratorResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketDataRedundancyTransitionRequest struct {
 	// The ID of the redundancy type change task.
 	//
@@ -19596,7 +19339,6 @@ func (s *DeleteBucketDataRedundancyTransitionRequest) SetXOssRedundancyTransitio
 func (s *DeleteBucketDataRedundancyTransitionRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19633,7 +19375,6 @@ func (s *DeleteBucketDataRedundancyTransitionResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketEncryptionResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19668,7 +19409,6 @@ func (s *DeleteBucketEncryptionResponse) SetStatusCode(v int32) *DeleteBucketEnc
 func (s *DeleteBucketEncryptionResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketEventNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19705,7 +19445,6 @@ func (s *DeleteBucketEventNotificationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketInventoryRequest struct {
 	// The name of the inventory that you want to delete.
 	//
@@ -19737,7 +19476,6 @@ func (s *DeleteBucketInventoryRequest) SetInventoryId(v string) *DeleteBucketInv
 func (s *DeleteBucketInventoryRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketInventoryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19774,7 +19512,6 @@ func (s *DeleteBucketInventoryResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketLifecycleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19809,7 +19546,6 @@ func (s *DeleteBucketLifecycleResponse) SetStatusCode(v int32) *DeleteBucketLife
 func (s *DeleteBucketLifecycleResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketLoggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19846,7 +19582,6 @@ func (s *DeleteBucketLoggingResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19881,7 +19616,6 @@ func (s *DeleteBucketNotificationResponse) SetStatusCode(v int32) *DeleteBucketN
 func (s *DeleteBucketNotificationResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -19918,7 +19652,6 @@ func (s *DeleteBucketPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19954,7 +19687,6 @@ func (s *DeleteBucketPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -19989,7 +19721,6 @@ func (s *DeleteBucketQoSInfoResponse) SetStatusCode(v int32) *DeleteBucketQoSInf
 func (s *DeleteBucketQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketReplicationRequest struct {
 	// The container that is used to store the data replication rule to delete.
@@ -20042,7 +19773,6 @@ func (s *DeleteBucketReplicationRequestReplicationRules) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketReplicationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20078,7 +19808,6 @@ func (s *DeleteBucketReplicationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	//
@@ -20108,7 +19837,6 @@ func (s *DeleteBucketRequesterQoSInfoRequest) SetQosRequester(v string) *DeleteB
 func (s *DeleteBucketRequesterQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20145,7 +19873,6 @@ func (s *DeleteBucketRequesterQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketResponseHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20180,7 +19907,6 @@ func (s *DeleteBucketResponseHeaderResponse) SetStatusCode(v int32) *DeleteBucke
 func (s *DeleteBucketResponseHeaderResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketTagsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20217,7 +19943,6 @@ func (s *DeleteBucketTagsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteBucketTransferAccelerationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20252,7 +19977,6 @@ func (s *DeleteBucketTransferAccelerationResponse) SetStatusCode(v int32) *Delet
 func (s *DeleteBucketTransferAccelerationResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteBucketWebsiteResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20289,7 +20013,6 @@ func (s *DeleteBucketWebsiteResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteCacheRequest struct {
 	XOssDatalakeCacheAvailableZone *string `json:"x-oss-datalake-cache-available-zone,omitempty" xml:"x-oss-datalake-cache-available-zone,omitempty"`
 	XOssDatalakeCacheName          *string `json:"x-oss-datalake-cache-name,omitempty" xml:"x-oss-datalake-cache-name,omitempty"`
@@ -20324,7 +20047,6 @@ func (s *DeleteCacheRequest) SetXOssDatalakeCacheName(v string) *DeleteCacheRequ
 func (s *DeleteCacheRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteCacheResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20361,7 +20083,6 @@ func (s *DeleteCacheResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteChannelResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20396,7 +20117,6 @@ func (s *DeleteChannelResponse) SetStatusCode(v int32) *DeleteChannelResponse {
 func (s *DeleteChannelResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteCnameRequest struct {
 	// The container that stores the CNAME record.
@@ -20474,7 +20194,6 @@ func (s *DeleteCnameRequestBucketCnameConfigurationCname) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteCnameResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20510,7 +20229,6 @@ func (s *DeleteCnameResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -20536,7 +20254,6 @@ func (s *DeleteDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *
 func (s *DeleteDataLakeCachePrefetchJobRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20573,7 +20290,6 @@ func (s *DeleteDataLakeCachePrefetchJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -20599,7 +20315,6 @@ func (s *DeleteDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string)
 func (s *DeleteDataLakeStorageTransferJobRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20636,7 +20351,6 @@ func (s *DeleteDataLakeStorageTransferJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteLiveChannelResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20671,7 +20385,6 @@ func (s *DeleteLiveChannelResponse) SetStatusCode(v int32) *DeleteLiveChannelRes
 func (s *DeleteLiveChannelResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteMultipleObjectsHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -20713,7 +20426,6 @@ func (s *DeleteMultipleObjectsHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteMultipleObjectsRequest struct {
 	Delete *Delete `json:"Delete,omitempty" xml:"Delete,omitempty"`
 	// The encoding type of the object name in the response. The value of the Key parameter is UTF-8 encoded. If the Key parameter includes control characters that are not supported by the XML 1.0 standard, you can specify this header to encode the value of the Key parameter in the response.
@@ -20753,7 +20465,6 @@ func (s *DeleteMultipleObjectsRequest) SetEncodingType(v string) *DeleteMultiple
 func (s *DeleteMultipleObjectsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteMultipleObjectsResponseBody struct {
 	DeleteResult *DeleteMultipleObjectsResponseBodyDeleteResult `json:"DeleteResult,omitempty" xml:"DeleteResult,omitempty" type:"Struct"`
@@ -20815,7 +20526,6 @@ func (s *DeleteMultipleObjectsResponseBodyDeleteResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteMultipleObjectsResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -20861,7 +20571,6 @@ func (s *DeleteMultipleObjectsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteObjectRequest struct {
 	// The version ID of the object.
 	//
@@ -20891,7 +20600,6 @@ func (s *DeleteObjectRequest) SetVersionId(v string) *DeleteObjectRequest {
 func (s *DeleteObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20928,7 +20636,6 @@ func (s *DeleteObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteObjectTaggingRequest struct {
 	// The version ID of the object that you want to delete.
 	//
@@ -20958,7 +20665,6 @@ func (s *DeleteObjectTaggingRequest) SetVersionId(v string) *DeleteObjectTagging
 func (s *DeleteObjectTaggingRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteObjectTaggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -20995,7 +20701,6 @@ func (s *DeleteObjectTaggingResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeletePublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21031,7 +20736,6 @@ func (s *DeletePublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteReservedCapacityRequest struct {
 	// This parameter is required.
 	XOssReservedCapacityId *string `json:"x-oss-reserved-capacity-id,omitempty" xml:"x-oss-reserved-capacity-id,omitempty"`
@@ -21057,7 +20761,6 @@ func (s *DeleteReservedCapacityRequest) SetXOssReservedCapacityId(v string) *Del
 func (s *DeleteReservedCapacityRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteReservedCapacityResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -21093,7 +20796,6 @@ func (s *DeleteReservedCapacityResponse) SetStatusCode(v int32) *DeleteReservedC
 func (s *DeleteReservedCapacityResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteResourcePoolBucketGroupQoSInfoRequest struct {
 	// This parameter is required.
@@ -21132,7 +20834,6 @@ func (s *DeleteResourcePoolBucketGroupQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteResourcePoolBucketGroupQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21167,7 +20868,6 @@ func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) SetStatusCode(v int32) *D
 func (s *DeleteResourcePoolBucketGroupQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteResourcePoolRequesterQoSInfoRequest struct {
 	// This parameter is required.
@@ -21206,7 +20906,6 @@ func (s *DeleteResourcePoolRequesterQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteResourcePoolRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21242,7 +20941,6 @@ func (s *DeleteResourcePoolRequesterQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteStyleRequest struct {
 	// The name of the image style.
 	//
@@ -21274,7 +20972,6 @@ func (s *DeleteStyleRequest) SetStyleName(v string) *DeleteStyleRequest {
 func (s *DeleteStyleRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteStyleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -21311,7 +21008,6 @@ func (s *DeleteStyleResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DeleteUserDefinedLogFieldsConfigResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21346,7 +21042,6 @@ func (s *DeleteUserDefinedLogFieldsConfigResponse) SetStatusCode(v int32) *Delet
 func (s *DeleteUserDefinedLogFieldsConfigResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DeleteVirtualBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -21383,7 +21078,6 @@ func (s *DeleteVirtualBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DescribeRegionsRequest struct {
 	// The region ID of the request.
 	//
@@ -21413,7 +21107,6 @@ func (s *DescribeRegionsRequest) SetRegions(v string) *DescribeRegionsRequest {
 func (s *DescribeRegionsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DescribeRegionsResponseBody struct {
 	// The information about the regions.
@@ -21467,7 +21160,6 @@ func (s *DescribeRegionsResponseBodyRegionInfoList) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DescribeRegionsResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                       `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21513,7 +21205,6 @@ func (s *DescribeRegionsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DoMetaQueryRequest struct {
 	// The containerfor query conditions.
 	MetaQuery *MetaQuery `json:"MetaQuery,omitempty" xml:"MetaQuery,omitempty"`
@@ -21550,7 +21241,6 @@ func (s *DoMetaQueryRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type DoMetaQueryResponseBody struct {
 	// The container for the query result.
 	MetaQuery *MetaQueryResp `json:"MetaQuery,omitempty" xml:"MetaQuery,omitempty"`
@@ -21576,7 +21266,6 @@ func (s *DoMetaQueryResponseBody) SetMetaQuery(v *MetaQueryResp) *DoMetaQueryRes
 func (s *DoMetaQueryResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type DoMetaQueryResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -21623,7 +21312,6 @@ func (s *DoMetaQueryResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ExtendBucketWormRequest struct {
 	// The parameters for WORM extension.
 	ExtendWormConfiguration *ExtendWormConfiguration `json:"ExtendWormConfiguration,omitempty" xml:"ExtendWormConfiguration,omitempty"`
@@ -21669,7 +21357,6 @@ func (s *ExtendBucketWormRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ExtendBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21704,7 +21391,6 @@ func (s *ExtendBucketWormResponse) SetStatusCode(v int32) *ExtendBucketWormRespo
 func (s *ExtendBucketWormResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -21748,7 +21434,6 @@ func (s *GetAccessPointHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointResponseBody struct {
 	// The container that stores the information about the access point.
 	GetAccessPointResult *GetAccessPointResult `json:"GetAccessPointResult,omitempty" xml:"GetAccessPointResult,omitempty"`
@@ -21774,7 +21459,6 @@ func (s *GetAccessPointResponseBody) SetGetAccessPointResult(v *GetAccessPointRe
 func (s *GetAccessPointResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -21821,7 +21505,6 @@ func (s *GetAccessPointResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointConfigForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the Object FC Access Point.
@@ -21863,7 +21546,6 @@ func (s *GetAccessPointConfigForObjectProcessHeaders) SetXOssAccessPointForObjec
 func (s *GetAccessPointConfigForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointConfigForObjectProcessResponseBody struct {
 	// The container that stores the configurations of the Object FC Access Point.
@@ -21943,7 +21625,6 @@ func (s *GetAccessPointConfigForObjectProcessResponseBodyGetAccessPointConfigFor
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointConfigForObjectProcessResponse struct {
 	Headers    map[string]*string                                `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                            `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -21988,7 +21669,6 @@ func (s *GetAccessPointConfigForObjectProcessResponse) SetBody(v *GetAccessPoint
 func (s *GetAccessPointConfigForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -22037,7 +21717,6 @@ func (s *GetAccessPointForObjectProcessHeaders) SetXOssAccessPointForObjectProce
 func (s *GetAccessPointForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointForObjectProcessResponseBody struct {
 	// The container that stores information about the Object FC Access Point.
@@ -22275,7 +21954,6 @@ func (s *GetAccessPointForObjectProcessResponseBodyGetAccessPointForObjectProces
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointForObjectProcessResponse struct {
 	Headers    map[string]*string                          `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                      `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -22321,7 +21999,6 @@ func (s *GetAccessPointForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointPolicyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the access point.
@@ -22363,7 +22040,6 @@ func (s *GetAccessPointPolicyHeaders) SetXOssAccessPointName(v string) *GetAcces
 func (s *GetAccessPointPolicyHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22410,7 +22086,6 @@ func (s *GetAccessPointPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointPolicyForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The name of the Object FC Access Point.
@@ -22452,7 +22127,6 @@ func (s *GetAccessPointPolicyForObjectProcessHeaders) SetXOssAccessPointForObjec
 func (s *GetAccessPointPolicyForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointPolicyForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22499,7 +22173,6 @@ func (s *GetAccessPointPolicyForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointPublicAccessBlockRequest struct {
 	// The name of the access point.
 	//
@@ -22530,7 +22203,6 @@ func (s *GetAccessPointPublicAccessBlockRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAccessPointPublicAccessBlockResponseBody struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
@@ -22556,7 +22228,6 @@ func (s *GetAccessPointPublicAccessBlockResponseBody) SetPublicAccessBlockConfig
 func (s *GetAccessPointPublicAccessBlockResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAccessPointPublicAccessBlockResponse struct {
 	Headers    map[string]*string                           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22603,7 +22274,6 @@ func (s *GetAccessPointPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAsyncFetchTaskHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// This parameter is required.
@@ -22640,7 +22310,6 @@ func (s *GetAsyncFetchTaskHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetAsyncFetchTaskResponseBody struct {
 	AsyncFetchTaskInfo *AsyncFetchTaskInfo `json:"AsyncFetchTaskInfo,omitempty" xml:"AsyncFetchTaskInfo,omitempty"`
 }
@@ -22665,7 +22334,6 @@ func (s *GetAsyncFetchTaskResponseBody) SetAsyncFetchTaskInfo(v *AsyncFetchTaskI
 func (s *GetAsyncFetchTaskResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetAsyncFetchTaskResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -22711,7 +22379,6 @@ func (s *GetAsyncFetchTaskResponse) SetBody(v *GetAsyncFetchTaskResponseBody) *G
 func (s *GetAsyncFetchTaskResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketAccessMonitorResponseBody struct {
 	// The container that stores access monitor configuration.
@@ -22769,7 +22436,6 @@ func (s *GetBucketAccessMonitorResponseBodyAccessMonitorConfiguration) Validate(
 	return dara.Validate(s)
 }
 
-
 type GetBucketAccessMonitorResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                              `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -22814,7 +22480,6 @@ func (s *GetBucketAccessMonitorResponse) SetBody(v *GetBucketAccessMonitorRespon
 func (s *GetBucketAccessMonitorResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketAclResponseBody struct {
 	// The container that stores the ACL information.
@@ -22905,7 +22570,6 @@ func (s *GetBucketAclResponseBodyAccessControlPolicyAccessControlList) Validate(
 	return dara.Validate(s)
 }
 
-
 type GetBucketAclResponse struct {
 	Headers    map[string]*string        `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -22951,7 +22615,6 @@ func (s *GetBucketAclResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketArchiveDirectReadResponseBody struct {
 	// The container that stores the configurations for real-time access of Archive objects.
 	ArchiveDirectReadConfiguration *ArchiveDirectReadConfiguration `json:"ArchiveDirectReadConfiguration,omitempty" xml:"ArchiveDirectReadConfiguration,omitempty"`
@@ -22977,7 +22640,6 @@ func (s *GetBucketArchiveDirectReadResponseBody) SetArchiveDirectReadConfigurati
 func (s *GetBucketArchiveDirectReadResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketArchiveDirectReadResponse struct {
 	Headers    map[string]*string                      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23024,7 +22686,6 @@ func (s *GetBucketArchiveDirectReadResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketCacheConfigurationResponseBody struct {
 	CacheConfiguration *CacheConfiguration `json:"CacheConfiguration,omitempty" xml:"CacheConfiguration,omitempty"`
 }
@@ -23049,7 +22710,6 @@ func (s *GetBucketCacheConfigurationResponseBody) SetCacheConfiguration(v *Cache
 func (s *GetBucketCacheConfigurationResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketCacheConfigurationResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23096,7 +22756,6 @@ func (s *GetBucketCacheConfigurationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketCallbackPolicyResponseBody struct {
 	BucketCallbackPolicy *CallbackPolicy `json:"BucketCallbackPolicy,omitempty" xml:"BucketCallbackPolicy,omitempty"`
 }
@@ -23121,7 +22780,6 @@ func (s *GetBucketCallbackPolicyResponseBody) SetBucketCallbackPolicy(v *Callbac
 func (s *GetBucketCallbackPolicyResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketCallbackPolicyResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23168,7 +22826,6 @@ func (s *GetBucketCallbackPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketCommonHeaderResponseBody struct {
 	CommonHeaders *CommonHeaders `json:"CommonHeaders,omitempty" xml:"CommonHeaders,omitempty"`
 }
@@ -23193,7 +22850,6 @@ func (s *GetBucketCommonHeaderResponseBody) SetCommonHeaders(v *CommonHeaders) *
 func (s *GetBucketCommonHeaderResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketCommonHeaderResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23239,7 +22895,6 @@ func (s *GetBucketCommonHeaderResponse) SetBody(v *GetBucketCommonHeaderResponse
 func (s *GetBucketCommonHeaderResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketCorsResponseBody struct {
 	// The container that stores CORS configuration.
@@ -23312,7 +22967,6 @@ func (s *GetBucketCorsResponseBodyCORSConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketCorsResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -23358,7 +23012,6 @@ func (s *GetBucketCorsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketDataAcceleratorRequest struct {
 	Verbose *string `json:"verbose,omitempty" xml:"verbose,omitempty"`
 }
@@ -23384,7 +23037,6 @@ func (s *GetBucketDataAcceleratorRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketDataAcceleratorResponseBody struct {
 	DataAccelerator *DataAccelerator `json:"DataAccelerator,omitempty" xml:"DataAccelerator,omitempty"`
 }
@@ -23409,7 +23061,6 @@ func (s *GetBucketDataAcceleratorResponseBody) SetDataAccelerator(v *DataAcceler
 func (s *GetBucketDataAcceleratorResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketDataAcceleratorResponse struct {
 	Headers    map[string]*string                    `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23456,7 +23107,6 @@ func (s *GetBucketDataAcceleratorResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketDataRedundancyTransitionRequest struct {
 	// The ID of the redundancy change task.
 	//
@@ -23489,7 +23139,6 @@ func (s *GetBucketDataRedundancyTransitionRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketDataRedundancyTransitionResponseBody struct {
 	// The container for a specific redundancy type change task.
 	BucketDataRedundancyTransition *BucketDataRedundancyTransition `json:"BucketDataRedundancyTransition,omitempty" xml:"BucketDataRedundancyTransition,omitempty"`
@@ -23515,7 +23164,6 @@ func (s *GetBucketDataRedundancyTransitionResponseBody) SetBucketDataRedundancyT
 func (s *GetBucketDataRedundancyTransitionResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23561,7 +23209,6 @@ func (s *GetBucketDataRedundancyTransitionResponse) SetBody(v *GetBucketDataRedu
 func (s *GetBucketDataRedundancyTransitionResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketEncryptionResponseBody struct {
 	// The container that stores server-side encryption rules.
@@ -23615,7 +23262,6 @@ func (s *GetBucketEncryptionResponseBodyServerSideEncryptionRule) Validate() err
 	return dara.Validate(s)
 }
 
-
 type GetBucketEncryptionResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                           `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -23661,7 +23307,6 @@ func (s *GetBucketEncryptionResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketEventNotificationResponseBody struct {
 	// Function Compute service configuration for a bucket.
 	NotificationConfiguration *EventNotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
@@ -23687,7 +23332,6 @@ func (s *GetBucketEventNotificationResponseBody) SetNotificationConfiguration(v 
 func (s *GetBucketEventNotificationResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketEventNotificationResponse struct {
 	Headers    map[string]*string                      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23734,7 +23378,6 @@ func (s *GetBucketEventNotificationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketHashResponseBody struct {
 	ObjectHashConfiguration *ObjectHashConfiguration `json:"ObjectHashConfiguration,omitempty" xml:"ObjectHashConfiguration,omitempty"`
 }
@@ -23759,7 +23402,6 @@ func (s *GetBucketHashResponseBody) SetObjectHashConfiguration(v *ObjectHashConf
 func (s *GetBucketHashResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketHashResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23806,7 +23448,6 @@ func (s *GetBucketHashResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketHttpsConfigResponseBody struct {
 	// The container that stores HTTPS configurations.
 	HttpsConfiguration *HttpsConfiguration `json:"HttpsConfiguration,omitempty" xml:"HttpsConfiguration,omitempty"`
@@ -23832,7 +23473,6 @@ func (s *GetBucketHttpsConfigResponseBody) SetHttpsConfiguration(v *HttpsConfigu
 func (s *GetBucketHttpsConfigResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketHttpsConfigResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23879,7 +23519,6 @@ func (s *GetBucketHttpsConfigResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketInfoResponseBody struct {
 	// The container that stores the information about the bucket.
 	BucketInfo *BucketInfo `json:"BucketInfo,omitempty" xml:"BucketInfo,omitempty"`
@@ -23905,7 +23544,6 @@ func (s *GetBucketInfoResponseBody) SetBucketInfo(v *BucketInfo) *GetBucketInfoR
 func (s *GetBucketInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketInfoResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -23952,7 +23590,6 @@ func (s *GetBucketInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketInventoryRequest struct {
 	// The name of the inventory to be queried.
 	//
@@ -23985,7 +23622,6 @@ func (s *GetBucketInventoryRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketInventoryResponseBody struct {
 	// The inventory task configured for a bucket.
 	InventoryConfiguration *InventoryConfiguration `json:"InventoryConfiguration,omitempty" xml:"InventoryConfiguration,omitempty"`
@@ -24011,7 +23647,6 @@ func (s *GetBucketInventoryResponseBody) SetInventoryConfiguration(v *InventoryC
 func (s *GetBucketInventoryResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketInventoryResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24058,7 +23693,6 @@ func (s *GetBucketInventoryResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketLifecycleResponseBody struct {
 	// The container that stores the lifecycle rules configured for the bucket.
 	LifecycleConfiguration *LifecycleConfiguration `json:"LifecycleConfiguration,omitempty" xml:"LifecycleConfiguration,omitempty"`
@@ -24084,7 +23718,6 @@ func (s *GetBucketLifecycleResponseBody) SetLifecycleConfiguration(v *LifecycleC
 func (s *GetBucketLifecycleResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketLifecycleResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24131,7 +23764,6 @@ func (s *GetBucketLifecycleResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketLocationResponseBody struct {
 	// The region in which the bucket resides.\\
 	//
@@ -24167,7 +23799,6 @@ func (s *GetBucketLocationResponseBody) SetLocationConstraint(v string) *GetBuck
 func (s *GetBucketLocationResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketLocationResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24213,7 +23844,6 @@ func (s *GetBucketLocationResponse) SetBody(v *GetBucketLocationResponseBody) *G
 func (s *GetBucketLocationResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketLoggingResponseBody struct {
 	// Indicates the container used to store access logging configuration of a bucket.
@@ -24267,7 +23897,6 @@ func (s *GetBucketLoggingResponseBodyBucketLoggingStatus) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketLoggingResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                        `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -24313,7 +23942,6 @@ func (s *GetBucketLoggingResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketNotificationResponseBody struct {
 	NotificationConfiguration *NotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
@@ -24338,7 +23966,6 @@ func (s *GetBucketNotificationResponseBody) SetNotificationConfiguration(v *Noti
 func (s *GetBucketNotificationResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketNotificationResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24385,7 +24012,6 @@ func (s *GetBucketNotificationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -24430,7 +24056,6 @@ func (s *GetBucketPolicyResponse) SetBody(v string) *GetBucketPolicyResponse {
 func (s *GetBucketPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketPolicyStatusResponseBody struct {
 	// The container that stores public access information.
@@ -24492,7 +24117,6 @@ func (s *GetBucketPolicyStatusResponseBodyPolicyStatus) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketPolicyStatusResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -24538,7 +24162,6 @@ func (s *GetBucketPolicyStatusResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketPublicAccessBlockResponseBody struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
@@ -24564,7 +24187,6 @@ func (s *GetBucketPublicAccessBlockResponseBody) SetPublicAccessBlockConfigurati
 func (s *GetBucketPublicAccessBlockResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketPublicAccessBlockResponse struct {
 	Headers    map[string]*string                      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24611,7 +24233,6 @@ func (s *GetBucketPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketQoSInfoResponseBody struct {
 	QoSConfiguration *BucketQoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 }
@@ -24636,7 +24257,6 @@ func (s *GetBucketQoSInfoResponseBody) SetQoSConfiguration(v *BucketQoSConfigura
 func (s *GetBucketQoSInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketQoSInfoResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24683,7 +24303,6 @@ func (s *GetBucketQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketRefererResponseBody struct {
 	// The container that stores the hotlink protection configurations.
 	RefererConfiguration *RefererConfiguration `json:"RefererConfiguration,omitempty" xml:"RefererConfiguration,omitempty"`
@@ -24709,7 +24328,6 @@ func (s *GetBucketRefererResponseBody) SetRefererConfiguration(v *RefererConfigu
 func (s *GetBucketRefererResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketRefererResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -24755,7 +24373,6 @@ func (s *GetBucketRefererResponse) SetBody(v *GetBucketRefererResponseBody) *Get
 func (s *GetBucketRefererResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketReplicationResponseBody struct {
 	// The container that stores data replication configurations.
@@ -24809,7 +24426,6 @@ func (s *GetBucketReplicationResponseBodyReplicationConfiguration) Validate() er
 	return dara.Validate(s)
 }
 
-
 type GetBucketReplicationResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                            `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -24854,7 +24470,6 @@ func (s *GetBucketReplicationResponse) SetBody(v *GetBucketReplicationResponseBo
 func (s *GetBucketReplicationResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketReplicationLocationResponseBody struct {
 	// The container that stores the region in which the destination bucket can be located.
@@ -24982,7 +24597,6 @@ func (s *GetBucketReplicationLocationResponseBodyReplicationLocationLocationTran
 	return dara.Validate(s)
 }
 
-
 type GetBucketReplicationLocationResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25028,7 +24642,6 @@ func (s *GetBucketReplicationLocationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketReplicationProgressRequest struct {
 	// The ID of the data replication rule. You can call the GetBucketReplication operation to query the ID.
 	//
@@ -25060,7 +24673,6 @@ func (s *GetBucketReplicationProgressRequest) SetRuleId(v string) *GetBucketRepl
 func (s *GetBucketReplicationProgressRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketReplicationProgressResponseBody struct {
 	// The container that is used to store the progress of data replication tasks.
@@ -25114,7 +24726,6 @@ func (s *GetBucketReplicationProgressResponseBodyReplicationProgress) Validate()
 	return dara.Validate(s)
 }
 
-
 type GetBucketReplicationProgressResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25159,7 +24770,6 @@ func (s *GetBucketReplicationProgressResponse) SetBody(v *GetBucketReplicationPr
 func (s *GetBucketReplicationProgressResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketRequestPaymentResponseBody struct {
 	// Indicates the container for the payer.
@@ -25217,7 +24827,6 @@ func (s *GetBucketRequestPaymentResponseBodyRequestPaymentConfiguration) Validat
 	return dara.Validate(s)
 }
 
-
 type GetBucketRequestPaymentResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                               `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25263,7 +24872,6 @@ func (s *GetBucketRequestPaymentResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	//
@@ -25294,7 +24902,6 @@ func (s *GetBucketRequesterQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketRequesterQoSInfoResponseBody struct {
 	RequesterQoSInfo *RequesterQoSInfo `json:"RequesterQoSInfo,omitempty" xml:"RequesterQoSInfo,omitempty"`
 }
@@ -25319,7 +24926,6 @@ func (s *GetBucketRequesterQoSInfoResponseBody) SetRequesterQoSInfo(v *Requester
 func (s *GetBucketRequesterQoSInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketRequesterQoSInfoResponse struct {
 	Headers    map[string]*string                     `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25365,7 +24971,6 @@ func (s *GetBucketRequesterQoSInfoResponse) SetBody(v *GetBucketRequesterQoSInfo
 func (s *GetBucketRequesterQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketResourceGroupResponseBody struct {
 	// The container that stores the ID of the resource group.
@@ -25425,7 +25030,6 @@ func (s *GetBucketResourceGroupResponseBodyBucketResourceGroupConfiguration) Val
 	return dara.Validate(s)
 }
 
-
 type GetBucketResourceGroupResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                              `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25471,7 +25075,6 @@ func (s *GetBucketResourceGroupResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketResponseHeaderResponseBody struct {
 	ResponseHeaderConfiguration *ResponseHeaderConfiguration `json:"ResponseHeaderConfiguration,omitempty" xml:"ResponseHeaderConfiguration,omitempty"`
 }
@@ -25496,7 +25099,6 @@ func (s *GetBucketResponseHeaderResponseBody) SetResponseHeaderConfiguration(v *
 func (s *GetBucketResponseHeaderResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketResponseHeaderResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25543,7 +25145,6 @@ func (s *GetBucketResponseHeaderResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketStatResponseBody struct {
 	// The container that stores all information returned for the GetBucketStat request.
 	BucketStat *BucketStat `json:"BucketStat,omitempty" xml:"BucketStat,omitempty"`
@@ -25569,7 +25170,6 @@ func (s *GetBucketStatResponseBody) SetBucketStat(v *BucketStat) *GetBucketStatR
 func (s *GetBucketStatResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketStatResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25615,7 +25215,6 @@ func (s *GetBucketStatResponse) SetBody(v *GetBucketStatResponseBody) *GetBucket
 func (s *GetBucketStatResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketTagsResponseBody struct {
 	// The container that stores the returned tags of the bucket.
@@ -25671,7 +25270,6 @@ func (s *GetBucketTagsResponseBodyTagging) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketTagsResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25716,7 +25314,6 @@ func (s *GetBucketTagsResponse) SetBody(v *GetBucketTagsResponseBody) *GetBucket
 func (s *GetBucketTagsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketTransferAccelerationResponseBody struct {
 	// The container that stores the transfer acceleration configurations.
@@ -25774,7 +25371,6 @@ func (s *GetBucketTransferAccelerationResponseBodyTransferAccelerationConfigurat
 	return dara.Validate(s)
 }
 
-
 type GetBucketTransferAccelerationResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25819,7 +25415,6 @@ func (s *GetBucketTransferAccelerationResponse) SetBody(v *GetBucketTransferAcce
 func (s *GetBucketTransferAccelerationResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketVersioningResponseBody struct {
 	// The container that stores the versioning state of the bucket.
@@ -25873,7 +25468,6 @@ func (s *GetBucketVersioningResponseBodyVersioningConfiguration) Validate() erro
 	return dara.Validate(s)
 }
 
-
 type GetBucketVersioningResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                           `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -25919,7 +25513,6 @@ func (s *GetBucketVersioningResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketWebsiteResponseBody struct {
 	// The containers of the website configuration.
 	WebsiteConfiguration *WebsiteConfiguration `json:"WebsiteConfiguration,omitempty" xml:"WebsiteConfiguration,omitempty"`
@@ -25945,7 +25538,6 @@ func (s *GetBucketWebsiteResponseBody) SetWebsiteConfiguration(v *WebsiteConfigu
 func (s *GetBucketWebsiteResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketWebsiteResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -25991,7 +25583,6 @@ func (s *GetBucketWebsiteResponse) SetBody(v *GetBucketWebsiteResponseBody) *Get
 func (s *GetBucketWebsiteResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetBucketWormResponseBody struct {
 	// The container that stores the information about retention policies of the bucket.
@@ -26111,7 +25702,6 @@ func (s *GetBucketWormResponseBodyWormConfiguration) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetBucketWormResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -26156,7 +25746,6 @@ func (s *GetBucketWormResponse) SetBody(v *GetBucketWormResponseBody) *GetBucket
 func (s *GetBucketWormResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetCacheRequest struct {
 	// This parameter is required.
@@ -26205,7 +25794,6 @@ func (s *GetCacheRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetCacheResponseBody struct {
 	Cache *CacheDetailInfo `json:"Cache,omitempty" xml:"Cache,omitempty"`
 }
@@ -26230,7 +25818,6 @@ func (s *GetCacheResponseBody) SetCache(v *CacheDetailInfo) *GetCacheResponseBod
 func (s *GetCacheResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetCacheResponse struct {
 	Headers    map[string]*string    `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26277,7 +25864,6 @@ func (s *GetCacheResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetChannelResponseBody struct {
 	Channel *GetChannelResult `json:"channel,omitempty" xml:"channel,omitempty"`
 }
@@ -26302,7 +25888,6 @@ func (s *GetChannelResponseBody) SetChannel(v *GetChannelResult) *GetChannelResp
 func (s *GetChannelResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetChannelResponse struct {
 	Headers    map[string]*string      `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26349,7 +25934,6 @@ func (s *GetChannelResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetCnameTokenRequest struct {
 	// The name of the CNAME record that is mapped to the bucket.
 	//
@@ -26382,7 +25966,6 @@ func (s *GetCnameTokenRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetCnameTokenResponseBody struct {
 	// The container in which the CNAME token is stored.
 	CnameToken *CnameToken `json:"CnameToken,omitempty" xml:"CnameToken,omitempty"`
@@ -26408,7 +25991,6 @@ func (s *GetCnameTokenResponseBody) SetCnameToken(v *CnameToken) *GetCnameTokenR
 func (s *GetCnameTokenResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetCnameTokenResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26455,7 +26037,6 @@ func (s *GetCnameTokenResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -26482,7 +26063,6 @@ func (s *GetDataLakeCachePrefetchJobRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetDataLakeCachePrefetchJobResponseBody struct {
 	DataLakeCachePrefetchJob *DataLakeCachePrefetchJob `json:"DataLakeCachePrefetchJob,omitempty" xml:"DataLakeCachePrefetchJob,omitempty"`
 }
@@ -26507,7 +26087,6 @@ func (s *GetDataLakeCachePrefetchJobResponseBody) SetDataLakeCachePrefetchJob(v 
 func (s *GetDataLakeCachePrefetchJobResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26554,7 +26133,6 @@ func (s *GetDataLakeCachePrefetchJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId       *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -26591,7 +26169,6 @@ func (s *GetDataLakeStorageTransferJobRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJob *DataLakeStorageTransferJob `json:"DataLakeStorageTransferJob,omitempty" xml:"DataLakeStorageTransferJob,omitempty"`
 }
@@ -26616,7 +26193,6 @@ func (s *GetDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJo
 func (s *GetDataLakeStorageTransferJobResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -26662,7 +26238,6 @@ func (s *GetDataLakeStorageTransferJobResponse) SetBody(v *GetDataLakeStorageTra
 func (s *GetDataLakeStorageTransferJobResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetLiveChannelHistoryResponseBody struct {
 	// The container that stores the returned results of the GetLiveChannelHistory request.
@@ -26716,7 +26291,6 @@ func (s *GetLiveChannelHistoryResponseBodyLiveChannelHistory) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetLiveChannelHistoryResponse struct {
 	Headers    map[string]*string                 `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -26761,7 +26335,6 @@ func (s *GetLiveChannelHistoryResponse) SetBody(v *GetLiveChannelHistoryResponse
 func (s *GetLiveChannelHistoryResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetLiveChannelInfoResponseBody struct {
 	// The container that stores the returned results of the GetLiveChannelInfo request.
@@ -26853,7 +26426,6 @@ func (s *GetLiveChannelInfoResponseBodyLiveChannelConfiguration) Validate() erro
 	return dara.Validate(s)
 }
 
-
 type GetLiveChannelInfoResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -26898,7 +26470,6 @@ func (s *GetLiveChannelInfoResponse) SetBody(v *GetLiveChannelInfoResponseBody) 
 func (s *GetLiveChannelInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetLiveChannelStatResponseBody struct {
 	// The container that stores the returned results of the GetLiveChannelStat request.
@@ -27014,7 +26585,6 @@ func (s *GetLiveChannelStatResponseBodyLiveChannelStat) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetLiveChannelStatResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -27059,7 +26629,6 @@ func (s *GetLiveChannelStatResponse) SetBody(v *GetLiveChannelStatResponseBody) 
 func (s *GetLiveChannelStatResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetMetaQueryStatusResponseBody struct {
 	// The container that stores the metadata information.
@@ -27180,7 +26749,6 @@ func (s *GetMetaQueryStatusResponseBodyMetaQueryStatus) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetMetaQueryStatusResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -27225,7 +26793,6 @@ func (s *GetMetaQueryStatusResponse) SetBody(v *GetMetaQueryStatusResponseBody) 
 func (s *GetMetaQueryStatusResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -27380,7 +26947,6 @@ func (s *GetObjectHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectRequest struct {
 	// The cache-control header in the response that OSS returns.
 	//
@@ -27501,7 +27067,6 @@ func (s *GetObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -27547,7 +27112,6 @@ func (s *GetObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectAclRequest struct {
 	// The verison id of the target object.
 	//
@@ -27577,7 +27141,6 @@ func (s *GetObjectAclRequest) SetVersionId(v string) *GetObjectAclRequest {
 func (s *GetObjectAclRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectAclResponseBody struct {
 	// The container that stores the results of the GetObjectACL request.
@@ -27668,7 +27231,6 @@ func (s *GetObjectAclResponseBodyAccessControlPolicyAccessControlList) Validate(
 	return dara.Validate(s)
 }
 
-
 type GetObjectAclResponse struct {
 	Headers    map[string]*string        `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -27714,7 +27276,6 @@ func (s *GetObjectAclResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectGroupIndexHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// This parameter is required.
@@ -27751,7 +27312,6 @@ func (s *GetObjectGroupIndexHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectGroupIndexResponseBody struct {
 	FileGroup *FileGroupInfo `json:"FileGroup,omitempty" xml:"FileGroup,omitempty"`
 }
@@ -27776,7 +27336,6 @@ func (s *GetObjectGroupIndexResponseBody) SetFileGroup(v *FileGroupInfo) *GetObj
 func (s *GetObjectGroupIndexResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectGroupIndexResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -27823,7 +27382,6 @@ func (s *GetObjectGroupIndexResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectInfoResponseBody struct {
 	GetObjectInfoResult *GetObjectInfoResult `json:"GetObjectInfoResult,omitempty" xml:"GetObjectInfoResult,omitempty"`
 }
@@ -27848,7 +27406,6 @@ func (s *GetObjectInfoResponseBody) SetGetObjectInfoResult(v *GetObjectInfoResul
 func (s *GetObjectInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectInfoResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -27895,7 +27452,6 @@ func (s *GetObjectInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectLinkResponseBody struct {
 	ObjectLink *ObjectLinkInfo `json:"ObjectLink,omitempty" xml:"ObjectLink,omitempty"`
 }
@@ -27920,7 +27476,6 @@ func (s *GetObjectLinkResponseBody) SetObjectLink(v *ObjectLinkInfo) *GetObjectL
 func (s *GetObjectLinkResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectLinkResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -27967,7 +27522,6 @@ func (s *GetObjectLinkResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectMetaRequest struct {
 	// The versionID of the object.
 	//
@@ -27997,7 +27551,6 @@ func (s *GetObjectMetaRequest) SetVersionId(v string) *GetObjectMetaRequest {
 func (s *GetObjectMetaRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectMetaResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28034,7 +27587,6 @@ func (s *GetObjectMetaResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectTaggingRequest struct {
 	// The versionID of the object that you want to query.
 	//
@@ -28064,7 +27616,6 @@ func (s *GetObjectTaggingRequest) SetVersionId(v string) *GetObjectTaggingReques
 func (s *GetObjectTaggingRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetObjectTaggingResponseBody struct {
 	// The container that stores the returned tag of the bucket.
@@ -28118,7 +27669,6 @@ func (s *GetObjectTaggingResponseBodyTagging) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectTaggingResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                        `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -28164,7 +27714,6 @@ func (s *GetObjectTaggingResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetObjectsRequest struct {
 	GetObjectsRequest *GetObjectsReq `json:"GetObjectsRequest,omitempty" xml:"GetObjectsRequest,omitempty"`
 }
@@ -28188,8 +27737,6 @@ func (s *GetObjectsRequest) SetGetObjectsRequest(v *GetObjectsReq) *GetObjectsRe
 
 func (s *GetObjectsRequest) Validate() error {
 	return dara.Validate(s)
-}
-
 }
 
 type GetObjectsResponse struct {
@@ -28237,7 +27784,6 @@ func (s *GetObjectsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetProcessConfigurationResponseBody struct {
 	BucketProcessConfiguration *GetBucketProcessConfiguration `json:"BucketProcessConfiguration,omitempty" xml:"BucketProcessConfiguration,omitempty"`
 }
@@ -28262,7 +27808,6 @@ func (s *GetProcessConfigurationResponseBody) SetBucketProcessConfiguration(v *G
 func (s *GetProcessConfigurationResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetProcessConfigurationResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28309,7 +27854,6 @@ func (s *GetProcessConfigurationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetPublicAccessBlockResponseBody struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
@@ -28335,7 +27879,6 @@ func (s *GetPublicAccessBlockResponseBody) SetPublicAccessBlockConfiguration(v *
 func (s *GetPublicAccessBlockResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetPublicAccessBlockResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28382,7 +27925,6 @@ func (s *GetPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetReservedCapacityRequest struct {
 	// This parameter is required.
 	XOssReservedCapacityId *string `json:"x-oss-reserved-capacity-id,omitempty" xml:"x-oss-reserved-capacity-id,omitempty"`
@@ -28409,7 +27951,6 @@ func (s *GetReservedCapacityRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetReservedCapacityResponseBody struct {
 	ReservedCapacityRecord *ReservedCapacityRecord `json:"ReservedCapacityRecord,omitempty" xml:"ReservedCapacityRecord,omitempty"`
 }
@@ -28434,7 +27975,6 @@ func (s *GetReservedCapacityResponseBody) SetReservedCapacityRecord(v *ReservedC
 func (s *GetReservedCapacityResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetReservedCapacityResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28481,7 +28021,6 @@ func (s *GetReservedCapacityResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetResourcePoolBucketGroupQoSInfoRequest struct {
 	// This parameter is required.
 	ResourcePool *string `json:"resourcePool,omitempty" xml:"resourcePool,omitempty"`
@@ -28519,7 +28058,6 @@ func (s *GetResourcePoolBucketGroupQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetResourcePoolBucketGroupQoSInfoResponseBody struct {
 	ResourcePoolBucketGroupQoSInfo *ResourcePoolBucketGroupQoSInfo `json:"ResourcePoolBucketGroupQoSInfo,omitempty" xml:"ResourcePoolBucketGroupQoSInfo,omitempty"`
 }
@@ -28544,7 +28082,6 @@ func (s *GetResourcePoolBucketGroupQoSInfoResponseBody) SetResourcePoolBucketGro
 func (s *GetResourcePoolBucketGroupQoSInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetResourcePoolBucketGroupQoSInfoResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28591,7 +28128,6 @@ func (s *GetResourcePoolBucketGroupQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetResourcePoolInfoRequest struct {
 	// This parameter is required.
 	//
@@ -28622,7 +28158,6 @@ func (s *GetResourcePoolInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetResourcePoolInfoResponseBody struct {
 	GetResourcePoolInfoResponse *GetResourcePoolInfoResp `json:"GetResourcePoolInfoResponse,omitempty" xml:"GetResourcePoolInfoResponse,omitempty"`
 }
@@ -28647,7 +28182,6 @@ func (s *GetResourcePoolInfoResponseBody) SetGetResourcePoolInfoResponse(v *GetR
 func (s *GetResourcePoolInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetResourcePoolInfoResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28694,7 +28228,6 @@ func (s *GetResourcePoolInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetResourcePoolRequesterQoSInfoRequest struct {
 	// This parameter is required.
 	//
@@ -28740,7 +28273,6 @@ func (s *GetResourcePoolRequesterQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetResourcePoolRequesterQoSInfoResponseBody struct {
 	RequesterQoSInfo *RequesterQoSInfo `json:"RequesterQoSInfo,omitempty" xml:"RequesterQoSInfo,omitempty"`
 }
@@ -28765,7 +28297,6 @@ func (s *GetResourcePoolRequesterQoSInfoResponseBody) SetRequesterQoSInfo(v *Req
 func (s *GetResourcePoolRequesterQoSInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetResourcePoolRequesterQoSInfoResponse struct {
 	Headers    map[string]*string                           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28812,7 +28343,6 @@ func (s *GetResourcePoolRequesterQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetStyleRequest struct {
 	// The name of the image style.
 	//
@@ -28845,7 +28375,6 @@ func (s *GetStyleRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetStyleResponseBody struct {
 	// The container in which the queried image styles are stored.
 	Style *StyleInfo `json:"Style,omitempty" xml:"Style,omitempty"`
@@ -28871,7 +28400,6 @@ func (s *GetStyleResponseBody) SetStyle(v *StyleInfo) *GetStyleResponseBody {
 func (s *GetStyleResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetStyleResponse struct {
 	Headers    map[string]*string    `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28918,7 +28446,6 @@ func (s *GetStyleResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetSymlinkRequest struct {
 	// The version of the object to which the symbolic link points.
 	//
@@ -28948,7 +28475,6 @@ func (s *GetSymlinkRequest) SetVersionId(v string) *GetSymlinkRequest {
 func (s *GetSymlinkRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetSymlinkResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -28984,7 +28510,6 @@ func (s *GetSymlinkResponse) SetStatusCode(v int32) *GetSymlinkResponse {
 func (s *GetSymlinkResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetUserAntiDDosInfoResponseBody struct {
 	// The container that stores the list of Anti-DDoS instances.
@@ -29038,7 +28563,6 @@ func (s *GetUserAntiDDosInfoResponseBodyAntiDDOSListConfiguration) Validate() er
 	return dara.Validate(s)
 }
 
-
 type GetUserAntiDDosInfoResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                           `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -29084,7 +28608,6 @@ func (s *GetUserAntiDDosInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetUserDefinedLogFieldsConfigResponseBody struct {
 	// The container for the user-defined logging configuration.
 	UserDefinedLogFieldsConfiguration *UserDefinedLogFieldsConfiguration `json:"UserDefinedLogFieldsConfiguration,omitempty" xml:"UserDefinedLogFieldsConfiguration,omitempty"`
@@ -29110,7 +28633,6 @@ func (s *GetUserDefinedLogFieldsConfigResponseBody) SetUserDefinedLogFieldsConfi
 func (s *GetUserDefinedLogFieldsConfigResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetUserDefinedLogFieldsConfigResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -29157,7 +28679,6 @@ func (s *GetUserDefinedLogFieldsConfigResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetUserQoSInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// example:
@@ -29196,7 +28717,6 @@ func (s *GetUserQoSInfoHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetUserQoSInfoResponseBody struct {
 	QoSConfiguration *UserQosConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 }
@@ -29221,7 +28741,6 @@ func (s *GetUserQoSInfoResponseBody) SetQoSConfiguration(v *UserQosConfiguration
 func (s *GetUserQoSInfoResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetUserQoSInfoResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -29268,7 +28787,6 @@ func (s *GetUserQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetVirtualBucketResponseBody struct {
 	VirtualBucketConfiguration *VirtualBucket `json:"VirtualBucketConfiguration,omitempty" xml:"VirtualBucketConfiguration,omitempty"`
 }
@@ -29293,7 +28811,6 @@ func (s *GetVirtualBucketResponseBody) SetVirtualBucketConfiguration(v *VirtualB
 func (s *GetVirtualBucketResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetVirtualBucketResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -29339,7 +28856,6 @@ func (s *GetVirtualBucketResponse) SetBody(v *GetVirtualBucketResponseBody) *Get
 func (s *GetVirtualBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type GetVodPlaylistRequest struct {
 	// The end time of the time range during which the TS files that you want to query are generated in the Unix timestamp format.
@@ -29392,7 +28908,6 @@ func (s *GetVodPlaylistRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type GetVodPlaylistResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -29438,7 +28953,6 @@ func (s *GetVodPlaylistResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type HeadBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -29473,7 +28987,6 @@ func (s *HeadBucketResponse) SetStatusCode(v int32) *HeadBucketResponse {
 func (s *HeadBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type HeadObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -29568,7 +29081,6 @@ func (s *HeadObjectHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type HeadObjectRequest struct {
 	// The version ID of the object for which you want to query metadata.
 	//
@@ -29598,7 +29110,6 @@ func (s *HeadObjectRequest) SetVersionId(v string) *HeadObjectRequest {
 func (s *HeadObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type HeadObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -29634,7 +29145,6 @@ func (s *HeadObjectResponse) SetStatusCode(v int32) *HeadObjectResponse {
 func (s *HeadObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InitBucketAntiDDosInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -29695,7 +29205,6 @@ func (s *InitBucketAntiDDosInfoHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InitBucketAntiDDosInfoRequest struct {
 	// The container that stores the configurations of Anti-DDoS instances.
 	AntiDDOSConfiguration *BucketAntiDDOSConfiguration `json:"AntiDDOSConfiguration,omitempty" xml:"AntiDDOSConfiguration,omitempty"`
@@ -29721,7 +29230,6 @@ func (s *InitBucketAntiDDosInfoRequest) SetAntiDDOSConfiguration(v *BucketAntiDD
 func (s *InitBucketAntiDDosInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InitBucketAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -29758,7 +29266,6 @@ func (s *InitBucketAntiDDosInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InitUserAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -29794,7 +29301,6 @@ func (s *InitUserAntiDDosInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InitiateBucketWormRequest struct {
 	// The parameters for WORM initialization.
 	InitiateWormConfiguration *InitiateWormConfiguration `json:"InitiateWormConfiguration,omitempty" xml:"InitiateWormConfiguration,omitempty"`
@@ -29820,7 +29326,6 @@ func (s *InitiateBucketWormRequest) SetInitiateWormConfiguration(v *InitiateWorm
 func (s *InitiateBucketWormRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InitiateBucketWormResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -29856,7 +29361,6 @@ func (s *InitiateBucketWormResponse) SetStatusCode(v int32) *InitiateBucketWormR
 func (s *InitiateBucketWormResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InitiateMultipartUploadHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -30068,7 +29572,6 @@ func (s *InitiateMultipartUploadHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type InitiateMultipartUploadRequest struct {
 	// The method used to encode the object name in the response. Only URL encoding is supported. The object name can contain characters encoded in UTF-8. However, the XML 1.0 standard cannot be used to parse specific control characters, such as characters whose ASCII values range from 0 to 10. You can configure the encoding-type parameter to encode object names that include characters that cannot be parsed by XML 1.0 in the response.
 	//
@@ -30096,7 +29599,6 @@ func (s *InitiateMultipartUploadRequest) SetEncodingType(v string) *InitiateMult
 func (s *InitiateMultipartUploadRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type InitiateMultipartUploadResponseBody struct {
 	// The container that stores the results of the InitiateMultipartUpload request.
@@ -30199,7 +29701,6 @@ func (s *InitiateMultipartUploadResponseBodyInitiateMultipartUploadResult) Valid
 	return dara.Validate(s)
 }
 
-
 type InitiateMultipartUploadResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                               `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -30244,7 +29745,6 @@ func (s *InitiateMultipartUploadResponse) SetBody(v *InitiateMultipartUploadResp
 func (s *InitiateMultipartUploadResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListAccessPointsRequest struct {
 	// The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
@@ -30295,7 +29795,6 @@ func (s *ListAccessPointsRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListAccessPointsResponseBody struct {
 	// The container that stores the information about access points.
 	ListAccessPointsResult *ListAccessPointsResult `json:"ListAccessPointsResult,omitempty" xml:"ListAccessPointsResult,omitempty"`
@@ -30321,7 +29820,6 @@ func (s *ListAccessPointsResponseBody) SetListAccessPointsResult(v *ListAccessPo
 func (s *ListAccessPointsResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListAccessPointsResponse struct {
 	Headers    map[string]*string            `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -30367,7 +29865,6 @@ func (s *ListAccessPointsResponse) SetBody(v *ListAccessPointsResponseBody) *Lis
 func (s *ListAccessPointsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListAccessPointsForObjectProcessRequest struct {
 	// The token from which the list operation must start. You can obtain this token from the NextContinuationToken element in the returned result.
@@ -30417,7 +29914,6 @@ func (s *ListAccessPointsForObjectProcessRequest) SetMaxKeys(v int64) *ListAcces
 func (s *ListAccessPointsForObjectProcessRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListAccessPointsForObjectProcessResponseBody struct {
 	// The container that stores information about the Object FC Access Points that are returned.
@@ -30644,7 +30140,6 @@ func (s *ListAccessPointsForObjectProcessResponseBodyListAccessPointsForObjectPr
 	return dara.Validate(s)
 }
 
-
 type ListAccessPointsForObjectProcessResponse struct {
 	Headers    map[string]*string                            `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                        `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -30689,7 +30184,6 @@ func (s *ListAccessPointsForObjectProcessResponse) SetBody(v *ListAccessPointsFo
 func (s *ListAccessPointsForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketAntiDDosInfoRequest struct {
 	// The name of the Anti-DDoS instance from which the list starts. The Anti-DDoS instances whose names are alphabetically after the value of marker are returned.
@@ -30741,7 +30235,6 @@ func (s *ListBucketAntiDDosInfoRequest) SetMaxKeys(v string) *ListBucketAntiDDos
 func (s *ListBucketAntiDDosInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketAntiDDosInfoResponseBody struct {
 	// The container that stores the protection list of an Anti-DDoS instance of a bucket.
@@ -30829,7 +30322,6 @@ func (s *ListBucketAntiDDosInfoResponseBodyAntiDDOSListConfiguration) Validate()
 	return dara.Validate(s)
 }
 
-
 type ListBucketAntiDDosInfoResponse struct {
 	Headers    map[string]*string                  `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                              `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -30874,7 +30366,6 @@ func (s *ListBucketAntiDDosInfoResponse) SetBody(v *ListBucketAntiDDosInfoRespon
 func (s *ListBucketAntiDDosInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketDataRedundancyTransitionResponseBody struct {
 	// The container for listed redundancy type conversion tasks.
@@ -30928,7 +30419,6 @@ func (s *ListBucketDataRedundancyTransitionResponseBodyListBucketDataRedundancyT
 	return dara.Validate(s)
 }
 
-
 type ListBucketDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -30974,7 +30464,6 @@ func (s *ListBucketDataRedundancyTransitionResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListBucketInventoryRequest struct {
 	// Specify the start position of the list operation. You can obtain this token from the NextContinuationToken field of last ListBucketInventory\\"s result.
 	//
@@ -31004,7 +30493,6 @@ func (s *ListBucketInventoryRequest) SetContinuationToken(v string) *ListBucketI
 func (s *ListBucketInventoryRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketInventoryResponseBody struct {
 	// The container that stores inventory configuration list.
@@ -31094,7 +30582,6 @@ func (s *ListBucketInventoryResponseBodyListInventoryConfigurationsResult) Valid
 	return dara.Validate(s)
 }
 
-
 type ListBucketInventoryResponse struct {
 	Headers    map[string]*string               `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                           `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -31140,7 +30627,6 @@ func (s *ListBucketInventoryResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListBucketRequesterQoSInfosRequest struct {
 	// example:
 	//
@@ -31182,7 +30668,6 @@ func (s *ListBucketRequesterQoSInfosRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListBucketRequesterQoSInfosResponseBody struct {
 	ListBucketRequesterQoSInfosResult *ListBucketRequesterQoSInfosResult `json:"ListBucketRequesterQoSInfosResult,omitempty" xml:"ListBucketRequesterQoSInfosResult,omitempty"`
 }
@@ -31207,7 +30692,6 @@ func (s *ListBucketRequesterQoSInfosResponseBody) SetListBucketRequesterQoSInfos
 func (s *ListBucketRequesterQoSInfosResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketRequesterQoSInfosResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -31254,7 +30738,6 @@ func (s *ListBucketRequesterQoSInfosResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListBucketsHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
 	// The ID of the resource group to which the bucket belongs.
@@ -31290,7 +30773,6 @@ func (s *ListBucketsHeaders) SetXOssResourceGroupId(v string) *ListBucketsHeader
 func (s *ListBucketsHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketsRequest struct {
 	// The name of the bucket from which the buckets start to return. The buckets whose names are alphabetically after the value of marker are returned. If this parameter is not specified, all results are returned. By default, this parameter is left empty.
@@ -31396,7 +30878,6 @@ func (s *ListBucketsRequest) SetTagging(v string) *ListBucketsRequest {
 func (s *ListBucketsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListBucketsResponseBody struct {
 	// The container that stores the result of ListBuckets(GetService) request.
@@ -31566,7 +31047,6 @@ func (s *ListBucketsResponseBodyListAllMyBucketsResultBuckets) Validate() error 
 	return dara.Validate(s)
 }
 
-
 type ListBucketsResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                   `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -31611,7 +31091,6 @@ func (s *ListBucketsResponse) SetBody(v *ListBucketsResponseBody) *ListBucketsRe
 func (s *ListBucketsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListCacheRequest struct {
 	Marker  *string `json:"marker,omitempty" xml:"marker,omitempty"`
@@ -31658,7 +31137,6 @@ func (s *ListCacheRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListCacheResponseBody struct {
 	ListAllMyCacheResult *ListAllMyCacheResult `json:"ListAllMyCacheResult,omitempty" xml:"ListAllMyCacheResult,omitempty"`
 }
@@ -31683,7 +31161,6 @@ func (s *ListCacheResponseBody) SetListAllMyCacheResult(v *ListAllMyCacheResult)
 func (s *ListCacheResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListCacheResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -31729,7 +31206,6 @@ func (s *ListCacheResponse) SetBody(v *ListCacheResponseBody) *ListCacheResponse
 func (s *ListCacheResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListCnameResponseBody struct {
 	// The container that is used to query information about all CNAME records.
@@ -31813,7 +31289,6 @@ func (s *ListCnameResponseBodyListCnameResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListCnameResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                 `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -31858,7 +31333,6 @@ func (s *ListCnameResponse) SetBody(v *ListCnameResponseBody) *ListCnameResponse
 func (s *ListCnameResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListDataLakeCachePrefetchJobResponseBody struct {
 	DataLakeCachePrefetchJobs *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs `json:"DataLakeCachePrefetchJobs,omitempty" xml:"DataLakeCachePrefetchJobs,omitempty" type:"Struct"`
@@ -31940,7 +31414,6 @@ func (s *ListDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobs) Vali
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                    `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -31986,7 +31459,6 @@ func (s *ListDataLakeCachePrefetchJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeCachePrefetchJobHistoryRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -32013,7 +31485,6 @@ func (s *ListDataLakeCachePrefetchJobHistoryRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeCachePrefetchJobHistoryResponseBody struct {
 	ListDataLakeCachePrefetchJobHistory *ListDataLakeCachePrefetchJobHistory `json:"ListDataLakeCachePrefetchJobHistory,omitempty" xml:"ListDataLakeCachePrefetchJobHistory,omitempty"`
 }
@@ -32038,7 +31509,6 @@ func (s *ListDataLakeCachePrefetchJobHistoryResponseBody) SetListDataLakeCachePr
 func (s *ListDataLakeCachePrefetchJobHistoryResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListDataLakeCachePrefetchJobHistoryResponse struct {
 	Headers    map[string]*string                               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -32085,7 +31555,6 @@ func (s *ListDataLakeCachePrefetchJobHistoryResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJobs *DataLakeStorageTransferJobs `json:"DataLakeStorageTransferJobs,omitempty" xml:"DataLakeStorageTransferJobs,omitempty"`
 }
@@ -32110,7 +31579,6 @@ func (s *ListDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJ
 func (s *ListDataLakeStorageTransferJobResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                          `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -32157,7 +31625,6 @@ func (s *ListDataLakeStorageTransferJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeStorageTransferJobHistoryRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -32184,7 +31651,6 @@ func (s *ListDataLakeStorageTransferJobHistoryRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListDataLakeStorageTransferJobHistoryResponseBody struct {
 	ListDataLakeStorageTransferJobHistory *ListDataLakeStorageTransferJobHistory `json:"ListDataLakeStorageTransferJobHistory,omitempty" xml:"ListDataLakeStorageTransferJobHistory,omitempty"`
 }
@@ -32209,7 +31675,6 @@ func (s *ListDataLakeStorageTransferJobHistoryResponseBody) SetListDataLakeStora
 func (s *ListDataLakeStorageTransferJobHistoryResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListDataLakeStorageTransferJobHistoryResponse struct {
 	Headers    map[string]*string                                 `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -32255,7 +31720,6 @@ func (s *ListDataLakeStorageTransferJobHistoryResponse) SetBody(v *ListDataLakeS
 func (s *ListDataLakeStorageTransferJobHistoryResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListLiveChannelRequest struct {
 	// The name of the LiveChannel from which the list operation starts. LiveChannels whose names are alphabetically after the value of the marker parameter are returned.
@@ -32318,7 +31782,6 @@ func (s *ListLiveChannelRequest) SetPrefix(v string) *ListLiveChannelRequest {
 func (s *ListLiveChannelRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListLiveChannelResponseBody struct {
 	// The container that stores the results of the ListLiveChannel request.
@@ -32451,7 +31914,6 @@ func (s *ListLiveChannelResponseBodyListLiveChannelResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListLiveChannelResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                       `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -32496,7 +31958,6 @@ func (s *ListLiveChannelResponse) SetBody(v *ListLiveChannelResponseBody) *ListL
 func (s *ListLiveChannelResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListMultipartUploadsRequest struct {
 	// The character used to group objects by name. Objects whose names contain the same string that ranges from the specified prefix to the delimiter that appears for the first time are grouped as a CommonPrefixes element.
@@ -32630,7 +32091,6 @@ func (s *ListMultipartUploadsRequest) SetUploadIdMarker(v string) *ListMultipart
 func (s *ListMultipartUploadsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListMultipartUploadsResponseBody struct {
 	// The container that stores the response to the ListMultipartUpload request.
@@ -32849,7 +32309,6 @@ func (s *ListMultipartUploadsResponseBodyListMultipartUploadsResult) Validate() 
 	return dara.Validate(s)
 }
 
-
 type ListMultipartUploadsResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                            `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -32894,7 +32353,6 @@ func (s *ListMultipartUploadsResponse) SetBody(v *ListMultipartUploadsResponseBo
 func (s *ListMultipartUploadsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListObjectVersionsRequest struct {
 	// The character that is used to group objects by name. If you specify prefix and delimiter in the request, the response contains CommonPrefixes. The objects whose name contains the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes. If you specify prefix and set delimiter to a forward slash (/), only the objects in the directory are listed. The subdirectories in the directory are returned in CommonPrefixes. Objects and subdirectories in the subdirectories are not listed.
@@ -33016,7 +32474,6 @@ func (s *ListObjectVersionsRequest) SetVersionIdMarker(v string) *ListObjectVers
 func (s *ListObjectVersionsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListObjectVersionsResponseBody struct {
 	// The container that stores the results of the ListObjectVersions (GetBucketVersions) request.
@@ -33246,7 +32703,6 @@ func (s *ListObjectVersionsResponseBodyListVersionsResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListObjectVersionsResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                          `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -33291,7 +32747,6 @@ func (s *ListObjectVersionsResponse) SetBody(v *ListObjectVersionsResponseBody) 
 func (s *ListObjectVersionsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListObjectsRequest struct {
 	// The character that is used to group objects by name. If you specify delimiter in the request, the response contains CommonPrefixes. The objects whose names contain the same string from the prefix to the next occurrence of the delimiter are grouped as a single result element in CommonPrefixes.
@@ -33398,7 +32853,6 @@ func (s *ListObjectsRequest) SetPrefix(v string) *ListObjectsRequest {
 func (s *ListObjectsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListObjectsResponseBody struct {
 	// The container that stores the result of the GetBucket (ListObjects) request.
@@ -33593,7 +33047,6 @@ func (s *ListObjectsResponseBodyListBucketResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListObjectsResponse struct {
 	Headers    map[string]*string       `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                   `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -33638,7 +33091,6 @@ func (s *ListObjectsResponse) SetBody(v *ListObjectsResponseBody) *ListObjectsRe
 func (s *ListObjectsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListObjectsV2Request struct {
 	// The token from which the list operation starts. You can obtain the token from NextContinuationToken in the response of the ListObjectsV2 request.
@@ -33782,7 +33234,6 @@ func (s *ListObjectsV2Request) SetStartAfter(v string) *ListObjectsV2Request {
 func (s *ListObjectsV2Request) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListObjectsV2ResponseBody struct {
 	// The container that stores the metadata of the returned objects.
@@ -34007,7 +33458,6 @@ func (s *ListObjectsV2ResponseBodyListBucketResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListObjectsV2Response struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                     `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -34052,7 +33502,6 @@ func (s *ListObjectsV2Response) SetBody(v *ListObjectsV2ResponseBody) *ListObjec
 func (s *ListObjectsV2Response) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListPartsRequest struct {
 	// The maximum number of parts that can be returned by OSS.
@@ -34139,7 +33588,6 @@ func (s *ListPartsRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListPartsShrinkRequest struct {
 	// The maximum number of parts that can be returned by OSS.
 	//
@@ -34224,7 +33672,6 @@ func (s *ListPartsShrinkRequest) SetUploadId(v string) *ListPartsShrinkRequest {
 func (s *ListPartsShrinkRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListPartsResponseBody struct {
 	// The container that stores the response of the ListParts request.
@@ -34385,7 +33832,6 @@ func (s *ListPartsResponseBodyListPartResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListPartsResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                 `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -34431,7 +33877,6 @@ func (s *ListPartsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListReservedCapacityResponseBody struct {
 	ReservedCapacityRecordList *ReservedCapacityRecordList `json:"ReservedCapacityRecordList,omitempty" xml:"ReservedCapacityRecordList,omitempty"`
 }
@@ -34456,7 +33901,6 @@ func (s *ListReservedCapacityResponseBody) SetReservedCapacityRecordList(v *Rese
 func (s *ListReservedCapacityResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListReservedCapacityResponse struct {
 	Headers    map[string]*string                `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -34502,7 +33946,6 @@ func (s *ListReservedCapacityResponse) SetBody(v *ListReservedCapacityResponseBo
 func (s *ListReservedCapacityResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketGroupQoSInfosRequest struct {
 	ContinuationToken *string `json:"continuation-token,omitempty" xml:"continuation-token,omitempty"`
@@ -34550,7 +33993,6 @@ func (s *ListResourcePoolBucketGroupQoSInfosRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolBucketGroupQoSInfosResponseBody struct {
 	ListResourcePoolBucketGroupQoSInfosResult *ListResourcePoolBucketGroupQoSInfosResult `json:"ListResourcePoolBucketGroupQoSInfosResult,omitempty" xml:"ListResourcePoolBucketGroupQoSInfosResult,omitempty"`
 }
@@ -34575,7 +34017,6 @@ func (s *ListResourcePoolBucketGroupQoSInfosResponseBody) SetListResourcePoolBuc
 func (s *ListResourcePoolBucketGroupQoSInfosResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketGroupQoSInfosResponse struct {
 	Headers    map[string]*string                               `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -34621,7 +34062,6 @@ func (s *ListResourcePoolBucketGroupQoSInfosResponse) SetBody(v *ListResourcePoo
 func (s *ListResourcePoolBucketGroupQoSInfosResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketGroupsRequest struct {
 	ContinuationToken *string `json:"continuation-token,omitempty" xml:"continuation-token,omitempty"`
@@ -34669,7 +34109,6 @@ func (s *ListResourcePoolBucketGroupsRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolBucketGroupsResponseBody struct {
 	ListResourcePoolBucketGroupsResult *ListResourcePoolBucketGroupsResult `json:"ListResourcePoolBucketGroupsResult,omitempty" xml:"ListResourcePoolBucketGroupsResult,omitempty"`
 }
@@ -34694,7 +34133,6 @@ func (s *ListResourcePoolBucketGroupsResponseBody) SetListResourcePoolBucketGrou
 func (s *ListResourcePoolBucketGroupsResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketGroupsResponse struct {
 	Headers    map[string]*string                        `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -34740,7 +34178,6 @@ func (s *ListResourcePoolBucketGroupsResponse) SetBody(v *ListResourcePoolBucket
 func (s *ListResourcePoolBucketGroupsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketsRequest struct {
 	// example:
@@ -34798,7 +34235,6 @@ func (s *ListResourcePoolBucketsRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolBucketsResponseBody struct {
 	ListResourcePoolBucketsResult *ListResourcePoolBucketsResult `json:"ListResourcePoolBucketsResult,omitempty" xml:"ListResourcePoolBucketsResult,omitempty"`
 }
@@ -34823,7 +34259,6 @@ func (s *ListResourcePoolBucketsResponseBody) SetListResourcePoolBucketsResult(v
 func (s *ListResourcePoolBucketsResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolBucketsResponse struct {
 	Headers    map[string]*string                   `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -34869,7 +34304,6 @@ func (s *ListResourcePoolBucketsResponse) SetBody(v *ListResourcePoolBucketsResp
 func (s *ListResourcePoolBucketsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolRequesterQoSInfosRequest struct {
 	// example:
@@ -34927,7 +34361,6 @@ func (s *ListResourcePoolRequesterQoSInfosRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolRequesterQoSInfosResponseBody struct {
 	ListResourcePoolRequesterQoSInfosResult *ListResourcePoolRequesterQoSInfosResult `json:"ListResourcePoolRequesterQoSInfosResult,omitempty" xml:"ListResourcePoolRequesterQoSInfosResult,omitempty"`
 }
@@ -34952,7 +34385,6 @@ func (s *ListResourcePoolRequesterQoSInfosResponseBody) SetListResourcePoolReque
 func (s *ListResourcePoolRequesterQoSInfosResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolRequesterQoSInfosResponse struct {
 	Headers    map[string]*string                             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -34999,7 +34431,6 @@ func (s *ListResourcePoolRequesterQoSInfosResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolsRequest struct {
 	// example:
 	//
@@ -35041,7 +34472,6 @@ func (s *ListResourcePoolsRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListResourcePoolsResponseBody struct {
 	ListResourcePoolsResult *ListResourcePoolsResult `json:"ListResourcePoolsResult,omitempty" xml:"ListResourcePoolsResult,omitempty"`
 }
@@ -35066,7 +34496,6 @@ func (s *ListResourcePoolsResponseBody) SetListResourcePoolsResult(v *ListResour
 func (s *ListResourcePoolsResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListResourcePoolsResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35112,7 +34541,6 @@ func (s *ListResourcePoolsResponse) SetBody(v *ListResourcePoolsResponseBody) *L
 func (s *ListResourcePoolsResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListStyleResponseBody struct {
 	// The container that was used to query the information about image styles.
@@ -35166,7 +34594,6 @@ func (s *ListStyleResponseBodyStyleList) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListStyleResponse struct {
 	Headers    map[string]*string     `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                 `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -35212,7 +34639,6 @@ func (s *ListStyleResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListUserDataRedundancyTransitionRequest struct {
 	ContinuationToken *string `json:"continuation-token,omitempty" xml:"continuation-token,omitempty"`
 	MaxKeys           *int32  `json:"max-keys,omitempty" xml:"max-keys,omitempty"`
@@ -35247,7 +34673,6 @@ func (s *ListUserDataRedundancyTransitionRequest) SetMaxKeys(v int32) *ListUserD
 func (s *ListUserDataRedundancyTransitionRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListUserDataRedundancyTransitionResponseBody struct {
 	ListBucketDataRedundancyTransition *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTransition `json:"ListBucketDataRedundancyTransition,omitempty" xml:"ListBucketDataRedundancyTransition,omitempty" type:"Struct"`
@@ -35319,7 +34744,6 @@ func (s *ListUserDataRedundancyTransitionResponseBodyListBucketDataRedundancyTra
 	return dara.Validate(s)
 }
 
-
 type ListUserDataRedundancyTransitionResponse struct {
 	Headers    map[string]*string                            `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                        `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -35365,7 +34789,6 @@ func (s *ListUserDataRedundancyTransitionResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListUserRegionsResponseBody struct {
 	ListUserRegionsResult *ListUserRegionsResult `json:"ListUserRegionsResult,omitempty" xml:"ListUserRegionsResult,omitempty"`
 }
@@ -35390,7 +34813,6 @@ func (s *ListUserRegionsResponseBody) SetListUserRegionsResult(v *ListUserRegion
 func (s *ListUserRegionsResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListUserRegionsResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35437,7 +34859,6 @@ func (s *ListUserRegionsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type ListVirtualBucketResponseBody struct {
 	ListVirtualBucketResult *ListVirtualBucketResult `json:"ListVirtualBucketResult,omitempty" xml:"ListVirtualBucketResult,omitempty"`
 }
@@ -35462,7 +34883,6 @@ func (s *ListVirtualBucketResponseBody) SetListVirtualBucketResult(v *ListVirtua
 func (s *ListVirtualBucketResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type ListVirtualBucketResponse struct {
 	Headers    map[string]*string             `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35509,7 +34929,6 @@ func (s *ListVirtualBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type OpenMetaQueryRequest struct {
 	Mode *string `json:"mode,omitempty" xml:"mode,omitempty"`
 }
@@ -35534,7 +34953,6 @@ func (s *OpenMetaQueryRequest) SetMode(v string) *OpenMetaQueryRequest {
 func (s *OpenMetaQueryRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type OpenMetaQueryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35570,7 +34988,6 @@ func (s *OpenMetaQueryResponse) SetStatusCode(v int32) *OpenMetaQueryResponse {
 func (s *OpenMetaQueryResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type OptionObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -35642,7 +35059,6 @@ func (s *OptionObjectHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type OptionObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -35678,7 +35094,6 @@ func (s *OptionObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostAsyncFetchTaskRequest struct {
 	AsyncFetchTaskConfiguration *AsyncFetchTaskConfiguration `json:"AsyncFetchTaskConfiguration,omitempty" xml:"AsyncFetchTaskConfiguration,omitempty"`
 }
@@ -35704,7 +35119,6 @@ func (s *PostAsyncFetchTaskRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostAsyncFetchTaskResponseBody struct {
 	AsyncFetchTaskResult *AsyncFetchTaskResult `json:"AsyncFetchTaskResult,omitempty" xml:"AsyncFetchTaskResult,omitempty"`
 }
@@ -35729,7 +35143,6 @@ func (s *PostAsyncFetchTaskResponseBody) SetAsyncFetchTaskResult(v *AsyncFetchTa
 func (s *PostAsyncFetchTaskResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostAsyncFetchTaskResponse struct {
 	Headers    map[string]*string              `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35776,7 +35189,6 @@ func (s *PostAsyncFetchTaskResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostDataLakeStorageAdminOperationRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
@@ -35801,7 +35213,6 @@ func (s *PostDataLakeStorageAdminOperationRequest) SetBody(v string) *PostDataLa
 func (s *PostDataLakeStorageAdminOperationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostDataLakeStorageAdminOperationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35848,7 +35259,6 @@ func (s *PostDataLakeStorageAdminOperationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostDataLakeStorageFileOperationRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
@@ -35873,7 +35283,6 @@ func (s *PostDataLakeStorageFileOperationRequest) SetBody(v string) *PostDataLak
 func (s *PostDataLakeStorageFileOperationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostDataLakeStorageFileOperationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35920,7 +35329,6 @@ func (s *PostDataLakeStorageFileOperationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostDataLakeStorageSecurityOperationRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
@@ -35945,7 +35353,6 @@ func (s *PostDataLakeStorageSecurityOperationRequest) SetBody(v string) *PostDat
 func (s *PostDataLakeStorageSecurityOperationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostDataLakeStorageSecurityOperationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -35992,7 +35399,6 @@ func (s *PostDataLakeStorageSecurityOperationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostObjectGroupRequest struct {
 	CreateFileGroup *CreateFileGroup `json:"CreateFileGroup,omitempty" xml:"CreateFileGroup,omitempty"`
 }
@@ -36018,7 +35424,6 @@ func (s *PostObjectGroupRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostObjectGroupResponseBody struct {
 	CreateFileGroup *CreateFileGroupResult `json:"CreateFileGroup,omitempty" xml:"CreateFileGroup,omitempty"`
 }
@@ -36043,7 +35448,6 @@ func (s *PostObjectGroupResponseBody) SetCreateFileGroup(v *CreateFileGroupResul
 func (s *PostObjectGroupResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostObjectGroupResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -36090,7 +35494,6 @@ func (s *PostObjectGroupResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostProcessTaskRequest struct {
 	Body *string `json:"body,omitempty" xml:"body,omitempty"`
 }
@@ -36115,7 +35518,6 @@ func (s *PostProcessTaskRequest) SetBody(v string) *PostProcessTaskRequest {
 func (s *PostProcessTaskRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostProcessTaskResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -36151,7 +35553,6 @@ func (s *PostProcessTaskResponse) SetStatusCode(v int32) *PostProcessTaskRespons
 func (s *PostProcessTaskResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PostVodPlaylistRequest struct {
 	// The end time of the time range during which the TS files that you want to query are generated,
@@ -36206,7 +35607,6 @@ func (s *PostVodPlaylistRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PostVodPlaylistResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -36242,7 +35642,6 @@ func (s *PostVodPlaylistResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PromoteDataLakeCacheRequest struct {
 	PromoteDataLakeCacheRequest *PromoteDataLakeCacheReq `json:"PromoteDataLakeCacheRequest,omitempty" xml:"PromoteDataLakeCacheRequest,omitempty"`
 }
@@ -36267,7 +35666,6 @@ func (s *PromoteDataLakeCacheRequest) SetPromoteDataLakeCacheRequest(v *PromoteD
 func (s *PromoteDataLakeCacheRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PromoteDataLakeCacheResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -36303,7 +35701,6 @@ func (s *PromoteDataLakeCacheResponse) SetStatusCode(v int32) *PromoteDataLakeCa
 func (s *PromoteDataLakeCacheResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointConfigForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -36352,7 +35749,6 @@ func (s *PutAccessPointConfigForObjectProcessHeaders) SetXOssAccessPointForObjec
 func (s *PutAccessPointConfigForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointConfigForObjectProcessRequest struct {
 	// The container that stores information about the Object FC Access Point.
@@ -36432,7 +35828,6 @@ func (s *PutAccessPointConfigForObjectProcessRequestPutAccessPointConfigForObjec
 	return dara.Validate(s)
 }
 
-
 type PutAccessPointConfigForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -36467,7 +35862,6 @@ func (s *PutAccessPointConfigForObjectProcessResponse) SetStatusCode(v int32) *P
 func (s *PutAccessPointConfigForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointPolicyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -36508,7 +35902,6 @@ func (s *PutAccessPointPolicyHeaders) SetXOssAccessPointName(v string) *PutAcces
 func (s *PutAccessPointPolicyHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointPolicyRequest struct {
 	// The configurations of the access point policy.
@@ -36572,7 +35965,6 @@ func (s *PutAccessPointPolicyRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutAccessPointPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -36607,7 +35999,6 @@ func (s *PutAccessPointPolicyResponse) SetStatusCode(v int32) *PutAccessPointPol
 func (s *PutAccessPointPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointPolicyForObjectProcessHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -36650,7 +36041,6 @@ func (s *PutAccessPointPolicyForObjectProcessHeaders) SetXOssAccessPointForObjec
 func (s *PutAccessPointPolicyForObjectProcessHeaders) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointPolicyForObjectProcessRequest struct {
 	// The json format permission policies for an Object FC Access Point.
@@ -36710,7 +36100,6 @@ func (s *PutAccessPointPolicyForObjectProcessRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutAccessPointPolicyForObjectProcessResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -36745,7 +36134,6 @@ func (s *PutAccessPointPolicyForObjectProcessResponse) SetStatusCode(v int32) *P
 func (s *PutAccessPointPolicyForObjectProcessResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutAccessPointPublicAccessBlockRequest struct {
 	// The container in which the Block Public Access configurations are stored.
@@ -36790,7 +36178,6 @@ func (s *PutAccessPointPublicAccessBlockRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutAccessPointPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -36825,7 +36212,6 @@ func (s *PutAccessPointPublicAccessBlockResponse) SetStatusCode(v int32) *PutAcc
 func (s *PutAccessPointPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -36900,7 +36286,6 @@ func (s *PutBucketHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketRequest struct {
 	// The container that stores the information about the bucket to be created.
 	CreateBucketConfiguration *CreateBucketConfiguration `json:"CreateBucketConfiguration,omitempty" xml:"CreateBucketConfiguration,omitempty"`
@@ -36926,7 +36311,6 @@ func (s *PutBucketRequest) SetCreateBucketConfiguration(v *CreateBucketConfigura
 func (s *PutBucketRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -36963,7 +36347,6 @@ func (s *PutBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketAccessMonitorRequest struct {
 	// The access tracking configurations of the bucket.
 	AccessMonitorConfiguration *AccessMonitorConfiguration `json:"AccessMonitorConfiguration,omitempty" xml:"AccessMonitorConfiguration,omitempty"`
@@ -36989,7 +36372,6 @@ func (s *PutBucketAccessMonitorRequest) SetAccessMonitorConfiguration(v *AccessM
 func (s *PutBucketAccessMonitorRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketAccessMonitorResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37025,7 +36407,6 @@ func (s *PutBucketAccessMonitorResponse) SetStatusCode(v int32) *PutBucketAccess
 func (s *PutBucketAccessMonitorResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketAclHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -37073,7 +36454,6 @@ func (s *PutBucketAclHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketAclResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -37109,7 +36489,6 @@ func (s *PutBucketAclResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketArchiveDirectReadRequest struct {
 	// The container that stores the configurations for real-time access of Archive objects.
 	ArchiveDirectReadConfiguration *ArchiveDirectReadConfiguration `json:"ArchiveDirectReadConfiguration,omitempty" xml:"ArchiveDirectReadConfiguration,omitempty"`
@@ -37135,7 +36514,6 @@ func (s *PutBucketArchiveDirectReadRequest) SetArchiveDirectReadConfiguration(v 
 func (s *PutBucketArchiveDirectReadRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketArchiveDirectReadResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37172,7 +36550,6 @@ func (s *PutBucketArchiveDirectReadResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketCacheConfigurationRequest struct {
 	CacheConfiguration *CacheConfiguration `json:"CacheConfiguration,omitempty" xml:"CacheConfiguration,omitempty"`
 }
@@ -37197,7 +36574,6 @@ func (s *PutBucketCacheConfigurationRequest) SetCacheConfiguration(v *CacheConfi
 func (s *PutBucketCacheConfigurationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketCacheConfigurationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37234,7 +36610,6 @@ func (s *PutBucketCacheConfigurationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketCallbackPolicyRequest struct {
 	BucketCallbackPolicy *CallbackPolicy `json:"BucketCallbackPolicy,omitempty" xml:"BucketCallbackPolicy,omitempty"`
 }
@@ -37259,7 +36634,6 @@ func (s *PutBucketCallbackPolicyRequest) SetBucketCallbackPolicy(v *CallbackPoli
 func (s *PutBucketCallbackPolicyRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketCallbackPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37296,7 +36670,6 @@ func (s *PutBucketCallbackPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketCommentRequest struct {
 	CommentConfiguration *CommentConfiguration `json:"CommentConfiguration,omitempty" xml:"CommentConfiguration,omitempty"`
 }
@@ -37321,7 +36694,6 @@ func (s *PutBucketCommentRequest) SetCommentConfiguration(v *CommentConfiguratio
 func (s *PutBucketCommentRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketCommentResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37358,7 +36730,6 @@ func (s *PutBucketCommentResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketCommonHeaderRequest struct {
 	// User-defined response headers configuration
 	CommonHeaders *CommonHeaders `json:"CommonHeaders,omitempty" xml:"CommonHeaders,omitempty"`
@@ -37384,7 +36755,6 @@ func (s *PutBucketCommonHeaderRequest) SetCommonHeaders(v *CommonHeaders) *PutBu
 func (s *PutBucketCommonHeaderRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketCommonHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37421,7 +36791,6 @@ func (s *PutBucketCommonHeaderResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketCorsRequest struct {
 	// The container that stores CORS rules.
 	//
@@ -37449,7 +36818,6 @@ func (s *PutBucketCorsRequest) SetCORSConfiguration(v *CORSConfiguration) *PutBu
 func (s *PutBucketCorsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketCorsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37486,7 +36854,6 @@ func (s *PutBucketCorsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketDataAcceleratorRequest struct {
 	DataAcceleratorConfiguration *DataAcceleratorConfiguration `json:"DataAcceleratorConfiguration,omitempty" xml:"DataAcceleratorConfiguration,omitempty"`
 }
@@ -37511,7 +36878,6 @@ func (s *PutBucketDataAcceleratorRequest) SetDataAcceleratorConfiguration(v *Dat
 func (s *PutBucketDataAcceleratorRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketDataAcceleratorResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37547,7 +36913,6 @@ func (s *PutBucketDataAcceleratorResponse) SetStatusCode(v int32) *PutBucketData
 func (s *PutBucketDataAcceleratorResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketDataLakeStorageHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -37585,7 +36950,6 @@ func (s *PutBucketDataLakeStorageHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketDataLakeStorageResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -37621,7 +36985,6 @@ func (s *PutBucketDataLakeStorageResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketEncryptionRequest struct {
 	// The container that stores server-side encryption rules.
 	ServerSideEncryptionRule *ServerSideEncryptionRule `json:"ServerSideEncryptionRule,omitempty" xml:"ServerSideEncryptionRule,omitempty"`
@@ -37647,7 +37010,6 @@ func (s *PutBucketEncryptionRequest) SetServerSideEncryptionRule(v *ServerSideEn
 func (s *PutBucketEncryptionRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketEncryptionResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37684,7 +37046,6 @@ func (s *PutBucketEncryptionResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketEventNotificationRequest struct {
 	NotificationConfiguration *EventNotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
@@ -37709,7 +37070,6 @@ func (s *PutBucketEventNotificationRequest) SetNotificationConfiguration(v *Even
 func (s *PutBucketEventNotificationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketEventNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37746,7 +37106,6 @@ func (s *PutBucketEventNotificationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketHashRequest struct {
 	// Object Hash Algorithm Configuration
 	ObjectHashConfiguration *ObjectHashConfiguration `json:"ObjectHashConfiguration,omitempty" xml:"ObjectHashConfiguration,omitempty"`
@@ -37772,7 +37131,6 @@ func (s *PutBucketHashRequest) SetObjectHashConfiguration(v *ObjectHashConfigura
 func (s *PutBucketHashRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketHashResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37809,7 +37167,6 @@ func (s *PutBucketHashResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketHttpsConfigRequest struct {
 	// The container that stores HTTPS configurations.
 	HttpsConfiguration *HttpsConfiguration `json:"HttpsConfiguration,omitempty" xml:"HttpsConfiguration,omitempty"`
@@ -37835,7 +37192,6 @@ func (s *PutBucketHttpsConfigRequest) SetHttpsConfiguration(v *HttpsConfiguratio
 func (s *PutBucketHttpsConfigRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketHttpsConfigResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -37871,7 +37227,6 @@ func (s *PutBucketHttpsConfigResponse) SetStatusCode(v int32) *PutBucketHttpsCon
 func (s *PutBucketHttpsConfigResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketInventoryRequest struct {
 	// The container that stores the Inventory configuration.
@@ -37916,7 +37271,6 @@ func (s *PutBucketInventoryRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketInventoryResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -37951,7 +37305,6 @@ func (s *PutBucketInventoryResponse) SetStatusCode(v int32) *PutBucketInventoryR
 func (s *PutBucketInventoryResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketLifecycleHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -37997,7 +37350,6 @@ func (s *PutBucketLifecycleHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketLifecycleRequest struct {
 	// The container that stores the lifecycle configuration.
 	LifecycleConfiguration *LifecycleConfiguration `json:"LifecycleConfiguration,omitempty" xml:"LifecycleConfiguration,omitempty"`
@@ -38023,7 +37375,6 @@ func (s *PutBucketLifecycleRequest) SetLifecycleConfiguration(v *LifecycleConfig
 func (s *PutBucketLifecycleRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketLifecycleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38060,7 +37411,6 @@ func (s *PutBucketLifecycleResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketLoggingRequest struct {
 	// The container that stores the logging status information.
 	BucketLoggingStatus *BucketLoggingStatus `json:"BucketLoggingStatus,omitempty" xml:"BucketLoggingStatus,omitempty"`
@@ -38086,7 +37436,6 @@ func (s *PutBucketLoggingRequest) SetBucketLoggingStatus(v *BucketLoggingStatus)
 func (s *PutBucketLoggingRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketLoggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38123,7 +37472,6 @@ func (s *PutBucketLoggingResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketNotificationRequest struct {
 	NotificationConfiguration *NotificationConfiguration `json:"NotificationConfiguration,omitempty" xml:"NotificationConfiguration,omitempty"`
 }
@@ -38148,7 +37496,6 @@ func (s *PutBucketNotificationRequest) SetNotificationConfiguration(v *Notificat
 func (s *PutBucketNotificationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketNotificationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38185,7 +37532,6 @@ func (s *PutBucketNotificationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketPolicyRequest struct {
 	// The request parameters.
 	//
@@ -38213,7 +37559,6 @@ func (s *PutBucketPolicyRequest) SetPolicy(v string) *PutBucketPolicyRequest {
 func (s *PutBucketPolicyRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketPolicyResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38250,7 +37595,6 @@ func (s *PutBucketPolicyResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketPublicAccessBlockRequest struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
@@ -38276,7 +37620,6 @@ func (s *PutBucketPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v 
 func (s *PutBucketPublicAccessBlockRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38313,7 +37656,6 @@ func (s *PutBucketPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketQoSInfoRequest struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
 }
@@ -38338,7 +37680,6 @@ func (s *PutBucketQoSInfoRequest) SetQoSConfiguration(v *QoSConfiguration) *PutB
 func (s *PutBucketQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38374,7 +37715,6 @@ func (s *PutBucketQoSInfoResponse) SetStatusCode(v int32) *PutBucketQoSInfoRespo
 func (s *PutBucketQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketRedundancyTypeRequest struct {
 	DataRedundancyTypeConfiguration *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration `json:"DataRedundancyTypeConfiguration,omitempty" xml:"DataRedundancyTypeConfiguration,omitempty" type:"Struct"`
@@ -38426,7 +37766,6 @@ func (s *PutBucketRedundancyTypeRequestDataRedundancyTypeConfiguration) Validate
 	return dara.Validate(s)
 }
 
-
 type PutBucketRedundancyTypeResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -38462,7 +37801,6 @@ func (s *PutBucketRedundancyTypeResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketRefererRequest struct {
 	// The container that stores the hotlink protection configurations.
 	RefererConfiguration *RefererConfiguration `json:"RefererConfiguration,omitempty" xml:"RefererConfiguration,omitempty"`
@@ -38488,7 +37826,6 @@ func (s *PutBucketRefererRequest) SetRefererConfiguration(v *RefererConfiguratio
 func (s *PutBucketRefererRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketRefererResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38525,7 +37862,6 @@ func (s *PutBucketRefererResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketReplicationRequest struct {
 	// The container that stores data replication configurations.
 	ReplicationConfiguration *ReplicationConfiguration `json:"ReplicationConfiguration,omitempty" xml:"ReplicationConfiguration,omitempty"`
@@ -38551,7 +37887,6 @@ func (s *PutBucketReplicationRequest) SetReplicationConfiguration(v *Replication
 func (s *PutBucketReplicationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketReplicationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38588,7 +37923,6 @@ func (s *PutBucketReplicationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketRequestPaymentRequest struct {
 	// The container that stores pay-by-requester configurations.
 	RequestPaymentConfiguration *RequestPaymentConfiguration `json:"RequestPaymentConfiguration,omitempty" xml:"RequestPaymentConfiguration,omitempty"`
@@ -38614,7 +37948,6 @@ func (s *PutBucketRequestPaymentRequest) SetRequestPaymentConfiguration(v *Reque
 func (s *PutBucketRequestPaymentRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketRequestPaymentResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38650,7 +37983,6 @@ func (s *PutBucketRequestPaymentResponse) SetStatusCode(v int32) *PutBucketReque
 func (s *PutBucketRequestPaymentResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketRequesterQoSInfoRequest struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
@@ -38692,7 +38024,6 @@ func (s *PutBucketRequesterQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -38728,7 +38059,6 @@ func (s *PutBucketRequesterQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketResourceGroupRequest struct {
 	// The container that contains the ID of the resource group.
 	BucketResourceGroupConfiguration *BucketResourceGroupConfiguration `json:"BucketResourceGroupConfiguration,omitempty" xml:"BucketResourceGroupConfiguration,omitempty"`
@@ -38754,7 +38084,6 @@ func (s *PutBucketResourceGroupRequest) SetBucketResourceGroupConfiguration(v *B
 func (s *PutBucketResourceGroupRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketResourceGroupResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38790,7 +38119,6 @@ func (s *PutBucketResourceGroupResponse) SetStatusCode(v int32) *PutBucketResour
 func (s *PutBucketResourceGroupResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketResourcePoolBucketGroupRequest struct {
 	// This parameter is required.
@@ -38829,7 +38157,6 @@ func (s *PutBucketResourcePoolBucketGroupRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketResourcePoolBucketGroupResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -38865,7 +38192,6 @@ func (s *PutBucketResourcePoolBucketGroupResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketResponseHeaderRequest struct {
 	ResponseHeaderConfiguration *ResponseHeaderConfiguration `json:"ResponseHeaderConfiguration,omitempty" xml:"ResponseHeaderConfiguration,omitempty"`
 }
@@ -38890,7 +38216,6 @@ func (s *PutBucketResponseHeaderRequest) SetResponseHeaderConfiguration(v *Respo
 func (s *PutBucketResponseHeaderRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketResponseHeaderResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38927,7 +38252,6 @@ func (s *PutBucketResponseHeaderResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketRtcRequest struct {
 	// The container that stores the RTC configurations.
 	ReplicationRule *RtcConfiguration `json:"ReplicationRule,omitempty" xml:"ReplicationRule,omitempty"`
@@ -38953,7 +38277,6 @@ func (s *PutBucketRtcRequest) SetReplicationRule(v *RtcConfiguration) *PutBucket
 func (s *PutBucketRtcRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketRtcResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -38990,7 +38313,6 @@ func (s *PutBucketRtcResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketTagsRequest struct {
 	// The container used to store TagSet.
 	Tagging *Tagging `json:"Tagging,omitempty" xml:"Tagging,omitempty"`
@@ -39016,7 +38338,6 @@ func (s *PutBucketTagsRequest) SetTagging(v *Tagging) *PutBucketTagsRequest {
 func (s *PutBucketTagsRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketTagsResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39053,7 +38374,6 @@ func (s *PutBucketTagsResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketTransferAccelerationRequest struct {
 	// The container that stores the transfer acceleration configurations.
 	TransferAccelerationConfiguration *TransferAccelerationConfiguration `json:"TransferAccelerationConfiguration,omitempty" xml:"TransferAccelerationConfiguration,omitempty"`
@@ -39079,7 +38399,6 @@ func (s *PutBucketTransferAccelerationRequest) SetTransferAccelerationConfigurat
 func (s *PutBucketTransferAccelerationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketTransferAccelerationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39116,7 +38435,6 @@ func (s *PutBucketTransferAccelerationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketVersioningRequest struct {
 	// The container that stores the versioning state of the bucket.
 	VersioningConfiguration *VersioningConfiguration `json:"VersioningConfiguration,omitempty" xml:"VersioningConfiguration,omitempty"`
@@ -39142,7 +38460,6 @@ func (s *PutBucketVersioningRequest) SetVersioningConfiguration(v *VersioningCon
 func (s *PutBucketVersioningRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketVersioningResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39179,7 +38496,6 @@ func (s *PutBucketVersioningResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutBucketWebsiteRequest struct {
 	// The container that stores the website configuration.
 	WebsiteConfiguration *WebsiteConfiguration `json:"WebsiteConfiguration,omitempty" xml:"WebsiteConfiguration,omitempty"`
@@ -39205,7 +38521,6 @@ func (s *PutBucketWebsiteRequest) SetWebsiteConfiguration(v *WebsiteConfiguratio
 func (s *PutBucketWebsiteRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutBucketWebsiteResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39242,7 +38557,6 @@ func (s *PutBucketWebsiteResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutCacheRequest struct {
 	CreateCacheConfiguration *CreateCacheConfiguration `json:"CreateCacheConfiguration,omitempty" xml:"CreateCacheConfiguration,omitempty"`
 }
@@ -39267,7 +38581,6 @@ func (s *PutCacheRequest) SetCreateCacheConfiguration(v *CreateCacheConfiguratio
 func (s *PutCacheRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutCacheResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39304,7 +38617,6 @@ func (s *PutCacheResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutChannelRequest struct {
 	// Container for storing image processing channel configuration
 	Channel *Channel `json:"Channel,omitempty" xml:"Channel,omitempty"`
@@ -39330,7 +38642,6 @@ func (s *PutChannelRequest) SetChannel(v *Channel) *PutChannelRequest {
 func (s *PutChannelRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutChannelResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39367,7 +38678,6 @@ func (s *PutChannelResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutCnameRequest struct {
 	// The container that stores the CNAME record.
 	BucketCnameConfiguration *BucketCnameConfiguration `json:"BucketCnameConfiguration,omitempty" xml:"BucketCnameConfiguration,omitempty"`
@@ -39393,7 +38703,6 @@ func (s *PutCnameRequest) SetBucketCnameConfiguration(v *BucketCnameConfiguratio
 func (s *PutCnameRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutCnameResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39430,7 +38739,6 @@ func (s *PutCnameResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutDataLakeCachePrefetchJobRequest struct {
 	CreateDataLakeCachePrefetchJob *CreateDataLakeCachePrefetchJob `json:"CreateDataLakeCachePrefetchJob,omitempty" xml:"CreateDataLakeCachePrefetchJob,omitempty"`
 	XOssDatalakeJobId              *string                         `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -39465,7 +38773,6 @@ func (s *PutDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *Put
 func (s *PutDataLakeCachePrefetchJobRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutDataLakeCachePrefetchJobResponseBody struct {
 	DataLakeCachePrefetchJobID *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID `json:"DataLakeCachePrefetchJobID,omitempty" xml:"DataLakeCachePrefetchJobID,omitempty" type:"Struct"`
@@ -39517,7 +38824,6 @@ func (s *PutDataLakeCachePrefetchJobResponseBodyDataLakeCachePrefetchJobID) Vali
 	return dara.Validate(s)
 }
 
-
 type PutDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string                       `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                                   `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -39563,7 +38869,6 @@ func (s *PutDataLakeCachePrefetchJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	CreateDataLakeStorageTransferJob *CreateDataLakeStorageTransferJob `json:"CreateDataLakeStorageTransferJob,omitempty" xml:"CreateDataLakeStorageTransferJob,omitempty"`
@@ -39600,7 +38905,6 @@ func (s *PutDataLakeStorageTransferJobRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJobId *DataLakeStorageTransferJobId `json:"DataLakeStorageTransferJobId,omitempty" xml:"DataLakeStorageTransferJobId,omitempty"`
 }
@@ -39625,7 +38929,6 @@ func (s *PutDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransferJo
 func (s *PutDataLakeStorageTransferJobResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -39672,7 +38975,6 @@ func (s *PutDataLakeStorageTransferJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutLiveChannelRequest struct {
 	// The container that stores the configurations of the LiveChannel.
 	LiveChannelConfiguration *LiveChannelConfiguration `json:"LiveChannelConfiguration,omitempty" xml:"LiveChannelConfiguration,omitempty"`
@@ -39698,7 +39000,6 @@ func (s *PutLiveChannelRequest) SetLiveChannelConfiguration(v *LiveChannelConfig
 func (s *PutLiveChannelRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutLiveChannelResponseBody struct {
 	// The container that stores the result of the CreateLiveChannel request.
@@ -39763,7 +39064,6 @@ func (s *PutLiveChannelResponseBodyCreateLiveChannelResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutLiveChannelResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                      `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -39809,7 +39109,6 @@ func (s *PutLiveChannelResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutLiveChannelStatusRequest struct {
 	// The status of the LiveChannel.
 	//
@@ -39848,7 +39147,6 @@ func (s *PutLiveChannelStatusRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutLiveChannelStatusResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -39883,7 +39181,6 @@ func (s *PutLiveChannelStatusResponse) SetStatusCode(v int32) *PutLiveChannelSta
 func (s *PutLiveChannelStatusResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutObjectHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -40078,7 +39375,6 @@ func (s *PutObjectHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutObjectRequest struct {
 	// The body of the request.
 	//
@@ -40108,7 +39404,6 @@ func (s *PutObjectRequest) SetBody(v io.Reader) *PutObjectRequest {
 func (s *PutObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -40144,7 +39439,6 @@ func (s *PutObjectResponse) SetStatusCode(v int32) *PutObjectResponse {
 func (s *PutObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutObjectAclHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -40184,7 +39478,6 @@ func (s *PutObjectAclHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutObjectAclRequest struct {
 	// The version id of the object.
 	//
@@ -40214,7 +39507,6 @@ func (s *PutObjectAclRequest) SetVersionId(v string) *PutObjectAclRequest {
 func (s *PutObjectAclRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutObjectAclResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -40251,7 +39543,6 @@ func (s *PutObjectAclResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutObjectLinkRequest struct {
 	CreateObjectLink *ObjectLinkInfo `json:"CreateObjectLink,omitempty" xml:"CreateObjectLink,omitempty"`
 }
@@ -40277,7 +39568,6 @@ func (s *PutObjectLinkRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutObjectLinkResponseBody struct {
 	CreateObjectLink *CreateObjectLinkResult `json:"CreateObjectLink,omitempty" xml:"CreateObjectLink,omitempty"`
 }
@@ -40302,7 +39592,6 @@ func (s *PutObjectLinkResponseBody) SetCreateObjectLink(v *CreateObjectLinkResul
 func (s *PutObjectLinkResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutObjectLinkResponse struct {
 	Headers    map[string]*string         `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -40349,7 +39638,6 @@ func (s *PutObjectLinkResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutObjectTaggingRequest struct {
 	// The container of the tag set.
 	Tagging *Tagging `json:"Tagging,omitempty" xml:"Tagging,omitempty"`
@@ -40391,7 +39679,6 @@ func (s *PutObjectTaggingRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutObjectTaggingResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -40427,7 +39714,6 @@ func (s *PutObjectTaggingResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutProcessConfigurationRequest struct {
 	// Bucket Image Processing Configuration
 	//
@@ -40455,7 +39741,6 @@ func (s *PutProcessConfigurationRequest) SetBucketProcessConfiguration(v *Bucket
 func (s *PutProcessConfigurationRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutProcessConfigurationResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -40492,7 +39777,6 @@ func (s *PutProcessConfigurationResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutPublicAccessBlockRequest struct {
 	// The container in which the Block Public Access configurations are stored.
 	PublicAccessBlockConfiguration *PublicAccessBlockConfiguration `json:"PublicAccessBlockConfiguration,omitempty" xml:"PublicAccessBlockConfiguration,omitempty"`
@@ -40518,7 +39802,6 @@ func (s *PutPublicAccessBlockRequest) SetPublicAccessBlockConfiguration(v *Publi
 func (s *PutPublicAccessBlockRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutPublicAccessBlockResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -40554,7 +39837,6 @@ func (s *PutPublicAccessBlockResponse) SetStatusCode(v int32) *PutPublicAccessBl
 func (s *PutPublicAccessBlockResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutResourcePoolBucketGroupQoSInfoRequest struct {
 	ResourcePoolBucketGroupQoSInfo *ResourcePoolBucketGroupQoSInfo `json:"ResourcePoolBucketGroupQoSInfo,omitempty" xml:"ResourcePoolBucketGroupQoSInfo,omitempty"`
@@ -40603,7 +39885,6 @@ func (s *PutResourcePoolBucketGroupQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutResourcePoolBucketGroupQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -40638,7 +39919,6 @@ func (s *PutResourcePoolBucketGroupQoSInfoResponse) SetStatusCode(v int32) *PutR
 func (s *PutResourcePoolBucketGroupQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutResourcePoolRequesterQoSInfoRequest struct {
 	QoSConfiguration *QoSConfiguration `json:"QoSConfiguration,omitempty" xml:"QoSConfiguration,omitempty"`
@@ -40687,7 +39967,6 @@ func (s *PutResourcePoolRequesterQoSInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutResourcePoolRequesterQoSInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -40722,7 +40001,6 @@ func (s *PutResourcePoolRequesterQoSInfoResponse) SetStatusCode(v int32) *PutRes
 func (s *PutResourcePoolRequesterQoSInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutStyleRequest struct {
 	// The style content.
@@ -40782,7 +40060,6 @@ func (s *PutStyleRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutStyleResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -40817,7 +40094,6 @@ func (s *PutStyleResponse) SetStatusCode(v int32) *PutStyleResponse {
 func (s *PutStyleResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutSymlinkHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -40938,7 +40214,6 @@ func (s *PutSymlinkHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutSymlinkResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -40974,7 +40249,6 @@ func (s *PutSymlinkResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutUserDefinedLogFieldsConfigRequest struct {
 	// The container for the user-defined logging configuration.
 	UserDefinedLogFieldsConfiguration *UserDefinedLogFieldsConfiguration `json:"UserDefinedLogFieldsConfiguration,omitempty" xml:"UserDefinedLogFieldsConfiguration,omitempty"`
@@ -41000,7 +40274,6 @@ func (s *PutUserDefinedLogFieldsConfigRequest) SetUserDefinedLogFieldsConfigurat
 func (s *PutUserDefinedLogFieldsConfigRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutUserDefinedLogFieldsConfigResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41037,7 +40310,6 @@ func (s *PutUserDefinedLogFieldsConfigResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type PutVirtualBucketRequest struct {
 	VirtualBucketConfiguration *VirtualBucketConfiguration `json:"VirtualBucketConfiguration,omitempty" xml:"VirtualBucketConfiguration,omitempty"`
 }
@@ -41062,7 +40334,6 @@ func (s *PutVirtualBucketRequest) SetVirtualBucketConfiguration(v *VirtualBucket
 func (s *PutVirtualBucketRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type PutVirtualBucketResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41098,7 +40369,6 @@ func (s *PutVirtualBucketResponse) SetStatusCode(v int32) *PutVirtualBucketRespo
 func (s *PutVirtualBucketResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type RestoreObjectRequest struct {
 	// The container that stores information about the RestoreObject request.
@@ -41141,7 +40411,6 @@ func (s *RestoreObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type RestoreObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -41177,7 +40446,6 @@ func (s *RestoreObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type SealAppendObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -41212,7 +40480,6 @@ func (s *SealAppendObjectResponse) SetStatusCode(v int32) *SealAppendObjectRespo
 func (s *SealAppendObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type SelectObjectRequest struct {
 	// Container for saving Select request.
@@ -41256,7 +40523,6 @@ func (s *SelectObjectRequest) SetXOssProcess(v string) *SelectObjectRequest {
 func (s *SelectObjectRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type SelectObjectResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41303,7 +40569,6 @@ func (s *SelectObjectResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type StartDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -41329,7 +40594,6 @@ func (s *StartDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *S
 func (s *StartDataLakeCachePrefetchJobRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StartDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41366,7 +40630,6 @@ func (s *StartDataLakeCachePrefetchJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type StartDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -41393,7 +40656,6 @@ func (s *StartDataLakeStorageTransferJobRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type StartDataLakeStorageTransferJobResponseBody struct {
 	DataLakeStorageTransferJobHistoryId *DataLakeStorageTransferJobHistoryId `json:"DataLakeStorageTransferJobHistoryId,omitempty" xml:"DataLakeStorageTransferJobHistoryId,omitempty"`
 }
@@ -41418,7 +40680,6 @@ func (s *StartDataLakeStorageTransferJobResponseBody) SetDataLakeStorageTransfer
 func (s *StartDataLakeStorageTransferJobResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StartDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string                           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41464,7 +40725,6 @@ func (s *StartDataLakeStorageTransferJobResponse) SetBody(v *StartDataLakeStorag
 func (s *StartDataLakeStorageTransferJobResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StartPartUploadRequest struct {
 	// This parameter is required.
@@ -41535,7 +40795,6 @@ func (s *StartPartUploadRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type StartPartUploadResponseBody struct {
 	StartPartUploadResult *StartPartUploadResult `json:"StartPartUploadResult,omitempty" xml:"StartPartUploadResult,omitempty"`
 }
@@ -41560,7 +40819,6 @@ func (s *StartPartUploadResponseBody) SetStartPartUploadResult(v *StartPartUploa
 func (s *StartPartUploadResponseBody) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StartPartUploadResponse struct {
 	Headers    map[string]*string           `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41607,7 +40865,6 @@ func (s *StartPartUploadResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type StopDataLakeCachePrefetchJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -41633,7 +40890,6 @@ func (s *StopDataLakeCachePrefetchJobRequest) SetXOssDatalakeJobId(v string) *St
 func (s *StopDataLakeCachePrefetchJobRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StopDataLakeCachePrefetchJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41670,7 +40926,6 @@ func (s *StopDataLakeCachePrefetchJobResponse) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type StopDataLakeStorageTransferJobRequest struct {
 	// This parameter is required.
 	XOssDatalakeJobId *string `json:"x-oss-datalake-job-id,omitempty" xml:"x-oss-datalake-job-id,omitempty"`
@@ -41696,7 +40951,6 @@ func (s *StopDataLakeStorageTransferJobRequest) SetXOssDatalakeJobId(v string) *
 func (s *StopDataLakeStorageTransferJobRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type StopDataLakeStorageTransferJobResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41732,7 +40986,6 @@ func (s *StopDataLakeStorageTransferJobResponse) SetStatusCode(v int32) *StopDat
 func (s *StopDataLakeStorageTransferJobResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UpdateBucketAntiDDosInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -41799,7 +41052,6 @@ func (s *UpdateBucketAntiDDosInfoHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UpdateBucketAntiDDosInfoRequest struct {
 	// The container that stores the configurations of Anti-DDoS instances.
 	AntiDDOSConfiguration *BucketAntiDDOSConfiguration `json:"AntiDDOSConfiguration,omitempty" xml:"AntiDDOSConfiguration,omitempty"`
@@ -41825,7 +41077,6 @@ func (s *UpdateBucketAntiDDosInfoRequest) SetAntiDDOSConfiguration(v *BucketAnti
 func (s *UpdateBucketAntiDDosInfoRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UpdateBucketAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
@@ -41861,7 +41112,6 @@ func (s *UpdateBucketAntiDDosInfoResponse) SetStatusCode(v int32) *UpdateBucketA
 func (s *UpdateBucketAntiDDosInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UpdateReservedCapacityRequest struct {
 	ReservedCapacityUpdateConfiguration *ReservedCapacityUpdateConfiguration `json:"ReservedCapacityUpdateConfiguration,omitempty" xml:"ReservedCapacityUpdateConfiguration,omitempty"`
@@ -41899,7 +41149,6 @@ func (s *UpdateReservedCapacityRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UpdateReservedCapacityResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -41934,7 +41183,6 @@ func (s *UpdateReservedCapacityResponse) SetStatusCode(v int32) *UpdateReservedC
 func (s *UpdateReservedCapacityResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UpdateUserAntiDDosInfoHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -41995,7 +41243,6 @@ func (s *UpdateUserAntiDDosInfoHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UpdateUserAntiDDosInfoResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -42030,7 +41277,6 @@ func (s *UpdateUserAntiDDosInfoResponse) SetStatusCode(v int32) *UpdateUserAntiD
 func (s *UpdateUserAntiDDosInfoResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UploadPartRequest struct {
 	// The request body.
@@ -42102,7 +41348,6 @@ func (s *UploadPartRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UploadPartResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -42137,7 +41382,6 @@ func (s *UploadPartResponse) SetStatusCode(v int32) *UploadPartResponse {
 func (s *UploadPartResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UploadPartChunkRequest struct {
 	Body io.Reader `json:"body,omitempty" xml:"body,omitempty"`
@@ -42197,7 +41441,6 @@ func (s *UploadPartChunkRequest) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UploadPartChunkResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -42232,7 +41475,6 @@ func (s *UploadPartChunkResponse) SetStatusCode(v int32) *UploadPartChunkRespons
 func (s *UploadPartChunkResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UploadPartCopyHeaders struct {
 	CommonHeaders map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -42371,7 +41613,6 @@ func (s *UploadPartCopyHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UploadPartCopyRequest struct {
 	// The number of parts.
 	//
@@ -42420,7 +41661,6 @@ func (s *UploadPartCopyRequest) SetUploadId(v string) *UploadPartCopyRequest {
 func (s *UploadPartCopyRequest) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type UploadPartCopyResponseBody struct {
 	// The container that stores the copy result.
@@ -42495,7 +41735,6 @@ func (s *UploadPartCopyResponseBodyCopyPartResult) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type UploadPartCopyResponse struct {
 	Headers    map[string]*string          `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32                      `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -42540,7 +41779,6 @@ func (s *UploadPartCopyResponse) SetBody(v *UploadPartCopyResponseBody) *UploadP
 func (s *UploadPartCopyResponse) Validate() error {
 	return dara.Validate(s)
 }
-
 
 type WriteGetObjectResponseHeaders struct {
 	CommonHeaders                   map[string]*string `json:"commonHeaders,omitempty" xml:"commonHeaders,omitempty"`
@@ -42707,7 +41945,6 @@ func (s *WriteGetObjectResponseHeaders) Validate() error {
 	return dara.Validate(s)
 }
 
-
 type WriteGetObjectResponseResponse struct {
 	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
 	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
@@ -42823,7 +42060,7 @@ type AddressDetail struct {
 }
 
 func (s AddressDetail) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s AddressDetail) GoString() string {
@@ -42923,7 +42160,7 @@ type Audit struct {
 }
 
 func (s Audit) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s Audit) GoString() string {
@@ -42951,7 +42188,7 @@ type CreateAddressInfo struct {
 }
 
 func (s CreateAddressInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAddressInfo) GoString() string {
@@ -43005,7 +42242,7 @@ type CreateAgentInfo struct {
 }
 
 func (s CreateAgentInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAgentInfo) GoString() string {
@@ -43086,7 +42323,7 @@ type CreateJobInfo struct {
 }
 
 func (s CreateJobInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateJobInfo) GoString() string {
@@ -43179,7 +42416,7 @@ type CreateReportInfo struct {
 }
 
 func (s CreateReportInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateReportInfo) GoString() string {
@@ -43210,7 +42447,7 @@ type CreateTunnelInfo struct {
 }
 
 func (s CreateTunnelInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateTunnelInfo) GoString() string {
@@ -43239,7 +42476,7 @@ type FileTypeFilters struct {
 }
 
 func (s FileTypeFilters) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FileTypeFilters) GoString() string {
@@ -43263,7 +42500,7 @@ type FilterRule struct {
 }
 
 func (s FilterRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s FilterRule) GoString() string {
@@ -43323,7 +42560,7 @@ type GetAddressResp struct {
 }
 
 func (s GetAddressResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAddressResp) GoString() string {
@@ -43421,7 +42658,7 @@ type GetAgentResp struct {
 }
 
 func (s GetAgentResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAgentResp) GoString() string {
@@ -43486,7 +42723,7 @@ type GetAgentStatusResp struct {
 }
 
 func (s GetAgentStatusResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAgentStatusResp) GoString() string {
@@ -43561,7 +42798,7 @@ type GetJobResp struct {
 }
 
 func (s GetJobResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResp) GoString() string {
@@ -43732,7 +42969,7 @@ type GetJobResultResp struct {
 }
 
 func (s GetJobResultResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResultResp) GoString() string {
@@ -43871,7 +43108,7 @@ type GetReportResp struct {
 }
 
 func (s GetReportResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReportResp) GoString() string {
@@ -43973,7 +43210,7 @@ type GetTunnelResp struct {
 }
 
 func (s GetTunnelResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetTunnelResp) GoString() string {
@@ -44022,7 +43259,7 @@ type ImportQos struct {
 }
 
 func (s ImportQos) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ImportQos) GoString() string {
@@ -44104,7 +43341,7 @@ type JobHistory struct {
 }
 
 func (s JobHistory) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s JobHistory) GoString() string {
@@ -44196,7 +43433,7 @@ type KeyFilterItem struct {
 }
 
 func (s KeyFilterItem) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s KeyFilterItem) GoString() string {
@@ -44214,7 +43451,7 @@ type KeyFilters struct {
 }
 
 func (s KeyFilters) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s KeyFilters) GoString() string {
@@ -44237,7 +43474,7 @@ type LastModifiedFilters struct {
 }
 
 func (s LastModifiedFilters) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LastModifiedFilters) GoString() string {
@@ -44259,7 +43496,7 @@ type LastModifyFilterItem struct {
 }
 
 func (s LastModifyFilterItem) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s LastModifyFilterItem) GoString() string {
@@ -44284,7 +43521,7 @@ type ListAddressResp struct {
 }
 
 func (s ListAddressResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAddressResp) GoString() string {
@@ -44319,7 +43556,7 @@ type ListAgentResp struct {
 }
 
 func (s ListAgentResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAgentResp) GoString() string {
@@ -44354,7 +43591,7 @@ type ListJobHistoryResp struct {
 }
 
 func (s ListJobHistoryResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobHistoryResp) GoString() string {
@@ -44389,7 +43626,7 @@ type ListJobInfo struct {
 }
 
 func (s ListJobInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobInfo) GoString() string {
@@ -44418,7 +43655,7 @@ type ListJobResp struct {
 }
 
 func (s ListJobResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobResp) GoString() string {
@@ -44447,7 +43684,7 @@ type ListTunnelResp struct {
 }
 
 func (s ListTunnelResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListTunnelResp) GoString() string {
@@ -44476,7 +43713,7 @@ type ScheduleRule struct {
 }
 
 func (s ScheduleRule) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ScheduleRule) GoString() string {
@@ -44504,7 +43741,7 @@ type TimeFilter struct {
 }
 
 func (s TimeFilter) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s TimeFilter) GoString() string {
@@ -44533,7 +43770,7 @@ type TunnelQos struct {
 }
 
 func (s TunnelQos) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s TunnelQos) GoString() string {
@@ -44555,7 +43792,7 @@ type UpdateAddressInfo struct {
 }
 
 func (s UpdateAddressInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateAddressInfo) GoString() string {
@@ -44576,7 +43813,7 @@ type UpdateJobInfo struct {
 }
 
 func (s UpdateJobInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateJobInfo) GoString() string {
@@ -44599,7 +43836,7 @@ type UpdateTunnelInfo struct {
 }
 
 func (s UpdateTunnelInfo) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateTunnelInfo) GoString() string {
@@ -44630,7 +43867,7 @@ type VerifyAddressResp struct {
 }
 
 func (s VerifyAddressResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VerifyAddressResp) GoString() string {
@@ -44667,7 +43904,7 @@ type VerifyResp struct {
 }
 
 func (s VerifyResp) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VerifyResp) GoString() string {
@@ -44694,7 +43931,7 @@ type CreateAddressRequest struct {
 }
 
 func (s CreateAddressRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAddressRequest) GoString() string {
@@ -44712,7 +43949,7 @@ type CreateAddressResponse struct {
 }
 
 func (s CreateAddressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAddressResponse) GoString() string {
@@ -44734,7 +43971,7 @@ type CreateAgentRequest struct {
 }
 
 func (s CreateAgentRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAgentRequest) GoString() string {
@@ -44752,7 +43989,7 @@ type CreateAgentResponse struct {
 }
 
 func (s CreateAgentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateAgentResponse) GoString() string {
@@ -44775,7 +44012,7 @@ type CreateJobRequest struct {
 }
 
 func (s CreateJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateJobRequest) GoString() string {
@@ -44793,7 +44030,7 @@ type CreateJobResponse struct {
 }
 
 func (s CreateJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateJobResponse) GoString() string {
@@ -44815,7 +44052,7 @@ type CreateReportRequest struct {
 }
 
 func (s CreateReportRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateReportRequest) GoString() string {
@@ -44833,7 +44070,7 @@ type CreateReportResponse struct {
 }
 
 func (s CreateReportResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateReportResponse) GoString() string {
@@ -44855,7 +44092,7 @@ type CreateTunnelRequest struct {
 }
 
 func (s CreateTunnelRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateTunnelRequest) GoString() string {
@@ -44873,7 +44110,7 @@ type CreateTunnelResponse struct {
 }
 
 func (s CreateTunnelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s CreateTunnelResponse) GoString() string {
@@ -44896,7 +44133,7 @@ type DeleteAddressResponse struct {
 }
 
 func (s DeleteAddressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAddressResponse) GoString() string {
@@ -44919,7 +44156,7 @@ type DeleteAgentResponse struct {
 }
 
 func (s DeleteAgentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteAgentResponse) GoString() string {
@@ -44944,7 +44181,7 @@ type DeleteJobRequest struct {
 }
 
 func (s DeleteJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteJobRequest) GoString() string {
@@ -44962,7 +44199,7 @@ type DeleteJobResponse struct {
 }
 
 func (s DeleteJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteJobResponse) GoString() string {
@@ -44985,7 +44222,7 @@ type DeleteTunnelResponse struct {
 }
 
 func (s DeleteTunnelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s DeleteTunnelResponse) GoString() string {
@@ -45008,7 +44245,7 @@ type GetAddressResponseBody struct {
 }
 
 func (s GetAddressResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAddressResponseBody) GoString() string {
@@ -45027,7 +44264,7 @@ type GetAddressResponse struct {
 }
 
 func (s GetAddressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAddressResponse) GoString() string {
@@ -45055,7 +44292,7 @@ type GetAgentResponseBody struct {
 }
 
 func (s GetAgentResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAgentResponseBody) GoString() string {
@@ -45074,7 +44311,7 @@ type GetAgentResponse struct {
 }
 
 func (s GetAgentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAgentResponse) GoString() string {
@@ -45102,7 +44339,7 @@ type GetAgentStatusResponseBody struct {
 }
 
 func (s GetAgentStatusResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAgentStatusResponseBody) GoString() string {
@@ -45121,7 +44358,7 @@ type GetAgentStatusResponse struct {
 }
 
 func (s GetAgentStatusResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetAgentStatusResponse) GoString() string {
@@ -45151,7 +44388,7 @@ type GetJobRequest struct {
 }
 
 func (s GetJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobRequest) GoString() string {
@@ -45168,7 +44405,7 @@ type GetJobResponseBody struct {
 }
 
 func (s GetJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResponseBody) GoString() string {
@@ -45187,7 +44424,7 @@ type GetJobResponse struct {
 }
 
 func (s GetJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResponse) GoString() string {
@@ -45219,7 +44456,7 @@ type GetJobResultRequest struct {
 }
 
 func (s GetJobResultRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResultRequest) GoString() string {
@@ -45237,7 +44474,7 @@ type GetJobResultResponseBody struct {
 }
 
 func (s GetJobResultResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResultResponseBody) GoString() string {
@@ -45256,7 +44493,7 @@ type GetJobResultResponse struct {
 }
 
 func (s GetJobResultResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetJobResultResponse) GoString() string {
@@ -45292,7 +44529,7 @@ type GetReportRequest struct {
 }
 
 func (s GetReportRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReportRequest) GoString() string {
@@ -45314,7 +44551,7 @@ type GetReportResponseBody struct {
 }
 
 func (s GetReportResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReportResponseBody) GoString() string {
@@ -45333,7 +44570,7 @@ type GetReportResponse struct {
 }
 
 func (s GetReportResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetReportResponse) GoString() string {
@@ -45360,7 +44597,7 @@ type GetTunnelResponseBody struct {
 }
 
 func (s GetTunnelResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetTunnelResponseBody) GoString() string {
@@ -45379,7 +44616,7 @@ type GetTunnelResponse struct {
 }
 
 func (s GetTunnelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s GetTunnelResponse) GoString() string {
@@ -45413,7 +44650,7 @@ type ListAddressRequest struct {
 }
 
 func (s ListAddressRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAddressRequest) GoString() string {
@@ -45435,7 +44672,7 @@ type ListAddressResponseBody struct {
 }
 
 func (s ListAddressResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAddressResponseBody) GoString() string {
@@ -45454,7 +44691,7 @@ type ListAddressResponse struct {
 }
 
 func (s ListAddressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAddressResponse) GoString() string {
@@ -45488,7 +44725,7 @@ type ListAgentRequest struct {
 }
 
 func (s ListAgentRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAgentRequest) GoString() string {
@@ -45510,7 +44747,7 @@ type ListAgentResponseBody struct {
 }
 
 func (s ListAgentResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAgentResponseBody) GoString() string {
@@ -45529,7 +44766,7 @@ type ListAgentResponse struct {
 }
 
 func (s ListAgentResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListAgentResponse) GoString() string {
@@ -45571,7 +44808,7 @@ type ListJobRequest struct {
 }
 
 func (s ListJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobRequest) GoString() string {
@@ -45603,7 +44840,7 @@ type ListJobResponseBody struct {
 }
 
 func (s ListJobResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobResponseBody) GoString() string {
@@ -45622,7 +44859,7 @@ type ListJobResponse struct {
 }
 
 func (s ListJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobResponse) GoString() string {
@@ -45657,7 +44894,7 @@ type ListJobHistoryRequest struct {
 }
 
 func (s ListJobHistoryRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobHistoryRequest) GoString() string {
@@ -45684,7 +44921,7 @@ type ListJobHistoryResponseBody struct {
 }
 
 func (s ListJobHistoryResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobHistoryResponseBody) GoString() string {
@@ -45703,7 +44940,7 @@ type ListJobHistoryResponse struct {
 }
 
 func (s ListJobHistoryResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListJobHistoryResponse) GoString() string {
@@ -45737,7 +44974,7 @@ type ListTunnelRequest struct {
 }
 
 func (s ListTunnelRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListTunnelRequest) GoString() string {
@@ -45760,7 +44997,7 @@ type ListTunnelResponseBody struct {
 }
 
 func (s ListTunnelResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListTunnelResponseBody) GoString() string {
@@ -45779,7 +45016,7 @@ type ListTunnelResponse struct {
 }
 
 func (s ListTunnelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s ListTunnelResponse) GoString() string {
@@ -45806,7 +45043,7 @@ type UpdateAddressRequest struct {
 }
 
 func (s UpdateAddressRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateAddressRequest) GoString() string {
@@ -45824,7 +45061,7 @@ type UpdateAddressResponse struct {
 }
 
 func (s UpdateAddressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateAddressResponse) GoString() string {
@@ -45846,7 +45083,7 @@ type UpdateJobRequest struct {
 }
 
 func (s UpdateJobRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateJobRequest) GoString() string {
@@ -45864,7 +45101,7 @@ type UpdateJobResponse struct {
 }
 
 func (s UpdateJobResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateJobResponse) GoString() string {
@@ -45886,7 +45123,7 @@ type UpdateTunnelRequest struct {
 }
 
 func (s UpdateTunnelRequest) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateTunnelRequest) GoString() string {
@@ -45904,7 +45141,7 @@ type UpdateTunnelResponse struct {
 }
 
 func (s UpdateTunnelResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s UpdateTunnelResponse) GoString() string {
@@ -45927,7 +45164,7 @@ type VerifyAddressResponseBody struct {
 }
 
 func (s VerifyAddressResponseBody) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VerifyAddressResponseBody) GoString() string {
@@ -45946,7 +45183,7 @@ type VerifyAddressResponse struct {
 }
 
 func (s VerifyAddressResponse) String() string {
-	return tea.Prettify(s)
+	return dara.Prettify(s)
 }
 
 func (s VerifyAddressResponse) GoString() string {
