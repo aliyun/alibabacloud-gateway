@@ -328,11 +328,15 @@ export default class Client extends SPI {
 
     for (let key of headersArray) {
       let lowerKey = String.toLower(key);
-      if (!String.contains(tmp, lowerKey)) {
-        tmp = `${tmp},${lowerKey}`;
-        newHeaders[lowerKey] = String.trim(headers[key]);
-      } else {
-        newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(headers[key])}`;
+      let value = headers[key];
+      if (!Util.isUnset(value)) {
+        if (!String.contains(tmp, lowerKey)) {
+          tmp = `${tmp},${lowerKey}`;
+          newHeaders[lowerKey] = String.trim(value);
+        } else {
+          newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(value)}`;
+        }
+
       }
 
     }
@@ -354,7 +358,8 @@ export default class Client extends SPI {
     for (let key of sortedHeadersArray) {
       let lowerKey = String.toLower(key);
       if (String.hasPrefix(lowerKey, "x-acs-") || String.equals(lowerKey, "host") || String.equals(lowerKey, "content-type")) {
-        if (!String.contains(tmp, lowerKey)) {
+        let value = headers[key];
+        if (!Util.isUnset(value) && !String.contains(tmp, lowerKey)) {
           tmp = `${tmp}${separator}${lowerKey}`;
           separator = ";";
         }

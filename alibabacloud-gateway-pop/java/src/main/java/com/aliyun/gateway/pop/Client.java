@@ -318,11 +318,15 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String tmp = "";
         for (String key : headersArray) {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
-            if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
-                tmp = "" + tmp + "," + lowerKey + "";
-                newHeaders.put(lowerKey, com.aliyun.darabonbastring.Client.trim(headers.get(key)));
-            } else {
-                newHeaders.put(lowerKey, "" + newHeaders.get(lowerKey) + "," + com.aliyun.darabonbastring.Client.trim(headers.get(key)) + "");
+            String value = headers.get(key);
+            if (!com.aliyun.teautil.Common.isUnset(value)) {
+                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
+                    tmp = "" + tmp + "," + lowerKey + "";
+                    newHeaders.put(lowerKey, com.aliyun.darabonbastring.Client.trim(value));
+                } else {
+                    newHeaders.put(lowerKey, "" + newHeaders.get(lowerKey) + "," + com.aliyun.darabonbastring.Client.trim(value) + "");
+                }
+
             }
 
         }
@@ -342,7 +346,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
         for (String key : sortedHeadersArray) {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
             if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-acs-") || com.aliyun.darabonbastring.Client.equals(lowerKey, "host") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-type")) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
+                String value = headers.get(key);
+                if (!com.aliyun.teautil.Common.isUnset(value) && !com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
                     tmp = "" + tmp + "" + separator + "" + lowerKey + "";
                     separator = ";";
                 }
