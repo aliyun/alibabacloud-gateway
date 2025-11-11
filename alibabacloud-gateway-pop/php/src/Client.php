@@ -396,11 +396,14 @@ class Client extends DarabonbaGatewaySpiClient
         $tmp = "";
         foreach ($headersArray as $key) {
             $lowerKey = StringUtil::toLower($key);
-            if (!StringUtil::contains($tmp, $lowerKey)) {
-                $tmp = "" . $tmp . "," . $lowerKey . "";
-                $newHeaders[$lowerKey] = StringUtil::trim(@$headers[$key]);
-            } else {
-                $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . StringUtil::trim(@$headers[$key]) . "";
+            $value = @$headers[$key];
+            if (!Utils::isUnset($value)) {
+                if (!StringUtil::contains($tmp, $lowerKey)) {
+                    $tmp = "" . $tmp . "," . $lowerKey . "";
+                    $newHeaders[$lowerKey] = StringUtil::trim($value);
+                } else {
+                    $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . StringUtil::trim($value) . "";
+                }
             }
         }
         $canonicalizedHeaders = "";
@@ -424,7 +427,8 @@ class Client extends DarabonbaGatewaySpiClient
         foreach ($sortedHeadersArray as $key) {
             $lowerKey = StringUtil::toLower($key);
             if (StringUtil::hasPrefix($lowerKey, "x-acs-") || StringUtil::equals($lowerKey, "host") || StringUtil::equals($lowerKey, "content-type")) {
-                if (!StringUtil::contains($tmp, $lowerKey)) {
+                $value = @$headers[$key];
+                if (!Utils::isUnset($value) && !StringUtil::contains($tmp, $lowerKey)) {
                     $tmp = "" . $tmp . "" . $separator . "" . $lowerKey . "";
                     $separator = ";";
                 }

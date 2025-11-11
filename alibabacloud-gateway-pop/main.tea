@@ -303,11 +303,14 @@ function buildCanonicalizedHeaders(headers: map[string]string): string {
   var tmp : string = '';
   for(var key : headersArray) {
     var lowerKey = String.toLower(key);
-    if (!String.contains(tmp, lowerKey)) {
-      tmp = `${tmp},${lowerKey}`;
-      newHeaders[lowerKey] = String.trim(headers[key]);
-    } else {
-      newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(headers[key])}`;
+    var value = headers[key];
+    if (!Util.isUnset(value)) {
+      if (!String.contains(tmp, lowerKey)) {
+        tmp = `${tmp},${lowerKey}`;
+        newHeaders[lowerKey] = String.trim(value);
+      } else {
+        newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(value)}`;
+      }
     }
   }
 
@@ -328,7 +331,8 @@ function getSignedHeaders(headers: map[string]string): [string] {
     var lowerKey = String.toLower(key);
     if (String.hasPrefix(lowerKey, 'x-acs-') || String.equals(lowerKey, 'host')
             || String.equals(lowerKey, 'content-type')) {
-      if (!String.contains(tmp, lowerKey)) {
+      var value = headers[key];
+      if (!Util.isUnset(value) && !String.contains(tmp, lowerKey)) {
         tmp = `${tmp}${separator}${lowerKey}`;
         separator = ';';
       }

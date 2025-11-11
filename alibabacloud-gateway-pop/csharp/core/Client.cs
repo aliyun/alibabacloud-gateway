@@ -579,14 +579,18 @@ namespace AlibabaCloud.GatewayPop
 
             foreach (var key in headersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
-                if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                string value = headers.Get(key);
+                if (!AlibabaCloud.TeaUtil.Common.IsUnset(value))
                 {
-                    tmp = "" + tmp + "," + lowerKey;
-                    newHeaders[lowerKey] = AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(key));
-                }
-                else
-                {
-                    newHeaders[lowerKey] = "" + newHeaders.Get(lowerKey) + "," + AlibabaCloud.DarabonbaString.StringUtil.Trim(headers.Get(key));
+                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    {
+                        tmp = "" + tmp + "," + lowerKey;
+                        newHeaders[lowerKey] = AlibabaCloud.DarabonbaString.StringUtil.Trim(value);
+                    }
+                    else
+                    {
+                        newHeaders[lowerKey] = "" + newHeaders.Get(lowerKey) + "," + AlibabaCloud.DarabonbaString.StringUtil.Trim(value);
+                    }
                 }
             }
             string canonicalizedHeaders = "";
@@ -609,7 +613,8 @@ namespace AlibabaCloud.GatewayPop
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    string value = headers.Get(key);
+                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(value) && !AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
                     {
                         tmp = "" + tmp + separator + lowerKey;
                         separator = ";";

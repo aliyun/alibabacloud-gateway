@@ -464,11 +464,13 @@ class Client(SPIClient):
         tmp = ''
         for key in headers_array:
             lower_key = StringClient.to_lower(key)
-            if not StringClient.contains(tmp, lower_key):
-                tmp = f'{tmp},{lower_key}'
-                new_headers[lower_key] = StringClient.trim(headers.get(key))
-            else:
-                new_headers[lower_key] = f'{new_headers.get(lower_key)},{StringClient.trim(headers.get(key))}'
+            value = headers.get(key)
+            if not UtilClient.is_unset(value):
+                if not StringClient.contains(tmp, lower_key):
+                    tmp = f'{tmp},{lower_key}'
+                    new_headers[lower_key] = StringClient.trim(value)
+                else:
+                    new_headers[lower_key] = f'{new_headers.get(lower_key)},{StringClient.trim(value)}'
         canonicalized_headers = ''
         sorted_headers = self.get_signed_headers(headers)
         for header in sorted_headers:
@@ -486,7 +488,8 @@ class Client(SPIClient):
         for key in sorted_headers_array:
             lower_key = StringClient.to_lower(key)
             if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
+                value = headers.get(key)
+                if not UtilClient.is_unset(value) and not StringClient.contains(tmp, lower_key):
                     tmp = f'{tmp}{separator}{lower_key}'
                     separator = ';'
         return StringClient.split(tmp, ';', None)
