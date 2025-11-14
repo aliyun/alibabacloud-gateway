@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewaySLS",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -93,7 +93,7 @@
   },
   "releaselog": {
     "changelog": [
-      "feat: sls support auto compress."
+      "[java]feat: sls java sdk support PutLogs with protobuf."
     ],
     "compatible": true
   }
