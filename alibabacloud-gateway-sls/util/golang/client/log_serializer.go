@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/gogo/protobuf/proto"
 )
 
 func serializeLogGroupToPB(logGroup interface{}) ([]byte, error) {
@@ -55,15 +57,18 @@ func serializeLogGroupToPB(logGroup interface{}) ([]byte, error) {
 }
 
 func serializeLogItems(lg *LogGroup, logGroup map[string]interface{}) error {
-	logItems, ok := logGroup["LogItems"].([]interface{})
+	// check if logItems is nil, regard as empty logItems if nil
+	logItemsValue, ok := logGroup["LogItems"]
+	if !ok {
+		return nil
+	}
+
+	logItems, ok := logItemsValue.([]interface{})
 	if !ok {
 		return errors.New("fail to serialize LogGroup to protobuf, LogItems field is not a slice")
 	}
 
-	if logItems == nil {
-		return nil
-	}
-
+	// empty logItems is valid
 	for _, logItem := range logItems {
 		if err := serializeLogItem(lg, logItem); err != nil {
 			return err
@@ -73,6 +78,10 @@ func serializeLogItems(lg *LogGroup, logGroup map[string]interface{}) error {
 }
 
 func serializeLogItem(lg *LogGroup, logItem interface{}) error {
+	if logItem == nil {
+		return errors.New("fail to serialize LogGroup to protobuf, logItem is nil")
+	}
+
 	m, ok := logItem.(map[string]interface{})
 	if !ok {
 		return errors.New("fail to serialize LogGroup to protobuf, logItem is not a map")
@@ -80,21 +89,18 @@ func serializeLogItem(lg *LogGroup, logItem interface{}) error {
 
 	logPb := &Log{}
 
-	time, exists, err := getInt(m, "Time")
-	if err != nil {
+	if time, exists, err := getInt(m, "Time"); err != nil {
 		return err
-	}
-	if !exists {
+	} else if !exists {
 		return errors.New("fail to serialize LogGroup to protobuf, log time is missing")
+	} else {
+		logPb.Time = proto.Uint32(uint32(time))
 	}
-	timeUint32 := uint32(time)
-	logPb.Time = &timeUint32
 
 	if timeNano, exists, err := getInt(m, "TimeNs"); err != nil {
 		return err
 	} else if exists {
-		timeNanoUint32 := uint32(timeNano)
-		logPb.TimeNs = &timeNanoUint32
+		logPb.TimeNs = proto.Uint32(uint32(timeNano))
 	}
 
 	if err := serializeLogContents(logPb, m); err != nil {
@@ -105,15 +111,17 @@ func serializeLogItem(lg *LogGroup, logItem interface{}) error {
 }
 
 func serializeLogContents(logPb *Log, logItem map[string]interface{}) error {
-	contents, ok := logItem["Contents"].([]interface{})
+	// check if logContents is nil, regard as empty logContents if nil
+	contentsValue, ok := logItem["Contents"]
+	if !ok {
+		return errors.New("fail to serialize LogGroup to protobuf, log Contents is missing")
+	}
+	contents, ok := contentsValue.([]interface{})
 	if !ok {
 		return errors.New("fail to serialize LogGroup to protobuf, logContents is not a slice")
 	}
 
-	if contents == nil {
-		return nil
-	}
-
+	// empty logContents is valid
 	for _, content := range contents {
 		if err := serializeLogContent(logPb, content); err != nil {
 			return err
@@ -124,6 +132,10 @@ func serializeLogContents(logPb *Log, logItem map[string]interface{}) error {
 }
 
 func serializeLogContent(logPb *Log, content interface{}) error {
+	if content == nil {
+		return errors.New("fail to serialize LogGroup to protobuf, logContent is nil")
+	}
+
 	m, ok := content.(map[string]interface{})
 	if !ok {
 		return errors.New("fail to serialize LogGroup to protobuf, logContent is not a map")
@@ -139,15 +151,18 @@ func serializeLogContent(logPb *Log, content interface{}) error {
 }
 
 func serializeLogTags(lg *LogGroup, logGroup map[string]interface{}) error {
-	logTags, ok := logGroup["LogTags"].([]interface{})
+	// check if logTags is nil, regard as empty logTags if nil
+	logTagsValue, ok := logGroup["LogTags"]
+	if !ok {
+		return nil
+	}
+
+	logTags, ok := logTagsValue.([]interface{})
 	if !ok {
 		return errors.New("fail to serialize LogGroup to protobuf, LogTags field is not a slice")
 	}
 
-	if logTags == nil {
-		return nil
-	}
-
+	// empty logTags is valid
 	for _, logTag := range logTags {
 		if err := serializeLogTag(lg, logTag); err != nil {
 			return err
@@ -157,6 +172,10 @@ func serializeLogTags(lg *LogGroup, logGroup map[string]interface{}) error {
 }
 
 func serializeLogTag(lg *LogGroup, logTag interface{}) error {
+	if logTag == nil {
+		return errors.New("fail to serialize LogGroup to protobuf, logTag is nil")
+	}
+
 	m, ok := logTag.(map[string]interface{})
 	if !ok {
 		return errors.New("fail to serialize LogGroup to protobuf, logTag is not a map")
