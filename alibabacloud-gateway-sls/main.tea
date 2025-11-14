@@ -57,7 +57,12 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   // get body bytes
   var bodyBytes : bytes = null;
   if (!Util.isUnset(request.body)) {
-    if (String.equals(request.reqBodyType, 'json') || String.equals(request.reqBodyType, 'formData')) {
+
+    // PutLogs
+    if (String.equals(request.action, 'PutLogs')) {
+        bodyBytes = SLS_Util.serializeLogGroupToPB(request.body);
+        request.headers['content-type'] = 'application/x-protobuf';
+    } else if (String.equals(request.reqBodyType, 'json') || String.equals(request.reqBodyType, 'formData')) {
       request.headers['content-type'] = 'application/json';
       var bodyStr = Util.toJSONString(request.body);
       bodyBytes = Util.toBytes(bodyStr);

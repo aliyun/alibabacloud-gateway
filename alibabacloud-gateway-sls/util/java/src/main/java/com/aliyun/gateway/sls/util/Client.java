@@ -49,4 +49,8 @@ public class Client {
     public static Long bytesLength(byte[] src) throws Exception {
         return (long) src.length;
     }
+
+    public static byte[] serializeLogGroupToPB(Object logGroup) throws Exception {
+        return LogGroupSerializer.serializeLogGroupToPB(logGroup);
+    }
 }

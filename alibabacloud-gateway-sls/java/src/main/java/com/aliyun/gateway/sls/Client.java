@@ -66,7 +66,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // get body bytes
         byte[] bodyBytes = null;
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
-            if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json") || com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData")) {
+            // PutLogs
+            if (com.aliyun.darabonbastring.Client.equals(request.action, "PutLogs")) {
+                bodyBytes = com.aliyun.gateway.sls.util.Client.serializeLogGroupToPB(request.body);
+                request.headers.put("content-type", "application/x-protobuf");
+            } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "json") || com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData")) {
                 request.headers.put("content-type", "application/json");
                 String bodyStr = com.aliyun.teautil.Common.toJSONString(request.body);
                 bodyBytes = com.aliyun.teautil.Common.toBytes(bodyStr);
