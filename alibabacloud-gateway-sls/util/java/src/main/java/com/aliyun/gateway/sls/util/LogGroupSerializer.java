@@ -38,10 +38,16 @@ public class LogGroupSerializer {
 
     @SuppressWarnings("unchecked")
     private static void serializeLogs(Logs.LogGroup.Builder logs, HashMap<String, Object> body) {
-        ArrayList<Object> logItems = (ArrayList<Object>) body.get("Logs");
+        ArrayList<Object> logItems = (ArrayList<Object>) body.get("LogItems");
+        if (logItems == null) {
+            return;
+        }
         for (Object obj : logItems) {
             Logs.Log.Builder logsBuilder = logs.addLogsBuilder();
             HashMap<String, Object> logItem = (HashMap<String, Object>) obj;
+            if (logItem == null) {
+                continue;
+            }
             logsBuilder.setTime((Integer) logItem.get("Time"));
             ArrayList<Object> contents = (ArrayList<Object>) logItem.get("Contents");
             for (Object content : contents) {
@@ -60,13 +66,14 @@ public class LogGroupSerializer {
     @SuppressWarnings("unchecked")
     private static void serializeLogTags(Logs.LogGroup.Builder logs, HashMap<String, Object> body) {
         ArrayList<Object> logTags = (ArrayList<Object>) body.get("LogTags");
-        if (logTags != null) {
-            for (Object obj : logTags) {
-                HashMap<String, String> tag = (HashMap<String, String>) obj;
-                Logs.LogTag.Builder tagBuilder = logs.addLogTagsBuilder();
-                tagBuilder.setKey(tag.get("Key"));
-                tagBuilder.setValue(tag.get("Value"));
-            }
+        if (logTags == null) {
+            return;
+        }
+        for (Object obj : logTags) {
+            HashMap<String, String> tag = (HashMap<String, String>) obj;
+            Logs.LogTag.Builder tagBuilder = logs.addLogTagsBuilder();
+            tagBuilder.setKey(tag.get("Key"));
+            tagBuilder.setValue(tag.get("Value"));
         }
     }
 
