@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -79,7 +80,7 @@ func serializeLogItem(lg *LogGroup, logItem interface{}) error {
 
 	logPb := &Log{}
 
-	time, exists, err := getInt64(m, "Time")
+	time, exists, err := getInt(m, "Time")
 	if err != nil {
 		return err
 	}
@@ -89,7 +90,7 @@ func serializeLogItem(lg *LogGroup, logItem interface{}) error {
 	timeUint32 := uint32(time)
 	logPb.Time = &timeUint32
 
-	if timeNano, exists, err := getInt64(m, "TimeNs"); err != nil {
+	if timeNano, exists, err := getInt(m, "TimeNs"); err != nil {
 		return err
 	} else if exists {
 		timeNanoUint32 := uint32(timeNano)
@@ -197,11 +198,20 @@ func getString(m map[string]interface{}, key string) (string, error) {
 	return s, nil
 }
 
-func getInt64(m map[string]interface{}, key string) (int64, bool, error) {
+func getInt(m map[string]interface{}, key string) (int64, bool, error) {
 	v, ok := m[key]
 	if !ok {
 		return 0, false, nil
 	}
+
+	if i, ok := v.(json.Number); ok {
+		if vv, err := i.Int64(); err != nil {
+			return 0, false, err
+		} else {
+			return vv, true, nil
+		}
+	}
+
 	if i, ok := v.(int64); ok {
 		return i, true, nil
 	}
