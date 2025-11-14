@@ -148,9 +148,12 @@
             <filters>
                 <filter>
                     <artifact>*:*</artifact>
-                    <excludes>
-                        <exclude>**/pom.xml</exclude>
-                    </excludes>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>**/pom.xml</exclude>
+                  </excludes>
                 </filter>
             </filters>
             </configuration>
