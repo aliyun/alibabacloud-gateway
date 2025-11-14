@@ -128,6 +128,36 @@
           <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <configuration>
+            <relocations>
+                <relocation>
+                    <pattern>com.google.protobuf</pattern>
+                    <shadedPattern>com.aliyun.gateway.sls.thirdparty.com.google.protobuf
+                    </shadedPattern>
+                </relocation>
+            </relocations>
+            <filters>
+                <filter>
+                    <artifact>*:*</artifact>
+                    <excludes>
+                        <exclude>**/pom.xml</exclude>
+                    </excludes>
+                </filter>
+            </filters>
+            </configuration>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
