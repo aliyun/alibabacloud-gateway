@@ -81,3 +81,7 @@ func IsDecompressorAvailable(compressType *string) (_result *bool) {
 func BytesLength(src []byte) (_result *int64) {
 	return tea.Int64(int64(len(src)))
 }
+
+func SerializeLogGroupToPB(logGroup interface{}) (_result []byte, _err error) {
+	return serializeLogGroupToPB(logGroup)
+}
