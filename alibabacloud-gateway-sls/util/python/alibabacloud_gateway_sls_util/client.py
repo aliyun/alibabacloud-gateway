@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Any
 import lz4.block
 import zlib
 import zstd
 import io
+from .log_group_serializer import serialize_log_group_to_pb
 
 # for compressor
 supported_compress_types = ['lz4', 'zstd', 'gzip', 'deflate']
@@ -177,3 +178,15 @@ class Client:
         src: bytes,
     ) -> int:
         return len(src)
+
+    @staticmethod
+    def serialize_log_group_to_pb(
+        log_group: Any,
+    ) -> bytes:
+        return serialize_log_group_to_pb(log_group)
+
+    @staticmethod
+    async def serialize_log_group_to_pb_async(
+        log_group: Any,
+    ) -> bytes:
+        return serialize_log_group_to_pb(log_group)
