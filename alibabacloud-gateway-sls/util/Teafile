@@ -16,7 +16,7 @@
     "ts": "@alicloud/gateway-sls-util:^0.3.0",
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client:v0.3.0",
     "java": "com.aliyun:alibabacloud-gateway-sls-util:0.3.0",
-    "python": "alibabacloud_gateway_sls_util:0.3.0",
+    "python": "alibabacloud_gateway_sls_util:0.4.0",
     "python2": "alibabacloud_gateway_sls_util_py2:0.0.1",
     "csharp": "AlibabaCloud.GatewaySls_Util:0.3.0",
     "php": "alibabacloud/gateway-sls-util:^0.3.0"
