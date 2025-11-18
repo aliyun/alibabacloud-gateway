@@ -17,6 +17,7 @@ from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
 
 
 class Client(SPIClient):
+
     def __init__(self):
         super().__init__()
         self._resp_body_decompress_type = {
@@ -85,7 +86,11 @@ class Client(SPIClient):
         # get body bytes
         body_bytes = None
         if not UtilClient.is_unset(request.body):
-            if StringClient.equals(request.req_body_type, 'json') or StringClient.equals(request.req_body_type, 'formData'):
+            # PutLogs
+            if StringClient.equals(request.action, 'PutLogs'):
+                body_bytes = SLS_UtilClient.serialize_log_group_to_pb(request.body)
+                request.headers['content-type'] = 'application/x-protobuf'
+            elif StringClient.equals(request.req_body_type, 'json') or StringClient.equals(request.req_body_type, 'formData'):
                 request.headers['content-type'] = 'application/json'
                 body_str = UtilClient.to_jsonstring(request.body)
                 body_bytes = UtilClient.to_bytes(body_str)
@@ -156,7 +161,11 @@ class Client(SPIClient):
         # get body bytes
         body_bytes = None
         if not UtilClient.is_unset(request.body):
-            if StringClient.equals(request.req_body_type, 'json') or StringClient.equals(request.req_body_type, 'formData'):
+            # PutLogs
+            if StringClient.equals(request.action, 'PutLogs'):
+                body_bytes = await SLS_UtilClient.serialize_log_group_to_pb_async(request.body)
+                request.headers['content-type'] = 'application/x-protobuf'
+            elif StringClient.equals(request.req_body_type, 'json') or StringClient.equals(request.req_body_type, 'formData'):
                 request.headers['content-type'] = 'application/json'
                 body_str = UtilClient.to_jsonstring(request.body)
                 body_bytes = UtilClient.to_bytes(body_str)
