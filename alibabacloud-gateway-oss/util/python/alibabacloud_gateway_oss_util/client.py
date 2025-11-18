@@ -150,6 +150,7 @@ instanceRegistry["PutObjectLink"] = build_instance_from_model(PutObjectLinkRespo
 instanceRegistry["StartDataLakeStorageTransferJob"] = build_instance_from_model(StartDataLakeStorageTransferJobResponseBody)
 instanceRegistry["StartPartUpload"] = build_instance_from_model(StartPartUploadResponseBody)
 instanceRegistry["UploadPartCopy"] = build_instance_from_model(UploadPartCopyResponseBody)
+instanceRegistry["GetBucketOverwriteConfig"] = build_instance_from_model(GetBucketOverwriteConfigResponseBody)
 
 
 # for hcs-mgw

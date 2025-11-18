@@ -34960,6 +34960,346 @@ class WriteGetObjectResponseResponse(TeaModel):
             self.status_code = m.get('statusCode')
         return self
 
+
+class OverwriteConfigurationRulePrincipals(TeaModel):
+    def __init__(
+        self,
+        principal: List[str] = None,
+    ):
+        self.principal = principal
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.principal is not None:
+            result['Principal'] = self.principal
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('Principal') is not None:
+            self.principal = m.get('Principal')
+
+        return self
+
+
+class OverwriteConfigurationRule(TeaModel):
+    def __init__(
+        self,
+        action: str = None,
+        id: str = None,
+        prefix: str = None,
+        principals: OverwriteConfigurationRulePrincipals = None,
+        suffix: str = None,
+    ):
+        self.action = action
+        self.id = id
+        self.prefix = prefix
+        self.principals = principals
+        self.suffix = suffix
+
+    def validate(self):
+        if self.principals:
+            self.principals.validate()
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.action is not None:
+            result['Action'] = self.action
+
+        if self.id is not None:
+            result['ID'] = self.id
+
+        if self.prefix is not None:
+            result['Prefix'] = self.prefix
+
+        if self.principals is not None:
+            result['Principals'] = self.principals.to_map()
+
+        if self.suffix is not None:
+            result['Suffix'] = self.suffix
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('Action') is not None:
+            self.action = m.get('Action')
+
+        if m.get('ID') is not None:
+            self.id = m.get('ID')
+
+        if m.get('Prefix') is not None:
+            self.prefix = m.get('Prefix')
+
+        if m.get('Principals') is not None:
+            temp_model = OverwriteConfigurationRulePrincipals()
+            self.principals = temp_model.from_map(m.get('Principals'))
+
+        if m.get('Suffix') is not None:
+            self.suffix = m.get('Suffix')
+
+        return self
+
+
+class OverwriteConfiguration(TeaModel):
+    def __init__(
+        self,
+        rule: List[OverwriteConfigurationRule] = None,
+    ):
+        self.rule = rule
+
+    def validate(self):
+        if self.rule:
+            for v1 in self.rule:
+                 if v1:
+                    v1.validate()
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        result['Rule'] = []
+        if self.rule is not None:
+            for k1 in self.rule:
+                result['Rule'].append(k1.to_map() if k1 else None)
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        self.rule = []
+        if m.get('Rule') is not None:
+            for k1 in m.get('Rule'):
+                temp_model = OverwriteConfigurationRule()
+                self.rule.append(temp_model.from_map(k1))
+
+        return self
+
+
+class GetBucketOverwriteConfigResponseBody(TeaModel):
+    def __init__(
+        self,
+        overwrite_configuration: OverwriteConfiguration = None,
+    ):
+        self.overwrite_configuration = overwrite_configuration
+
+    def validate(self):
+        if self.overwrite_configuration:
+            self.overwrite_configuration.validate()
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.overwrite_configuration is not None:
+            result['OverwriteConfiguration'] = self.overwrite_configuration.to_map()
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('OverwriteConfiguration') is not None:
+            temp_model = OverwriteConfiguration()
+            self.overwrite_configuration = temp_model.from_map(m.get('OverwriteConfiguration'))
+
+        return self
+
+
+class GetBucketOverwriteConfigResponse(TeaModel):
+    def __init__(
+        self,
+        headers: Dict[str, str] = None,
+        status_code: int = None,
+        body: GetBucketOverwriteConfigResponseBody = None,
+    ):
+        self.headers = headers
+        self.status_code = status_code
+        self.body = body
+
+    def validate(self):
+        if self.body:
+            self.body.validate()
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.headers is not None:
+            result['headers'] = self.headers
+
+        if self.status_code is not None:
+            result['statusCode'] = self.status_code
+
+        if self.body is not None:
+            result['body'] = self.body.to_map()
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('headers') is not None:
+            self.headers = m.get('headers')
+
+        if m.get('statusCode') is not None:
+            self.status_code = m.get('statusCode')
+
+        if m.get('body') is not None:
+            temp_model = GetBucketOverwriteConfigResponseBody()
+            self.body = temp_model.from_map(m.get('body'))
+
+        return self
+
+
+class PutBucketOverwriteConfigRequest(TeaModel):
+    def __init__(
+        self,
+        overwrite_configuration: OverwriteConfiguration = None,
+    ):
+        self.overwrite_configuration = overwrite_configuration
+
+    def validate(self):
+        if self.overwrite_configuration:
+            self.overwrite_configuration.validate()
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.overwrite_configuration is not None:
+            result['OverwriteConfiguration'] = self.overwrite_configuration.to_map()
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('OverwriteConfiguration') is not None:
+            temp_model = OverwriteConfiguration()
+            self.overwrite_configuration = temp_model.from_map(m.get('OverwriteConfiguration'))
+
+        return self
+
+
+class PutBucketOverwriteConfigResponse(TeaModel):
+    def __init__(
+        self,
+        headers: Dict[str, str] = None,
+        status_code: int = None,
+    ):
+        self.headers = headers
+        self.status_code = status_code
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.headers is not None:
+            result['headers'] = self.headers
+
+        if self.status_code is not None:
+            result['statusCode'] = self.status_code
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('headers') is not None:
+            self.headers = m.get('headers')
+
+        if m.get('statusCode') is not None:
+            self.status_code = m.get('statusCode')
+
+        return self
+
+
+class DeleteBucketOverwriteConfigResponse(TeaModel):
+    def __init__(
+        self,
+        headers: Dict[str, str] = None,
+        status_code: int = None,
+    ):
+        self.headers = headers
+        self.status_code = status_code
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.headers is not None:
+            result['headers'] = self.headers
+
+        if self.status_code is not None:
+            result['statusCode'] = self.status_code
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('headers') is not None:
+            self.headers = m.get('headers')
+
+        if m.get('statusCode') is not None:
+            self.status_code = m.get('statusCode')
+
+        return self
+
+
+class SealAppendObjectResponse(TeaModel):
+    def __init__(
+        self,
+        headers: Dict[str, str] = None,
+        status_code: int = None,
+    ):
+        self.headers = headers
+        self.status_code = status_code
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.headers is not None:
+            result['headers'] = self.headers
+
+        if self.status_code is not None:
+            result['statusCode'] = self.status_code
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('headers') is not None:
+            self.headers = m.get('headers')
+
+        if m.get('statusCode') is not None:
+            self.status_code = m.get('statusCode')
+
+        return self
+
 # ================================================================== for hcs-mgw ===========================================================
 
 class AddressDetail(TeaModel):
@@ -38809,5 +39149,3 @@ class VerifyAddressResponse(TeaModel):
             temp_model = VerifyAddressResponseBody()
             self.body = temp_model.from_map(m['body'])
         return self
-
-
