@@ -85,7 +85,15 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	// get body bytes
 	var bodyBytes []byte
 	if !tea.BoolValue(util.IsUnset(request.Body)) {
-		if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) || tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
+		// PutLogs
+		if tea.BoolValue(string_.Equals(request.Action, tea.String("PutLogs"))) {
+			bodyBytes, _err = sls_util.SerializeLogGroupToPB(request.Body)
+			if _err != nil {
+				return _err
+			}
+
+			request.Headers["content-type"] = tea.String("application/x-protobuf")
+		} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("json"))) || tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) {
 			request.Headers["content-type"] = tea.String("application/json")
 			bodyStr := util.ToJSONString(request.Body)
 			bodyBytes = util.ToBytes(bodyStr)
