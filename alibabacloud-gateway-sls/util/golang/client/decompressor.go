@@ -3,7 +3,7 @@ package client
 import (
 	"bytes"
 	"compress/zlib"
-	"io"
+	"io/ioutil"
 
 	"github.com/klauspost/compress/zstd"
 	"github.com/pierrec/lz4"
@@ -41,7 +41,7 @@ func (d *gzipDecompressor) decompress(src []byte, bodyRawSize int) ([]byte, erro
 		return nil, err
 	}
 	defer reader.Close()
-	return io.ReadAll(reader)
+	return ioutil.ReadAll(reader)
 }
 
 type zstdDecompressor struct {
