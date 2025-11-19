@@ -2,7 +2,7 @@ package client
 
 import (
 	"bytes"
-	"io"
+	"io/ioutil"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -21,7 +21,7 @@ func testData(data []byte, t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		decompressed, err := io.ReadAll(r2)
+		decompressed, err := ioutil.ReadAll(r2)
 		if err != nil {
 			t.Fatal(err)
 		}
