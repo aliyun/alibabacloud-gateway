@@ -330,7 +330,7 @@ export default class Client extends SPI {
       let lowerKey = String.toLower(key);
       let value = headers[key];
       if (!Util.isUnset(value)) {
-        if (!String.contains(tmp, lowerKey)) {
+        if (!String.contains(tmp, lowerKey) || String.equals(lowerKey, "host")) {
           tmp = `${tmp},${lowerKey}`;
           newHeaders[lowerKey] = String.trim(value);
         } else {

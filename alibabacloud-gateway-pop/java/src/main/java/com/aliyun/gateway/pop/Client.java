@@ -320,7 +320,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
             String value = headers.get(key);
             if (!com.aliyun.teautil.Common.isUnset(value)) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
+                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey) || com.aliyun.darabonbastring.Client.equals(lowerKey, "host")) {
                     tmp = "" + tmp + "," + lowerKey + "";
                     newHeaders.put(lowerKey, com.aliyun.darabonbastring.Client.trim(value));
                 } else {

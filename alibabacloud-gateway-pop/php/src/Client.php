@@ -398,7 +398,7 @@ class Client extends DarabonbaGatewaySpiClient
             $lowerKey = StringUtil::toLower($key);
             $value = @$headers[$key];
             if (!Utils::isUnset($value)) {
-                if (!StringUtil::contains($tmp, $lowerKey)) {
+                if (!StringUtil::contains($tmp, $lowerKey) || StringUtil::equals($lowerKey, "host")) {
                     $tmp = "" . $tmp . "," . $lowerKey . "";
                     $newHeaders[$lowerKey] = StringUtil::trim($value);
                 } else {

@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_pop.
 
-Created on 11/11/2025
+Created on 25/11/2025
 
 @author: Alibaba Cloud SDK
 """
@@ -70,19 +70,17 @@ setup(
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     classifiers=(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
         "Topic :: Software Development"
     )
 )

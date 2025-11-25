@@ -425,7 +425,7 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 		lowerKey := string_.ToLower(key)
 		value := headers[tea.StringValue(key)]
 		if !tea.BoolValue(util.IsUnset(value)) {
-			if !tea.BoolValue(string_.Contains(tmp, lowerKey)) {
+			if !tea.BoolValue(string_.Contains(tmp, lowerKey)) || tea.BoolValue(string_.Equals(lowerKey, tea.String("host"))) {
 				tmp = tea.String(tea.StringValue(tmp) + "," + tea.StringValue(lowerKey))
 				newHeaders[tea.StringValue(lowerKey)] = string_.Trim(value)
 			} else {

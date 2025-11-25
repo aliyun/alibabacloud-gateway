@@ -466,7 +466,7 @@ class Client(SPIClient):
             lower_key = StringClient.to_lower(key)
             value = headers.get(key)
             if not UtilClient.is_unset(value):
-                if not StringClient.contains(tmp, lower_key):
+                if not StringClient.contains(tmp, lower_key) or StringClient.equals(lower_key, 'host'):
                     tmp = f'{tmp},{lower_key}'
                     new_headers[lower_key] = StringClient.trim(value)
                 else:

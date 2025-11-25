@@ -582,7 +582,7 @@ namespace AlibabaCloud.GatewayPop
                 string value = headers.Get(key);
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(value))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey) || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host"))
                     {
                         tmp = "" + tmp + "," + lowerKey;
                         newHeaders[lowerKey] = AlibabaCloud.DarabonbaString.StringUtil.Trim(value);
