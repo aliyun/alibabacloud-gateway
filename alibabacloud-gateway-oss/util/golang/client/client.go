@@ -10,6 +10,7 @@ package client
 import (
 	"reflect"
 
+	hcs_mgw_models "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client/hcs_mgw_models"
 	xml "github.com/alibabacloud-go/tea-xml/service"
 )
 
@@ -133,21 +134,22 @@ func init() {
 	typeRegistry["StartDataLakeStorageTransferJob"] = reflect.TypeOf(StartDataLakeStorageTransferJobResponseBody{})
 	typeRegistry["StartPartUpload"] = reflect.TypeOf(StartPartUploadResponseBody{})
 	typeRegistry["UploadPartCopy"] = reflect.TypeOf(UploadPartCopyResponseBody{})
+	typeRegistry["GetBucketOverwriteConfig"] = reflect.TypeOf(GetBucketOverwriteConfigResponseBody{})
 
 	// for hcs-mgw
-	typeRegistry["GetAddress"] = reflect.TypeOf(GetAddressResponseBody{})
-	typeRegistry["GetAgent"] = reflect.TypeOf(GetAgentResponseBody{})
-	typeRegistry["GetAgentStatus"] = reflect.TypeOf(GetAgentStatusResponseBody{})
-	typeRegistry["GetJob"] = reflect.TypeOf(GetJobResponseBody{})
-	typeRegistry["GetJobResult"] = reflect.TypeOf(GetJobResultResponseBody{})
-	typeRegistry["GetReport"] = reflect.TypeOf(GetReportResponseBody{})
-	typeRegistry["GetTunnel"] = reflect.TypeOf(GetTunnelResponseBody{})
-	typeRegistry["ListAddress"] = reflect.TypeOf(ListAddressResponseBody{})
-	typeRegistry["ListAgent"] = reflect.TypeOf(ListAgentResponseBody{})
-	typeRegistry["ListJob"] = reflect.TypeOf(ListJobResponseBody{})
-	typeRegistry["ListJobHistory"] = reflect.TypeOf(ListJobHistoryResponseBody{})
-	typeRegistry["ListTunnel"] = reflect.TypeOf(ListTunnelResponseBody{})
-	typeRegistry["VerifyAddress"] = reflect.TypeOf(VerifyAddressResponseBody{})
+	typeRegistry["GetAddress"] = reflect.TypeOf(hcs_mgw_models.GetAddressResponseBody{})
+	typeRegistry["GetAgent"] = reflect.TypeOf(hcs_mgw_models.GetAgentResponseBody{})
+	typeRegistry["GetAgentStatus"] = reflect.TypeOf(hcs_mgw_models.GetAgentStatusResponseBody{})
+	typeRegistry["GetJob"] = reflect.TypeOf(hcs_mgw_models.GetJobResponseBody{})
+	typeRegistry["GetJobResult"] = reflect.TypeOf(hcs_mgw_models.GetJobResultResponseBody{})
+	typeRegistry["GetReport"] = reflect.TypeOf(hcs_mgw_models.GetReportResponseBody{})
+	typeRegistry["GetTunnel"] = reflect.TypeOf(hcs_mgw_models.GetTunnelResponseBody{})
+	typeRegistry["ListAddress"] = reflect.TypeOf(hcs_mgw_models.ListAddressResponseBody{})
+	typeRegistry["ListAgent"] = reflect.TypeOf(hcs_mgw_models.ListAgentResponseBody{})
+	typeRegistry["ListJob"] = reflect.TypeOf(hcs_mgw_models.ListJobResponseBody{})
+	typeRegistry["ListJobHistory"] = reflect.TypeOf(hcs_mgw_models.ListJobHistoryResponseBody{})
+	typeRegistry["ListTunnel"] = reflect.TypeOf(hcs_mgw_models.ListTunnelResponseBody{})
+	typeRegistry["VerifyAddress"] = reflect.TypeOf(hcs_mgw_models.VerifyAddressResponseBody{})
 }
 
 func ParseXml(bodyStr *string, apiName *string) (_result interface{}, _err error) {

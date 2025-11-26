@@ -10,7 +10,11 @@ public class Client {
         try {
             try {
                 bodyClass = Class.forName("com.aliyun.gateway.oss.util.models." + apiName + "ResponseBody");
-            } catch (ClassNotFoundException e) {}
+            } catch (ClassNotFoundException e) {
+                try {
+                    bodyClass = Class.forName("com.aliyun.gateway.oss.util.hcs_mgw_models." + apiName + "ResponseBody");
+                } catch (ClassNotFoundException e) {}
+            }
             return com.aliyun.teaxml.Client.parseXml(bodyStr, bodyClass); 
         } catch (Exception e) {
             throw new TeaException(TeaConverter.buildMap(

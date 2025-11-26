@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.aliyun</groupId>
   <artifactId>alibabacloud-gateway-oss</artifactId>
-  <version>0.0.20</version>
+  <version>0.0.21</version>
   <packaging>jar</packaging>
   <name>alibabacloud-gateway-oss</name>
   <description>
@@ -119,7 +119,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>alibabacloud-gateway-oss-util</artifactId>
-      <version>0.0.8</version>
+      <version>0.0.9</version>
     </dependency>
   </dependencies>
   <build>
