@@ -50,6 +50,7 @@ REQUIRES = [
     "alibabacloud_darabonba_signature_util>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_time>=0.0.1, <1.0.0",
     "alibabacloud_gateway_oss_util>=0.0.4, <1.0.0",
+    "darabonba-core>=1.0.4, <2.0.0"
 ]
 
 LONG_DESCRIPTION = ''

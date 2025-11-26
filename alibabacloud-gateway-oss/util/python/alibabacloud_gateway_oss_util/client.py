@@ -4,14 +4,14 @@
 # import alibabacloud_tea_xml.client
 
 from Tea.model import TeaModel
-from typing import Dict
+from typing import Dict, get_type_hints
 from xml.etree import ElementTree
 from collections import defaultdict
 import inspect
 from typing_extensions import get_origin, get_args
 from Tea.exceptions import RequiredArgumentException
 from .structs import *
-
+from alibabacloud_hcs_mgw20240626 import models as hcs_mgw_models
 
 basic_instance = {}
 basic_instance[str] = ''
@@ -22,16 +22,16 @@ basic_instance[Dict[str, str]] = {'':''}
 def build_instance_from_model(model):
     if model in basic_instance:
         return basic_instance[model]
-    sig = inspect.signature(model.__init__)
     params = {}
-    for para_name, param in sig.parameters.items():
+    type_hints = get_type_hints(model.__init__, globalns=globals(), localns=locals())
+    for para_name, param in type_hints.items():
         if para_name == "self":
             continue
-        origin_type = get_origin(param.annotation)
+        origin_type = get_origin(param)
         if origin_type is not None and issubclass(origin_type, list):
-            params[para_name] = [build_instance_from_model(get_args(param.annotation)[0])]
+            params[para_name] = [build_instance_from_model(get_args(param)[0])]
         else:
-            params[para_name] = build_instance_from_model(param.annotation)
+            params[para_name] = build_instance_from_model(param)
     return model(**params)
 
 
@@ -154,24 +154,27 @@ instanceRegistry["GetBucketOverwriteConfig"] = build_instance_from_model(GetBuck
 
 
 # for hcs-mgw
-instanceRegistry["GetAddress"] = build_instance_from_model(GetAddressResponseBody)
-instanceRegistry["GetAgent"] = build_instance_from_model(GetAgentResponseBody)
-instanceRegistry["GetAgentStatus"] = build_instance_from_model(GetAgentStatusResponseBody)
-instanceRegistry["GetJob"] = build_instance_from_model(GetJobResponseBody)
-instanceRegistry["GetJobResult"] = build_instance_from_model(GetJobResultResponseBody)
-instanceRegistry["GetReport"] = build_instance_from_model(GetReportResponseBody)
-instanceRegistry["GetTunnel"] = build_instance_from_model(GetTunnelResponseBody)
-instanceRegistry["ListAddress"] = build_instance_from_model(ListAddressResponseBody)
-instanceRegistry["ListAgent"] = build_instance_from_model(ListAgentResponseBody)
-instanceRegistry["ListJob"] = build_instance_from_model(ListJobResponseBody)
-instanceRegistry["ListJobHistory"] = build_instance_from_model(ListJobHistoryResponseBody)
-instanceRegistry["ListTunnel"] = build_instance_from_model(ListTunnelResponseBody)
-instanceRegistry["VerifyAddress"] = build_instance_from_model(VerifyAddressResponseBody)
+main_models = hcs_mgw_models
+instanceRegistry["GetAddress"] = build_instance_from_model(main_models.GetAddressResponseBody)
+instanceRegistry["GetAgent"] = build_instance_from_model(main_models.GetAgentResponseBody)
+instanceRegistry["GetAgentStatus"] = build_instance_from_model(main_models.GetAgentStatusResponseBody)
+instanceRegistry["GetJob"] = build_instance_from_model(main_models.GetJobResponseBody)
+instanceRegistry["GetJobResult"] = build_instance_from_model(main_models.GetJobResultResponseBody)
+instanceRegistry["GetReport"] = build_instance_from_model(main_models.GetReportResponseBody)
+instanceRegistry["GetTunnel"] = build_instance_from_model(main_models.GetTunnelResponseBody)
+instanceRegistry["ListAddress"] = build_instance_from_model(main_models.ListAddressResponseBody)
+instanceRegistry["ListAgent"] = build_instance_from_model(main_models.ListAgentResponseBody)
+instanceRegistry["ListJob"] = build_instance_from_model(main_models.ListJobResponseBody)
+instanceRegistry["ListJobHistory"] = build_instance_from_model(main_models.ListJobHistoryResponseBody)
+instanceRegistry["ListTunnel"] = build_instance_from_model(main_models.ListTunnelResponseBody)
+instanceRegistry["VerifyAddress"] = build_instance_from_model(main_models.VerifyAddressResponseBody)
 
 
 class Client:
     @staticmethod
     def __parse_xml_impl(t, m):
+        if t.tag not in m:
+            return {}
         d = {t.tag: {} if t.attrib else None}
         children = list(t)
         if children:
