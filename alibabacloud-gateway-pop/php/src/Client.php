@@ -421,15 +421,21 @@ class Client extends DarabonbaGatewaySpiClient
     public function getSignedHeaders($headers)
     {
         $headersArray = MapUtil::keySet($headers);
-        $sortedHeadersArray = ArrayUtil::ascSort($headersArray);
+        $newHeadersArray = [];
+        foreach ($headersArray as $key) {
+            $lowerKey = StringUtil::toLower($key);
+            $value = @$headers[$key];
+            if (!Utils::isUnset($value)) {
+                ArrayUtil::append($newHeadersArray, $lowerKey);
+            }
+        }
+        $sortedHeadersArray = ArrayUtil::ascSort($newHeadersArray);
         $tmp = "";
         $separator = "";
         foreach ($sortedHeadersArray as $key) {
-            $lowerKey = StringUtil::toLower($key);
-            if (StringUtil::hasPrefix($lowerKey, "x-acs-") || StringUtil::equals($lowerKey, "host") || StringUtil::equals($lowerKey, "content-type")) {
-                $value = @$headers[$key];
-                if (!Utils::isUnset($value) && !StringUtil::contains($tmp, $lowerKey)) {
-                    $tmp = "" . $tmp . "" . $separator . "" . $lowerKey . "";
+            if (StringUtil::hasPrefix($key, "x-acs-") || StringUtil::equals($key, "host") || StringUtil::equals($key, "content-type")) {
+                if (!StringUtil::contains($tmp, $key)) {
+                    $tmp = "" . $tmp . "" . $separator . "" . $key . "";
                     $separator = ";";
                 }
             }

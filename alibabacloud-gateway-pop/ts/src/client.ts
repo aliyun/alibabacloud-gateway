@@ -351,16 +351,24 @@ export default class Client extends SPI {
 
   getSignedHeaders(headers: {[key: string ]: string}): string[] {
     let headersArray : string[] = Map.keySet(headers);
-    let sortedHeadersArray = Array.ascSort(headersArray);
+    let newHeadersArray : string[] = [ ];
+
+    for (let key of headersArray) {
+      let lowerKey = String.toLower(key);
+      let value = headers[key];
+      if (!Util.isUnset(value)) {
+        Array.append(newHeadersArray, lowerKey);
+      }
+
+    }
+    let sortedHeadersArray = Array.ascSort(newHeadersArray);
     let tmp : string = "";
     let separator : string = "";
 
     for (let key of sortedHeadersArray) {
-      let lowerKey = String.toLower(key);
-      if (String.hasPrefix(lowerKey, "x-acs-") || String.equals(lowerKey, "host") || String.equals(lowerKey, "content-type")) {
-        let value = headers[key];
-        if (!Util.isUnset(value) && !String.contains(tmp, lowerKey)) {
-          tmp = `${tmp}${separator}${lowerKey}`;
+      if (String.hasPrefix(key, "x-acs-") || String.equals(key, "host") || String.equals(key, "content-type")) {
+        if (!String.contains(tmp, key)) {
+          tmp = `${tmp}${separator}${key}`;
           separator = ";";
         }
 
