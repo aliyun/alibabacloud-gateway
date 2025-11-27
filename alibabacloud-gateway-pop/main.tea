@@ -324,16 +324,22 @@ function buildCanonicalizedHeaders(headers: map[string]string): string {
 
 function getSignedHeaders(headers: map[string]string): [string] {
   var headersArray : [string] = Map.keySet(headers);
-  var sortedHeadersArray = Array.ascSort(headersArray);
+  var newHeadersArray : [string] = [];
+  for(var key : headersArray) {
+    var lowerKey = String.toLower(key);
+    var value = headers[key];
+    if (!Util.isUnset(value)) {
+      Array.append(newHeadersArray, lowerKey);
+    }
+  }
+  var sortedHeadersArray = Array.ascSort(newHeadersArray);
   var tmp : string = '';
   var separator : string = '';
   for(var key : sortedHeadersArray) {
-    var lowerKey = String.toLower(key);
-    if (String.hasPrefix(lowerKey, 'x-acs-') || String.equals(lowerKey, 'host')
-            || String.equals(lowerKey, 'content-type')) {
-      var value = headers[key];
-      if (!Util.isUnset(value) && !String.contains(tmp, lowerKey)) {
-        tmp = `${tmp}${separator}${lowerKey}`;
+    if (String.hasPrefix(key, 'x-acs-') || String.equals(key, 'host')
+            || String.equals(key, 'content-type')) {
+      if (!String.contains(tmp, key)) {
+        tmp = `${tmp}${separator}${key}`;
         separator = ';';
       }
     }

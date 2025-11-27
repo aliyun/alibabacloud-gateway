@@ -482,14 +482,18 @@ class Client(SPIClient):
         headers: Dict[str, str],
     ) -> List[str]:
         headers_array = MapClient.key_set(headers)
-        sorted_headers_array = ArrayClient.asc_sort(headers_array)
+        new_headers_array = []
+        for key in headers_array:
+            lower_key = StringClient.to_lower(key)
+            value = headers.get(key)
+            if not UtilClient.is_unset(value):
+                new_headers_array.append(lower_key)
+        sorted_headers_array = ArrayClient.asc_sort(new_headers_array)
         tmp = ''
         separator = ''
         for key in sorted_headers_array:
-            lower_key = StringClient.to_lower(key)
-            if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                value = headers.get(key)
-                if not UtilClient.is_unset(value) and not StringClient.contains(tmp, lower_key):
-                    tmp = f'{tmp}{separator}{lower_key}'
+            if StringClient.has_prefix(key, 'x-acs-') or StringClient.equals(key, 'host') or StringClient.equals(key, 'content-type'):
+                if not StringClient.contains(tmp, key):
+                    tmp = f'{tmp}{separator}{key}'
                     separator = ';'
         return StringClient.split(tmp, ';', None)

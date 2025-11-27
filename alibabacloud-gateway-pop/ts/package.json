@@ -37,5 +37,6 @@
   "files": [
     "dist",
     "src"
-  ]
+  ],
+  "repository": "git@github.com:aliyun/alibabacloud-gateway.git"
 }
