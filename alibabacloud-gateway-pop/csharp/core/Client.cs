@@ -605,18 +605,28 @@ namespace AlibabaCloud.GatewayPop
         public List<string> GetSignedHeaders(Dictionary<string, string> headers)
         {
             List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
-            List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
+            List<string> newHeadersArray = new List<string>
+            {
+            };
+
+            foreach (var key in headersArray) {
+                string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
+                string value = headers.Get(key);
+                if (!AlibabaCloud.TeaUtil.Common.IsUnset(value))
+                {
+                    AlibabaCloud.DarabonbaArray.ArrayUtil.Append(newHeadersArray, lowerKey);
+                }
+            }
+            List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(newHeadersArray);
             string tmp = "";
             string separator = "";
 
             foreach (var key in sortedHeadersArray) {
-                string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
-                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(key, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(key, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(key, "content-type"))
                 {
-                    string value = headers.Get(key);
-                    if (!AlibabaCloud.TeaUtil.Common.IsUnset(value) && !AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, key))
                     {
-                        tmp = "" + tmp + separator + lowerKey;
+                        tmp = "" + tmp + separator + key;
                         separator = ";";
                     }
                 }

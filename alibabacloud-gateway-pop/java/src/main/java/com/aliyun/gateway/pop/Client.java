@@ -340,15 +340,22 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public java.util.List<String> getSignedHeaders(java.util.Map<String, String> headers) throws Exception {
         java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(headers);
-        java.util.List<String> sortedHeadersArray = com.aliyun.darabonba.array.Client.ascSort(headersArray);
+        java.util.List<String> newHeadersArray = new java.util.ArrayList<>();
+        for (String key : headersArray) {
+            String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
+            String value = headers.get(key);
+            if (!com.aliyun.teautil.Common.isUnset(value)) {
+                com.aliyun.darabonba.array.Client.append(newHeadersArray, lowerKey);
+            }
+
+        }
+        java.util.List<String> sortedHeadersArray = com.aliyun.darabonba.array.Client.ascSort(newHeadersArray);
         String tmp = "";
         String separator = "";
         for (String key : sortedHeadersArray) {
-            String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
-            if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-acs-") || com.aliyun.darabonbastring.Client.equals(lowerKey, "host") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-type")) {
-                String value = headers.get(key);
-                if (!com.aliyun.teautil.Common.isUnset(value) && !com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
-                    tmp = "" + tmp + "" + separator + "" + lowerKey + "";
+            if (com.aliyun.darabonbastring.Client.hasPrefix(key, "x-acs-") || com.aliyun.darabonbastring.Client.equals(key, "host") || com.aliyun.darabonbastring.Client.equals(key, "content-type")) {
+                if (!com.aliyun.darabonbastring.Client.contains(tmp, key)) {
+                    tmp = "" + tmp + "" + separator + "" + key + "";
                     separator = ";";
                 }
 
