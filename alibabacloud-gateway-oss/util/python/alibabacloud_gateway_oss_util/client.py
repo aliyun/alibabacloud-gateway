@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-# -*- coding: utf-8 -*-
-# import alibabacloud_tea_xml.client
 
 from Tea.model import TeaModel
-from typing import Dict, get_type_hints
+from typing import Dict, Union, get_type_hints
 from xml.etree import ElementTree
 from collections import defaultdict
-import inspect
 from typing_extensions import get_origin, get_args
 from Tea.exceptions import RequiredArgumentException
 from .structs import *
@@ -19,6 +16,12 @@ basic_instance[int] = 0
 basic_instance[bool] = False
 basic_instance[Dict[str, str]] = {'':''}
 
+def get_origin_type(tp):
+    if get_origin(tp) is Union:
+        args = [t for t in get_args(tp) if t is not type(None)]
+        return args[0] if args else None
+    return get_origin(tp)
+
 def build_instance_from_model(model):
     if model in basic_instance:
         return basic_instance[model]
@@ -27,11 +30,19 @@ def build_instance_from_model(model):
     for para_name, param in type_hints.items():
         if para_name == "self":
             continue
-        origin_type = get_origin(param)
-        if origin_type is not None and issubclass(origin_type, list):
-            params[para_name] = [build_instance_from_model(get_args(param)[0])]
-        else:
+        origin_type = get_origin_type(param)
+
+        # for Python >= 3.10
+        if origin_type is None:
             params[para_name] = build_instance_from_model(param)
+        elif isinstance(origin_type, type) and issubclass(origin_type, list):
+            params[para_name] = [build_instance_from_model(get_args(param)[0])]
+
+        # for Python <= 3.9
+        elif get_origin(origin_type) is list:
+            params[para_name] = [build_instance_from_model(get_args(origin_type)[0])]
+        else:
+            params[para_name] = build_instance_from_model(origin_type)
     return model(**params)
 
 
