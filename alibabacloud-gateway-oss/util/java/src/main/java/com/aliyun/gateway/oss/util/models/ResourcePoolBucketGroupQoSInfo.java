@@ -8,8 +8,8 @@ public class ResourcePoolBucketGroupQoSInfo extends TeaModel {
      * <strong>example:</strong>
      * <p>test-group</p>
      */
-    @NameInMap("GroupName")
-    public String groupName;
+    @NameInMap("BucketGroup")
+    public String bucketGroup;
 
     @NameInMap("QoSConfiguration")
     public QoSConfiguration qoSConfiguration;
@@ -19,12 +19,12 @@ public class ResourcePoolBucketGroupQoSInfo extends TeaModel {
         return TeaModel.build(map, self);
     }
 
-    public ResourcePoolBucketGroupQoSInfo setGroupName(String groupName) {
-        this.groupName = groupName;
+    public ResourcePoolBucketGroupQoSInfo setBucketGroup(String bucketGroup) {
+        this.bucketGroup = bucketGroup;
         return this;
     }
-    public String getGroupName() {
-        return this.groupName;
+    public String getBucketGroup() {
+        return this.bucketGroup;
     }
 
     public ResourcePoolBucketGroupQoSInfo setQoSConfiguration(QoSConfiguration qoSConfiguration) {

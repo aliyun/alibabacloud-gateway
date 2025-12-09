@@ -4,9 +4,21 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ListUserDataRedundancyTransitionRequest extends TeaModel {
+    /**
+     * <p>Specifies that the List operation should start from this token.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>abc</p>
+     */
     @NameInMap("continuation-token")
     public String continuationToken;
 
+    /**
+     * <p>Limits the maximum number of tasks returned in this request. Value range: 1-100.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>10</p>
+     */
     @NameInMap("max-keys")
     public Integer maxKeys;
 

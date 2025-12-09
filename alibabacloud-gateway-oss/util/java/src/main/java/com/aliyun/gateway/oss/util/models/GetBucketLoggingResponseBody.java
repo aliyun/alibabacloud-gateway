@@ -23,26 +23,4 @@ public class GetBucketLoggingResponseBody extends TeaModel {
         return this.bucketLoggingStatus;
     }
 
-    public static class BucketLoggingStatus extends TeaModel {
-        /**
-         * <p>Indicates the container used to store access logging information. This element is returned if it is enabled and is not returned if it is disabled.</p>
-         */
-        @NameInMap("LoggingEnabled")
-        public LoggingEnabled loggingEnabled;
-
-        public static BucketLoggingStatus build(java.util.Map<String, ?> map) throws Exception {
-            BucketLoggingStatus self = new BucketLoggingStatus();
-            return TeaModel.build(map, self);
-        }
-
-        public BucketLoggingStatus setLoggingEnabled(LoggingEnabled loggingEnabled) {
-            this.loggingEnabled = loggingEnabled;
-            return this;
-        }
-        public LoggingEnabled getLoggingEnabled() {
-            return this.loggingEnabled;
-        }
-
-    }
-
 }

@@ -4,6 +4,9 @@ package com.aliyun.gateway.oss.util.models;
 import com.aliyun.tea.*;
 
 public class ListUserDataRedundancyTransitionResponseBody extends TeaModel {
+    /**
+     * <p>Container for listing storage redundancy transition tasks.</p>
+     */
     @NameInMap("ListBucketDataRedundancyTransition")
     public ListBucketDataRedundancyTransition listBucketDataRedundancyTransition;
 
@@ -21,12 +24,29 @@ public class ListUserDataRedundancyTransitionResponseBody extends TeaModel {
     }
 
     public static class ListBucketDataRedundancyTransition extends TeaModel {
+        /**
+         * <p>Container for storage redundancy transition tasks.</p>
+         */
         @NameInMap("BucketDataRedundancyTransition")
         public java.util.List<BucketDataRedundancyTransition> bucketDataRedundancyTransition;
 
+        /**
+         * <p>Indicates whether the results in the request are truncated. The values are as follows:</p>
+         * <p>true: Indicates that not all results are returned in this request.</p>
+         * <p>false: Indicates that all results are returned in this request.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>true</p>
+         */
         @NameInMap("IsTruncated")
         public Boolean isTruncated;
 
+        /**
+         * <p>Indicates that the current ListUserDataRedundancyTransition request contains subsequent results, and you need to specify NextContinuationToken as continuation-token to continue retrieving the results.</p>
+         * 
+         * <strong>example:</strong>
+         * <p>def</p>
+         */
         @NameInMap("NextContinuationToken")
         public String nextContinuationToken;
 

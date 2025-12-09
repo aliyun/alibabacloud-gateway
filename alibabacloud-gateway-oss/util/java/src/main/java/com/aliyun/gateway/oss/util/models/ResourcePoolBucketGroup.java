@@ -11,8 +11,8 @@ public class ResourcePoolBucketGroup extends TeaModel {
      * <strong>example:</strong>
      * <p>test-group-1</p>
      */
-    @NameInMap("GroupName")
-    public String groupName;
+    @NameInMap("Name")
+    public String name;
 
     public static ResourcePoolBucketGroup build(java.util.Map<String, ?> map) throws Exception {
         ResourcePoolBucketGroup self = new ResourcePoolBucketGroup();
@@ -27,12 +27,12 @@ public class ResourcePoolBucketGroup extends TeaModel {
         return this.groupBucketInfo;
     }
 
-    public ResourcePoolBucketGroup setGroupName(String groupName) {
-        this.groupName = groupName;
+    public ResourcePoolBucketGroup setName(String name) {
+        this.name = name;
         return this;
     }
-    public String getGroupName() {
-        return this.groupName;
+    public String getName() {
+        return this.name;
     }
 
 }
