@@ -9,6 +9,13 @@ public class DataAcceleratorConfiguration extends TeaModel {
 
     /**
      * <strong>example:</strong>
+     * <p>cn-hangzhou-a</p>
+     */
+    @NameInMap("AvailableZone")
+    public String availableZone;
+
+    /**
+     * <strong>example:</strong>
      * <p>102400</p>
      */
     @NameInMap("Quota")
@@ -25,6 +32,14 @@ public class DataAcceleratorConfiguration extends TeaModel {
     }
     public AcceleratePaths getAcceleratePaths() {
         return this.acceleratePaths;
+    }
+
+    public DataAcceleratorConfiguration setAvailableZone(String availableZone) {
+        this.availableZone = availableZone;
+        return this;
+    }
+    public String getAvailableZone() {
+        return this.availableZone;
     }
 
     public DataAcceleratorConfiguration setQuota(String quota) {

@@ -6,12 +6,18 @@ import com.aliyun.tea.*;
 public class DeleteResourcePoolRequesterQoSInfoRequest extends TeaModel {
     /**
      * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>26753xxxxxxxx14340</p>
      */
     @NameInMap("qosRequester")
     public String qosRequester;
 
     /**
      * <p>This parameter is required.</p>
+     * 
+     * <strong>example:</strong>
+     * <p>rp-01</p>
      */
     @NameInMap("resourcePool")
     public String resourcePool;

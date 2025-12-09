@@ -1,0 +1,51 @@
+// This file is auto-generated, don't edit it. Thanks.
+package client
+
+import (
+	"github.com/alibabacloud-go/tea/dara"
+)
+
+type iDeleteBucketLifecycleResponse interface {
+	dara.Model
+	String() string
+	GoString() string
+	SetHeaders(v map[string]*string) *DeleteBucketLifecycleResponse
+	GetHeaders() map[string]*string
+	SetStatusCode(v int32) *DeleteBucketLifecycleResponse
+	GetStatusCode() *int32
+}
+
+type DeleteBucketLifecycleResponse struct {
+	Headers    map[string]*string `json:"headers,omitempty" xml:"headers,omitempty"`
+	StatusCode *int32             `json:"statusCode,omitempty" xml:"statusCode,omitempty"`
+}
+
+func (s DeleteBucketLifecycleResponse) String() string {
+	return dara.Prettify(s)
+}
+
+func (s DeleteBucketLifecycleResponse) GoString() string {
+	return s.String()
+}
+
+func (s *DeleteBucketLifecycleResponse) GetHeaders() map[string]*string {
+	return s.Headers
+}
+
+func (s *DeleteBucketLifecycleResponse) GetStatusCode() *int32 {
+	return s.StatusCode
+}
+
+func (s *DeleteBucketLifecycleResponse) SetHeaders(v map[string]*string) *DeleteBucketLifecycleResponse {
+	s.Headers = v
+	return s
+}
+
+func (s *DeleteBucketLifecycleResponse) SetStatusCode(v int32) *DeleteBucketLifecycleResponse {
+	s.StatusCode = &v
+	return s
+}
+
+func (s *DeleteBucketLifecycleResponse) Validate() error {
+	return dara.Validate(s)
+}
