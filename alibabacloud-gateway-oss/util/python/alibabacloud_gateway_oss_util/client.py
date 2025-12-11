@@ -7,8 +7,8 @@ from xml.etree import ElementTree
 from collections import defaultdict
 from typing_extensions import get_origin, get_args
 from Tea.exceptions import RequiredArgumentException
-from alibabacloud_oss20190517 import models as oss_models
-from alibabacloud_hcs_mgw20240626 import models as hcs_mgw_models
+from _models_oss import models as oss_models
+from _models_hcs_mgw import models as hcs_mgw_models
 
 basic_instance = {}
 basic_instance[str] = ''

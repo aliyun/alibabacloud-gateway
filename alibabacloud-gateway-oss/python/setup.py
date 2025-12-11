@@ -49,7 +49,7 @@ REQUIRES = [
     "alibabacloud_darabonba_encode_util>=0.0.2, <1.0.0",
     "alibabacloud_darabonba_signature_util>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_time>=0.0.1, <1.0.0",
-    "alibabacloud_gateway_oss_util>=0.0.8, <1.0.0",
+    "alibabacloud_gateway_oss_util>=0.0.9, <1.0.0",
     "darabonba-core>=1.0.4, <2.0.0"
 ]
 
