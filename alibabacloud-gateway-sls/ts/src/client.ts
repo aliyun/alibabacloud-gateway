@@ -389,10 +389,10 @@ export default class Client extends SPI {
 
   async getSigningkeyV4(signatureAlgorithm: string, secret: string, region: string, date: string): Promise<Buffer> {
     let sc1 = `aliyun_v4${secret}`;
-    let sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
-    let sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
-    let sc4 = SignatureUtil.HmacSHA256SignByBytes("sls", sc3);
-    return SignatureUtil.HmacSHA256SignByBytes("aliyun_v4_request", sc4);
+    let sc2 = Client.HmacSha256(date, sc1);
+    let sc3 = Client.HmacSha256(region, sc2);
+    let sc4 = Client.HmacSha256("sls", sc3);
+    return Client.HmacSha256("aliyun_v4_request", sc4);
   }
 
   async getSignatureV4(context: $SPI.InterceptorContext, signatureAlgorithm: string, signedHeaderStr: string, date: string, scope: string, contentSha256: string, signingkey: Buffer): Promise<string> {
@@ -407,7 +407,7 @@ export default class Client extends SPI {
     let stringToHash = `${request.method}\n${canonicalURI}\n${resources}\n${headers}\n${signedHeaderStr}\n${contentSha256}`;
     let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToHash), signatureAlgorithm));
     let stringToSign = `${signatureAlgorithm}\n${date}\n${scope}\n${hex}`;
-    let signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+    let signature = Client.HmacSha256(stringToSign, signingkey);
     return EncodeUtil.hexEncode(signature);
   }
 
@@ -499,4 +499,9 @@ export default class Client extends SPI {
       return crypto.createHash('md5').update(bytesToSign).digest();
   }
 
+  static HmacSha256(data: string, secret: Buffer | string): Buffer {
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(data);
+    return hmac.digest();
+  }
 }
