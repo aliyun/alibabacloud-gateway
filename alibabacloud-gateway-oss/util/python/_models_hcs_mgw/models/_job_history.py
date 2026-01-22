@@ -19,6 +19,8 @@ class JobHistory(DaraModel):
         operator: str = None,
         runtime_id: str = None,
         runtime_state: str = None,
+        skipped_count: int = None,
+        skipped_size: int = None,
         start_time: str = None,
         status: str = None,
         total_count: int = None,
@@ -36,6 +38,8 @@ class JobHistory(DaraModel):
         self.operator = operator
         self.runtime_id = runtime_id
         self.runtime_state = runtime_state
+        self.skipped_count = skipped_count
+        self.skipped_size = skipped_size
         self.start_time = start_time
         self.status = status
         self.total_count = total_count
@@ -84,6 +88,12 @@ class JobHistory(DaraModel):
 
         if self.runtime_state is not None:
             result['RuntimeState'] = self.runtime_state
+
+        if self.skipped_count is not None:
+            result['SkippedCount'] = self.skipped_count
+
+        if self.skipped_size is not None:
+            result['SkippedSize'] = self.skipped_size
 
         if self.start_time is not None:
             result['StartTime'] = self.start_time
@@ -136,6 +146,12 @@ class JobHistory(DaraModel):
 
         if m.get('RuntimeState') is not None:
             self.runtime_state = m.get('RuntimeState')
+
+        if m.get('SkippedCount') is not None:
+            self.skipped_count = m.get('SkippedCount')
+
+        if m.get('SkippedSize') is not None:
+            self.skipped_size = m.get('SkippedSize')
 
         if m.get('StartTime') is not None:
             self.start_time = m.get('StartTime')
