@@ -26,7 +26,7 @@
   },
   "releases": {
     "ts": "@alicloud/gateway-oss:^0.0.9",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss/client:v0.0.24",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss/client:v0.0.25",
     "java": "com.aliyun:alibabacloud-gateway-oss:0.0.23",
     "python": "alibabacloud_gateway_oss:0.0.24",
     "python2": "alibabacloud_gateway_oss_py2:0.0.9",
