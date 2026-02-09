@@ -97,6 +97,9 @@ class Client(SPIClient):
             elif StringClient.equals(request.req_body_type, 'binary'):
                 # content-type: application/octet-stream
                 body_bytes = UtilClient.assert_as_bytes(request.body)
+        # ensure content-type is set, to get rid of aio-http auto-added header
+        if request.headers.get('content-type') is None:
+            request.headers['content-type'] = 'application/json'
         # get body raw size
         body_raw_size = '0'
         raw_size_ref = request.headers.get('x-log-bodyrawsize')
@@ -172,6 +175,9 @@ class Client(SPIClient):
             elif StringClient.equals(request.req_body_type, 'binary'):
                 # content-type: application/octet-stream
                 body_bytes = UtilClient.assert_as_bytes(request.body)
+        # ensure content-type is set, to get rid of aio-http auto-added header
+        if request.headers.get('content-type') is None:
+            request.headers['content-type'] = 'application/json'
         # get body raw size
         body_raw_size = '0'
         raw_size_ref = request.headers.get('x-log-bodyrawsize')
