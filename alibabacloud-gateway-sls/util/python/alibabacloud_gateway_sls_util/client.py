@@ -107,7 +107,7 @@ class Client:
         compress_type: str,
         body_raw_size: str,
     ) -> BinaryIO:
-        raise Exception('Un-implemented')
+        return Client.read_and_uncompress_block(stream, compress_type, body_raw_size)
 
     @staticmethod
     def compress(
@@ -141,7 +141,7 @@ class Client:
         @return: the compressed data
         @throws error if the compress type is not supported or the compress failed
         """
-        raise Exception('Un-implemented')
+        return Client.compress(src, compress_type)
 
     @staticmethod
     def is_compressor_available(
@@ -153,7 +153,7 @@ class Client:
     async def is_compressor_available_async(
         compress_type: str,
     ) -> bool:
-        raise Exception('Un-implemented')
+        return compress_type in supported_compress_types
 
     @staticmethod
     def is_decompressor_available(
@@ -165,7 +165,7 @@ class Client:
     async def is_decompressor_available_async(
         compress_type: str,
     ) -> bool:
-        raise Exception('Un-implemented')
+        return compress_type in supported_decompress_types
 
     @staticmethod
     def bytes_length(
