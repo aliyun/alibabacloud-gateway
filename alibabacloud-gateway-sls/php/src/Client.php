@@ -184,7 +184,7 @@ class Client extends DarabonbaGatewaySpiClient {
      * @param string[] $headers
      * @return void
      */
-    public function setDefaultAcceptEncoding($action, $headers){
+    public function setDefaultAcceptEncoding($action, &$headers){
         $acceptEncoding = @$headers["Accept-Encoding"];
         // for php warning, dont rm this line
         if (!Utils::isUnset($acceptEncoding)) {
