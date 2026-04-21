@@ -440,16 +440,10 @@ func (m *LogGroupList) GetLogGroups() []*LogGroup {
 }
 
 func init() {
-	proto.RegisterType((*LogContent)(nil), "sls.LogContent")
-	proto.RegisterType((*Log)(nil), "sls.Log")
-	proto.RegisterType((*LogTag)(nil), "sls.LogTag")
-	proto.RegisterType((*LogGroup)(nil), "sls.LogGroup")
-	proto.RegisterType((*SlsLogPackage)(nil), "sls.SlsLogPackage")
-	proto.RegisterType((*SlsLogPackageList)(nil), "sls.SlsLogPackageList")
-	proto.RegisterType((*LogGroupList)(nil), "sls.LogGroupList")
+	// Registration skipped to avoid conflict with aliyun-log-go-sdk which registers
+	// the same protobuf types under the "sls" namespace. This library only uses
+	// the generated Marshal/Unmarshal methods and does not need registry-based reflection.
 }
-
-func init() { proto.RegisterFile("log.proto", fileDescriptor_a153da538f858886) }
 
 var fileDescriptor_a153da538f858886 = []byte{
 	// 412 bytes of a gzipped FileDescriptorProto
