@@ -1,7 +1,7 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/alibabacloud-go/alibabacloud-gateway-sls-util v0.4.0 h1:wxHNhcmF0688/FCzje+mIGALaL6u4PGv8dnfHODGshg=
-github.com/alibabacloud-go/alibabacloud-gateway-sls-util v0.4.0/go.mod h1:VE1dhV8NCGjurZyFH9IFrjfV/qv72Zx5MAPS+kQ7gJk=
+github.com/alibabacloud-go/alibabacloud-gateway-sls-util v0.4.1 h1:DSqBex/Nii3ogtP0cbMn2YL/E6sP0dSVGSfF3PnrkzY=
+github.com/alibabacloud-go/alibabacloud-gateway-sls-util v0.4.1/go.mod h1:VE1dhV8NCGjurZyFH9IFrjfV/qv72Zx5MAPS+kQ7gJk=
 github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5 h1:zE8vH9C7JiZLNJJQ5OwjU9mSi4T9ef9u3BURT6LCLC8=
 github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5/go.mod h1:tWnyE9AjF8J8qqLk645oUmVUnFybApTQWklQmi5tY6g=
 github.com/alibabacloud-go/darabonba-array v0.1.0 h1:vR8s7b1fWAQIjEjWnuF0JiKsCvclSRTfDzZHTYqfufY=
