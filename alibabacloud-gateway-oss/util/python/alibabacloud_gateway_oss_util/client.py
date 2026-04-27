@@ -180,7 +180,9 @@ instanceRegistry["StartPartUpload"] = build_instance_from_model(main_models.Star
 instanceRegistry["UpdateJobPriority"] = build_instance_from_model(main_models.UpdateJobPriorityResponseBody)
 instanceRegistry["UpdateJobStatus"] = build_instance_from_model(main_models.UpdateJobStatusResponseBody)
 instanceRegistry["UploadPartCopy"] = build_instance_from_model(main_models.UploadPartCopyResponseBody)
-
+instanceRegistry["GetBucketObjectWormConfiguration"] = build_instance_from_model(main_models.GetBucketObjectWormConfigurationResponseBody)
+instanceRegistry["GetObjectLegalHold"] = build_instance_from_model(main_models.GetObjectLegalHoldResponseBody)
+instanceRegistry["GetObjectRetention"] = build_instance_from_model(main_models.GetObjectRetentionResponseBody)
 
 # for hcs-mgw
 main_models = hcs_mgw_models

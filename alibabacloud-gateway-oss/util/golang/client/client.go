@@ -149,6 +149,9 @@ func init() {
 	typeRegistry["UpdateJobPriority"] = reflect.TypeOf(models.UpdateJobPriorityResponseBody{})
 	typeRegistry["UpdateJobStatus"] = reflect.TypeOf(models.UpdateJobStatusResponseBody{})
 	typeRegistry["UploadPartCopy"] = reflect.TypeOf(models.UploadPartCopyResponseBody{})
+	typeRegistry["GetBucketObjectWormConfiguration"] = reflect.TypeOf(models.GetBucketObjectWormConfigurationResponseBody{})
+	typeRegistry["GetObjectLegalHold"] = reflect.TypeOf(models.GetObjectLegalHoldResponseBody{})
+	typeRegistry["GetObjectRetention"] = reflect.TypeOf(models.GetObjectRetentionResponseBody{})
 
 	// for hcs-mgw
 	typeRegistry["GetAddress"] = reflect.TypeOf(hcs_mgw_models.GetAddressResponseBody{})
