@@ -4,17 +4,24 @@ package com.aliyun.gateway.oss.util.hcs_mgw_models;
 import com.aliyun.tea.*;
 
 public class ListJobInfo extends TeaModel {
+    /**
+     * <p>The tasks.</p>
+     */
     @NameInMap("ImportJob")
     public java.util.List<CreateJobInfo> importJob;
 
     /**
+     * <p>The position from which the next list operation starts.</p>
+     * 
      * <strong>example:</strong>
-     * <your-next-job-name>
+     * <p>test_next_marker</p>
      */
     @NameInMap("NextMarker")
     public String nextMarker;
 
     /**
+     * <p>Indicates whether the queried results are truncated.</p>
+     * 
      * <strong>example:</strong>
      * <p>true</p>
      */

@@ -23,6 +23,8 @@ type iAddressDetail interface {
 	GetDataType() *string
 	SetDomain(v string) *AddressDetail
 	GetDomain() *string
+	SetHdfsAuthConfig(v *HdfsAuthConfig) *AddressDetail
+	GetHdfsAuthConfig() *HdfsAuthConfig
 	SetInvAccessId(v string) *AddressDetail
 	GetInvAccessId() *string
 	SetInvAccessSecret(v string) *AddressDetail
@@ -48,87 +50,124 @@ type iAddressDetail interface {
 }
 
 type AddressDetail struct {
+	// The AccessKey ID that is used to access the bucket.
+	//
 	// This parameter is required.
 	//
 	// example:
 	//
-	// *******************
+	// test_access_id
 	AccessId *string `json:"AccessId,omitempty" xml:"AccessId,omitempty"`
+	// The AccessKey secret that is used to access the bucket.
+	//
 	// This parameter is required.
 	//
 	// example:
 	//
-	// *******************
+	// test_secret_key
 	AccessSecret *string `json:"AccessSecret,omitempty" xml:"AccessSecret,omitempty"`
+	// The type of the data address.
+	//
 	// This parameter is required.
 	//
 	// example:
 	//
 	// ossinv
 	AddressType *string `json:"AddressType,omitempty" xml:"AddressType,omitempty"`
+	// The associated agents. If you want to access data over an Express Connect circuit or a VPN gateway, you must associate agents.
+	//
 	// example:
 	//
-	// agnet1,agent2,agent3
+	// agent1,agent2
 	AgentList *string `json:"AgentList,omitempty" xml:"AgentList,omitempty"`
+	// The bucket name.
+	//
 	// This parameter is required.
 	//
 	// example:
 	//
-	// <your-bucket-name>
+	// test_bucket
 	Bucket *string `json:"Bucket,omitempty" xml:"Bucket,omitempty"`
 	// example:
 	//
 	// oss
 	DataType *string `json:"DataType,omitempty" xml:"DataType,omitempty"`
+	// The domain name of the bucket.
+	//
 	// This parameter is required.
 	//
 	// example:
 	//
-	// oss-cn-hangzhou.aliyuncs.com
-	Domain *string `json:"Domain,omitempty" xml:"Domain,omitempty"`
+	// test_domain
+	Domain         *string         `json:"Domain,omitempty" xml:"Domain,omitempty"`
+	HdfsAuthConfig *HdfsAuthConfig `json:"HdfsAuthConfig,omitempty" xml:"HdfsAuthConfig,omitempty"`
+	// The AccessKey ID that is used to access the bucket in which the inventory list resides.
+	//
 	// example:
 	//
-	// *******************
+	// test_inv_access_id
 	InvAccessId *string `json:"InvAccessId,omitempty" xml:"InvAccessId,omitempty"`
+	// The AccessKey secret that is used to access the bucket in which the inventory list resides.
+	//
 	// example:
 	//
-	// *******************
+	// test_inv_secret_key
 	InvAccessSecret *string `json:"InvAccessSecret,omitempty" xml:"InvAccessSecret,omitempty"`
+	// The name of the bucket in which the inventory list resides.
+	//
 	// example:
 	//
-	// <your-inv-bucket-name>
+	// test_inv_bucket
 	InvBucket *string `json:"InvBucket,omitempty" xml:"InvBucket,omitempty"`
+	// The domain name of the bucket in which the inventory list resides.
+	//
 	// example:
 	//
-	// oss-cn-hangzhou.aliyuncs.com
+	// test_inv_domain
 	InvDomain *string `json:"InvDomain,omitempty" xml:"InvDomain,omitempty"`
+	// The type of the bucket in which the inventory list resides.\\
+	//
+	// Valid values: oss, s3, and cos.
+	//
 	// example:
 	//
 	// oss
 	InvLocation *string `json:"InvLocation,omitempty" xml:"InvLocation,omitempty"`
+	// The inventory list. You must specify the file name and file name extension of the inventory list.
+	//
 	// example:
 	//
-	// dir/manifest.json
+	// manifest.json
 	InvPath *string `json:"InvPath,omitempty" xml:"InvPath,omitempty"`
+	// The region ID of the bucket in which the inventory list resides. If the bucket in which the inventory list resides is an OSS bucket, you must specify the ID of the region in which the inventory list resides. You do not need to specify the domain name of the inventory list.
+	//
 	// example:
 	//
-	// oss-cn-hangzhou
+	// test_inv_region_id
 	InvRegionId *string `json:"InvRegionId,omitempty" xml:"InvRegionId,omitempty"`
+	// The role that is used to migrate data for the bucket in which the inventory list resides. If the bucket in which the inventory list resides is an OSS bucket, you must specify a role. You do not need to specify an AccessKey pair that is used to access the bucket.
+	//
 	// example:
 	//
-	// <your-role-name>
+	// test_inv_role
 	InvRole *string `json:"InvRole,omitempty" xml:"InvRole,omitempty"`
+	// The bucket prefix.
+	//
 	// example:
 	//
-	// dir1/dir2/
+	// test_prefix
 	Prefix *string `json:"Prefix,omitempty" xml:"Prefix,omitempty"`
+	// The region ID of the bucket. If the bucket is an OSS bucket, you must specify the ID of the region in which the bucket resides. You do not need to specify the domain name of the bucket.
+	//
 	// example:
 	//
-	// oss-cn-hangzhou
+	// test_region_id
 	RegionId *string `json:"RegionId,omitempty" xml:"RegionId,omitempty"`
+	// The role that is used to migrate data. If the bucket is an Object Storage Service (OSS) bucket, you must specify a role. You do not need to specify an AccessKey pair that is used to access the bucket.
+	//
 	// example:
 	//
-	// <your-role-name>
+	// test_role
 	Role *string `json:"Role,omitempty" xml:"Role,omitempty"`
 }
 
@@ -166,6 +205,10 @@ func (s *AddressDetail) GetDataType() *string {
 
 func (s *AddressDetail) GetDomain() *string {
 	return s.Domain
+}
+
+func (s *AddressDetail) GetHdfsAuthConfig() *HdfsAuthConfig {
+	return s.HdfsAuthConfig
 }
 
 func (s *AddressDetail) GetInvAccessId() *string {
@@ -247,6 +290,11 @@ func (s *AddressDetail) SetDomain(v string) *AddressDetail {
 	return s
 }
 
+func (s *AddressDetail) SetHdfsAuthConfig(v *HdfsAuthConfig) *AddressDetail {
+	s.HdfsAuthConfig = v
+	return s
+}
+
 func (s *AddressDetail) SetInvAccessId(v string) *AddressDetail {
 	s.InvAccessId = &v
 	return s
@@ -303,5 +351,10 @@ func (s *AddressDetail) SetRole(v string) *AddressDetail {
 }
 
 func (s *AddressDetail) Validate() error {
-	return dara.Validate(s)
+	if s.HdfsAuthConfig != nil {
+		if err := s.HdfsAuthConfig.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -4,9 +4,15 @@ package com.aliyun.gateway.oss.util.hcs_mgw_models;
 import com.aliyun.tea.*;
 
 public class KeyFilters extends TeaModel {
+    /**
+     * <p>The excluded file name.</p>
+     */
     @NameInMap("Excludes")
     public KeyFilterItem excludes;
 
+    /**
+     * <p>The included file name.</p>
+     */
     @NameInMap("Includes")
     public KeyFilterItem includes;
 
