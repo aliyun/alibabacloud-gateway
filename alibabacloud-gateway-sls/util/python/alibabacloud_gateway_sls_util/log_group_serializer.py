@@ -11,8 +11,4 @@ def serialize_log_group_to_pb(log_group: Any) -> bytes:
 
 
 def deserialize_log_group_list_from_pb(data: bytes) -> dict:
-    if data is None:
-        raise ValueError("data is None")
-    if not isinstance(data, bytes):
-        raise ValueError("data is not bytes")
     return deserialize_log_group_list(data)
