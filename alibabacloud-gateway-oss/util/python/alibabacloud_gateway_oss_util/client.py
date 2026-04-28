@@ -87,6 +87,7 @@ instanceRegistry["GetBucketLifecycle"] = build_instance_from_model(main_models.G
 instanceRegistry["GetBucketLocation"] = build_instance_from_model(main_models.GetBucketLocationResponseBody)
 instanceRegistry["GetBucketLogging"] = build_instance_from_model(main_models.GetBucketLoggingResponseBody)
 instanceRegistry["GetBucketNotification"] = build_instance_from_model(main_models.GetBucketNotificationResponseBody)
+instanceRegistry["GetBucketObjectWormConfiguration"] = build_instance_from_model(main_models.GetBucketObjectWormConfigurationResponseBody)
 instanceRegistry["GetBucketOverwriteConfig"] = build_instance_from_model(main_models.GetBucketOverwriteConfigResponseBody)
 instanceRegistry["GetBucketPolicyStatus"] = build_instance_from_model(main_models.GetBucketPolicyStatusResponseBody)
 instanceRegistry["GetBucketPublicAccessBlock"] = build_instance_from_model(main_models.GetBucketPublicAccessBlockResponseBody)
@@ -117,7 +118,9 @@ instanceRegistry["GetMetaQueryStatus"] = build_instance_from_model(main_models.G
 instanceRegistry["GetObjectAcl"] = build_instance_from_model(main_models.GetObjectAclResponseBody)
 instanceRegistry["GetObjectGroupIndex"] = build_instance_from_model(main_models.GetObjectGroupIndexResponseBody)
 instanceRegistry["GetObjectInfo"] = build_instance_from_model(main_models.GetObjectInfoResponseBody)
+instanceRegistry["GetObjectLegalHold"] = build_instance_from_model(main_models.GetObjectLegalHoldResponseBody)
 instanceRegistry["GetObjectLink"] = build_instance_from_model(main_models.GetObjectLinkResponseBody)
+instanceRegistry["GetObjectRetention"] = build_instance_from_model(main_models.GetObjectRetentionResponseBody)
 instanceRegistry["GetObjectTagging"] = build_instance_from_model(main_models.GetObjectTaggingResponseBody)
 instanceRegistry["GetProcessConfiguration"] = build_instance_from_model(main_models.GetProcessConfigurationResponseBody)
 instanceRegistry["GetPublicAccessBlock"] = build_instance_from_model(main_models.GetPublicAccessBlockResponseBody)
@@ -180,7 +183,6 @@ instanceRegistry["StartPartUpload"] = build_instance_from_model(main_models.Star
 instanceRegistry["UpdateJobPriority"] = build_instance_from_model(main_models.UpdateJobPriorityResponseBody)
 instanceRegistry["UpdateJobStatus"] = build_instance_from_model(main_models.UpdateJobStatusResponseBody)
 instanceRegistry["UploadPartCopy"] = build_instance_from_model(main_models.UploadPartCopyResponseBody)
-
 
 # for hcs-mgw
 main_models = hcs_mgw_models

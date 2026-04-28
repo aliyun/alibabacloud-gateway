@@ -2,6 +2,7 @@
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
 
+from _models_hcs_mgw import models as main_models
 from darabonba.model import DaraModel
 
 
@@ -16,6 +17,7 @@ class AddressDetail(DaraModel):
         bucket: str = None,
         data_type: str = None,
         domain: str = None,
+        hdfs_auth_config: main_models.HdfsAuthConfig = None,
         inv_access_id: str = None,
         inv_access_secret: str = None,
         inv_bucket: str = None,
@@ -28,32 +30,57 @@ class AddressDetail(DaraModel):
         region_id: str = None,
         role: str = None,
     ):
+        # The AccessKey ID that is used to access the bucket.
+        # 
         # This parameter is required.
         self.access_id = access_id
+        # The AccessKey secret that is used to access the bucket.
+        # 
         # This parameter is required.
         self.access_secret = access_secret
+        # The type of the data address.
+        # 
         # This parameter is required.
         self.address_type = address_type
+        # The associated agents. If you want to access data over an Express Connect circuit or a VPN gateway, you must associate agents.
         self.agent_list = agent_list
+        # The bucket name.
+        # 
         # This parameter is required.
         self.bucket = bucket
         self.data_type = data_type
+        # The domain name of the bucket.
+        # 
         # This parameter is required.
         self.domain = domain
+        self.hdfs_auth_config = hdfs_auth_config
+        # The AccessKey ID that is used to access the bucket in which the inventory list resides.
         self.inv_access_id = inv_access_id
+        # The AccessKey secret that is used to access the bucket in which the inventory list resides.
         self.inv_access_secret = inv_access_secret
+        # The name of the bucket in which the inventory list resides.
         self.inv_bucket = inv_bucket
+        # The domain name of the bucket in which the inventory list resides.
         self.inv_domain = inv_domain
+        # The type of the bucket in which the inventory list resides.\\
+        # Valid values: oss, s3, and cos.
         self.inv_location = inv_location
+        # The inventory list. You must specify the file name and file name extension of the inventory list.
         self.inv_path = inv_path
+        # The region ID of the bucket in which the inventory list resides. If the bucket in which the inventory list resides is an OSS bucket, you must specify the ID of the region in which the inventory list resides. You do not need to specify the domain name of the inventory list.
         self.inv_region_id = inv_region_id
+        # The role that is used to migrate data for the bucket in which the inventory list resides. If the bucket in which the inventory list resides is an OSS bucket, you must specify a role. You do not need to specify an AccessKey pair that is used to access the bucket.
         self.inv_role = inv_role
+        # The bucket prefix.
         self.prefix = prefix
+        # The region ID of the bucket. If the bucket is an OSS bucket, you must specify the ID of the region in which the bucket resides. You do not need to specify the domain name of the bucket.
         self.region_id = region_id
+        # The role that is used to migrate data. If the bucket is an Object Storage Service (OSS) bucket, you must specify a role. You do not need to specify an AccessKey pair that is used to access the bucket.
         self.role = role
 
     def validate(self):
-        pass
+        if self.hdfs_auth_config:
+            self.hdfs_auth_config.validate()
 
     def to_map(self):
         result = dict()
@@ -80,6 +107,9 @@ class AddressDetail(DaraModel):
 
         if self.domain is not None:
             result['Domain'] = self.domain
+
+        if self.hdfs_auth_config is not None:
+            result['HdfsAuthConfig'] = self.hdfs_auth_config.to_map()
 
         if self.inv_access_id is not None:
             result['InvAccessId'] = self.inv_access_id
@@ -138,6 +168,10 @@ class AddressDetail(DaraModel):
 
         if m.get('Domain') is not None:
             self.domain = m.get('Domain')
+
+        if m.get('HdfsAuthConfig') is not None:
+            temp_model = main_models.HdfsAuthConfig()
+            self.hdfs_auth_config = temp_model.from_map(m.get('HdfsAuthConfig'))
 
         if m.get('InvAccessId') is not None:
             self.inv_access_id = m.get('InvAccessId')
