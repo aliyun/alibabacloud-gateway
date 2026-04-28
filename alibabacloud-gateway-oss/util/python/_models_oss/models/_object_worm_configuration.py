@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import List
 
-from alibabacloud_oss20190517 import models as main_models
+from _models_oss import models as main_models
 from darabonba.model import DaraModel
 
 class ObjectWormConfiguration(DaraModel):
