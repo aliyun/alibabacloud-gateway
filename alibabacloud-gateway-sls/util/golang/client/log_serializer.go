@@ -190,6 +190,62 @@ func serializeLogTag(lg *LogGroup, logTag interface{}) error {
 	return nil
 }
 
+func deserializeLogGroupListFromPB(data []byte) (interface{}, error) {
+	lgl := &LogGroupList{}
+	if err := lgl.Unmarshal(data); err != nil {
+		return nil, fmt.Errorf("fail to deserialize LogGroupList from protobuf, %w", err)
+	}
+
+	logGroups := make([]interface{}, 0, len(lgl.LogGroups))
+	for _, lg := range lgl.LogGroups {
+		logGroup := map[string]interface{}{}
+
+		if lg.Topic != nil {
+			logGroup["Topic"] = *lg.Topic
+		}
+		if lg.Source != nil {
+			logGroup["Source"] = *lg.Source
+		}
+
+		if len(lg.LogTags) > 0 {
+			tags := make([]interface{}, 0, len(lg.LogTags))
+			for _, tag := range lg.LogTags {
+				tags = append(tags, map[string]interface{}{
+					"Key":   *tag.Key,
+					"Value": *tag.Value,
+				})
+			}
+			logGroup["LogTags"] = tags
+		}
+
+		logItems := make([]interface{}, 0, len(lg.Logs))
+		for _, log := range lg.Logs {
+			logItem := map[string]interface{}{
+				"Time": int(*log.Time),
+			}
+			if log.TimeNs != nil {
+				logItem["TimeNs"] = int(*log.TimeNs)
+			}
+			contents := make([]interface{}, 0, len(log.Contents))
+			for _, c := range log.Contents {
+				contents = append(contents, map[string]interface{}{
+					"Key":   *c.Key,
+					"Value": *c.Value,
+				})
+			}
+			logItem["Contents"] = contents
+			logItems = append(logItems, logItem)
+		}
+		logGroup["LogItems"] = logItems
+
+		logGroups = append(logGroups, logGroup)
+	}
+
+	return map[string]interface{}{
+		"logGroupList": logGroups,
+	}, nil
+}
+
 func getKeyValuePair(m map[string]interface{}) (key string, value string, err error) {
 	key, err = getString(m, "Key")
 	if err != nil {
