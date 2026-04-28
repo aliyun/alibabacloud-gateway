@@ -1,5 +1,5 @@
 from typing import Any
-from aliyun_log_fastpb import serialize_log_group
+from aliyun_log_fastpb import serialize_log_group, deserialize_log_group_list
 
 
 def serialize_log_group_to_pb(log_group: Any) -> bytes:
@@ -8,3 +8,11 @@ def serialize_log_group_to_pb(log_group: Any) -> bytes:
     if not isinstance(log_group, dict):
         raise ValueError("log_group is not a dict")
     return serialize_log_group(log_group)
+
+
+def deserialize_log_group_list_from_pb(data: bytes) -> dict:
+    if data is None:
+        raise ValueError("data is None")
+    if not isinstance(data, bytes):
+        raise ValueError("data is not bytes")
+    return deserialize_log_group_list(data)
