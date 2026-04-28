@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayOSS_Util",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -13,8 +13,8 @@
   },
   "releases": {
     "go": "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client:v0.0.14",
-    "java": "com.aliyun:alibabacloud-gateway-oss-util:0.0.12",
-    "python": "alibabacloud_gateway_oss_util:0.0.11"
+    "java": "com.aliyun:alibabacloud-gateway-oss-util:0.0.13",
+    "python": "alibabacloud_gateway_oss_util:0.0.12"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayOss_Util",
