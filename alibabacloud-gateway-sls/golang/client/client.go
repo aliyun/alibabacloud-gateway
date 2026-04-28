@@ -149,6 +149,9 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		"x-log-apiversion": tea.String("0.6.0"),
 	}, request.Headers)
 	request.Headers["x-log-bodyrawsize"] = bodyRawSize
+	if tea.BoolValue(string_.Equals(request.Action, tea.String("PullLogs"))) {
+		request.Headers["accept"] = tea.String("application/x-protobuf")
+	}
 	_err = client.SetDefaultAcceptEncoding(request.Action, request.Headers)
 	if _err != nil {
 		return _err
@@ -304,7 +307,16 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 
 		}
 
-		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
+		if tea.BoolValue(string_.Equals(request.Action, tea.String("PullLogs"))) {
+			bodyBytes, _err := util.ReadAsBytes(uncompressedData)
+			if _err != nil {
+				return _err
+			}
+			response.DeserializedBody, _err = sls_util.DeserializeLogGroupListFromPB(bodyBytes)
+			if _err != nil {
+				return _err
+			}
+		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
 			response.DeserializedBody = uncompressedData
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
 			byt, _err := util.ReadAsBytes(uncompressedData)
