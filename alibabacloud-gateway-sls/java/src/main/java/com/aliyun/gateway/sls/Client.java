@@ -113,6 +113,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
             request.headers
         );
         request.headers.put("x-log-bodyrawsize", bodyRawSize);
+        if (com.aliyun.darabonbastring.Client.equals(request.action, "PullLogs")) {
+            request.headers.put("accept", "application/x-protobuf");
+        }
+
         this.setDefaultAcceptEncoding(request.action, request.headers);
         this.buildRequest(context);
         // move param in path to query
@@ -226,7 +230,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 uncompressedData = com.aliyun.gateway.sls.util.Client.readAndUncompressBlock(response.body, compressType, bodyrawSize);
             }
 
-            if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
+            if (com.aliyun.darabonbastring.Client.equals(request.action, "PullLogs")) {
+                byte[] bodyBytes = com.aliyun.teautil.Common.readAsBytes(uncompressedData);
+                response.deserializedBody = com.aliyun.gateway.sls.util.Client.deserializeLogGroupListFromPB(bodyBytes);
+            } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "binary")) {
                 response.deserializedBody = uncompressedData;
             } else if (com.aliyun.teautil.Common.equalString(request.bodyType, "byte")) {
                 byte[] byt = com.aliyun.teautil.Common.readAsBytes(uncompressedData);
