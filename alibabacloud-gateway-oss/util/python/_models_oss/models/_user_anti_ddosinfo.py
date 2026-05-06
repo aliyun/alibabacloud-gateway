@@ -14,11 +14,21 @@ class UserAntiDDOSInfo(DaraModel):
         owner: str = None,
         status: str = None,
     ):
+        # The time when the Anti-DDoS instance was activated. The value is a timestamp.
         self.active_time = active_time
+        # The time when the Anti-DDoS instance was created. The value is a timestamp.
         self.ctime = ctime
+        # The ID of the Anti-DDoS instance.
         self.instance_id = instance_id
+        # The time when the Anti-DDoS instance was last updated. The value is a timestamp.
         self.mtime = mtime
+        # The ID of the owner of the Anti-DDoS instance.
         self.owner = owner
+        # The status of the Anti-DDoS instance. Valid values:
+        # 
+        # *   Init
+        # *   Defending
+        # *   HaltDefending
         self.status = status
 
     def validate(self):

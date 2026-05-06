@@ -9,6 +9,7 @@ class RoutingRuleLuaConfig(DaraModel):
         self,
         script: str = None,
     ):
+        # The name of the Lua script.
         self.script = script
 
     def validate(self):

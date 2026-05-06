@@ -10,7 +10,21 @@ class CreateBucketConfiguration(DaraModel):
         data_redundancy_type: str = None,
         storage_class: str = None,
     ):
+        # The redundancy type of the bucket.
+        # 
+        # *   LRS (default)\\
+        #     LRS stores multiple copies of your data on multiple devices in the same zone. LRS ensures data durability and availability even if hardware failures occur on two devices.
+        # *   ZRS\\
+        #     ZRS stores multiple copies of your data across three zones in the same region. Even if a zone becomes unavailable due to unexpected events, such as power outages and fires, data can still be accessed.
+        # 
+        # >  You cannot set the redundancy type of Archive buckets to ZRS.
         self.data_redundancy_type = data_redundancy_type
+        # The storage class of the bucket. Valid values:
+        # 
+        # *   Standard (default)
+        # *   IA
+        # *   Archive
+        # *   ColdArchive
         self.storage_class = storage_class
 
     def validate(self):

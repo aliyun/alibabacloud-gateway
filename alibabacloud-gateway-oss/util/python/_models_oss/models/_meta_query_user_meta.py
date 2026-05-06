@@ -10,7 +10,9 @@ class MetaQueryUserMeta(DaraModel):
         key: str = None,
         value: str = None,
     ):
+        # The key of the user metadata item.
         self.key = key
+        # The value of the user metadata item.
         self.value = value
 
     def validate(self):

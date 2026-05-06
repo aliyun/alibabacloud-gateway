@@ -9,6 +9,7 @@ class BucketResourceGroupConfiguration(DaraModel):
         self,
         resource_group_id: str = None,
     ):
+        # The ID of the resource group to which the bucket belongs.
         self.resource_group_id = resource_group_id
 
     def validate(self):

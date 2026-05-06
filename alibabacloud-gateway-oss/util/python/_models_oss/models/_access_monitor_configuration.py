@@ -11,6 +11,7 @@ class AccessMonitorConfiguration(DaraModel):
         status: str = None,
     ):
         self.allow_copy = allow_copy
+        # The access tracking status of the bucket.
         self.status = status
 
     def validate(self):

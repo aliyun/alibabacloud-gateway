@@ -11,8 +11,57 @@ class JSONInput(DaraModel):
         range: str = None,
         type: str = None,
     ):
+        # Specifies whether to parse integer and floating-point numbers in the JSON object into strings. The precision of floating-point numbers in a JSON object decreases when the numbers are parsed. If you want to retain the raw data, we recommend that you set this parameter to true. To use the parsed numbers in calculations, you can use the CAST function in SQL to convert the parsed data into the required type such as INT, DOUBLE, or DECIMAL.\\
+        # Default value: false.
+        # 
+        # Valid values:
+        # 
+        # *   true
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   false
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.parse_json_number_as_string = parse_json_number_as_string
+        # The query range. This parameter is optional. The following formats are supported:
+        # 
+        # >  SelectMeta must be created for objects that are queried based on Range. For more information about SelectMeta, see [CreateSelectObjectMeta](https://help.aliyun.com/document_detail/74054.html).
+        # 
+        # *   Query by row: line-range=start-end. For example, line-range=10-20 indicates that data from row 10 to row 20 is scanned.
+        # *   Query by split: split-range=start-end. For example, split-range=10-20 indicates that data from split 10 to split 20 is scanned.
+        # 
+        # \\
+        # The start and end of the range are both inclusive. The start and end of the range use the same format as that of the range parameter in range get.\\
+        # This parameter can be used only if the object is in the CSV format or if the JSON type is LINES.
         self.range = range
+        # The type of JSON input.
+        # 
+        # Valid values:
+        # 
+        # *   LINES
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   DOCUMENT
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.type = type
 
     def validate(self):

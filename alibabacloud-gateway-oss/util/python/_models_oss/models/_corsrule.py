@@ -15,10 +15,21 @@ class CORSRule(DaraModel):
         expose_header: List[str] = None,
         max_age_seconds: int = None,
     ):
+        # Specifies whether the headers specified by Access-Control-Request-Headers in the OPTIONS preflight request are allowed. Each header specified by Access-Control-Request-Headers must match the value of an AllowedHeader element.
+        # 
+        # >  You can use only one asterisk (\\*) as the wildcard character.
         self.allowed_header = allowed_header
+        # The methods that you can use in cross-origin requests.
         self.allowed_method = allowed_method
+        # The origins from which cross-origin requests are allowed.
         self.allowed_origin = allowed_origin
+        # The response headers for allowed access requests from applications, such as an XMLHttpRequest object in JavaScript.
+        # 
+        # >  The asterisk (\\*) wildcard character is not supported.
         self.expose_header = expose_header
+        # The period of time within which the browser can cache the response to an OPTIONS preflight request for the specified resource. Unit: seconds.
+        # 
+        # You can specify only one MaxAgeSeconds element in a CORS rule.
         self.max_age_seconds = max_age_seconds
 
     def validate(self):

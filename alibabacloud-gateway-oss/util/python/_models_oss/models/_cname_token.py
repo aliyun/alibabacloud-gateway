@@ -12,9 +12,13 @@ class CnameToken(DaraModel):
         expire_time: str = None,
         token: str = None,
     ):
+        # The name of the bucket to which the CNAME record is mapped.
         self.bucket = bucket
+        # The name of the CNAME record that is mapped to the bucket.
         self.cname = cname
+        # The time when the CNAME token expires.
         self.expire_time = expire_time
+        # The CNAME token that is returned by OSS.
         self.token = token
 
     def validate(self):

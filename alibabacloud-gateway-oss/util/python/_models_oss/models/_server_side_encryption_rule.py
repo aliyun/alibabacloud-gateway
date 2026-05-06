@@ -10,6 +10,7 @@ class ServerSideEncryptionRule(DaraModel):
         self,
         apply_server_side_encryption_by_default: main_models.ApplyServerSideEncryptionByDefault = None,
     ):
+        # The container that stores the server-side encryption method that is used by default.
         self.apply_server_side_encryption_by_default = apply_server_side_encryption_by_default
 
     def validate(self):

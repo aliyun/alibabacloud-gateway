@@ -9,6 +9,7 @@ class CommonPrefix(DaraModel):
         self,
         prefix: str = None,
     ):
+        # The prefix contained in the names of returned objects.
         self.prefix = prefix
 
     def validate(self):

@@ -10,6 +10,7 @@ class PutBucketOverwriteConfigRequest(DaraModel):
         self,
         overwrite_configuration: main_models.OverwriteConfiguration = None,
     ):
+        # Container for Saving the Overwrite Configuration Rules of the Bucket
         self.overwrite_configuration = overwrite_configuration
 
     def validate(self):

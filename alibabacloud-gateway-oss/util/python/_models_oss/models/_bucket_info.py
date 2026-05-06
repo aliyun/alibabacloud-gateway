@@ -10,6 +10,7 @@ class BucketInfo(DaraModel):
         self,
         bucket: main_models.BucketInfoBucket = None,
     ):
+        # The container that stores the bucket information.
         self.bucket = bucket
 
     def validate(self):
@@ -56,24 +57,97 @@ class BucketInfoBucket(DaraModel):
         transfer_acceleration: str = None,
         versioning: str = None,
     ):
+        # The ACL of the bucket.
         self.access_control_list = access_control_list
+        # Indicates whether access tracking is enabled for the bucket.
+        # 
+        # Valid values:
+        # 
+        # *   Enabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   Disabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.access_monitor = access_monitor
+        # Whether the bucket has been configured to block public access.
         self.block_public_access = block_public_access
+        # The log configurations of the bucket.
         self.bucket_policy = bucket_policy
+        # Bucket description.
         self.comment = comment
+        # The time when the bucket is created.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.creation_date = creation_date
+        # Indicates whether cross-region replication (CRR) is enabled for the bucket.
+        # 
+        # Valid values:
+        # 
+        # *   Enabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   Disabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.cross_region_replication = cross_region_replication
+        # The redundancy type of the bucket.
         self.data_redundancy_type = data_redundancy_type
+        # The public endpoint of the bucket.
         self.extranet_endpoint = extranet_endpoint
+        # The internal endpoint of the bucket.
         self.intranet_endpoint = intranet_endpoint
+        # The region in which the bucket is located.
         self.location = location
+        # The name of the bucket.
         self.name = name
+        # The owner of the bucket.
         self.owner = owner
+        # The ID of the resource group to which the bucket belongs.
         self.resource_group_id = resource_group_id
+        # The server-side encryption configurations of the bucket.
         self.server_side_encryption_rule = server_side_encryption_rule
+        # The storage class of the bucket.
         self.storage_class = storage_class
+        # Indicates whether transfer acceleration is enabled for the bucket.
+        # 
+        # Valid values:
+        # 
+        # *   Enabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   Disabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.transfer_acceleration = transfer_acceleration
+        # The versioning status of the bucket.
         self.versioning = versioning
 
     def validate(self):
@@ -216,8 +290,15 @@ class BucketInfoBucketServerSideEncryptionRule(DaraModel):
         kmsmaster_key_id: str = None,
         ssealgorithm: str = None,
     ):
+        # The algorithm that is used to encrypt objects. If you do not configure this parameter, objects are encrypted by using AES-256. This parameter is valid only when SSEAlgorithm is set to KMS.
+        # 
+        # Valid value: SM4.
         self.kmsdata_encryption = kmsdata_encryption
+        # The key that is managed by Key Management Service (KMS).
         self.kmsmaster_key_id = kmsmaster_key_id
+        # The default server-side encryption method.
+        # 
+        # Valid values: KMS, AES-256, and SM4.
         self.ssealgorithm = ssealgorithm
 
     def validate(self):
@@ -258,7 +339,9 @@ class BucketInfoBucketBucketPolicy(DaraModel):
         log_bucket: str = None,
         log_prefix: str = None,
     ):
+        # The name of the bucket used to store access logs.
         self.log_bucket = log_bucket
+        # The directory used to store access logs.
         self.log_prefix = log_prefix
 
     def validate(self):

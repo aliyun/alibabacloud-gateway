@@ -9,6 +9,7 @@ class ReplicationEncryptionConfiguration(DaraModel):
         self,
         replica_kms_key_id: str = None,
     ):
+        # The KMS key ID used for replication.
         self.replica_kms_key_id = replica_kms_key_id
 
     def validate(self):

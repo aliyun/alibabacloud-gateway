@@ -15,11 +15,17 @@ class BucketProcessConfiguration(DaraModel):
         source_file_protect_suffix: str = None,
         style_delimiters: str = None,
     ):
+        # Image processing channel configuration.
         self.bucket_channel_config = bucket_channel_config
+        # Access host used for image processing.
         self.complied_host = complied_host
+        # Whether to support access image processing with OSS domain.
         self.oss_domain_support_at_process = oss_domain_support_at_process
+        # Whether to protect images from being used by unauthorized anonymous requesters.
         self.source_file_protect = source_file_protect
+        # Suffix of the source file to be protected.
         self.source_file_protect_suffix = source_file_protect_suffix
+        # Delimiters used for image styles.
         self.style_delimiters = style_delimiters
 
     def validate(self):

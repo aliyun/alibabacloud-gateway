@@ -12,8 +12,16 @@ class CreateAccessPointConfiguration(DaraModel):
         network_origin: str = None,
         vpc_configuration: main_models.AccessPointVpcConfiguration = None,
     ):
+        # The name of the access point. The name of the access point must meet the following naming rules:
+        # 
+        # *   The name must be unique in a region of your Alibaba Cloud account.
+        # *   The name cannot end with -ossalias.
+        # *   The name can contain only lowercase letters, digits, and hyphens (-). It cannot start or end with a hyphen (-).
+        # *   The name must be 3 to 19 characters in length.
         self.access_point_name = access_point_name
+        # The network origin of the access point.
         self.network_origin = network_origin
+        # The container that stores the information about the VPC.
         self.vpc_configuration = vpc_configuration
 
     def validate(self):

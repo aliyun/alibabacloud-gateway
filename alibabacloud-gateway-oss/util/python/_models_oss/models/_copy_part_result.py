@@ -10,7 +10,12 @@ class CopyPartResult(DaraModel):
         etag: str = None,
         last_modified: str = None,
     ):
+        # The ETag that is generated when the object is created. ETags are used to identify the content of objects. If an object is created by calling the CompleteMultipartUpload operation, the ETag is not the MD5 hash of the object content but a unique value calculated based on a specific rule.
+        # 
+        # >  The ETag of an object can be used to check whether the object content changes. We recommend that you use the MD5 hash of an object rather than the ETag of the object to verify data integrity.
         self.etag = etag
+        # The time when the part was uploaded.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.last_modified = last_modified
 

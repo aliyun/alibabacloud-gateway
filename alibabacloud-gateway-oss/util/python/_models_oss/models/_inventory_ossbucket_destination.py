@@ -15,11 +15,17 @@ class InventoryOSSBucketDestination(DaraModel):
         prefix: str = None,
         role_arn: str = None,
     ):
+        # The ID of the account to which permissions are granted by the bucket owner.
         self.account_id = account_id
+        # The name of the bucket in which exported inventory lists are stored.
         self.bucket = bucket
+        # The container that stores the encryption method of the exported inventory lists.
         self.encryption = encryption
+        # The format of exported inventory lists. The exported inventory lists are CSV objects compressed by using GZIP.
         self.format = format
+        # The prefix of the path in which the exported inventory lists are stored.
         self.prefix = prefix
+        # The Alibaba Cloud Resource Name (ARN) of the role that has the permissions to read all objects from the source bucket and write objects to the destination bucket. Format: `acs:ram::uid:role/rolename`.
         self.role_arn = role_arn
 
     def validate(self):

@@ -10,6 +10,8 @@ class BucketLoggingStatus(DaraModel):
         self,
         logging_enabled: main_models.LoggingEnabled = None,
     ):
+        # The container that stores the access log information.
+        # 
         # This parameter is required.
         self.logging_enabled = logging_enabled
 

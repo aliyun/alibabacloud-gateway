@@ -18,6 +18,7 @@ import (
 var typeRegistry = make(map[string]reflect.Type)
 
 func init() {
+	// --- BEGIN GENERATED REGISTRY ---
 	// for oss
 	typeRegistry["CompleteMultipartUpload"] = reflect.TypeOf(models.CompleteMultipartUploadResponseBody{})
 	typeRegistry["CopyObject"] = reflect.TypeOf(models.CopyObjectResponseBody{})
@@ -167,6 +168,7 @@ func init() {
 	typeRegistry["ListJobHistory"] = reflect.TypeOf(hcs_mgw_models.ListJobHistoryResponseBody{})
 	typeRegistry["ListTunnel"] = reflect.TypeOf(hcs_mgw_models.ListTunnelResponseBody{})
 	typeRegistry["VerifyAddress"] = reflect.TypeOf(hcs_mgw_models.VerifyAddressResponseBody{})
+	// --- END GENERATED REGISTRY ---
 }
 
 func ParseXml(bodyStr *string, apiName *string) (_result interface{}, _err error) {

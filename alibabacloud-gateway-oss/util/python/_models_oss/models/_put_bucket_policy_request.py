@@ -2,12 +2,14 @@
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
 
+from typing import BinaryIO
+
 from darabonba.model import DaraModel
 
 class PutBucketPolicyRequest(DaraModel):
     def __init__(
         self,
-        policy: str = None,
+        policy: BinaryIO = None,
     ):
         # The request parameters.
         # 

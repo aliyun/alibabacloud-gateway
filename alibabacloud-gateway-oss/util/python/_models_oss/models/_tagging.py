@@ -10,6 +10,7 @@ class Tagging(DaraModel):
         self,
         tag_set: main_models.TagSet = None,
     ):
+        # The container used to store a set of tags.
         self.tag_set = tag_set
 
     def validate(self):

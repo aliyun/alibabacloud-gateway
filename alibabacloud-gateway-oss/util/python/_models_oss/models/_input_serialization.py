@@ -12,8 +12,11 @@ class InputSerialization(DaraModel):
         compression_type: str = None,
         json: main_models.JSONInput = None,
     ):
+        # The format of the input CSV object.
         self.csv = csv
+        # The compression type of the object. This parameter is optional. Valid value: None.
         self.compression_type = compression_type
+        # The format of the input JSON object.
         self.json = json
 
     def validate(self):

@@ -9,6 +9,33 @@ class AccessControlList(DaraModel):
         self,
         grant: str = None,
     ):
+        # The ACL of the bucket.
+        # 
+        # Valid values:
+        # 
+        # *   private
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   public-read
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   public-read-write
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.grant = grant
 
     def validate(self):

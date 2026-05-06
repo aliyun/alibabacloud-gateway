@@ -12,6 +12,7 @@ class CompleteMultipartUpload(DaraModel):
         self,
         part: List[main_models.CompleteMultipartUploadPart] = None,
     ):
+        # The container that stores the uploaded parts.
         self.part = part
 
     def validate(self):
@@ -48,7 +49,13 @@ class CompleteMultipartUploadPart(DaraModel):
         etag: str = None,
         part_number: int = None,
     ):
+        # The ETag that is generated when the object is created. ETags are used to identify the content of objects.
+        # 
+        # If an object is created by calling the CompleteMultipartUpload operation, the ETag is not the MD5 hash of the object content but a unique value calculated based on a specific rule.
+        # 
+        # >  The ETag of an object can be used to check whether the object content changes. We recommend that you use the MD5 hash of an object rather than the ETag of the object to verify data integrity.
         self.etag = etag
+        # The number of parts.
         self.part_number = part_number
 
     def validate(self):

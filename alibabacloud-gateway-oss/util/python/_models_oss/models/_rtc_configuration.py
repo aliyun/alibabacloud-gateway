@@ -11,7 +11,9 @@ class RtcConfiguration(DaraModel):
         id: str = None,
         rtc: main_models.RTC = None,
     ):
+        # The ID of the data replication rule for which you want to configure RTC.
         self.id = id
+        # The container that stores the status of RTC.
         self.rtc = rtc
 
     def validate(self):

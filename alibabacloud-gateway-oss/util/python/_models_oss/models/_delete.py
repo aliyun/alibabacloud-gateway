@@ -13,7 +13,14 @@ class Delete(DaraModel):
         objects: List[main_models.ObjectIdentifier] = None,
         quiet: bool = None,
     ):
+        # The container that stores the information about an object.
         self.objects = objects
+        # Specifies whether to enable the Quiet return mode. The DeleteMultipleObjects operation provides the following return modes:
+        # 
+        # *   quiet: The response does not include a message body.
+        # *   verbose (default): The response includes a message body that contains the information about all deleted objects.
+        # 
+        # Valid values: **true** and **false** Default value: **false**
         self.quiet = quiet
 
     def validate(self):

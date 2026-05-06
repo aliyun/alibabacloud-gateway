@@ -12,8 +12,11 @@ class LoggingEnabled(DaraModel):
         target_prefix: str = None,
     ):
         self.logging_role = logging_role
+        # The bucket that stores access logs.
+        # 
         # This parameter is required.
         self.target_bucket = target_bucket
+        # The prefix of the log objects. This parameter can be left empty.
         self.target_prefix = target_prefix
 
     def validate(self):

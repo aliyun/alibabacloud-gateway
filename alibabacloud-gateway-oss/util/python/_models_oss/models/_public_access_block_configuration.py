@@ -9,6 +9,11 @@ class PublicAccessBlockConfiguration(DaraModel):
         self,
         block_public_access: bool = None,
     ):
+        # Specifies whether to enable Block Public Access.
+        # 
+        # true: enables Block Public Access.
+        # 
+        # false (default): disables Block Public Access.
         self.block_public_access = block_public_access
 
     def validate(self):

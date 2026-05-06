@@ -9,6 +9,7 @@ class ExtendWormConfiguration(DaraModel):
         self,
         retention_period_in_days: int = None,
     ):
+        # The number of days for which objects can be retained.
         self.retention_period_in_days = retention_period_in_days
 
     def validate(self):

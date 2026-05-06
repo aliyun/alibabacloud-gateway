@@ -12,9 +12,31 @@ class LiveChannelTarget(DaraModel):
         playlist_name: str = None,
         type: str = None,
     ):
+        # The number of TS files included in the M3U8 file when the value of Type is HLS.
+        # 
+        # Valid values: [1, 100] Default value: **3**
+        # 
+        # >  If you do not specify values for the FragDuration and FragCount parameters, the default values of the two parameters are used. If you specify one of the parameters, you must also specify the other.
         self.frag_count = frag_count
+        # The duration of each TS file when the value of Type is HLS. Unit: seconds.
+        # 
+        # Valid values: [1, 100]. Default value: **5**
+        # 
+        # >  If you do not specify values for the FragDuration and FragCount parameters, the default values of the two parameters are used. If you specify one of the parameters, you must also specify the other.
         self.frag_duration = frag_duration
+        # The name of the generated M3U8 file when the value of Type is HLS. The name must be 6 to 128 bytes in length and end with .m3u8.
+        # 
+        # Default value: **playlist.m3u8** Valid values: [6, 128]
         self.playlist_name = playlist_name
+        # The format in which the LiveChannel stores uploaded data.
+        # 
+        # Valid value: **HLS**
+        # 
+        # > 
+        # 
+        # *   When you set the value of Type to HLS, Object Storage Service (OSS) updates the M3U8 file each time when a TS file is generated. The maximum number of the latest .ts files that can be included in the M3U8 file is specified by the FragCount parameter.
+        # 
+        # *   If you set the value of Type to HLS and the duration of the audio and video data written to the current TS file exceeds the duration specified by FragDuration, OSS switches to the next TS file when the next key frame is received. If OSS does not receive the next key frame after 60 seconds or twice the duration specified by FragDuration (whichever is greater), OSS forcibly switches to the next TS file. In this case, stuttering may occur during the playback of the stream.
         self.type = type
 
     def validate(self):

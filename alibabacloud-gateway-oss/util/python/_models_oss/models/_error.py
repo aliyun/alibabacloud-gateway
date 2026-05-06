@@ -12,9 +12,13 @@ class Error(DaraModel):
         message: str = None,
         request_id: str = None,
     ):
+        # The error code returned.
         self.code = code
+        # The domain name that is used to access OSS.
         self.host_id = host_id
+        # The error message returned.
         self.message = message
+        # The request ID.
         self.request_id = request_id
 
     def validate(self):

@@ -18,16 +18,35 @@ class ObjectSummary(DaraModel):
         transition_time: str = None,
         type: str = None,
     ):
+        # The ETag that is generated when an object is created. ETags are used to identify the content of objects.
+        # 
+        # *   For an object that is created by calling the PutObject operation, the ETag value of the object is the MD5 hash of its content.
+        # *   For an object that is created by using another method, the ETag value is not the MD5 hash of the object content but a unique value calculated based on a specific rule.
+        # *   The ETag of an object can be used to check whether the object content is modified. We recommend that you use the MD5 hash of an object rather than the ETag of it to verify data integrity.
         self.etag = etag
+        # The key of the object.
         self.key = key
+        # The time when the object was last modified.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.last_modified = last_modified
+        # The container for the information about the bucket owner.
         self.owner = owner
+        # The restoration status of the object.
         self.restore_info = restore_info
+        # The sizes of the returned objects. Unit: byte.
         self.size = size
+        # The storage class of the object.
         self.storage_class = storage_class
+        # The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.transition_time = transition_time
+        # The types of the returned objects.
+        # 
+        # *   Normal: Objects created by using simple upload.
+        # *   Multipart: Objects created by using multipart upload.
+        # *   Appendable: Objects created by using append upload. You can append content to objects only of the Appendable type.
         self.type = type
 
     def validate(self):

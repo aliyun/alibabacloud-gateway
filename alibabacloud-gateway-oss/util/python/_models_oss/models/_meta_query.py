@@ -19,13 +19,24 @@ class MetaQuery(DaraModel):
         simple_query: str = None,
         sort: str = None,
     ):
+        # The container that stores the information about aggregate operations.
         self.aggregations = aggregations
+        # The maximum number of objects to return. Valid values: 0 to 100. If this parameter is not set or is set to 0, up to 100 objects are returned.
         self.max_results = max_results
         self.media_types = media_types
+        # The pagination token used to obtain information in the next request. The object information is returned in alphabetical order starting from the value of NextToken.
         self.next_token = next_token
+        # The sort order.
         self.order = order
+        # The query conditions. A query condition includes the following elements:
+        # 
+        # *   Operation: the operator. Valid values: eq (equal to), gt (greater than), gte (greater than or equal to), lt (less than), lte (less than or equal to), match (fuzzy query), prefix (prefix query), and (AND), or (OR), and not (NOT).
+        # *   Field: the field name.
+        # *   Value: the field value.
+        # *   SubQueries: the subquery conditions. Options that are included in this element are the same as those of simple query. You need to set subquery conditions only when Operation is set to and, or, or not.
         self.query = query
         self.simple_query = simple_query
+        # The field based on which the results are sorted.
         self.sort = sort
 
     def validate(self):
@@ -127,6 +138,7 @@ class MetaQueryAggregations(DaraModel):
         self,
         aggregation: List[main_models.MetaQueryAggregation] = None,
     ):
+        # The container that stores the information about a single aggregate operation.
         self.aggregation = aggregation
 
     def validate(self):

@@ -11,8 +11,13 @@ class LiveChannelAudio(DaraModel):
         codec: str = None,
         sample_rate: int = None,
     ):
+        # The bitrate of the current audio stream.
+        # 
+        # >  Bandwidth indicates the average bitrate of the audio stream or video stream in the recent period. When LiveChannel is switched to the Live state, the returned value of Bandwidth may be 0. Unit: B/s.
         self.bandwidth = bandwidth
+        # The encoding format of the current audio stream.
         self.codec = codec
+        # The sample rate of the current audio stream.
         self.sample_rate = sample_rate
 
     def validate(self):

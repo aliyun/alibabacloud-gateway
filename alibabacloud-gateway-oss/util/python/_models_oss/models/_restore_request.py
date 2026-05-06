@@ -11,7 +11,9 @@ class RestoreRequest(DaraModel):
         days: int = None,
         job_parameters: main_models.RestoreRequestJobParameters = None,
     ):
+        # The duration in which the object can remain in the restored state. Unit: days. Valid values: 1 to 7.
         self.days = days
+        # The container that stores the restoration priority coniguration. This configuration takes effect only when the request is sent to restore Cold Archive objects. If you do not specify the JobParameters parameter, the default restoration priority Standard is used.
         self.job_parameters = job_parameters
 
     def validate(self):
@@ -47,6 +49,11 @@ class RestoreRequestJobParameters(DaraModel):
         self,
         tier: str = None,
     ):
+        # The restoration priority. Valid values:
+        # 
+        # *   Expedited: The object is restored within 1 hour.
+        # *   Standard: The object is restored within 2 to 5 hours.
+        # *   Bulk: The object is restored within 5 to 12 hours.
         self.tier = tier
 
     def validate(self):

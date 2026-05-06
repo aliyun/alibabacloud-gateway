@@ -14,8 +14,11 @@ class BucketChannelConfig(DaraModel):
         rule_list: main_models.BucketChannelConfigRuleList = None,
         version: int = None,
     ):
+        # Debug information for the channel.
         self.debug_info = debug_info
+        # Process rule list.
         self.rule_list = rule_list
+        # Channel version.
         self.version = version
 
     def validate(self):
@@ -57,6 +60,7 @@ class BucketChannelConfigRuleList(DaraModel):
         self,
         rule: List[main_models.BucketChannelConfigRuleListRule] = None,
     ):
+        # The content of the process rule.
         self.rule = rule
 
     def validate(self):
@@ -94,8 +98,11 @@ class BucketChannelConfigRuleListRule(DaraModel):
         rule_name: str = None,
         rule_regex: str = None,
     ):
+        # Channel rule front content.
         self.front_content = front_content
+        # Channel rule name.
         self.rule_name = rule_name
+        # Channel rule regex.
         self.rule_regex = rule_regex
 
     def validate(self):

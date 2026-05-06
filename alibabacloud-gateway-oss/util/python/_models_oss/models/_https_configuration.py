@@ -14,6 +14,7 @@ class HttpsConfiguration(DaraModel):
         tls: main_models.HttpsConfigurationTLS = None,
     ):
         self.cipher_suite = cipher_suite
+        # The container that stores TLS version configurations.
         self.tls = tls
 
     def validate(self):
@@ -53,8 +54,29 @@ class HttpsConfigurationTLS(DaraModel):
         enable: bool = None,
         tlsversion: List[str] = None,
     ):
+        # Specifies whether to enable TLS version management for the bucket.
+        # 
+        # Valid values:
+        # 
+        # *   true
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   false
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
         # This parameter is required.
         self.enable = enable
+        # The TLS versions.
         self.tlsversion = tlsversion
 
     def validate(self):

@@ -12,8 +12,14 @@ class ReplicationRuleProgress(DaraModel):
         id: str = None,
         prefix_set: main_models.ReplicationPrefixSet = None,
     ):
+        # The operations that are synchronized to the destination bucket. You can set Action to one or more of the following operation types.
+        # 
+        # *   ALL: PUT, DELETE, and ABORT operations are synchronized to the destination bucket.
+        # *   PUT: Write operations are synchronized to the destination bucket, including PutObject, PostObject, AppendObject, CopyObject, PutObjectACL, InitiateMultipartUpload, UploadPart, UploadPartCopy, and CompleteMultipartUpload.
         self.action = action
+        # The ID of the data replication rule.
         self.id = id
+        # The container that stores prefixes. You can specify up to 10 prefixes in each data replication rule.
         self.prefix_set = prefix_set
 
     def validate(self):
