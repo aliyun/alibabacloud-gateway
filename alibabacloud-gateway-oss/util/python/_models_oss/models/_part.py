@@ -12,10 +12,15 @@ class Part(DaraModel):
         part_number: int = None,
         size: int = None,
     ):
+        # The ETag value that is returned by OSS after the part is uploaded.
         self.etag = etag
+        # The time when the part was uploaded.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.last_modified = last_modified
+        # The part number.
         self.part_number = part_number
+        # The size of the part.
         self.size = size
 
     def validate(self):

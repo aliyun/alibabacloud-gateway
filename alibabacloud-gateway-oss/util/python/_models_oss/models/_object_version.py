@@ -19,17 +19,37 @@ class ObjectVersion(DaraModel):
         transition_time: str = None,
         version_id: str = None,
     ):
+        # The ETag that is generated when an object is created. ETags are used to identify the content of objects.
+        # 
+        # *   For an object that is created by calling the PutObject operation, the ETag value of the object is the MD5 hash of its content.
+        # *   For an object that is created by using another method, the ETag value is not the MD5 hash of the object content but a unique value calculated based on a specific rule.
+        # 
+        # >  The ETag value of an object can be used only to check whether the content of the object is modified. We recommend that you use the MD5 hash of an object rather than the ETag of it to verify data integrity.
         self.etag = etag
+        # Indicates whether the version of the object is the current version. Valid values:
+        # 
+        # *   true: The version is the current version.
+        # *   false: The version is a previous version.
         self.is_latest = is_latest
+        # The name of the object.
         self.key = key
+        # The time when the object was last modified.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.last_modified = last_modified
+        # The container for the information about the bucket owner.
         self.owner = owner
+        # The restoration status of the object version.
         self.restore_info = restore_info
+        # The size of the object.
         self.size = size
+        # The storage class of the object.
         self.storage_class = storage_class
+        # The time when a version of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.transition_time = transition_time
+        # The version ID of the object.
         self.version_id = version_id
 
     def validate(self):

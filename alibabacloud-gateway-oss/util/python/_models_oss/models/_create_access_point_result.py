@@ -10,7 +10,9 @@ class CreateAccessPointResult(DaraModel):
         access_point_arn: str = None,
         alias: str = None,
     ):
+        # The Alibaba Cloud Resource Name (ARN) of the access point.
         self.access_point_arn = access_point_arn
+        # The alias of the access point.
         self.alias = alias
 
     def validate(self):

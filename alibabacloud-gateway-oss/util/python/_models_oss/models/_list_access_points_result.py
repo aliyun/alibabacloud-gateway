@@ -16,10 +16,18 @@ class ListAccessPointsResult(DaraModel):
         max_keys: int = None,
         next_continuation_token: str = None,
     ):
+        # The container that stores the information about all access points.
         self.access_points = access_points
+        # The ID of the Alibaba Cloud account to which the access point belongs.
         self.account_id = account_id
+        # Indicates whether the returned list is truncated. 
+        # Valid values: 
+        # * true: indicates that not all results are returned. 
+        # * false: indicates that all results are returned.
         self.is_truncated = is_truncated
+        # The maximum number of results set for this enumeration operation.
         self.max_keys = max_keys
+        # Indicates that this ListAccessPoints request does not return all results that can be listed. You can use NextContinuationToken to continue obtaining list results.
         self.next_continuation_token = next_continuation_token
 
     def validate(self):
@@ -73,6 +81,7 @@ class ListAccessPointsResultAccessPoints(DaraModel):
         self,
         access_point: List[main_models.AccessPoint] = None,
     ):
+        # The container that stores the information about all access point.
         self.access_point = access_point
 
     def validate(self):

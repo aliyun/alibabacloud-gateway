@@ -12,6 +12,7 @@ class LifecycleConfiguration(DaraModel):
         self,
         rule: List[main_models.LifecycleRule] = None,
     ):
+        # The container that stores the lifecycle rules. The period of time after which objects expire must be longer than the period of time after which the storage class of the same objects is converted to Infrequent Access (IA) or Archive.
         self.rule = rule
 
     def validate(self):

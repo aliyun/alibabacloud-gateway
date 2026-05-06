@@ -30,6 +30,7 @@ class MetaQueryFile(DaraModel):
         filename: str = None,
         image_height: int = None,
         image_width: int = None,
+        insights: main_models.MetaQueryRespFileInsights = None,
         lat_long: str = None,
         media_type: str = None,
         osscrc64: str = None,
@@ -69,27 +70,213 @@ class MetaQueryFile(DaraModel):
         self.content_language = content_language
         self.content_type = content_type
         self.duration = duration
+        # The ETag of the object.
         self.etag = etag
+        # The time when the object was last modified.
         self.file_modified_time = file_modified_time
+        # The full path of the object.
         self.filename = filename
         self.image_height = image_height
         self.image_width = image_width
+        self.insights = insights
         self.lat_long = lat_long
         self.media_type = media_type
+        # The CRC-64 value of the object.
         self.osscrc64 = osscrc64
         self.ossexpiration = ossexpiration
+        # The type of the object.
+        # 
+        # Valid values:
+        # 
+        # *   Multipart
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     The object is uploaded by using multipart upload
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   Symlink
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     The object is a symbolic link that was created by calling the PutSymlink operation.
+        # 
+        #     <!-- -->
+        # 
+        # *   Appendable
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     The object is uploaded by using AppendObject
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   Normal
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     The object is uploaded by using PutObject
+        # 
+        #     <!-- -->
+        # 
+        #     .
         self.ossobject_type = ossobject_type
+        # The storage class of the object.
+        # 
+        # Valid values:
+        # 
+        # *   Archive
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     the Archive storage class
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   ColdArchive
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     the Cold Archive storage class
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   IA
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     the Infrequent Access (IA) storage class
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   Standard
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     The Standard storage class
+        # 
+        #     <!-- -->
+        # 
+        #     .
         self.ossstorage_class = ossstorage_class
+        # The list of object tags.
         self.osstagging = osstagging
+        # The number of the tags of the object.
         self.osstagging_count = osstagging_count
+        # The container that stores user metadata.
         self.ossuser_meta = ossuser_meta
+        # The access control list (ACL) of the object.
+        # 
+        # Valid values:
+        # 
+        # *   default
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     the ACL of the bucket
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   private
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     private
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   public-read
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     public-read
+        # 
+        #     <!-- -->
+        # 
+        #     .
+        # 
+        # *   public-read-write
+        # 
+        #     <!-- -->
+        # 
+        #     :
+        # 
+        #     <!-- -->
+        # 
+        #     public-read-write
+        # 
+        #     <!-- -->
+        # 
+        #     .
         self.object_acl = object_acl
         self.performer = performer
         self.produce_time = produce_time
         self.server_side_data_encryption = server_side_data_encryption
+        # The server-side encryption of the object.
         self.server_side_encryption = server_side_encryption
+        # The server-side encryption algorithm used when the object was created.
         self.server_side_encryption_customer_algorithm = server_side_encryption_customer_algorithm
         self.server_side_encryption_key_id = server_side_encryption_key_id
+        # The object size.
         self.size = size
         self.subtitles = subtitles
         self.title = title
@@ -103,6 +290,8 @@ class MetaQueryFile(DaraModel):
             self.addresses.validate()
         if self.audio_streams:
             self.audio_streams.validate()
+        if self.insights:
+            self.insights.validate()
         if self.osstagging:
             self.osstagging.validate()
         if self.ossuser_meta:
@@ -176,6 +365,9 @@ class MetaQueryFile(DaraModel):
 
         if self.image_width is not None:
             result['ImageWidth'] = self.image_width
+
+        if self.insights is not None:
+            result['Insights'] = self.insights.to_map()
 
         if self.lat_long is not None:
             result['LatLong'] = self.lat_long
@@ -311,6 +503,10 @@ class MetaQueryFile(DaraModel):
 
         if m.get('ImageWidth') is not None:
             self.image_width = m.get('ImageWidth')
+
+        if m.get('Insights') is not None:
+            temp_model = main_models.MetaQueryRespFileInsights()
+            self.insights = temp_model.from_map(m.get('Insights'))
 
         if m.get('LatLong') is not None:
             self.lat_long = m.get('LatLong')
@@ -450,6 +646,7 @@ class MetaQueryFileOSSUserMeta(DaraModel):
         self,
         user_meta: List[main_models.MetaQueryUserMeta] = None,
     ):
+        # The user metadata items.
         self.user_meta = user_meta
 
     def validate(self):
@@ -485,6 +682,7 @@ class MetaQueryFileOSSTagging(DaraModel):
         self,
         tagging: List[main_models.MetaQueryTagging] = None,
     ):
+        # The tags.
         self.tagging = tagging
 
     def validate(self):

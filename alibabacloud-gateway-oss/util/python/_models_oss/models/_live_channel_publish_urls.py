@@ -9,6 +9,13 @@ class LiveChannelPublishUrls(DaraModel):
         self,
         url: str = None,
     ):
+        # The URL used to ingest streams to the LiveChannel.
+        # 
+        # > 
+        # 
+        # *   The URL used to ingest streams is not signed. If the ACL of the bucket is not public-read-write, you must add a signature to the URL before you use the URL to access the bucket.
+        # 
+        # *   The URL used to play streams is not signed. If the ACL of the bucket is private, you must add a signature to the URL before you use the URL to access the bucket.
         self.url = url
 
     def validate(self):

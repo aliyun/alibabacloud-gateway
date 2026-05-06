@@ -11,8 +11,14 @@ class ReplicationDestination(DaraModel):
         location: str = None,
         transfer_type: str = None,
     ):
+        # The destination bucket to which data is replicated.
         self.bucket = bucket
+        # The region in which the destination bucket is located.
         self.location = location
+        # The link that is used to transfer data during data replication. Valid values:
+        # 
+        # *   internal (default): the default data transfer link used in OSS.
+        # *   oss_acc: the transfer acceleration link. You can set TransferType to oss_acc only when you create CRR rules.
         self.transfer_type = transfer_type
 
     def validate(self):

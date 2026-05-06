@@ -10,6 +10,7 @@ class GetBucketOverwriteConfigResponseBody(DaraModel):
         self,
         overwrite_configuration: main_models.OverwriteConfiguration = None,
     ):
+        # Container for Saving Bucket Overwrite Rules
         self.overwrite_configuration = overwrite_configuration
 
     def validate(self):

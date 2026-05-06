@@ -13,9 +13,15 @@ class LiveChannelConfiguration(DaraModel):
         status: str = None,
         target: main_models.LiveChannelTarget = None,
     ):
+        # The description of the LiveChannel. The description can be up to 128 bytes in length.
         self.description = description
+        # The container that stores the options of the high-frequency snapshot operations.
         self.snapshot = snapshot
+        # The status of the LiveChannel.
+        # 
+        # Valid values: **enabled** and **disabled**. Default value: **enabled**.
         self.status = status
+        # The container that stores the configurations used by the LiveChannel to store uploaded data.
         self.target = target
 
     def validate(self):

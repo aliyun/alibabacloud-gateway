@@ -11,7 +11,9 @@ class InventoryEncryption(DaraModel):
         ssekms: main_models.SSEKMS = None,
         sseoss: str = None,
     ):
+        # The container that stores the customer master key (CMK) used for SSE-KMS encryption.
         self.ssekms = ssekms
+        # The container that stores information about the SSE-OSS encryption method.
         self.sseoss = sseoss
 
     def validate(self):

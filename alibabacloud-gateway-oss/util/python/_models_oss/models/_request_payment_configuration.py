@@ -9,6 +9,10 @@ class RequestPaymentConfiguration(DaraModel):
         self,
         payer: str = None,
     ):
+        # The payer of the request and traffic fees. Valid values:
+        # 
+        # *   BucketOwner: The bucket owner is charged request fees and traffic fees.
+        # *   Requester: The requester is charged request fees and traffic fees.
         self.payer = payer
 
     def validate(self):

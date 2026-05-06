@@ -10,7 +10,9 @@ class Owner(DaraModel):
         display_name: str = None,
         id: str = None,
     ):
+        # The name of the bucket owner, which is the same as the user ID.
         self.display_name = display_name
+        # The user ID of the bucket owner.
         self.id = id
 
     def validate(self):

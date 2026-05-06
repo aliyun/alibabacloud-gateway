@@ -9,6 +9,10 @@ class Style(DaraModel):
         self,
         content: str = None,
     ):
+        # The content of the image style. You can include one or more IMG actions in an image style.
+        # 
+        # *   Style with a single IMG action. For example, image/resize,p_50 reduces the size of an image by half.
+        # *   Style with multiple IMG actions. For example, image/resize,p_63/quality,q_90 resizes an image to 63% of its original size and sets the relative quality to 90%.
         self.content = content
 
     def validate(self):

@@ -13,7 +13,9 @@ class ObjectProcessConfiguration(DaraModel):
         allowed_features: main_models.ObjectProcessConfigurationAllowedFeatures = None,
         transformation_configurations: main_models.ObjectProcessConfigurationTransformationConfigurations = None,
     ):
+        # The container that stores allowed features.
         self.allowed_features = allowed_features
+        # The container that stores the transformation configurations.
         self.transformation_configurations = transformation_configurations
 
     def validate(self):
@@ -52,6 +54,7 @@ class ObjectProcessConfigurationTransformationConfigurations(DaraModel):
         self,
         transformation_configuration: List[main_models.ObjectProcessConfigurationTransformationConfigurationsTransformationConfiguration] = None,
     ):
+        # The container that stores the transformation configurations.
         self.transformation_configuration = transformation_configuration
 
     def validate(self):
@@ -88,7 +91,9 @@ class ObjectProcessConfigurationTransformationConfigurationsTransformationConfig
         actions: main_models.ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationActions = None,
         content_transformation: main_models.ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformation = None,
     ):
+        # The container that stores the operations.
         self.actions = actions
+        # The container that stores the content of the transformation configurations.
         self.content_transformation = content_transformation
 
     def validate(self):
@@ -129,6 +134,7 @@ class ObjectProcessConfigurationTransformationConfigurationsTransformationConfig
         function_compute: main_models.ObjectProcessConfigurationTransformationConfigurationsTransformationConfigurationContentTransformationFunctionCompute = None,
     ):
         self.additional_features = additional_features
+        # The container that stores the information about Function Compute.
         self.function_compute = function_compute
 
     def validate(self):
@@ -168,7 +174,9 @@ class ObjectProcessConfigurationTransformationConfigurationsTransformationConfig
         function_arn: str = None,
         function_assume_role_arn: str = None,
     ):
+        # The ARN of the function. For more information,
         self.function_arn = function_arn
+        # The Alibaba Cloud Resource Name (ARN) of the role that Function Compute uses to access your resources in other cloud services. The default role is AliyunFCDefaultRole.
         self.function_assume_role_arn = function_assume_role_arn
 
     def validate(self):
@@ -258,6 +266,7 @@ class ObjectProcessConfigurationTransformationConfigurationsTransformationConfig
         self,
         action: List[str] = None,
     ):
+        # The supported OSS API operations. Only the GetObject operation is supported.
         self.action = action
 
     def validate(self):
@@ -285,6 +294,7 @@ class ObjectProcessConfigurationAllowedFeatures(DaraModel):
         self,
         allowed_feature: List[str] = None,
     ):
+        # Specifies that Function Compute supports Range GetObject requests.
         self.allowed_feature = allowed_feature
 
     def validate(self):

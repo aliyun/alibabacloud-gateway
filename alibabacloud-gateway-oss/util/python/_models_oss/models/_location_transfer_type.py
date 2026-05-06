@@ -13,7 +13,9 @@ class LocationTransferType(DaraModel):
         location: str = None,
         transfer_types: main_models.LocationTransferTypeTransferTypes = None,
     ):
+        # The regions in which the destination bucket can be located.
         self.location = location
+        # The container that stores the transfer type.
         self.transfer_types = transfer_types
 
     def validate(self):
@@ -49,6 +51,10 @@ class LocationTransferTypeTransferTypes(DaraModel):
         self,
         type: List[str] = None,
     ):
+        # The data transfer type that is used to transfer data in data replication. Valid values:
+        # 
+        # *   internal (default): the default data transfer link used in OSS.
+        # *   oss_acc: the link in which data transmission is accelerated. You can set TransferType to oss_acc only when you create CRR rules.
         self.type = type
 
     def validate(self):

@@ -48,42 +48,135 @@ class RoutingRuleRedirect(DaraModel):
         replace_key_with: str = None,
         transparent_mirror_response_codes: str = None,
     ):
+        # If this parameter is set to true, the prefix of the object names is replaced with the value specified by ReplaceKeyPrefixWith. If this parameter is not specified or empty, the prefix of object names is truncated.
+        # 
+        # >  When the ReplaceKeyWith parameter is not empty, the EnableReplacePrefix parameter cannot be set to true.
+        # 
+        # Default value: false.
         self.enable_replace_prefix = enable_replace_prefix
+        # The domain name used for redirection. The domain name must comply with the domain naming rules. For example, if you access an object named test, Protocol is set to https, and Hostname is set to `example.com`, the value of the Location header is `https://example.com/test`.
         self.host_name = host_name
+        # The HTTP redirect code in the response. This parameter takes effect only when RedirectType is set to External or AliCDN. Valid values: 301, 302, and 307.
         self.http_redirect_code = http_redirect_code
+        # Whether to allow get image information in mirror-based back-to-origin.
         self.mirror_allow_get_image_info = mirror_allow_get_image_info
+        # Whether to allow take HeadObject in mirror-based back-to-origin.
         self.mirror_allow_head_object = mirror_allow_head_object
+        # Whether to allow take video snapshot in mirror-based back-to-origin.
         self.mirror_allow_video_snapshot = mirror_allow_video_snapshot
+        # The HTTP status codes that trigger the asynchronous pull mode in mirror-based back-to-origin.
         self.mirror_async_status = mirror_async_status
+        # The authentication information for the origin server in mirror-based back-to-origin.
         self.mirror_auth = mirror_auth
+        # Specifies whether to check the MD5 hash of the body of the response returned by the origin. This parameter takes effect only when the value of RedirectType is Mirror. When **MirrorCheckMd5** is set to true and the response returned by the origin includes the Content-Md5 header, OSS checks whether the MD5 hash of the obtained data matches the header value. If the MD5 hash of the obtained data does not match the header value, the obtained data is not stored in OSS. Default value: false.
         self.mirror_check_md_5 = mirror_check_md_5
+        # The VPC region for mirror-based back-to-origin express tunnel.
         self.mirror_dst_region = mirror_dst_region
+        # The slave VPC ID for mirror-based back-to-origin express tunnel.
         self.mirror_dst_slave_vpc_id = mirror_dst_slave_vpc_id
+        # The VPC ID for mirror-based back-to-origin express tunnel.
         self.mirror_dst_vpc_id = mirror_dst_vpc_id
+        # Specifies whether to redirect the access to the address specified by Location if the origin returns an HTTP 3xx status code. This parameter takes effect only when the value of RedirectType is Mirror. For example, when a mirroring-based back-to-origin request is initiated, the origin returns 302 and Location is specified.
+        # 
+        # *   If you set MirrorFollowRedirect to true, OSS continues requesting the resource at the address specified by Location. The access can be redirected up to 10 times. If the access is redirected more than 10 times, the mirroring-based back-to-origin request fails.
+        # *   If you set MirrorFollowRedirect to false, OSS returns 302 and passes through Location.
+        # 
+        # Default value: true.
         self.mirror_follow_redirect = mirror_follow_redirect
+        # The headers contained in the response that is returned when you use mirroring-based back-to-origin. This parameter takes effect only when the value of RedirectType is Mirror.
         self.mirror_headers = mirror_headers
+        # Mirror-based back-to-origin with express tunnel.
         self.mirror_is_express_tunnel = mirror_is_express_tunnel
+        # The container to store the configuration for multiple origins in mirror-based back-to-origin.
         self.mirror_multi_alternates = mirror_multi_alternates
+        # Whether to pass slashes to origin.
         self.mirror_pass_original_slashes = mirror_pass_original_slashes
+        # This parameter plays the same role as PassQueryString and has a higher priority than PassQueryString. This parameter takes effect only when the value of RedirectType is Mirror. Default value: false.
+        # 
+        # Valid values:
+        # 
+        # *   true
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   false
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.mirror_pass_query_string = mirror_pass_query_string
+        # Not save data in web-based back-to-origin.
         self.mirror_proxy_pass = mirror_proxy_pass
+        # Container to store the rules for setting response headers in mirror-based back-to-origin.
         self.mirror_return_headers = mirror_return_headers
+        # The role name used for mirror-based back-to-origin.
         self.mirror_role = mirror_role
+        # 是否透传SNI
         self.mirror_sni = mirror_sni
+        # Whether to store the user defined metadata in mirror-based back-to-origin.
         self.mirror_save_oss_meta = mirror_save_oss_meta
+        # Used for determining the state of primary-secondary switching. The logic for primary-secondary switching is based on the error code returned by the origin server. If MirrorSwitchAllErrors is set to true, all status codes except the following are considered failures: 200, 206, 301, 302, 303, 307, 404. If it is set to false, only status codes in the 5xx range or timeouts are considered failures.
         self.mirror_switch_all_errors = mirror_switch_all_errors
+        # The rules for setting tags when saving files during mirror-based back-to-origin.
         self.mirror_taggings = mirror_taggings
+        # The tunnel ID for mirror-based back-to-origin.
         self.mirror_tunnel_id = mirror_tunnel_id
+        # The origin URL for mirroring-based back-to-origin. This parameter takes effect only when the value of RedirectType is Mirror. The origin URL must start with \\*\\*http://** or **https://\\*\\* and end with a forward slash (/). OSS adds an object name to the end of the URL to generate a back-to-origin URL. For example, the name of the object to access is myobject. If MirrorURL is set to `http://example.com/`, the back-to-origin URL is `http://example.com/myobject`. If MirrorURL is set to `http://example.com/dir1/`, the back-to-origin URL is `http://example.com/dir1/myobject`.
+        # 
+        # >  This parameter must be specified if RedirectType is set to Mirror.
+        # 
+        # Valid values:
+        # 
+        # *   true
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   false
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.mirror_url = mirror_url
+        # The probe URL for mirror-based back-to-origin.
         self.mirror_urlprobe = mirror_urlprobe
+        # The slave URL for mirror-based back-to-origin.
         self.mirror_urlslave = mirror_urlslave
+        # Use LastModifiedTime of the file from origin.
         self.mirror_user_last_modified = mirror_user_last_modified
+        # Whether to use role for mirror-based back-to-origin.
         self.mirror_using_role = mirror_using_role
+        # Specifies whether to include parameters of the original request in the redirection request when the system runs the redirection rule or mirroring-based back-to-origin rule. For example, if the **PassQueryString** parameter is set to true, the `?a=b&c=d` parameter string is included in a request sent to OSS, and the redirection mode is 302, this parameter is added to the Location header. For example, if the request is `Location:example.com?a=b&c=d` and the redirection type is mirroring-based back-to-origin, the ?a=b\\&c=d parameter string is also included in the back-to-origin request. Valid values: true and false (default).
         self.pass_query_string = pass_query_string
+        # The protocol used for redirection. This parameter takes effect only when RedirectType is set to External or AliCDN. For example, if you access an object named test, Protocol is set to https, and Hostname is set to `example.com`, the value of the Location header is `https://example.com/test`. Valid values: **http** and **https**.
         self.protocol = protocol
+        # The redirection type. Valid values:
+        # 
+        # *   **Mirror**: mirroring-based back-to-origin.
+        # *   **External**: external redirection. OSS returns an HTTP 3xx status code and returns an address for you to redirect to.
+        # *   **AliCDN**: redirection based on Alibaba Cloud CDN. Compared with external redirection, OSS adds an additional header to the request. After Alibaba Cloud CDN identifies the header, Alibaba Cloud CDN redirects the access to the specified address and returns the obtained data instead of the HTTP 3xx status code that redirects the access to another address.
+        # 
+        # >  This parameter must be specified if Redirect is specified.
         self.redirect_type = redirect_type
+        # The string that is used to replace the prefix of the object name during redirection. If the prefix of an object name is empty, the string precedes the object name.
+        # 
+        # >  You can specify only one of the ReplaceKeyWith and ReplaceKeyPrefixWith parameters in a rule. For example, if you access an object named abc/test.txt, KeyPrefixEquals is set to abc/, ReplaceKeyPrefixWith is set to def/, the value of the Location header is `http://example.com/def/test.txt`.
         self.replace_key_prefix_with = replace_key_prefix_with
+        # The string that is used to replace the requested object name when the request is redirected. This parameter can be set to the ${key} variable, which indicates the object name in the request. For example, if ReplaceKeyWith is set to `prefix/${key}.suffix` and the object to access is test, the value of the Location header is `http://example.com/prefix/test.suffix`.
         self.replace_key_with = replace_key_with
+        # Specify which status codes returned by the origin server should be passed through to the client along with the body. The value should be HTTP status codes such as 4xx, 5xx, etc., separated by commas (,), for example, 400,404. This setting takes effect only when RedirectType is set to Mirror. When OSS requests content from the origin server, if the origin server returns one of the status codes specified in this parameter, OSS will pass through the status code and body returned by the origin server to the client.
+        # > If the 404 status code is specified in this parameter, the configured ErrorDocument will be ineffective.
         self.transparent_mirror_response_codes = transparent_mirror_response_codes
 
     def validate(self):
@@ -341,6 +434,7 @@ class RoutingRuleRedirectMirrorTaggings(DaraModel):
         self,
         taggings: List[main_models.RoutingRuleRedirectMirrorTaggingsTaggings] = None,
     ):
+        # The rule list for setting tags.
         self.taggings = taggings
 
     def validate(self):
@@ -377,7 +471,9 @@ class RoutingRuleRedirectMirrorTaggingsTaggings(DaraModel):
         key: str = None,
         value: str = None,
     ):
+        # The tag key.
         self.key = key
+        # The rule for setting tag value for a specific tag key.
         self.value = value
 
     def validate(self):
@@ -411,6 +507,7 @@ class RoutingRuleRedirectMirrorReturnHeaders(DaraModel):
         self,
         return_header: List[main_models.RoutingRuleRedirectMirrorReturnHeadersReturnHeader] = None,
     ):
+        # The rule list for setting response headers in mirror-based back-to-origin.
         self.return_header = return_header
 
     def validate(self):
@@ -447,7 +544,9 @@ class RoutingRuleRedirectMirrorReturnHeadersReturnHeader(DaraModel):
         key: str = None,
         value: str = None,
     ):
+        # The response header.
         self.key = key
+        # The rule for setting response header value for a specific header.
         self.value = value
 
     def validate(self):
@@ -481,6 +580,7 @@ class RoutingRuleRedirectMirrorMultiAlternates(DaraModel):
         self,
         mirror_multi_alternate: List[main_models.RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate] = None,
     ):
+        # The configuration list for multiple origins.
         self.mirror_multi_alternate = mirror_multi_alternate
 
     def validate(self):
@@ -519,9 +619,13 @@ class RoutingRuleRedirectMirrorMultiAlternatesMirrorMultiAlternate(DaraModel):
         mirror_multi_alternate_url: str = None,
         mirror_multi_alternate_vpc_id: str = None,
     ):
+        # The region for a specific origin.
         self.mirror_multi_alternate_dst_region = mirror_multi_alternate_dst_region
+        # The distinct number of a specific origin.
         self.mirror_multi_alternate_number = mirror_multi_alternate_number
+        # The URL for a specific origin.
         self.mirror_multi_alternate_url = mirror_multi_alternate_url
+        # The VPC ID for a specific origin.
         self.mirror_multi_alternate_vpc_id = mirror_multi_alternate_vpc_id
 
     def validate(self):
@@ -570,9 +674,36 @@ class RoutingRuleRedirectMirrorHeaders(DaraModel):
         remove: List[str] = None,
         set: List[main_models.RoutingRuleRedirectMirrorHeadersSet] = None,
     ):
+        # The headers to pass through to the origin. This parameter takes effect only when the value of RedirectType is Mirror. Each specified header can be up to 1,024 bytes in length and can contain only letters, digits, and hyphens (-). You can specify up to 10 headers.
         self.pass_ = pass_
+        # Specifies whether to pass through all request headers other than the following headers to the origin. This parameter takes effect only when the value of RedirectType is Mirror.
+        # 
+        # *   Headers such as content-length, authorization2, authorization, range, and date
+        # *   Headers that start with oss-, x-oss-, and x-drs-
+        # 
+        # Default value: false.
+        # 
+        # Valid values:
+        # 
+        # *   true
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   false
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.pass_all = pass_all
+        # The headers that are not allowed to pass through to the origin. This parameter takes effect only when the value of RedirectType is Mirror. Each header can be up to 1,024 bytes in length and can contain only letters, digits, and hyphens (-). You can specify up to 10 headers. This parameter is used together with PassAll.
         self.remove = remove
+        # The headers that are sent to the origin. The specified headers are configured in the data returned by the origin regardless of whether the headers are contained in the request. This parameter takes effect only when the value of RedirectType is Mirror. You can specify up to 10 headers.
         self.set = set
 
     def validate(self):
@@ -627,7 +758,13 @@ class RoutingRuleRedirectMirrorHeadersSet(DaraModel):
         key: str = None,
         value: str = None,
     ):
+        # The key of the header. The key can be up to 1,024 bytes in length and can contain only letters, digits, and hyphens (-). This parameter takes effect only when the value of RedirectType is Mirror.
+        # 
+        # >  This parameter must be specified if Set is specified.
         self.key = key
+        # The value of the header. The value can be up to 1,024 bytes in length and cannot contain `\\r\\n`. This parameter takes effect only when the value of RedirectType is Mirror.
+        # 
+        # >  This parameter must be specified if Set is specified.
         self.value = value
 
     def validate(self):
@@ -664,9 +801,13 @@ class RoutingRuleRedirectMirrorAuth(DaraModel):
         auth_type: str = None,
         region: str = None,
     ):
+        # The access key id for signature.
         self.access_key_id = access_key_id
+        # The access key secret for signature.
         self.access_key_secret = access_key_secret
+        # The authentication type.
         self.auth_type = auth_type
+        # The sign region for signature.
         self.region = region
 
     def validate(self):

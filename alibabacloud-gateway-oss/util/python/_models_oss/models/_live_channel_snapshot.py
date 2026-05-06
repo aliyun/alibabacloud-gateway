@@ -12,9 +12,13 @@ class LiveChannelSnapshot(DaraModel):
         notify_topic: str = None,
         role_name: str = None,
     ):
+        # The bucket that stores the results of high-frequency snapshot operations. The bucket must belong to the same owner as the current bucket.
         self.dest_bucket = dest_bucket
+        # The interval of high-frequency snapshot operations. If no key frame (inline frame) exists within the interval, no snapshot is captured. Unit: seconds. Valid values: [1, 100].
         self.interval = interval
+        # The Message Service (MNS) topic used to notify users of the results of high-frequency snapshot operations.
         self.notify_topic = notify_topic
+        # The name of the role used to perform high-frequency snapshot operations. The role must have the write permissions on DestBucket and the permissions to send messages to NotifyTopic.
         self.role_name = role_name
 
     def validate(self):

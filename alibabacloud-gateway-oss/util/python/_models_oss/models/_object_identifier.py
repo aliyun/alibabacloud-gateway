@@ -10,8 +10,11 @@ class ObjectIdentifier(DaraModel):
         key: str = None,
         version_id: str = None,
     ):
+        # The key of the object.
+        # 
         # This parameter is required.
         self.key = key
+        # The version ID.
         self.version_id = version_id
 
     def validate(self):

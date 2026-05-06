@@ -9,6 +9,7 @@ class LiveChannelPlayUrls(DaraModel):
         self,
         url: str = None,
     ):
+        # The playback URL.
         self.url = url
 
     def validate(self):

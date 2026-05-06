@@ -9,6 +9,13 @@ class InventorySchedule(DaraModel):
         self,
         frequency: str = None,
     ):
+        # The frequency at which the inventory list is exported. 
+        # 
+        # Valid values:
+        # 
+        # - Daily: The inventory list is exported on a daily basis. 
+        # 
+        # - Weekly: The inventory list is exported on a weekly basis.
         self.frequency = frequency
 
     def validate(self):

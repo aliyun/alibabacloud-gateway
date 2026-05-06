@@ -11,8 +11,11 @@ class LiveRecord(DaraModel):
         remote_addr: str = None,
         start_time: str = None,
     ):
+        # The end time of stream ingest, which is in the ISO8601 format.
         self.end_time = end_time
+        # The IP address of the stream ingest client.
         self.remote_addr = remote_addr
+        # The start time of stream ingest, which is in the ISO8601 format.
         self.start_time = start_time
 
     def validate(self):

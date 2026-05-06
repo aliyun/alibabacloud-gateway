@@ -101,6 +101,7 @@ instanceRegistry["GetBucketRequesterQoSInfo"] = build_instance_from_model(main_m
 instanceRegistry["GetBucketResourceGroup"] = build_instance_from_model(main_models.GetBucketResourceGroupResponseBody)
 instanceRegistry["GetBucketResponseHeader"] = build_instance_from_model(main_models.GetBucketResponseHeaderResponseBody)
 instanceRegistry["GetBucketStat"] = build_instance_from_model(main_models.GetBucketStatResponseBody)
+instanceRegistry["GetBucketStorageQuota"] = build_instance_from_model(main_models.GetBucketStorageQuotaResponseBody)
 instanceRegistry["GetBucketTags"] = build_instance_from_model(main_models.GetBucketTagsResponseBody)
 instanceRegistry["GetBucketTransferAcceleration"] = build_instance_from_model(main_models.GetBucketTransferAccelerationResponseBody)
 instanceRegistry["GetBucketVersioning"] = build_instance_from_model(main_models.GetBucketVersioningResponseBody)

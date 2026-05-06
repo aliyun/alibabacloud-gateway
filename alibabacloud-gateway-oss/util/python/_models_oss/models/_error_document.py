@@ -10,7 +10,9 @@ class ErrorDocument(DaraModel):
         http_status: int = None,
         key: str = None,
     ):
+        # The HTTP status code returned with the error page.
         self.http_status = http_status
+        # The error page.
         self.key = key
 
     def validate(self):

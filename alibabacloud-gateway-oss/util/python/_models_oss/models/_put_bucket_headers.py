@@ -23,6 +23,7 @@ class PutBucketHeaders(DaraModel):
         # 
         # For more information, see [Bucket ACL](https://help.aliyun.com/document_detail/31843.html).
         self.acl = acl
+        # 指定Bucket标签，如 k1=v1&k2=v2。
         self.x_oss_bucket_tagging = x_oss_bucket_tagging
         # The ID of the resource group.
         # 

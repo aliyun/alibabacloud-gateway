@@ -11,6 +11,10 @@ class ReplicationPrefixSet(DaraModel):
         self,
         prefixs: List[str] = None,
     ):
+        # The prefix that is used to specify the object that you want to replicate. Only objects whose names contain the specified prefix are replicated to the destination bucket.
+        # 
+        # *   The value of the Prefix parameter can be up to 1,023 characters in length.
+        # *   If you specify the Prefix parameter in a data replication rule, OSS synchronizes new data and historical data based on the value of the Prefix parameter.
         self.prefixs = prefixs
 
     def validate(self):

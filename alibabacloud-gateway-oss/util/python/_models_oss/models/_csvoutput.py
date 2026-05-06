@@ -10,7 +10,11 @@ class CSVOutput(DaraModel):
         field_delimiter: str = None,
         record_delimiter: str = None,
     ):
+        # The delimiter that you want to use to separate values in the CSV object. The value of this parameter must be Base64-encoded. The value of this parameter is an ANSI character before encoding. For example, a comma (`,`) is used to indicate a comma in Java.\\
+        # Default value: `,`
         self.field_delimiter = field_delimiter
+        # A Base64-encoded line feed. The value of this parameter is up to two ANSI characters in length before encoding. For example, `\\n` is used to represent a line feed in Java.\\
+        # Default value: `\\n`
         self.record_delimiter = record_delimiter
 
     def validate(self):

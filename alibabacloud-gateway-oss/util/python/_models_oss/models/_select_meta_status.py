@@ -15,12 +15,19 @@ class SelectMetaStatus(DaraModel):
         status: int = None,
         total_scanned_bytes: int = None,
     ):
+        # A 4-digit integer, which indicates the total number of columns.
         self.cols_count = cols_count
+        # The detailed error message. If no errors occur, the value is empty.
         self.error_message = error_message
+        # An 8-bit integer, which indicates the offset when the scanning is complete.
         self.offset = offset
+        # An 8-bit integer, which indicates the total number of rows.
         self.rows_count = rows_count
+        # A 4-bit integer, which indicates total number of splits.
         self.splits_count = splits_count
+        # A 4-bit integer, which indicates the final status of the operation.
         self.status = status
+        # An 8-bit integer, which indicates the size of the data that was scanned.
         self.total_scanned_bytes = total_scanned_bytes
 
     def validate(self):

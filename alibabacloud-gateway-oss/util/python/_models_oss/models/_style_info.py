@@ -13,10 +13,15 @@ class StyleInfo(DaraModel):
         last_modify_time: str = None,
         name: str = None,
     ):
+        # The category of this style。  Invalid value：image、document、video。
         self.category = category
+        # The content of the style.
         self.content = content
+        # The time when the style was created.
         self.create_time = create_time
+        # The time when the style was last modified.
         self.last_modify_time = last_modify_time
+        # The style name.
         self.name = name
 
     def validate(self):

@@ -15,13 +15,21 @@ class Bucket(DaraModel):
         region: str = None,
         storage_class: str = None,
     ):
+        # The time when the bucket was created. Format: `yyyy-mm-ddThh:mm:ss.timezone`.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.creation_date = creation_date
+        # The public endpoint of the region in which the bucket resides.
         self.extranet_endpoint = extranet_endpoint
+        # The internal endpoint of the region in which the bucket you access from ECS instances resides. The bucket and ECS instances are in the same region.
         self.intranet_endpoint = intranet_endpoint
+        # The data center in which the bucket is located.
         self.location = location
+        # The name of the bucket.
         self.name = name
+        # The region in which the bucket is located.
         self.region = region
+        # The storage class of the bucket. Valid values: Standard, IA, Archive, and ColdArchive.
         self.storage_class = storage_class
 
     def validate(self):

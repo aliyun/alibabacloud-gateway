@@ -13,10 +13,15 @@ class LiveChannelVideo(DaraModel):
         height: int = None,
         width: int = None,
     ):
+        # The bitrate of the video stream. Unit: bit/s.
         self.bandwidth = bandwidth
+        # The encoding format of the video stream.
         self.codec = codec
+        # The frame rate of the video stream.
         self.frame_rate = frame_rate
+        # The height of the video stream. Unit: pixels.
         self.height = height
+        # The width of the video stream. Unit: pixels.
         self.width = width
 
     def validate(self):

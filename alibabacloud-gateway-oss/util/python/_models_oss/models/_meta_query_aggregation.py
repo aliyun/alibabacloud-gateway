@@ -10,7 +10,17 @@ class MetaQueryAggregation(DaraModel):
         field: str = None,
         operation: str = None,
     ):
+        # The field name.
         self.field = field
+        # The operator for aggregate operations.
+        # 
+        # *   min
+        # *   max
+        # *   average
+        # *   sum
+        # *   count
+        # *   distinct
+        # *   group
         self.operation = operation
 
     def validate(self):

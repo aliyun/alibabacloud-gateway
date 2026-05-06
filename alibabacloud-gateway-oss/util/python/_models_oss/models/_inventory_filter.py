@@ -16,13 +16,31 @@ class InventoryFilter(DaraModel):
         tags_condition: str = None,
         upper_size_bound: int = None,
     ):
+        # The beginning of the time range during which the object was last modified. Unit: seconds.
+        # Valid values: [1262275200, 253402271999]
         self.last_modify_begin_time_stamp = last_modify_begin_time_stamp
+        # The end of the time range during which the object was last modified. Unit: seconds.
+        # Valid values: [1262275200, 253402271999]
         self.last_modify_end_time_stamp = last_modify_end_time_stamp
+        # The minimum size of the specified object.Unit: B.
+        # Valid values: [0 B, 48.8 TB]
         self.lower_size_bound = lower_size_bound
+        # The prefix that is specified in the inventory.
         self.prefix = prefix
+        # The storage class of the object. You can specify multiple storage classes.
+        # Valid values:
+        # - Standard
+        # - IA
+        #  - Archive
+        #  - ColdArchive
+        #  - All
         self.storage_class = storage_class
+        # Tag list. Key-value pairs are separated by semicolons (;), with the key and value separated by a hash (#).
         self.tags = tags
+        # Tag filter operator, Valid values：OR_FILTER，AND_FILTER
         self.tags_condition = tags_condition
+        # The maximum size of the specified object.Unit: B.
+        # Valid values: [0B, 48.8TB]
         self.upper_size_bound = upper_size_bound
 
     def validate(self):

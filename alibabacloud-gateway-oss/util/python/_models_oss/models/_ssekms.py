@@ -9,6 +9,7 @@ class SSEKMS(DaraModel):
         self,
         key_id: str = None,
     ):
+        # The ID of the key that is managed by Key Management Service (KMS).
         self.key_id = key_id
 
     def validate(self):

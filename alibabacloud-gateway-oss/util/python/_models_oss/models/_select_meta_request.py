@@ -11,7 +11,28 @@ class SelectMetaRequest(DaraModel):
         input_serialization: main_models.InputSerialization = None,
         overwrite_if_exists: bool = None,
     ):
+        # Specifies input serialization. This parameter is optional.
         self.input_serialization = input_serialization
+        # Specifies whether to perform the operation again and overwrite the existing data.\\
+        # Default value: false. This indicates that the result is directly returned if the existing data returned from a previous CreateSelectObjectMeta operation is available.
+        # 
+        # Valid values:
+        # 
+        # *   true
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   false
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.overwrite_if_exists = overwrite_if_exists
 
     def validate(self):

@@ -11,6 +11,7 @@ class ReplicationRules(DaraModel):
         self,
         ids: List[str] = None,
     ):
+        # The ID of data replication rules that you want to delete. You can call the GetBucketReplication operation to obtain the ID.
         self.ids = ids
 
     def validate(self):

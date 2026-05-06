@@ -14,16 +14,31 @@ class InventoryConfiguration(DaraModel):
         filter: main_models.InventoryFilter = None,
         id: str = None,
         included_object_versions: str = None,
+        incremental_inventory: main_models.IncrementalInventory = None,
         is_enabled: bool = None,
         optional_fields: main_models.InventoryConfigurationOptionalFields = None,
         schedule: main_models.InventorySchedule = None,
     ):
+        # The container that stores the exported inventory lists.
         self.destination = destination
+        # The container that stores the prefix used to filter objects. Only objects whose names contain the specified prefix are included in the inventory.
         self.filter = filter
+        # The name of the inventory. The name must be unique in the bucket.
         self.id = id
+        # Specifies whether to include the version information about the objects in inventory lists. Valid values:
+        # 
+        # *   All: The information about all versions of the objects is exported.
+        # *   Current: Only the information about the current versions of the objects is exported.
         self.included_object_versions = included_object_versions
+        self.incremental_inventory = incremental_inventory
+        # Specifies whether to enable the bucket inventory feature. Valid values:
+        # 
+        # *   true
+        # *   false
         self.is_enabled = is_enabled
+        # The container that stores the configuration fields in inventory lists.
         self.optional_fields = optional_fields
+        # The container that stores information about the frequency at which inventory lists are exported.
         self.schedule = schedule
 
     def validate(self):
@@ -31,6 +46,8 @@ class InventoryConfiguration(DaraModel):
             self.destination.validate()
         if self.filter:
             self.filter.validate()
+        if self.incremental_inventory:
+            self.incremental_inventory.validate()
         if self.optional_fields:
             self.optional_fields.validate()
         if self.schedule:
@@ -52,6 +69,9 @@ class InventoryConfiguration(DaraModel):
 
         if self.included_object_versions is not None:
             result['IncludedObjectVersions'] = self.included_object_versions
+
+        if self.incremental_inventory is not None:
+            result['IncrementalInventory'] = self.incremental_inventory.to_map()
 
         if self.is_enabled is not None:
             result['IsEnabled'] = self.is_enabled
@@ -80,6 +100,10 @@ class InventoryConfiguration(DaraModel):
         if m.get('IncludedObjectVersions') is not None:
             self.included_object_versions = m.get('IncludedObjectVersions')
 
+        if m.get('IncrementalInventory') is not None:
+            temp_model = main_models.IncrementalInventory()
+            self.incremental_inventory = temp_model.from_map(m.get('IncrementalInventory'))
+
         if m.get('IsEnabled') is not None:
             self.is_enabled = m.get('IsEnabled')
 
@@ -98,6 +122,14 @@ class InventoryConfigurationOptionalFields(DaraModel):
         self,
         fields: List[str] = None,
     ):
+        # The configuration fields that are included in inventory lists. Available configuration fields:
+        # 
+        # *   Size: the size of the object.
+        # *   LastModifiedDate: the time when the object was last modified.
+        # *   ETag: the ETag of the object. It is used to identify the content of the object.
+        # *   StorageClass: the storage class of the object.
+        # *   IsMultipartUploaded: specifies whether the object is uploaded by using multipart upload.
+        # *   EncryptionStatus: the encryption status of the object.
         self.fields = fields
 
     def validate(self):

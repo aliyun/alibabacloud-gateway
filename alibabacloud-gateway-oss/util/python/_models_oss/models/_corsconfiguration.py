@@ -13,7 +13,16 @@ class CORSConfiguration(DaraModel):
         corsrule: List[main_models.CORSRule] = None,
         response_vary: bool = None,
     ):
+        # The container that stores the CORS rules.
+        # 
+        # Up to 10 CORS rules can be configured for a bucket. The XML message body in a request can be up to 16 KB in size.
         self.corsrule = corsrule
+        # Indicates whether the Vary: Origin header is returned. Valid values:
+        # 
+        # *   true: The Vary: Origin header is returned regardless of whether the request is a cross-origin request or whether the cross-origin request succeeds.
+        # *   false (default): The Vary: Origin header is not returned.
+        # 
+        # >  This parameter is valid only when at least one CORS rule is configured.
         self.response_vary = response_vary
 
     def validate(self):
