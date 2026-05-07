@@ -15,9 +15,13 @@ class RoutingRuleCondition(DaraModel):
         key_prefix_equals: str = None,
         key_suffix_equals: str = None,
     ):
+        # The HTTP status code. The rule is matched only when the specified object is accessed and the specified HTTP status code is returned. If the redirection rule is the mirroring-based back-to-origin rule, the value of this parameter is 404.
         self.http_error_code_returned_equals = http_error_code_returned_equals
+        # The rule will only be matched when the request contains the specified Header with the specified value. Up to 10 of these can be specified in the container.
         self.include_header = include_header
+        # The prefix of object names. Only objects whose names contain the specified prefix match the rule.
         self.key_prefix_equals = key_prefix_equals
+        # Only Objects that match this suffix can match this rule.
         self.key_suffix_equals = key_suffix_equals
 
     def validate(self):
@@ -74,9 +78,13 @@ class RoutingRuleConditionIncludeHeader(DaraModel):
         key: str = None,
         starts_with: str = None,
     ):
+        # The rule will only be matched when the request contains this Header and its value ends with the specified value.
         self.ends_with = ends_with
+        # The rule will only be matched when the request contains this Header and its value is equal to the specified value.
         self.equals = equals
+        # The rule will only be matched when the request contains this Header and its value is equal to the specified value.
         self.key = key
+        # The rule will only be matched when the request contains this Header and its value starts with the specified value.
         self.starts_with = starts_with
 
     def validate(self):

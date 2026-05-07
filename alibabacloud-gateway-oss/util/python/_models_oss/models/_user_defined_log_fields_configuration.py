@@ -13,7 +13,9 @@ class UserDefinedLogFieldsConfiguration(DaraModel):
         header_set: main_models.UserDefinedLogFieldsConfigurationHeaderSet = None,
         param_set: main_models.UserDefinedLogFieldsConfigurationParamSet = None,
     ):
+        # The container that stores the configurations of custom request headers.
         self.header_set = header_set
+        # The container that stores the configurations of custom URL parameters.
         self.param_set = param_set
 
     def validate(self):
@@ -52,6 +54,7 @@ class UserDefinedLogFieldsConfigurationParamSet(DaraModel):
         self,
         parameter: List[str] = None,
     ):
+        # The list of the custom URL parameters.
         self.parameter = parameter
 
     def validate(self):
@@ -79,6 +82,7 @@ class UserDefinedLogFieldsConfigurationHeaderSet(DaraModel):
         self,
         header: List[str] = None,
     ):
+        # The list of the custom request headers.
         self.header = header
 
     def validate(self):

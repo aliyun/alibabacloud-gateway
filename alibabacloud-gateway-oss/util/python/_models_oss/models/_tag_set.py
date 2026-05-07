@@ -12,6 +12,7 @@ class TagSet(DaraModel):
         self,
         tags: List[main_models.Tag] = None,
     ):
+        # The tags.
         self.tags = tags
 
     def validate(self):

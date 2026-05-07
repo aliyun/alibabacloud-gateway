@@ -16,13 +16,25 @@ class BucketDataRedundancyTransition(DaraModel):
         status: str = None,
         task_id: str = None,
     ):
+        # Name of the bucket.
         self.bucket = bucket
+        # Time when the redundancy type conversion task was created.
         self.create_time = create_time
+        # Time when the redundancy type conversion task was complete.
         self.end_time = end_time
+        # Estimated remaining time of the redundancy type conversion task. Unit: hour.
         self.estimated_remaining_time = estimated_remaining_time
+        # Progress of the redundancy type conversion task in percentage. Value values: 0 to 100.
         self.process_percentage = process_percentage
+        # Time when the redundancy type conversion task started.
         self.start_time = start_time
+        # Status of the redundancy type conversion task. Valid values:
+        # 
+        # *   Queueing
+        # *   Processing
+        # *   Finished
         self.status = status
+        # ID of the redundancy type conversion task.
         self.task_id = task_id
 
     def validate(self):

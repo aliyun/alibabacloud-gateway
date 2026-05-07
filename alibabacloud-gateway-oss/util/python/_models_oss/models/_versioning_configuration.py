@@ -9,6 +9,10 @@ class VersioningConfiguration(DaraModel):
         self,
         status: str = None,
     ):
+        # The versioning state. Valid values:
+        # 
+        # *   Enabled
+        # *   Suspended
         self.status = status
 
     def validate(self):

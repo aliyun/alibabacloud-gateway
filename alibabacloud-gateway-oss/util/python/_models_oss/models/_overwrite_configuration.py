@@ -12,6 +12,7 @@ class OverwriteConfiguration(DaraModel):
         self,
         rule: List[main_models.OverwriteConfigurationRule] = None,
     ):
+        # List of overwrite protection rules. A bucket can have a maximum of 100 rules.
         self.rule = rule
 
     def validate(self):
@@ -51,10 +52,15 @@ class OverwriteConfigurationRule(DaraModel):
         principals: main_models.OverwriteConfigurationRulePrincipals = None,
         suffix: str = None,
     ):
+        # The operation type. Currently, only `forbid` (prohibit overwrites) is supported.
         self.action = action
+        # The unique identifier of the rule. If you do not specify this element, a UUID is randomly generated. If you specify this element, the value must be unique. Different rules cannot have the same ID.
         self.id = id
+        # The prefix of object names to filter the objects that you want to process. The maximum length is 1,023 characters. Each rule can have at most one prefix. Prefixes and suffixes do not support regular expressions.
         self.prefix = prefix
+        # A collection of authorized entities. The usage is similar to the `Principal` element in a bucket policy. You can specify an Alibaba Cloud account, a RAM user, or a RAM role. If this element is empty or not configured, overwrites are prohibited for all objects that match the prefix and suffix conditions.
         self.principals = principals
+        # The suffix of object names to filter the objects that you want to process. The maximum length is 1,023 characters. Each rule can have at most one suffix. Prefixes and suffixes do not support regular expressions.
         self.suffix = suffix
 
     def validate(self):
@@ -108,6 +114,7 @@ class OverwriteConfigurationRulePrincipals(DaraModel):
         self,
         principal: List[str] = None,
     ):
+        # A collection of authorized entities. The usage is similar to the `Principal` element in a bucket policy. You can specify an Alibaba Cloud account, a RAM user, or a RAM role. If this element is empty or not configured, overwrites are prohibited for all objects that match the prefix and suffix conditions.
         self.principal = principal
 
     def validate(self):

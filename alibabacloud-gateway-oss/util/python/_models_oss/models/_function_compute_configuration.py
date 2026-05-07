@@ -15,9 +15,13 @@ class FunctionComputeConfiguration(DaraModel):
         function: main_models.FunctionComputeConfigurationFunction = None,
         id: str = None,
     ):
+        # Events to listen.
         self.event = event
+        # Filter for event.
         self.filter = filter
+        # The Function used for the event.
         self.function = function
+        # Function compute configuration id.
         self.id = id
 
     def validate(self):
@@ -69,7 +73,9 @@ class FunctionComputeConfigurationFunction(DaraModel):
         arn: str = None,
         assume_role: str = None,
     ):
+        # Function ARN.
         self.arn = arn
+        # Role used to execute the function.
         self.assume_role = assume_role
 
     def validate(self):
@@ -103,6 +109,7 @@ class FunctionComputeConfigurationFilter(DaraModel):
         self,
         key: main_models.FunctionComputeConfigurationFilterKey = None,
     ):
+        # Filter for object names.
         self.key = key
 
     def validate(self):
@@ -133,7 +140,9 @@ class FunctionComputeConfigurationFilterKey(DaraModel):
         prefix: str = None,
         suffix: str = None,
     ):
+        # The prefix of an object name.
         self.prefix = prefix
+        # The suffix of an object name.
         self.suffix = suffix
 
     def validate(self):

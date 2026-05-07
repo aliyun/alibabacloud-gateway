@@ -12,6 +12,7 @@ class EventNotificationConfiguration(DaraModel):
         self,
         function_compute_configuration: List[main_models.FunctionComputeConfiguration] = None,
     ):
+        # The container for Function compute configuration.
         self.function_compute_configuration = function_compute_configuration
 
     def validate(self):

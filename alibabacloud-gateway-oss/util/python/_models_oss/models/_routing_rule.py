@@ -13,9 +13,19 @@ class RoutingRule(DaraModel):
         redirect: main_models.RoutingRuleRedirect = None,
         rule_number: int = None,
     ):
+        # The matching condition. If all of the specified conditions are met, the rule is run. A rule is considered matched only when the rule meets the conditions that are specified by all nodes in Condition.
+        # 
+        # >  This parameter must be specified if RoutingRule is specified.
         self.condition = condition
+        # The Lua script config of this rule.
         self.lua_config = lua_config
+        # The operation to perform after the rule is matched.
+        # 
+        # >  This parameter must be specified if RoutingRule is specified.
         self.redirect = redirect
+        # The sequence number that is used to match and run the redirection rules. OSS matches redirection rules based on this parameter. If a match succeeds, only the rule is run and the subsequent rules are not run.
+        # 
+        # >  This parameter must be specified if RoutingRule is specified.
         self.rule_number = rule_number
 
     def validate(self):

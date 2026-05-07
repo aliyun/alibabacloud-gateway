@@ -9,6 +9,12 @@ class TransferAccelerationConfiguration(DaraModel):
         self,
         enabled: bool = None,
     ):
+        # Specifies whether to enable transfer acceleration for the bucket. Valid values:
+        # 
+        # *   **true**
+        # *   **false**
+        # 
+        # >  When you enable or disable transfer acceleration, the configuration takes effect within 30 minutes.
         self.enabled = enabled
 
     def validate(self):

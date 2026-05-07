@@ -10,7 +10,15 @@ class SelectRequestOptions(DaraModel):
         max_skipped_records_allowed: int = None,
         skip_partial_data_record: bool = None,
     ):
+        # The maximum number of rows that can be skipped. If a row does not match the type specified in the SQL statement, or if one or more columns in a row are missing and the value of SkipPartialDataRecord is True, the rows are skipped. If the number of skipped rows has exceeded the value of this parameter, OSS reports an error and stops processing the data.\\
+        # The default value is 0.
+        # 
+        # >  A problematic row can affect CSV file parsing. If a row is not a valid CSV row, for example, if the row contains an odd number of consecutive quotes, OSS stops processing and returns an error to prevent CSV parsing errors. This parameter can be used to adjust the tolerance for irregular data but cannot be applied to invalid CSV objects.
         self.max_skipped_records_allowed = max_skipped_records_allowed
+        # Specifies whether to ignore rows in which data is missing.
+        # 
+        # *   If this parameter is set to false, OSS processes the row data as null without reporting errors.
+        # *   If this parameter is set to true, rows that do not contain data are skipped. If the number of skipped rows has exceeded the maximum number of rows that can be skipped, OSS reports an error and stops processing the data.
         self.skip_partial_data_record = skip_partial_data_record
 
     def validate(self):

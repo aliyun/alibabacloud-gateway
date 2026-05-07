@@ -20,14 +20,27 @@ class BucketAntiDDOSInfo(DaraModel):
         status: str = None,
         type: str = None,
     ):
+        # The time when the Anti-DDoS instance was activated. The value is a timestamp.
         self.active_time = active_time
+        # The name of the bucket for which the Anti-DDoS instance is created.
         self.bucket = bucket
+        # The container that stores the custom domain names.
         self.cnames = cnames
+        # The time when the Anti-DDoS instance was created. The value is a timestamp.
         self.ctime = ctime
+        # The ID of the Anti-DDoS instance.
         self.instance_id = instance_id
+        # The time when the Anti-DDoS instance was last updated. The value is a timestamp.
         self.mtime = mtime
+        # The ID of the bucket owner.
         self.owner = owner
+        # The status of the Anti-DDoS instance. Valid values:
+        # 
+        # *   Init
+        # *   Defending
+        # *   HaltDefending
         self.status = status
+        # The type of the Anti-DDoS instance. Valid value: AntiDDosPremimum.
         self.type = type
 
     def validate(self):
@@ -105,6 +118,7 @@ class BucketAntiDDOSInfoCnames(DaraModel):
         self,
         domain: List[str] = None,
     ):
+        # The custom domain names.
         self.domain = domain
 
     def validate(self):

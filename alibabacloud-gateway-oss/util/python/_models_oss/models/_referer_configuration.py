@@ -16,12 +16,30 @@ class RefererConfiguration(DaraModel):
         referer_list: main_models.RefererConfigurationRefererList = None,
         truncate_path: bool = None,
     ):
+        # Specifies whether to allow a request whose Referer field is empty. Valid values:
+        # 
+        # *   true (default)
+        # *   false
+        # 
         # This parameter is required.
         self.allow_empty_referer = allow_empty_referer
+        # Specifies whether to truncate the query string in the URL when the Referer is matched. Valid values:
+        # 
+        # *   true (default)
+        # *   false
         self.allow_truncate_query_string = allow_truncate_query_string
+        # The container that stores the Referer blacklist.
         self.referer_blacklist = referer_blacklist
+        # The container that stores the Referer whitelist.
+        # 
+        # >  ****The PutBucketReferer operation overwrites the existing Referer whitelist with the Referer whitelist specified in RefererList. If RefererList is not specified in the request, which specifies that no Referer elements are included, the operation clears the existing Referer whitelist.
+        # 
         # This parameter is required.
         self.referer_list = referer_list
+        # Specifies whether to truncate the path and parts that follow the path in the URL when the Referer is matched. Valid values:
+        # 
+        # *   true
+        # *   false
         self.truncate_path = truncate_path
 
     def validate(self):
@@ -78,6 +96,7 @@ class RefererConfigurationRefererList(DaraModel):
         self,
         referer: List[str] = None,
     ):
+        # The addresses in the Referer whitelist.
         self.referer = referer
 
     def validate(self):
@@ -105,6 +124,7 @@ class RefererConfigurationRefererBlacklist(DaraModel):
         self,
         referer: List[str] = None,
     ):
+        # The addresses in the Referer blacklist.
         self.referer = referer
 
     def validate(self):

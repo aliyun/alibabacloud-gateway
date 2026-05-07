@@ -10,7 +10,14 @@ class CopyObjectResult(DaraModel):
         etag: str = None,
         last_modified: str = None,
     ):
+        # The ETag that is generated when the object is created. ETags are used to identify the content of objects.
+        # 
+        # *   If an object is created by calling the PutObject operation, the ETag of the object is the MD5 hash of the object content.
+        # *   If an object is created by using another method, the ETag is not the MD5 hash of the object content but a unique value that is calculated based on a specific rule.
+        # 
+        # >  The ETag of an object can be used to check whether the object content changes. We recommend that you use the MD5 hash of an object rather than the ETag of the object to verify data integrity. This parameter is empty by default.
         self.etag = etag
+        # The time when the object was last modified.
         self.last_modified = last_modified
 
     def validate(self):

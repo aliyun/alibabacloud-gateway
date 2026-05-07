@@ -13,9 +13,31 @@ class CnameSummary(DaraModel):
         last_modified: str = None,
         status: str = None,
     ):
+        # The container that stores the certificate information.
         self.certificate = certificate
+        # The custom domain name.
         self.domain = domain
+        # The time when the custom domain name was mapped.
         self.last_modified = last_modified
+        # The status of the domain name.
+        # 
+        # Valid values:
+        # 
+        # *   Enabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   Disabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.status = status
 
     def validate(self):

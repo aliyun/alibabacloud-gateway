@@ -14,11 +14,22 @@ class CertificateConfiguration(DaraModel):
         previous_cert_id: str = None,
         private_key: str = None,
     ):
+        # The ID of the certificate.
         self.cert_id = cert_id
+        # The public key of the certificate.
         self.certificate = certificate
+        # Specifies whether to delete the certificate. Valid values:
+        # - true: deletes the certificate.
+        # - false: does not delete the certificate.
         self.delete_certificate = delete_certificate
+        # Specifies whether to overwrite the certificate. Valid values:
+        # - true: overwrites the certificate.
+        # - false: does not overwrite the certificate.
         self.force = force
+        # The ID of the certificate. If the Force parameter is not set to true, the OSS server checks whether the value of the Force parameter matches the current certificate ID. If the value does not match the certificate ID, an error is returned.
+        # <notice>If you do not specify the PreviousCertId parameter when you bind a certificate, you must set the Force parameter to true.</notice>
         self.previous_cert_id = previous_cert_id
+        # The private key of the certificate.
         self.private_key = private_key
 
     def validate(self):

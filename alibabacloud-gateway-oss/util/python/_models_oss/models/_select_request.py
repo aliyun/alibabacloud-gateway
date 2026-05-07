@@ -13,9 +13,13 @@ class SelectRequest(DaraModel):
         options: main_models.SelectRequestOptions = None,
         output_serialization: main_models.OutputSerialization = None,
     ):
+        # The Base64-encoded SQL statement.
         self.expression = expression
+        # The input serialization parameters.
         self.input_serialization = input_serialization
+        # Other optional parameters.
         self.options = options
+        # The output serialization parameters.
         self.output_serialization = output_serialization
 
     def validate(self):

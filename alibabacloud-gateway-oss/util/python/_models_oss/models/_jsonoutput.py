@@ -9,6 +9,8 @@ class JSONOutput(DaraModel):
         self,
         record_delimiter: str = None,
     ):
+        # Optional. A Base64-encoded line feed. The value of this parameter is up to two ANSI characters in length before encoding. For example, `\\n` is used to represent a line feed in Java.\\
+        # Default value: `\\n`
         self.record_delimiter = record_delimiter
 
     def validate(self):

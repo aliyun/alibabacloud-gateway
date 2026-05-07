@@ -10,6 +10,7 @@ class ReplicationSourceSelectionCriteria(DaraModel):
         self,
         sse_kms_encrypted_objects: main_models.ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects = None,
     ):
+        # The container that is used to filter the source objects that are encrypted by using SSE-KMS. This parameter must be specified if the SourceSelectionCriteria parameter is specified in the data replication rule.
         self.sse_kms_encrypted_objects = sse_kms_encrypted_objects
 
     def validate(self):
@@ -39,6 +40,10 @@ class ReplicationSourceSelectionCriteriaSseKmsEncryptedObjects(DaraModel):
         self,
         status: str = None,
     ):
+        # Specifies whether to replicate objects that are encrypted by using SSE-KMS. Valid values:
+        # 
+        # *   Enabled
+        # *   Disabled
         self.status = status
 
     def validate(self):

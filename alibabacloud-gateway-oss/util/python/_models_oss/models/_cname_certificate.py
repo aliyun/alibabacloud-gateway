@@ -15,12 +15,55 @@ class CnameCertificate(DaraModel):
         valid_end_date: str = None,
         valid_start_date: str = None,
     ):
+        # The ID of the certificate.
         self.cert_id = cert_id
+        # The time when the certificate was bound.
         self.creation_date = creation_date
+        # The signature of the certificate.
         self.fingerprint = fingerprint
+        # The status of the certificate.
+        # 
+        # Valid values:
+        # 
+        # *   Enabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   Disabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.status = status
+        # The source of the certificate.
+        # 
+        # Valid values:
+        # 
+        # *   CAS
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   Upload
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.type = type
+        # The time when the certificate expires.
         self.valid_end_date = valid_end_date
+        # The time when the certificate takes effect.
         self.valid_start_date = valid_start_date
 
     def validate(self):

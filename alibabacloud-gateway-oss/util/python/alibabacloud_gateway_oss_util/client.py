@@ -48,19 +48,17 @@ def build_instance_from_model(model):
 
 
 instanceRegistry = {}
+# --- BEGIN GENERATED REGISTRY ---
 # for oss
 main_models = oss_models
 instanceRegistry["CompleteMultipartUpload"] = build_instance_from_model(main_models.CompleteMultipartUploadResponseBody)
 instanceRegistry["CopyObject"] = build_instance_from_model(main_models.CopyObjectResponseBody)
-instanceRegistry["CopyObjects"] = build_instance_from_model(main_models.CopyObjectsResponseBody)
 instanceRegistry["CreateAccessPoint"] = build_instance_from_model(main_models.CreateAccessPointResponseBody)
 instanceRegistry["CreateAccessPointForObjectProcess"] = build_instance_from_model(main_models.CreateAccessPointForObjectProcessResponseBody)
 instanceRegistry["CreateBucketDataRedundancyTransition"] = build_instance_from_model(main_models.CreateBucketDataRedundancyTransitionResponseBody)
 instanceRegistry["CreateCnameToken"] = build_instance_from_model(main_models.CreateCnameTokenResponseBody)
-instanceRegistry["CreateJob"] = build_instance_from_model(main_models.CreateJobResponseBody)
 instanceRegistry["CreateReservedCapacity"] = build_instance_from_model(main_models.CreateReservedCapacityResponseBody)
 instanceRegistry["DeleteMultipleObjects"] = build_instance_from_model(main_models.DeleteMultipleObjectsResponseBody)
-instanceRegistry["DescribeJob"] = build_instance_from_model(main_models.DescribeJobResponseBody)
 instanceRegistry["DescribeRegions"] = build_instance_from_model(main_models.DescribeRegionsResponseBody)
 instanceRegistry["DoMetaQuery"] = build_instance_from_model(main_models.DoMetaQueryResponseBody)
 instanceRegistry["GetAccessPoint"] = build_instance_from_model(main_models.GetAccessPointResponseBody)
@@ -101,6 +99,7 @@ instanceRegistry["GetBucketRequesterQoSInfo"] = build_instance_from_model(main_m
 instanceRegistry["GetBucketResourceGroup"] = build_instance_from_model(main_models.GetBucketResourceGroupResponseBody)
 instanceRegistry["GetBucketResponseHeader"] = build_instance_from_model(main_models.GetBucketResponseHeaderResponseBody)
 instanceRegistry["GetBucketStat"] = build_instance_from_model(main_models.GetBucketStatResponseBody)
+instanceRegistry["GetBucketStorageQuota"] = build_instance_from_model(main_models.GetBucketStorageQuotaResponseBody)
 instanceRegistry["GetBucketTags"] = build_instance_from_model(main_models.GetBucketTagsResponseBody)
 instanceRegistry["GetBucketTransferAcceleration"] = build_instance_from_model(main_models.GetBucketTransferAccelerationResponseBody)
 instanceRegistry["GetBucketVersioning"] = build_instance_from_model(main_models.GetBucketVersioningResponseBody)
@@ -125,16 +124,12 @@ instanceRegistry["GetObjectTagging"] = build_instance_from_model(main_models.Get
 instanceRegistry["GetProcessConfiguration"] = build_instance_from_model(main_models.GetProcessConfigurationResponseBody)
 instanceRegistry["GetPublicAccessBlock"] = build_instance_from_model(main_models.GetPublicAccessBlockResponseBody)
 instanceRegistry["GetReservedCapacity"] = build_instance_from_model(main_models.GetReservedCapacityResponseBody)
-instanceRegistry["GetResourcePoolBucketGroupQoSInfo"] = build_instance_from_model(main_models.GetResourcePoolBucketGroupQoSInfoResponseBody)
 instanceRegistry["GetResourcePoolInfo"] = build_instance_from_model(main_models.GetResourcePoolInfoResponseBody)
 instanceRegistry["GetResourcePoolRequesterQoSInfo"] = build_instance_from_model(main_models.GetResourcePoolRequesterQoSInfoResponseBody)
 instanceRegistry["GetStyle"] = build_instance_from_model(main_models.GetStyleResponseBody)
 instanceRegistry["GetUserAntiDDosInfo"] = build_instance_from_model(main_models.GetUserAntiDDosInfoResponseBody)
 instanceRegistry["GetUserDefinedLogFieldsConfig"] = build_instance_from_model(main_models.GetUserDefinedLogFieldsConfigResponseBody)
 instanceRegistry["GetUserQoSInfo"] = build_instance_from_model(main_models.GetUserQoSInfoResponseBody)
-instanceRegistry["GetVectorBucket"] = build_instance_from_model(main_models.GetVectorBucketResponseBody)
-instanceRegistry["GetVectorIndex"] = build_instance_from_model(main_models.GetVectorIndexResponseBody)
-instanceRegistry["GetVectors"] = build_instance_from_model(main_models.GetVectorsResponseBody)
 instanceRegistry["GetVirtualBucket"] = build_instance_from_model(main_models.GetVirtualBucketResponseBody)
 instanceRegistry["InitiateMultipartUpload"] = build_instance_from_model(main_models.InitiateMultipartUploadResponseBody)
 instanceRegistry["ListAccessPoints"] = build_instance_from_model(main_models.ListAccessPointsResponseBody)
@@ -150,7 +145,6 @@ instanceRegistry["ListDataLakeCachePrefetchJob"] = build_instance_from_model(mai
 instanceRegistry["ListDataLakeCachePrefetchJobHistory"] = build_instance_from_model(main_models.ListDataLakeCachePrefetchJobHistoryResponseBody)
 instanceRegistry["ListDataLakeStorageTransferJob"] = build_instance_from_model(main_models.ListDataLakeStorageTransferJobResponseBody)
 instanceRegistry["ListDataLakeStorageTransferJobHistory"] = build_instance_from_model(main_models.ListDataLakeStorageTransferJobHistoryResponseBody)
-instanceRegistry["ListJobs"] = build_instance_from_model(main_models.ListJobsResponseBody)
 instanceRegistry["ListLiveChannel"] = build_instance_from_model(main_models.ListLiveChannelResponseBody)
 instanceRegistry["ListMultipartUploads"] = build_instance_from_model(main_models.ListMultipartUploadsResponseBody)
 instanceRegistry["ListObjectVersions"] = build_instance_from_model(main_models.ListObjectVersionsResponseBody)
@@ -158,17 +152,12 @@ instanceRegistry["ListObjects"] = build_instance_from_model(main_models.ListObje
 instanceRegistry["ListObjectsV2"] = build_instance_from_model(main_models.ListObjectsV2ResponseBody)
 instanceRegistry["ListParts"] = build_instance_from_model(main_models.ListPartsResponseBody)
 instanceRegistry["ListReservedCapacity"] = build_instance_from_model(main_models.ListReservedCapacityResponseBody)
-instanceRegistry["ListResourcePoolBucketGroupQoSInfos"] = build_instance_from_model(main_models.ListResourcePoolBucketGroupQoSInfosResponseBody)
-instanceRegistry["ListResourcePoolBucketGroups"] = build_instance_from_model(main_models.ListResourcePoolBucketGroupsResponseBody)
 instanceRegistry["ListResourcePoolBuckets"] = build_instance_from_model(main_models.ListResourcePoolBucketsResponseBody)
 instanceRegistry["ListResourcePoolRequesterQoSInfos"] = build_instance_from_model(main_models.ListResourcePoolRequesterQoSInfosResponseBody)
 instanceRegistry["ListResourcePools"] = build_instance_from_model(main_models.ListResourcePoolsResponseBody)
 instanceRegistry["ListStyle"] = build_instance_from_model(main_models.ListStyleResponseBody)
 instanceRegistry["ListUserDataRedundancyTransition"] = build_instance_from_model(main_models.ListUserDataRedundancyTransitionResponseBody)
 instanceRegistry["ListUserRegions"] = build_instance_from_model(main_models.ListUserRegionsResponseBody)
-instanceRegistry["ListVectorBuckets"] = build_instance_from_model(main_models.ListVectorBucketsResponseBody)
-instanceRegistry["ListVectorIndexes"] = build_instance_from_model(main_models.ListVectorIndexesResponseBody)
-instanceRegistry["ListVectors"] = build_instance_from_model(main_models.ListVectorsResponseBody)
 instanceRegistry["ListVirtualBucket"] = build_instance_from_model(main_models.ListVirtualBucketResponseBody)
 instanceRegistry["PostAsyncFetchTask"] = build_instance_from_model(main_models.PostAsyncFetchTaskResponseBody)
 instanceRegistry["PostObjectGroup"] = build_instance_from_model(main_models.PostObjectGroupResponseBody)
@@ -177,11 +166,7 @@ instanceRegistry["PutDataLakeCachePrefetchJob"] = build_instance_from_model(main
 instanceRegistry["PutDataLakeStorageTransferJob"] = build_instance_from_model(main_models.PutDataLakeStorageTransferJobResponseBody)
 instanceRegistry["PutLiveChannel"] = build_instance_from_model(main_models.PutLiveChannelResponseBody)
 instanceRegistry["PutObjectLink"] = build_instance_from_model(main_models.PutObjectLinkResponseBody)
-instanceRegistry["QueryVectors"] = build_instance_from_model(main_models.QueryVectorsResponseBody)
 instanceRegistry["StartDataLakeStorageTransferJob"] = build_instance_from_model(main_models.StartDataLakeStorageTransferJobResponseBody)
-instanceRegistry["StartPartUpload"] = build_instance_from_model(main_models.StartPartUploadResponseBody)
-instanceRegistry["UpdateJobPriority"] = build_instance_from_model(main_models.UpdateJobPriorityResponseBody)
-instanceRegistry["UpdateJobStatus"] = build_instance_from_model(main_models.UpdateJobStatusResponseBody)
 instanceRegistry["UploadPartCopy"] = build_instance_from_model(main_models.UploadPartCopyResponseBody)
 
 # for hcs-mgw
@@ -199,6 +184,7 @@ instanceRegistry["ListJob"] = build_instance_from_model(main_models.ListJobRespo
 instanceRegistry["ListJobHistory"] = build_instance_from_model(main_models.ListJobHistoryResponseBody)
 instanceRegistry["ListTunnel"] = build_instance_from_model(main_models.ListTunnelResponseBody)
 instanceRegistry["VerifyAddress"] = build_instance_from_model(main_models.VerifyAddressResponseBody)
+# --- END GENERATED REGISTRY ---
 
 
 class Client:

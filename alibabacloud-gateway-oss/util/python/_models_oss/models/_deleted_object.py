@@ -12,9 +12,15 @@ class DeletedObject(DaraModel):
         key: str = None,
         version_id: str = None,
     ):
+        # Indicates whether the specified version is a delete marker. Valid values: true and false.
+        # 
+        # >  This parameter is returned only if a delete marker is created or permanently deleted. In this case, the value of this parameter is true.
         self.delete_marker = delete_marker
+        # The version ID of the delete marker.
         self.delete_marker_version_id = delete_marker_version_id
+        # The name of the deleted object.
         self.key = key
+        # The version ID of the object.
         self.version_id = version_id
 
     def validate(self):

@@ -11,7 +11,9 @@ class AccessControlPolicy(DaraModel):
         access_control_list: main_models.AccessControlList = None,
         owner: main_models.Owner = None,
     ):
+        # The container that stores the access control list (ACL) information.
         self.access_control_list = access_control_list
+        # The container that stores information about the bucket owner.
         self.owner = owner
 
     def validate(self):

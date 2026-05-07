@@ -20,16 +20,27 @@ class GetAccessPointResult(DaraModel):
         status: str = None,
         vpc_configuration: main_models.AccessPointVpcConfiguration = None,
     ):
+        # The ARN of the access point.
         self.access_point_arn = access_point_arn
+        # The name of the access point.
         self.access_point_name = access_point_name
+        # The ID of the Alibaba Cloud account for which the access point is configured.
         self.account_id = account_id
+        # The alias of the access point.
         self.alias = alias
+        # The name of the bucket for which the access point is configured.
         self.bucket = bucket
+        # 接入点创建时间。
         self.creation_date = creation_date
+        # The container that stores the network origin information about the access point.
         self.endpoints = endpoints
+        # The network origin of the access point. Valid values: vpc and internet. vpc: You can only use the specified VPC ID to access the access point. internet: You can use public endpoints and internal endpoints to access the access point.
         self.network_origin = network_origin
+        # 保存接入点阻止公共访问的配置
         self.public_access_block_configuration = public_access_block_configuration
+        # The status of the access point.
         self.status = status
+        # The container that stores the information about the VPC.
         self.vpc_configuration = vpc_configuration
 
     def validate(self):
@@ -126,7 +137,9 @@ class GetAccessPointResultEndpoints(DaraModel):
         internal_endpoint: str = None,
         public_endpoint: str = None,
     ):
+        # 接入点的内网Endpoint。
         self.internal_endpoint = internal_endpoint
+        # The public endpoint of the access point.
         self.public_endpoint = public_endpoint
 
     def validate(self):

@@ -12,6 +12,7 @@ class BucketAntiDDOSConfiguration(DaraModel):
         self,
         cnames: main_models.BucketAntiDDOSConfigurationCnames = None,
     ):
+        # The container that stores the list of domain names.
         self.cnames = cnames
 
     def validate(self):
@@ -41,6 +42,7 @@ class BucketAntiDDOSConfigurationCnames(DaraModel):
         self,
         domain: List[str] = None,
     ):
+        # The custom domain names that you want to protect.
         self.domain = domain
 
     def validate(self):

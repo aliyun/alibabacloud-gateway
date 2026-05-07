@@ -16,13 +16,21 @@ class Channel(DaraModel):
         use_src_format: bool = None,
         use_style_only: bool = None,
     ):
+        # Whether to automatically set content-type.
         self.auto_set_content_type = auto_set_content_type
+        # Default picture file for 404 status code.
         self.default_404pic = default_404pic
+        # Whether to prohibit access to the original image.
         self.orig_pic_forbidden = orig_pic_forbidden
+        # Whether to set attach name.
         self.set_attach_name = set_attach_name
+        # Status of the image process channel
         self.status = status
+        # Delimiters used for image style.
         self.style_delimiters = style_delimiters
+        # Whether to use source file format.
         self.use_src_format = use_src_format
+        # Can only process images with styles.
         self.use_style_only = use_style_only
 
     def validate(self):

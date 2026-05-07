@@ -9,6 +9,25 @@ class RTC(DaraModel):
         self,
         status: str = None,
     ):
+        # Specifies whether to enable RTC.
+        # 
+        # Valid values:
+        # 
+        # *   disabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        # *   enabled
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
+        # 
+        #     <!-- -->
         self.status = status
 
     def validate(self):

@@ -12,6 +12,7 @@ class CommonHeaders(DaraModel):
         self,
         header: List[main_models.CommonHeadersHeader] = None,
     ):
+        # The response header list.
         self.header = header
 
     def validate(self):
@@ -48,7 +49,9 @@ class CommonHeadersHeader(DaraModel):
         key: str = None,
         value: str = None,
     ):
+        # Response header name.
         self.key = key
+        # Response header value.
         self.value = value
 
     def validate(self):

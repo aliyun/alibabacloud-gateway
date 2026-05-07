@@ -15,11 +15,17 @@ class AccessPoint(DaraModel):
         status: str = None,
         vpc_configuration: main_models.AccessPointVpcConfiguration = None,
     ):
+        # The name of the access point.
         self.access_point_name = access_point_name
+        # The alias of the access point.
         self.alias = alias
+        # The name of the bucket for which the access point is configured.
         self.bucket = bucket
+        # The network origin of the access point.
         self.network_origin = network_origin
+        # The status of the access point.
         self.status = status
+        # The container that stores the information about the VPC.
         self.vpc_configuration = vpc_configuration
 
     def validate(self):

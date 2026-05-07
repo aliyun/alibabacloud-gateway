@@ -14,11 +14,20 @@ class DeleteMarkerEntry(DaraModel):
         owner: main_models.Owner = None,
         version_id: str = None,
     ):
+        # Indicates whether the version is the current version. Valid values:
+        # 
+        # *   true: The version is the current version.
+        # *   false: The version is a previous version.
         self.is_latest = is_latest
+        # The name of the object.
         self.key = key
+        # The time when the object was last modified.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.last_modified = last_modified
+        # The container that stores the information about the bucket owner.
         self.owner = owner
+        # The version ID of the object.
         self.version_id = version_id
 
     def validate(self):

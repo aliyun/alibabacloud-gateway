@@ -14,8 +14,17 @@ class WebsiteConfiguration(DaraModel):
         index_document: main_models.IndexDocument = None,
         routing_rules: main_models.WebsiteConfigurationRoutingRules = None,
     ):
+        # The container that stores the default 404 page.
+        # 
+        # >  You must specify at least one of the following containers: IndexDocument, ErrorDocument, and RoutingRules.
         self.error_document = error_document
+        # The container that stores the default homepage.
+        # 
+        # >  You must specify at least one of the following containers: IndexDocument, ErrorDocument, and RoutingRules.
         self.index_document = index_document
+        # The container that stores the redirection rules.
+        # 
+        # >  You must specify at least one of the following containers: IndexDocument, ErrorDocument, and RoutingRules.
         self.routing_rules = routing_rules
 
     def validate(self):
@@ -63,6 +72,7 @@ class WebsiteConfigurationRoutingRules(DaraModel):
         self,
         routing_rule: List[main_models.RoutingRule] = None,
     ):
+        # The specified redirection rule or mirroring-based back-to-origin rule. You can specify up to 20 rules.
         self.routing_rule = routing_rule
 
     def validate(self):

@@ -12,9 +12,13 @@ class RegionInfo(DaraModel):
         internet_endpoint: str = None,
         region: str = None,
     ):
+        # The acceleration endpoint of the region. The value is always oss-accelerate.aliyuncs.com.
         self.accelerate_endpoint = accelerate_endpoint
+        # The internal endpoint of the region.
         self.internal_endpoint = internal_endpoint
+        # The public endpoint of the region.
         self.internet_endpoint = internet_endpoint
+        # The region ID.
         self.region = region
 
     def validate(self):

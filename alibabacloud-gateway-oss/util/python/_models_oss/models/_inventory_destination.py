@@ -10,6 +10,7 @@ class InventoryDestination(DaraModel):
         self,
         ossbucket_destination: main_models.InventoryOSSBucketDestination = None,
     ):
+        # The container that stores information about the bucket in which exported inventory lists are stored.
         self.ossbucket_destination = ossbucket_destination
 
     def validate(self):

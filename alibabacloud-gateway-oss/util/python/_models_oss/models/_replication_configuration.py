@@ -10,6 +10,7 @@ class ReplicationConfiguration(DaraModel):
         self,
         rule: main_models.PutReplicationRule = None,
     ):
+        # The container that stores data replication rules.
         self.rule = rule
 
     def validate(self):

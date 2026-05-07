@@ -9,6 +9,7 @@ class AccessPointVpcConfiguration(DaraModel):
         self,
         vpc_id: str = None,
     ):
+        # The ID of the VPC that is required only when the NetworkOrigin parameter is set to vpc.
         self.vpc_id = vpc_id
 
     def validate(self):

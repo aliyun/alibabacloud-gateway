@@ -16,12 +16,29 @@ class ReplicationProgressRule(DaraModel):
         progress: main_models.ReplicationProgressRuleProgress = None,
         status: str = None,
     ):
+        # The operations that are synchronized to the destination bucket.
+        # 
+        # *   ALL: PUT, DELETE, and ABORT operations are synchronized to the destination bucket.
+        # *   PUT: Write operations are synchronized to the destination bucket, including PutObject, PostObject, AppendObject, CopyObject, PutObjectACL, InitiateMultipartUpload, UploadPart, UploadPartCopy, and CompleteMultipartUpload.
         self.action = action
+        # The container that stores the information about the destination bucket.
         self.destination = destination
+        # Specifies whether to replicate historical data that exists before data replication is enabled from the source bucket to the destination bucket.
+        # 
+        # *   enabled (default): replicates historical data to the destination bucket.
+        # *   disabled: ignores historical data and replicates only data uploaded to the source bucket after data replication is enabled for the source bucket.
         self.historical_object_replication = historical_object_replication
+        # The ID of the data replication rule.
         self.id = id
+        # The container that stores prefixes. You can specify up to 10 prefixes in each data replication rule.
         self.prefix_set = prefix_set
+        # The container that stores the progress of the data replication task. This parameter is returned only when the data replication task is in the doing state.
         self.progress = progress
+        # The status of the data replication task. Valid values:
+        # 
+        # *   starting: OSS creates a data replication task after a data replication rule is configured.
+        # *   doing: The replication rule is effective and the replication task is in progress.
+        # *   closing: OSS clears a data replication task after the corresponding data replication rule is deleted.
         self.status = status
 
     def validate(self):
@@ -94,7 +111,9 @@ class ReplicationProgressRuleProgress(DaraModel):
         historical_object: str = None,
         new_object: str = None,
     ):
+        # The percentage of the replicated historical data. This parameter is valid only when HistoricalObjectReplication is set to enabled.
         self.historical_object = historical_object
+        # The time used to determine whether data is replicated to the destination bucket. Data that is written to the source bucket before the time is replicated to the destination bucket. The value of this parameter is in the GMT format. Example: Thu, 24 Sep 2015 15:39:18 GMT.
         self.new_object = new_object
 
     def validate(self):

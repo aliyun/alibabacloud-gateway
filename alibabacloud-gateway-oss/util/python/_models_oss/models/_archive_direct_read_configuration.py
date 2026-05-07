@@ -9,6 +9,11 @@ class ArchiveDirectReadConfiguration(DaraModel):
         self,
         enabled: bool = None,
     ):
+        # Specifies whether to enable real-time access of Archive objects for a bucket. Valid values:
+        # 
+        # - true
+        # 
+        # - false
         self.enabled = enabled
 
     def validate(self):

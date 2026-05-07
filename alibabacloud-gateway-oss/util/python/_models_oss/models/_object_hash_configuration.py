@@ -10,7 +10,9 @@ class ObjectHashConfiguration(DaraModel):
         display_object_hash: bool = None,
         object_hash_function: str = None,
     ):
+        # Whether display the hash function used in bucket information.
         self.display_object_hash = display_object_hash
+        # The object hash function used in the bucket.
         self.object_hash_function = object_hash_function
 
     def validate(self):

@@ -15,12 +15,22 @@ class LiveChannel(DaraModel):
         publish_urls: main_models.LiveChannelPublishUrls = None,
         status: str = None,
     ):
+        # The description of the LiveChannel.
         self.description = description
+        # The time when the LiveChannel configuration is last modified. Standard: ISO 8601.
+        # 
         # Use the UTC time format: yyyy-MM-ddTHH:mmZ
         self.last_modified = last_modified
+        # The name of the LiveChannel.
         self.name = name
+        # The container that stores the URL used to play a stream ingested to the LiveChannel.
         self.play_urls = play_urls
+        # The container that stores the URL used to ingest a stream to the LiveChannel.
         self.publish_urls = publish_urls
+        # The status of the LiveChannel. Valid values:
+        # 
+        # *   disabled
+        # *   enabled
         self.status = status
 
     def validate(self):

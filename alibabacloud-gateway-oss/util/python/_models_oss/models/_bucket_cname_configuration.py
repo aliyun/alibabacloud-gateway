@@ -10,6 +10,7 @@ class BucketCnameConfiguration(DaraModel):
         self,
         cname: main_models.BucketCnameConfigurationCname = None,
     ):
+        # The container that stores the CNAME information.
         self.cname = cname
 
     def validate(self):
@@ -40,7 +41,9 @@ class BucketCnameConfigurationCname(DaraModel):
         certificate_configuration: main_models.CertificateConfiguration = None,
         domain: str = None,
     ):
+        # The container for which the certificate is configured.
         self.certificate_configuration = certificate_configuration
+        # The custom domain name.
         self.domain = domain
 
     def validate(self):
