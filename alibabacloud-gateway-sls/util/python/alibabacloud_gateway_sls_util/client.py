@@ -5,7 +5,7 @@ import lz4.block
 import zlib
 import zstd
 import io
-from .log_group_serializer import serialize_log_group_to_pb
+from .log_group_serializer import serialize_log_group_to_pb, deserialize_log_group_list_from_pb
 
 # for compressor
 supported_compress_types = ['lz4', 'zstd', 'gzip', 'deflate']
@@ -190,3 +190,15 @@ class Client:
         log_group: Any,
     ) -> bytes:
         return serialize_log_group_to_pb(log_group)
+
+    @staticmethod
+    def deserialize_log_group_list_from_pb(
+        data: bytes,
+    ) -> Any:
+        return deserialize_log_group_list_from_pb(data)
+
+    @staticmethod
+    async def deserialize_log_group_list_from_pb_async(
+        data: bytes,
+    ) -> Any:
+        return deserialize_log_group_list_from_pb(data)

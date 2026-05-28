@@ -39,7 +39,7 @@ VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
     "lz4>=4.3.2",
     "zstd>=1.5.5.1",
-    "aliyun-log-fastpb>=0.2.0"
+    "aliyun-log-fastpb>=0.3.0"
 ]
 
 LONG_DESCRIPTION = ''
