@@ -85,3 +85,7 @@ func BytesLength(src []byte) (_result *int64) {
 func SerializeLogGroupToPB(logGroup interface{}) (_result []byte, _err error) {
 	return serializeLogGroupToPB(logGroup)
 }
+
+func DeserializeLogGroupListFromPB(data []byte) (_result interface{}, _err error) {
+	return deserializeLogGroupListFromPB(data)
+}
