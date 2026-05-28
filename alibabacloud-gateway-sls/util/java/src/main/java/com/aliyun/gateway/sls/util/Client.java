@@ -53,4 +53,8 @@ public class Client {
     public static byte[] serializeLogGroupToPB(Object logGroup) throws Exception {
         return LogGroupSerializer.serializeLogGroupToPB(logGroup);
     }
+
+    public static Object deserializeLogGroupListFromPB(byte[] data) throws Exception {
+        return LogGroupSerializer.deserializeLogGroupListFromPB(data);
+    }
 }

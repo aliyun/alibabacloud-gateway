@@ -78,6 +78,60 @@ public class LogGroupSerializer {
     }
 
 
+    public static Object deserializeLogGroupListFromPB(byte[] data) throws Exception {
+        Logs.LogGroupList logGroupListPB = Logs.LogGroupList.parseFrom(data);
+
+        ArrayList<HashMap<String, Object>> logGroupList = new ArrayList<>();
+        for (Logs.LogGroup lgPB : logGroupListPB.getLogGroupListList()) {
+            HashMap<String, Object> logGroup = new HashMap<>();
+
+            if (lgPB.hasTopic()) {
+                logGroup.put("Topic", lgPB.getTopic());
+            }
+            if (lgPB.hasSource()) {
+                logGroup.put("Source", lgPB.getSource());
+            }
+
+            if (lgPB.getLogTagsCount() > 0) {
+                ArrayList<HashMap<String, String>> tags = new ArrayList<>();
+                for (Logs.LogTag tag : lgPB.getLogTagsList()) {
+                    HashMap<String, String> tagMap = new HashMap<>();
+                    tagMap.put("Key", tag.getKey());
+                    tagMap.put("Value", tag.getValue());
+                    tags.add(tagMap);
+                }
+                logGroup.put("LogTags", tags);
+            }
+
+            ArrayList<HashMap<String, Object>> logItems = new ArrayList<>();
+            for (Logs.Log log : lgPB.getLogsList()) {
+                HashMap<String, Object> logItem = new HashMap<>();
+                logItem.put("Time", log.getTime());
+
+                if (log.hasTimeNs()) {
+                    logItem.put("TimeNs", log.getTimeNs());
+                }
+
+                ArrayList<HashMap<String, String>> contents = new ArrayList<>();
+                for (Logs.Log.Content content : log.getContentsList()) {
+                    HashMap<String, String> contentMap = new HashMap<>();
+                    contentMap.put("Key", content.getKey());
+                    contentMap.put("Value", content.getValue());
+                    contents.add(contentMap);
+                }
+                logItem.put("Contents", contents);
+                logItems.add(logItem);
+            }
+            logGroup.put("LogItems", logItems);
+
+            logGroupList.add(logGroup);
+        }
+
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("logGroupList", logGroupList);
+        return result;
+    }
+
     private static volatile String localMachineIP = null;
     private static String getSourceIP() {
         if (localMachineIP != null) {
