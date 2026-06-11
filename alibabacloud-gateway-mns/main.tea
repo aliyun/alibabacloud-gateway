@@ -1,0 +1,354 @@
+import SPI;
+import Credential;
+import Util;
+import OpenApiUtil;
+import EncodeUtil;
+import SignatureUtil;
+import String;
+import Map;
+import Array;
+import XML;
+
+extends SPI;
+
+type @signPrefix = string;
+type @signSuffix = string;
+type @authPrefix = string;
+
+init() {
+  super();
+  @signPrefix = 'aliyun_v4';
+  @signSuffix = 'aliyun_v4_request';
+  @authPrefix = 'MNS4-HMAC-SHA256';
+}
+
+async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var config = context.configuration;
+  config.endpoint = getEndpoint(config.regionId, config.endpoint);
+}
+
+async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var request = context.request;
+  var config = context.configuration;
+  var signatureVersion = Util.defaultString(request.signatureVersion, 'v2');
+
+  if (!Util.isUnset(request.body)) {
+    if (String.equals(request.reqBodyType, 'xml')) {
+      var reqBodyMap = Util.assertAsMap(request.body);
+      var xmlStr = XML.toXML(reqBodyMap);
+      request.stream = xmlStr;
+      request.headers['content-type'] = 'text/xml;charset=UTF-8';
+      request.headers['content-md5'] = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(xmlStr));
+    } else if (String.equals(request.reqBodyType, 'json') || String.equals(request.reqBodyType, 'formData')) {
+      var bodyStr = Util.toJSONString(request.body);
+      request.stream = bodyStr;
+      request.headers['content-type'] = 'application/json';
+      request.headers['content-md5'] = EncodeUtil.base64EncodeToString(SignatureUtil.MD5Sign(bodyStr));
+    } else if (String.equals(request.reqBodyType, 'byte') || String.equals(request.reqBodyType, 'binary')) {
+      var bodyBytes = Util.assertAsBytes(request.body);
+      request.stream = bodyBytes;
+      request.headers['content-md5'] = EncodeUtil.base64EncodeToString(SignatureUtil.MD5SignForBytes(bodyBytes));
+    }
+  }
+
+  buildRequest(context);
+
+  request.headers = {
+    host = config.endpoint,
+    x-mns-version = request.version,
+    user-agent = request.userAgent,
+    accept = 'application/json',
+    ...request.headers
+  };
+
+  if (!Util.equalString(request.authType, 'Anonymous')) {
+    var credential : Credential = request.credential;
+    if (Util.isUnset(credential)) {
+      throw {
+        code = 'ParameterMissing',
+        message = '\'config.credential\' can not be unset'
+      };
+    }
+
+    var credentialModel = credential.getCredential();
+    var authType = credentialModel.type;
+    if (Util.equalString(authType, 'bearer')) {
+      var bearerToken = credentialModel.bearerToken;
+      request.headers['x-acs-bearer-token'] = bearerToken;
+      request.headers['x-acs-signature-type'] = 'BEARERTOKEN';
+      request.headers.Authorization = `Bearer ${bearerToken}`;
+    } else {
+      var accessKeyId = credentialModel.accessKeyId;
+      var accessKeySecret = credentialModel.accessKeySecret;
+      var securityToken = credentialModel.securityToken;
+      if (!Util.empty(securityToken)) {
+        request.headers['security-token'] = securityToken;
+      }
+
+      request.headers['date'] = Util.getDateUTCString();
+      if (String.equals(signatureVersion, 'v4')) {
+        var date = getDateISO8601();
+        request.headers['authorization'] = getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
+      } else {
+        request.headers['authorization'] = getAuthorizationV2(request.pathname, request.method, request.headers, accessKeyId, accessKeySecret);
+      }
+    }
+  }
+}
+
+async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
+  var request = context.request;
+  var response = context.response;
+  if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
+    var err : map[string]any = {};
+    if (!Util.isUnset(response.headers.content-type) && String.contains(response.headers.content-type, 'text/xml')) {
+      var _str = Util.readAsString(response.body);
+      var respMap = XML.parseXml(_str, null);
+      err = Util.assertAsMap(respMap.Error);
+    } else {
+      var _res = Util.readAsJSON(response.body);
+      err = Util.assertAsMap(_res);
+    }
+    var requestId = defaultAny(err.RequestId, err.requestId);
+    if (!Util.isUnset(response.headers.x-mns-request-id)) {
+      requestId = response.headers.x-mns-request-id;
+    }
+    err.statusCode = response.statusCode;
+    throw {
+      code = `${defaultAny(err.Code, err.code)}`,
+      message = `code: ${response.statusCode}, ${defaultAny(err.Message, err.message)} request id: ${requestId}`,
+      data = err,
+      description = `${defaultAny(err.Description, err.description)}`,
+      accessDeniedDetail = defaultAny(err.AccessDeniedDetail, err.accessDeniedDetail),
+    };
+  }
+  if (Util.equalNumber(response.statusCode, 204)) {
+    Util.readAsString(response.body);
+  } else if (Util.equalString(request.bodyType, 'binary')) {
+    response.deserializedBody = response.body;
+  } else if (Util.equalString(request.bodyType, 'byte')) {
+    var byt = Util.readAsBytes(response.body);
+    response.deserializedBody = byt;
+  } else if (Util.equalString(request.bodyType, 'string')) {
+    var str = Util.readAsString(response.body);
+    response.deserializedBody = str;
+  } else if (Util.equalString(request.bodyType, 'json')) {
+    var obj = Util.readAsJSON(response.body);
+    var res = Util.assertAsMap(obj);
+    response.deserializedBody = res;
+  } else if (Util.equalString(request.bodyType, 'array')) {
+    var arr = Util.readAsJSON(response.body);
+    response.deserializedBody = arr;
+  } else {
+    response.deserializedBody = Util.readAsString(response.body);
+  }
+}
+
+async function getEndpoint(regionId: string, endpoint: string) : string {
+  if (!Util.empty(endpoint)) {
+    return endpoint;
+  }
+  if (Util.empty(regionId)) {
+    regionId = 'cn-hangzhou';
+  }
+  return `${regionId}.mns.aliyuncs.com`;
+}
+
+function defaultAny(inputValue: any, defaultValue: any): any {
+  if (Util.isUnset(inputValue)) {
+    return defaultValue;
+  }
+  return inputValue;
+}
+
+function defaultString(inputValue: string, defaultValue: string): string {
+  if (Util.isUnset(inputValue) || Util.empty(inputValue)) {
+    return defaultValue;
+  }
+  return inputValue;
+}
+
+async function base64Encode(input: string): string {
+  if (Util.isUnset(input)) {
+    return '';
+  }
+  return EncodeUtil.base64EncodeToString(Util.toBytes(input));
+}
+
+async function base64Decode(input: string): string {
+  if (Util.isUnset(input)) {
+    return '';
+  }
+  return Util.toString(EncodeUtil.base64Decode(input));
+}
+
+async function buildRequest(context: SPI.InterceptorContext): void {
+  var request = context.request;
+  var resource : string = request.pathname;
+  if (!Util.empty(resource)) {
+    var paths : [string] = String.split(resource, `?`, 2);
+    resource = paths[0];
+    if (Util.equalNumber(Array.size(paths), 2)) {
+      var params : [string] = String.split(paths[1], '&', null);
+      for (var sub : params) {
+        var item : [string] = String.split(sub, '=', null);
+        var key : string = item[0];
+        var value : string = null;
+        if (Util.equalNumber(Array.size(item), 2)) {
+          value = item[1];
+        }
+        request.query[key] = value;
+      }
+    }
+  }
+  request.pathname = resource;
+}
+
+async function getAuthorizationV2(pathname: string, method: string, headers: map[string]string, ak: string, secret: string): string {
+  var sign = getSignatureV2(pathname, method, headers, secret);
+  return `MNS ${ak}:${sign}`;
+}
+
+async function getSignatureV2(pathname: string, method: string, headers: map[string]string, secret: string): string {
+  var canonicalizedResource = defaultString(pathname, '/');
+  var canonicalizedHeaders = buildCanonicalizedHeadersV2(headers);
+  var stringToSign = `${method}\n${canonicalizedHeaders}${canonicalizedResource}`;
+  return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA1Sign(stringToSign, secret));
+}
+
+async function buildCanonicalizedHeadersV2(headers: map[string]string): string {
+  var contentMd5 = defaultString(headers['content-md5'], '');
+  var contentType = defaultString(headers['content-type'], '');
+  var date = defaultString(headers.date, '');
+  var canonicalizedHeaders : string = `${contentMd5}\n${contentType}\n${date}\n`;
+  var mnsHeaders : map[string]string = {};
+  for (var header : Map.keySet(headers)) {
+    var lowerHeader = String.toLower(header);
+    if (String.hasPrefix(lowerHeader, 'x-mns-')) {
+      mnsHeaders[lowerHeader] = headers[header];
+    }
+  }
+  for (var header : Array.ascSort(Map.keySet(mnsHeaders))) {
+    canonicalizedHeaders = `${canonicalizedHeaders}${header}:${mnsHeaders[header]}\n`;
+  }
+  return canonicalizedHeaders;
+}
+
+async function getAuthorizationV4(context: SPI.InterceptorContext, date: string, accessKeyId: string, accessKeySecret: string): string {
+  var region = getRegion(context);
+  var dateShort = String.subString(date, 0, 8);
+  dateShort = String.replace(dateShort, 'T', '', null);
+  var scope = `${dateShort}/${region}/mns/${@signSuffix}`;
+  var signingkey = getSigningkeyV4(accessKeySecret, region, dateShort);
+  var signature = getSignatureV4(context, date, scope, signingkey);
+  return `${@authPrefix} Credential=${accessKeyId}/${scope},Signature=${signature}`;
+}
+
+async function getSigningkeyV4(secret: string, region: string, date: string): bytes {
+  var sc1 = `${@signPrefix}${secret}`;
+  var sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
+  var sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
+  var sc4 = SignatureUtil.HmacSHA256SignByBytes('mns', sc3);
+  return SignatureUtil.HmacSHA256SignByBytes(@signSuffix, sc4);
+}
+
+async function getSignatureV4(context: SPI.InterceptorContext, date: string, scope: string, signingkey: bytes): string {
+  var request = context.request;
+  var canonicalString = buildCanonicalRequestV4(request.pathname, request.method, request.query, request.headers);
+  var stringToSign = `${@authPrefix}\n${date}\n${scope}\n${canonicalString}`;
+  var signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+  return EncodeUtil.hexEncode(signature);
+}
+
+async function buildCanonicalRequestV4(pathname: string, method: string, query: map[string]string, headers: map[string]string): string {
+  var canonicalURI = '/';
+  if (!Util.empty(pathname)) {
+    canonicalURI = pathname;
+    if (!String.hasPrefix(canonicalURI, '/')) {
+      canonicalURI = `/${canonicalURI}`;
+    }
+  }
+  var suffix : string = '';
+  if (!String.equals(canonicalURI, '/') && String.hasSuffix(canonicalURI, '/')) {
+    suffix = '/';
+  }
+  canonicalURI = `${OpenApiUtil.getEncodePath(canonicalURI)}${suffix}`;
+  var resources = buildCanonicalizedResourceV4(query);
+  var canonicalHeaders = buildCanonicalizedHeadersV4(headers);
+  return `${method}\n${canonicalURI}\n${resources}\n${canonicalHeaders}\n`;
+}
+
+async function buildCanonicalizedResourceV4(query: map[string]string): string {
+  var canonicalizedResource : string = '';
+  if (!Util.isUnset(query)) {
+    var queryMap : map[string]string = {};
+    for (var key : Map.keySet(query)) {
+      var encodedKey = percentEncodeMns(String.toLower(String.trim(key)));
+      var encodedValue = '';
+      if (!Util.isUnset(query[key]) && !Util.empty(query[key])) {
+        encodedValue = percentEncodeMns(String.trim(query[key]));
+      }
+      queryMap[encodedKey] = encodedValue;
+    }
+    var queryArray : [string] = Map.keySet(queryMap);
+    var sortedQueryArray = Array.ascSort(queryArray);
+    var separator : string = '';
+    for (var encodedKey : sortedQueryArray) {
+      canonicalizedResource = `${canonicalizedResource}${separator}${encodedKey}`;
+      var encodedValue = queryMap[encodedKey];
+      if (!Util.empty(encodedValue)) {
+        canonicalizedResource = `${canonicalizedResource}=${encodedValue}`;
+      }
+      separator = '&';
+    }
+  }
+  return canonicalizedResource;
+}
+
+async function buildCanonicalizedHeadersV4(headers: map[string]string): string {
+  var signedHeaders : map[string]string = {};
+  for (var key : Map.keySet(headers)) {
+    var lowerKey = String.toLower(key);
+    if (hasSignedHeaderV4(lowerKey)) {
+      signedHeaders[lowerKey] = String.trim(headers[key]);
+    }
+  }
+  var canonicalizedHeaders : string = '';
+  for (var lowerKey : Array.ascSort(Map.keySet(signedHeaders))) {
+    canonicalizedHeaders = `${canonicalizedHeaders}${lowerKey}:${signedHeaders[lowerKey]}\n`;
+  }
+  return canonicalizedHeaders;
+}
+
+function hasSignedHeaderV4(header: string): boolean {
+  if (String.equals(header, 'content-type') || String.equals(header, 'content-md5')) {
+    return true;
+  }
+  return String.hasPrefix(header, 'x-mns-');
+}
+
+function percentEncodeMns(value: string): string {
+  var encoded = EncodeUtil.percentEncode(value);
+  return String.replace(encoded, '+', '%20', null);
+}
+
+async function getRegion(context: SPI.InterceptorContext): string {
+  var config = context.configuration;
+  if (!Util.isUnset(config.regionId) && !Util.empty(config.regionId)) {
+    return config.regionId;
+  }
+  var region: string = String.replace(config.endpoint, '.mns.aliyuncs.com', '', null);
+  if (String.equals(region, config.endpoint)) {
+    throw {
+      code = 'ClientConfigError',
+      message = 'The regionId configuration of mns client is missing.'
+    };
+  }
+  return region;
+}
+
+async function getDateISO8601() : string {
+  var date = OpenApiUtil.getTimestamp();
+  date = String.replace(date, '-', '', null);
+  return String.replace(date, ':', '', null);
+}
