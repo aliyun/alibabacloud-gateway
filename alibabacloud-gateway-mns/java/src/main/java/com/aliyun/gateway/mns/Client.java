@@ -173,7 +173,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return inputValue;
     }
 
-    public String base64Encode(String input) throws Exception {
+    public static String base64Encode(String input) throws Exception {
         if (com.aliyun.teautil.Common.isUnset(input)) {
             return "";
         }
@@ -181,7 +181,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return com.aliyun.darabonba.encode.Encoder.base64EncodeToString(com.aliyun.teautil.Common.toBytes(input));
     }
 
-    public String base64Decode(String input) throws Exception {
+    public static String base64Decode(String input) throws Exception {
         if (com.aliyun.teautil.Common.isUnset(input)) {
             return "";
         }

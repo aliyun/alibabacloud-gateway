@@ -279,26 +279,26 @@ func (client *Client) DefaultString (inputValue *string, defaultValue *string) (
   return _result
 }
 
-func (client *Client) Base64Encode (input *string) (_result *string, _err error) {
+func Base64Encode (input *string) (_result *string) {
   if tea.BoolValue(util.IsUnset(input)) {
     _result = tea.String("")
-    return _result, _err
+    return _result
   }
 
   _body := encodeutil.Base64EncodeToString(util.ToBytes(input))
   _result = _body
-  return _result, _err
+  return _result
 }
 
-func (client *Client) Base64Decode (input *string) (_result *string, _err error) {
+func Base64Decode (input *string) (_result *string) {
   if tea.BoolValue(util.IsUnset(input)) {
     _result = tea.String("")
-    return _result, _err
+    return _result
   }
 
   _body := util.ToString(encodeutil.Base64Decode(input))
   _result = _body
-  return _result, _err
+  return _result
 }
 
 func (client *Client) BuildRequest (context *spi.InterceptorContext) (_err error) {

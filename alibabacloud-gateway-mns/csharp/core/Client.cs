@@ -386,7 +386,7 @@ namespace AlibabaCloud.GatewayMns
             return inputValue;
         }
 
-        public string Base64Encode(string input)
+        public static string Base64Encode(string input)
         {
             if (AlibabaCloud.TeaUtil.Common.IsUnset(input))
             {
@@ -395,25 +395,7 @@ namespace AlibabaCloud.GatewayMns
             return AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.TeaUtil.Common.ToBytes(input));
         }
 
-        public async Task<string> Base64EncodeAsync(string input)
-        {
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(input))
-            {
-                return "";
-            }
-            return AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64EncodeToString(AlibabaCloud.TeaUtil.Common.ToBytes(input));
-        }
-
-        public string Base64Decode(string input)
-        {
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(input))
-            {
-                return "";
-            }
-            return AlibabaCloud.TeaUtil.Common.ToString(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Base64Decode(input));
-        }
-
-        public async Task<string> Base64DecodeAsync(string input)
+        public static string Base64Decode(string input)
         {
             if (AlibabaCloud.TeaUtil.Common.IsUnset(input))
             {

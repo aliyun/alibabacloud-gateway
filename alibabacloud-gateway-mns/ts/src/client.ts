@@ -180,7 +180,7 @@ export default class Client extends SPI {
     return inputValue;
   }
 
-  async base64Encode(input: string): Promise<string> {
+  static base64Encode(input: string): string {
     if (Util.isUnset(input)) {
       return "";
     }
@@ -188,7 +188,7 @@ export default class Client extends SPI {
     return EncodeUtil.base64EncodeToString(Util.toBytes(input));
   }
 
-  async base64Decode(input: string): Promise<string> {
+  static base64Decode(input: string): string {
     if (Util.isUnset(input)) {
       return "";
     }

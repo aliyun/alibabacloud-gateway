@@ -293,32 +293,16 @@ class Client(SPIClient):
             return default_value
         return input_value
 
+    @staticmethod
     def base_64encode(
-        self,
         input: str,
     ) -> str:
         if UtilClient.is_unset(input):
             return ''
         return Encoder.base_64encode_to_string(UtilClient.to_bytes(input))
 
-    async def base_64encode_async(
-        self,
-        input: str,
-    ) -> str:
-        if UtilClient.is_unset(input):
-            return ''
-        return Encoder.base_64encode_to_string(UtilClient.to_bytes(input))
-
+    @staticmethod
     def base_64decode(
-        self,
-        input: str,
-    ) -> str:
-        if UtilClient.is_unset(input):
-            return ''
-        return UtilClient.to_string(Encoder.base_64decode(input))
-
-    async def base_64decode_async(
-        self,
         input: str,
     ) -> str:
         if UtilClient.is_unset(input):

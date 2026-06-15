@@ -186,24 +186,20 @@ public class UnitTest {
 
     @Test
     public void base64MessageBodyTest() throws Exception {
-        Client client = new Client();
-
-        Assert.assertEquals("aGVsbG8tbW5z", client.base64Encode("hello-mns"));
-        Assert.assertEquals("hello-mns", client.base64Decode("aGVsbG8tbW5z"));
+        Assert.assertEquals("aGVsbG8tbW5z", Client.base64Encode("hello-mns"));
+        Assert.assertEquals("hello-mns", Client.base64Decode("aGVsbG8tbW5z"));
 
         String messageBody = "中文 message body !@#";
-        String encoded = client.base64Encode(messageBody);
-        Assert.assertEquals(messageBody, client.base64Decode(encoded));
+        String encoded = Client.base64Encode(messageBody);
+        Assert.assertEquals(messageBody, Client.base64Decode(encoded));
     }
 
     @Test
     public void base64EmptyInputTest() throws Exception {
-        Client client = new Client();
-
-        Assert.assertEquals("", client.base64Encode(""));
-        Assert.assertEquals("", client.base64Decode(""));
-        Assert.assertEquals("", client.base64Encode(null));
-        Assert.assertEquals("", client.base64Decode(null));
+        Assert.assertEquals("", Client.base64Encode(""));
+        Assert.assertEquals("", Client.base64Decode(""));
+        Assert.assertEquals("", Client.base64Encode(null));
+        Assert.assertEquals("", Client.base64Decode(null));
     }
 
     private InterceptorContext buildV4Context(String regionId, String method, String pathname) {

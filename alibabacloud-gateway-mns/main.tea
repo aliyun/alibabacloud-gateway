@@ -168,14 +168,14 @@ function defaultString(inputValue: string, defaultValue: string): string {
   return inputValue;
 }
 
-async function base64Encode(input: string): string {
+static function base64Encode(input: string): string {
   if (Util.isUnset(input)) {
     return '';
   }
   return EncodeUtil.base64EncodeToString(Util.toBytes(input));
 }
 
-async function base64Decode(input: string): string {
+static function base64Decode(input: string): string {
   if (Util.isUnset(input)) {
     return '';
   }

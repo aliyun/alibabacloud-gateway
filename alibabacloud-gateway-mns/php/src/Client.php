@@ -218,7 +218,7 @@ class Client extends DarabonbaGatewaySpiClient {
      * @param string $input
      * @return string
      */
-    public function base64Encode($input){
+    public static function base64Encode($input){
         if (Utils::isUnset($input)) {
             return '';
         }
@@ -229,7 +229,7 @@ class Client extends DarabonbaGatewaySpiClient {
      * @param string $input
      * @return string
      */
-    public function base64Decode($input){
+    public static function base64Decode($input){
         if (Utils::isUnset($input)) {
             return '';
         }

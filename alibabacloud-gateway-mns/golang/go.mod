@@ -1,6 +1,6 @@
 module github.com/alibabacloud-go/alibabacloud-gateway-mns
 
-go 1.23.12
+go 1.14
 
 require (
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5
