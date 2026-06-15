@@ -158,6 +158,7 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
     throw {
       code = `${defaultAny(err.Code, err.code)}`,
       message = `code: ${response.statusCode}, ${defaultAny(err.Message, err.message)} request id: ${requestId}`,
+      detail = `${defaultAny(err.Detail, err.detail)}`,
       data = err,
       description = `${defaultAny(err.Description, err.description)}`,
       accessDeniedDetail = defaultAny(err.AccessDeniedDetail, err.accessDeniedDetail),

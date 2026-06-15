@@ -16,3 +16,12 @@
 **/target/
 **/*.iml
 **/*.sh
+
+.claude/
+.cursor/
+.qoder/
+.idea/
+.vscode/
+.agents/
+.DS_Store
+.venv/
