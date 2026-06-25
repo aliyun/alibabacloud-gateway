@@ -51,7 +51,12 @@ class Client extends DarabonbaGatewaySpiClient {
     public function modifyRequest($context, $attributeMap){
         $request = $context->request;
         $config = $context->configuration;
-        $signatureVersion = Utils::defaultString($request->signatureVersion, "v2");
+        if (!Utils::isUnset($request->signatureVersion) && StringUtil::equals($request->signatureVersion, "v2")) {
+            throw new TeaError([
+                "code" => "UnsupportedSignatureVersion",
+                "message" => "MNS gateway does not support signature version v2, please use v4"
+            ]);
+        }
         if (!Utils::isUnset($request->body)) {
             if (StringUtil::equals($request->reqBodyType, "xml")) {
                 $reqBodyMap = Utils::assertAsMap($request->body);
@@ -103,13 +108,8 @@ class Client extends DarabonbaGatewaySpiClient {
                     $request->headers["security-token"] = $securityToken;
                 }
                 $request->headers["date"] = Utils::getDateUTCString();
-                if (StringUtil::equals($signatureVersion, "v4")) {
-                    $date = $this->getDateISO8601();
-                    $request->headers["authorization"] = $this->getAuthorizationV4($context, $date, $accessKeyId, $accessKeySecret);
-                }
-                else {
-                    $request->headers["authorization"] = $this->getAuthorizationV2($request->pathname, $request->method, $request->headers, $accessKeyId, $accessKeySecret);
-                }
+                $date = $this->getDateISO8601();
+                $request->headers["authorization"] = $this->getAuthorizationV4($context, $date, $accessKeyId, $accessKeySecret);
             }
         }
     }

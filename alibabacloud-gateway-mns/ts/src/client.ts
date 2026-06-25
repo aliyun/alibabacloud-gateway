@@ -33,7 +33,13 @@ export default class Client extends SPI {
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
-    let signatureVersion = Util.defaultString(request.signatureVersion, "v2");
+    if (!Util.isUnset(request.signatureVersion) && String.equals(request.signatureVersion, "v2")) {
+      throw $tea.newError({
+        code: "UnsupportedSignatureVersion",
+        message: "MNS gateway does not support signature version v2, please use v4",
+      });
+    }
+
     if (!Util.isUnset(request.body)) {
       if (String.equals(request.reqBodyType, "xml")) {
         let reqBodyMap = Util.assertAsMap(request.body);
@@ -87,12 +93,8 @@ export default class Client extends SPI {
         }
 
         request.headers["date"] = Util.getDateUTCString();
-        if (String.equals(signatureVersion, "v4")) {
-          let date = await this.getDateISO8601();
-          request.headers["authorization"] = await this.getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
-        } else {
-          request.headers["authorization"] = await this.getAuthorizationV2(request.pathname, request.method, request.headers, accessKeyId, accessKeySecret);
-        }
+        let date = await this.getDateISO8601();
+        request.headers["authorization"] = await this.getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
 
       }
 

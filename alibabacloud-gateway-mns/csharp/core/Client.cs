@@ -42,7 +42,14 @@ namespace AlibabaCloud.GatewayMns
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            string signatureVersion = AlibabaCloud.TeaUtil.Common.DefaultString(request.SignatureVersion, "v2");
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.SignatureVersion) && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.SignatureVersion, "v2"))
+            {
+                throw new TeaException(new Dictionary<string, string>
+                {
+                    {"code", "UnsupportedSignatureVersion"},
+                    {"message", "MNS gateway does not support signature version v2, please use v4"},
+                });
+            }
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
             {
                 if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "xml"))
@@ -109,15 +116,8 @@ namespace AlibabaCloud.GatewayMns
                         request.Headers["security-token"] = securityToken;
                     }
                     request.Headers["date"] = AlibabaCloud.TeaUtil.Common.GetDateUTCString();
-                    if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
-                    {
-                        string date = GetDateISO8601();
-                        request.Headers["authorization"] = GetAuthorizationV4(context, date, accessKeyId, accessKeySecret);
-                    }
-                    else
-                    {
-                        request.Headers["authorization"] = GetAuthorizationV2(request.Pathname, request.Method, request.Headers, accessKeyId, accessKeySecret);
-                    }
+                    string date = GetDateISO8601();
+                    request.Headers["authorization"] = GetAuthorizationV4(context, date, accessKeyId, accessKeySecret);
                 }
             }
         }
@@ -126,7 +126,14 @@ namespace AlibabaCloud.GatewayMns
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            string signatureVersion = AlibabaCloud.TeaUtil.Common.DefaultString(request.SignatureVersion, "v2");
+            if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.SignatureVersion) && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.SignatureVersion, "v2"))
+            {
+                throw new TeaException(new Dictionary<string, string>
+                {
+                    {"code", "UnsupportedSignatureVersion"},
+                    {"message", "MNS gateway does not support signature version v2, please use v4"},
+                });
+            }
             if (!AlibabaCloud.TeaUtil.Common.IsUnset(request.Body))
             {
                 if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "xml"))
@@ -193,15 +200,8 @@ namespace AlibabaCloud.GatewayMns
                         request.Headers["security-token"] = securityToken;
                     }
                     request.Headers["date"] = AlibabaCloud.TeaUtil.Common.GetDateUTCString();
-                    if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
-                    {
-                        string date = await GetDateISO8601Async();
-                        request.Headers["authorization"] = await GetAuthorizationV4Async(context, date, accessKeyId, accessKeySecret);
-                    }
-                    else
-                    {
-                        request.Headers["authorization"] = await GetAuthorizationV2Async(request.Pathname, request.Method, request.Headers, accessKeyId, accessKeySecret);
-                    }
+                    string date = await GetDateISO8601Async();
+                    request.Headers["authorization"] = await GetAuthorizationV4Async(context, date, accessKeyId, accessKeySecret);
                 }
             }
         }

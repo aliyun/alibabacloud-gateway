@@ -53,7 +53,14 @@ func (client *Client) ModifyConfiguration (context *spi.InterceptorContext, attr
 func (client *Client) ModifyRequest (context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
   request := context.Request
   config := context.Configuration
-  signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v2"))
+  if !tea.BoolValue(util.IsUnset(request.SignatureVersion)) && tea.BoolValue(string_.Equals(request.SignatureVersion, tea.String("v2"))) {
+    _err = tea.NewSDKError(map[string]interface{}{
+      "code": "UnsupportedSignatureVersion",
+      "message": "MNS gateway does not support signature version v2, please use v4",
+    })
+    return _err
+  }
+
   if !tea.BoolValue(util.IsUnset(request.Body)) {
     if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("xml"))) {
       reqBodyMap, _err := util.AssertAsMap(request.Body)
@@ -122,23 +129,14 @@ func (client *Client) ModifyRequest (context *spi.InterceptorContext, attributeM
       }
 
       request.Headers["date"] = util.GetDateUTCString()
-      if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
-        date, _err := client.GetDateISO8601()
-        if _err != nil {
-          return _err
-        }
+      date, _err := client.GetDateISO8601()
+      if _err != nil {
+        return _err
+      }
 
-        request.Headers["authorization"], _err = client.GetAuthorizationV4(context, date, accessKeyId, accessKeySecret)
-        if _err != nil {
-          return _err
-        }
-
-      } else {
-        request.Headers["authorization"], _err = client.GetAuthorizationV2(request.Pathname, request.Method, request.Headers, accessKeyId, accessKeySecret)
-        if _err != nil {
-          return _err
-        }
-
+      request.Headers["authorization"], _err = client.GetAuthorizationV4(context, date, accessKeyId, accessKeySecret)
+      if _err != nil {
+        return _err
       }
 
     }

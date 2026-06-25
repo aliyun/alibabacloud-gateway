@@ -50,7 +50,11 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        signature_version = UtilClient.default_string(request.signature_version, 'v2')
+        if not UtilClient.is_unset(request.signature_version) and StringClient.equals(request.signature_version, 'v2'):
+            raise TeaException({
+                'code': 'UnsupportedSignatureVersion',
+                'message': 'MNS gateway does not support signature version v2, please use v4'
+            })
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
@@ -95,11 +99,8 @@ class Client(SPIClient):
                 if not UtilClient.empty(security_token):
                     request.headers['security-token'] = security_token
                 request.headers['date'] = UtilClient.get_date_utcstring()
-                if StringClient.equals(signature_version, 'v4'):
-                    date = self.get_date_iso8601()
-                    request.headers['authorization'] = self.get_authorization_v4(context, date, access_key_id, access_key_secret)
-                else:
-                    request.headers['authorization'] = self.get_authorization_v2(request.pathname, request.method, request.headers, access_key_id, access_key_secret)
+                date = self.get_date_iso8601()
+                request.headers['authorization'] = self.get_authorization_v4(context, date, access_key_id, access_key_secret)
 
     async def modify_request_async(
         self,
@@ -108,7 +109,11 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        signature_version = UtilClient.default_string(request.signature_version, 'v2')
+        if not UtilClient.is_unset(request.signature_version) and StringClient.equals(request.signature_version, 'v2'):
+            raise TeaException({
+                'code': 'UnsupportedSignatureVersion',
+                'message': 'MNS gateway does not support signature version v2, please use v4'
+            })
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
@@ -153,11 +158,8 @@ class Client(SPIClient):
                 if not UtilClient.empty(security_token):
                     request.headers['security-token'] = security_token
                 request.headers['date'] = UtilClient.get_date_utcstring()
-                if StringClient.equals(signature_version, 'v4'):
-                    date = await self.get_date_iso8601_async()
-                    request.headers['authorization'] = await self.get_authorization_v4_async(context, date, access_key_id, access_key_secret)
-                else:
-                    request.headers['authorization'] = await self.get_authorization_v2_async(request.pathname, request.method, request.headers, access_key_id, access_key_secret)
+                date = await self.get_date_iso8601_async()
+                request.headers['authorization'] = await self.get_authorization_v4_async(context, date, access_key_id, access_key_secret)
 
     def modify_response(
         self,
