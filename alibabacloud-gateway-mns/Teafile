@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayMns",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -23,12 +23,12 @@
     "XML": "darabonba:XML:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-mns:^0.0.1",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-mns/client:v0.0.1",
-    "java": "com.aliyun:alibabacloud-gateway-mns:0.0.1",
-    "python": "alibabacloud_gateway_mns:0.0.1",
-    "csharp": "AlibabaCloud.GatewayMns:0.0.1",
-    "php": "alibabacloud/gateway-mns:^0.0.1",
+    "ts": "@alicloud/gateway-mns:^0.0.2",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-mns/client:v0.0.2",
+    "java": "com.aliyun:alibabacloud-gateway-mns:0.0.2",
+    "python": "alibabacloud_gateway_mns:0.0.2",
+    "csharp": "AlibabaCloud.GatewayMns:0.0.2",
+    "php": "alibabacloud/gateway-mns:^0.0.2",
     "swift": "alibabacloud-sdk-swift/alibabacloud-gateway-mns:0.0.1"
   },
   "csharp": {
@@ -103,7 +103,7 @@
   },
   "releaselog": {
     "changelog": [
-      "fix: resolve host rewrite for signature v4"
+      "fix: resolve signature v2"
     ],
     "compatible": true
   }
