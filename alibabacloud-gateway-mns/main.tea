@@ -30,7 +30,13 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
 async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var request = context.request;
   var config = context.configuration;
-  var signatureVersion = Util.defaultString(request.signatureVersion, 'v2');
+
+  if (!Util.isUnset(request.signatureVersion) && String.equals(request.signatureVersion, 'v2')) {
+    throw {
+      code = 'UnsupportedSignatureVersion',
+      message = 'MNS gateway does not support signature version v2, please use v4'
+    };
+  }
 
   if (!Util.isUnset(request.body)) {
     if (String.equals(request.reqBodyType, 'xml')) {
@@ -86,12 +92,8 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       }
 
       request.headers['date'] = Util.getDateUTCString();
-      if (String.equals(signatureVersion, 'v4')) {
-        var date = getDateISO8601();
-        request.headers['authorization'] = getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
-      } else {
-        request.headers['authorization'] = getAuthorizationV2(request.pathname, request.method, request.headers, accessKeyId, accessKeySecret);
-      }
+      var date = getDateISO8601();
+      request.headers['authorization'] = getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
     }
   }
 }

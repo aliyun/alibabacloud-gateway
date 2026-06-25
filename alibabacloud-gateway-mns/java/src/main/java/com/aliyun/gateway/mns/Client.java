@@ -24,7 +24,13 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
-        String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v2");
+        if (!com.aliyun.teautil.Common.isUnset(request.signatureVersion) && com.aliyun.darabonbastring.Client.equals(request.signatureVersion, "v2")) {
+            throw new TeaException(TeaConverter.buildMap(
+                new TeaPair("code", "UnsupportedSignatureVersion"),
+                new TeaPair("message", "MNS gateway does not support signature version v2, please use v4")
+            ));
+        }
+
         if (!com.aliyun.teautil.Common.isUnset(request.body)) {
             if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "xml")) {
                 java.util.Map<String, Object> reqBodyMap = com.aliyun.teautil.Common.assertAsMap(request.body);
@@ -80,12 +86,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 }
 
                 request.headers.put("date", com.aliyun.teautil.Common.getDateUTCString());
-                if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
-                    String date = this.getDateISO8601();
-                    request.headers.put("authorization", this.getAuthorizationV4(context, date, accessKeyId, accessKeySecret));
-                } else {
-                    request.headers.put("authorization", this.getAuthorizationV2(request.pathname, request.method, request.headers, accessKeyId, accessKeySecret));
-                }
+                String date = this.getDateISO8601();
+                request.headers.put("authorization", this.getAuthorizationV4(context, date, accessKeyId, accessKeySecret));
 
             }
 

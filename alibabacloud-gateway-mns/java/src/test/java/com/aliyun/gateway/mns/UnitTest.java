@@ -202,6 +202,19 @@ public class UnitTest {
         Assert.assertEquals("", Client.base64Decode(null));
     }
 
+    @Test(expected = TeaException.class)
+    public void modifyRequestRejectsSignatureV2Test() throws Exception {
+        Client client = new Client();
+        InterceptorContext context = new InterceptorContext();
+        context.configuration = new InterceptorContext.InterceptorContextConfiguration();
+        context.configuration.endpoint = "cn-hangzhou.mns.aliyuncs.com";
+        context.request = new InterceptorContext.InterceptorContextRequest();
+        context.request.signatureVersion = "v2";
+        context.request.headers = new HashMap<String, String>();
+        context.request.query = new HashMap<String, String>();
+        client.modifyRequest(context, null);
+    }
+
     private InterceptorContext buildV4Context(String regionId, String method, String pathname) {
         InterceptorContext context = new InterceptorContext();
         context.configuration = new InterceptorContext.InterceptorContextConfiguration();
