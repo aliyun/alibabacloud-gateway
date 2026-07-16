@@ -62,7 +62,15 @@ class TestClient(unittest.TestCase):
         # 测试空headers情况
         headers4 = {}
         result4 = client.get_signed_headers(headers4)
-        self.assertEqual([''], result4)
+        self.assertEqual([], result4)
+
+        # Prefix pairs must not be mis-deduped via substring contains
+        headers_prefix = {
+            'host': 'example.com',
+            'x-acs-foobar': '1',
+            'x-acs-foo': '2'
+        }
+        self.assertEqual(['host', 'x-acs-foo', 'x-acs-foobar'], client.get_signed_headers(headers_prefix))
         
         # 测试包含空值的headers情况
         headers5 = {

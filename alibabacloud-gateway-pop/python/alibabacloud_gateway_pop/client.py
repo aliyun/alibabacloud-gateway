@@ -461,13 +461,11 @@ class Client(SPIClient):
         # lower header key
         headers_array = MapClient.key_set(headers)
         new_headers = {}
-        tmp = ''
         for key in headers_array:
             lower_key = StringClient.to_lower(key)
             value = headers.get(key)
             if not UtilClient.is_unset(value):
-                if not StringClient.contains(tmp, lower_key) or StringClient.equals(lower_key, 'host'):
-                    tmp = f'{tmp},{lower_key}'
+                if UtilClient.is_unset(new_headers.get(lower_key)) or StringClient.equals(lower_key, 'host'):
                     new_headers[lower_key] = StringClient.trim(value)
                 else:
                     new_headers[lower_key] = f'{new_headers.get(lower_key)},{StringClient.trim(value)}'
@@ -489,11 +487,9 @@ class Client(SPIClient):
             if not UtilClient.is_unset(value):
                 new_headers_array.append(lower_key)
         sorted_headers_array = ArrayClient.asc_sort(new_headers_array)
-        tmp = ''
-        separator = ''
+        result = []
         for key in sorted_headers_array:
             if StringClient.has_prefix(key, 'x-acs-') or StringClient.equals(key, 'host') or StringClient.equals(key, 'content-type'):
-                if not StringClient.contains(tmp, key):
-                    tmp = f'{tmp}{separator}{key}'
-                    separator = ';'
-        return StringClient.split(tmp, ';', None)
+                if not ArrayClient.contains(result, key):
+                    ArrayClient.append(result, key)
+        return result

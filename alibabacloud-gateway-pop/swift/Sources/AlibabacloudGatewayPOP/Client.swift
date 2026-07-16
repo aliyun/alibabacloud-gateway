@@ -313,17 +313,15 @@ open class Client : AlibabacloudGatewaySPI.Client {
     public func getSignedHeaders(_ headers: [String: String]) -> [String] {
         var headersArray: [String] = DarabonbaMap.Client.keySet(headers)
         var sortedHeadersArray: [String] = DarabonbaArray.Client.ascSort(headersArray)
-        var tmp: String = ""
-        var separator: String = ""
+        var result: [String] = []
         for key in sortedHeadersArray {
             var lowerKey: String = DarabonbaString.Client.toLower(key)
             if (DarabonbaString.Client.hasPrefix(lowerKey, "x-acs-") || DarabonbaString.Client.equals(lowerKey, "host") || DarabonbaString.Client.equals(lowerKey, "content-type")) {
-                if (!DarabonbaString.Client.contains(tmp, lowerKey)) {
-                    tmp = (tmp as! String) + (separator as! String) + (lowerKey as! String)
-                    separator = ";"
+                if (!result.contains(lowerKey)) {
+                    result.append(lowerKey)
                 }
             }
         }
-        return DarabonbaString.Client.split(tmp, ";", nil)
+        return result
     }
 }

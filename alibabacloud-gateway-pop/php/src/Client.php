@@ -393,13 +393,11 @@ class Client extends DarabonbaGatewaySpiClient
         // lower header key
         $headersArray = MapUtil::keySet($headers);
         $newHeaders = [];
-        $tmp = "";
         foreach ($headersArray as $key) {
             $lowerKey = StringUtil::toLower($key);
             $value = @$headers[$key];
             if (!Utils::isUnset($value)) {
-                if (!StringUtil::contains($tmp, $lowerKey) || StringUtil::equals($lowerKey, "host")) {
-                    $tmp = "" . $tmp . "," . $lowerKey . "";
+                if (Utils::isUnset(@$newHeaders[$lowerKey]) || StringUtil::equals($lowerKey, "host")) {
                     $newHeaders[$lowerKey] = StringUtil::trim($value);
                 } else {
                     $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . StringUtil::trim($value) . "";
@@ -430,16 +428,14 @@ class Client extends DarabonbaGatewaySpiClient
             }
         }
         $sortedHeadersArray = ArrayUtil::ascSort($newHeadersArray);
-        $tmp = "";
-        $separator = "";
+        $result = [];
         foreach ($sortedHeadersArray as $key) {
             if (StringUtil::hasPrefix($key, "x-acs-") || StringUtil::equals($key, "host") || StringUtil::equals($key, "content-type")) {
-                if (!StringUtil::contains($tmp, $key)) {
-                    $tmp = "" . $tmp . "" . $separator . "" . $key . "";
-                    $separator = ";";
+                if (!ArrayUtil::contains($result, $key)) {
+                    ArrayUtil::append($result, $key);
                 }
             }
         }
-        return StringUtil::split($tmp, ";", null);
+        return $result;
     }
 }

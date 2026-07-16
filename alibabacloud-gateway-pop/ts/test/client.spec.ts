@@ -57,7 +57,15 @@ describe('Client', function () {
 
         // 测试空headers情况
         const headers4 = {};
-        assert.deepStrictEqual([''], client.getSignedHeaders(headers4));
+        assert.deepStrictEqual([], client.getSignedHeaders(headers4));
+
+        // Prefix pairs must not be mis-deduped via substring contains
+        const headersPrefix = {
+            'host': 'example.com',
+            'x-acs-foobar': '1',
+            'x-acs-foo': '2'
+        };
+        assert.deepStrictEqual(['host', 'x-acs-foo', 'x-acs-foobar'], client.getSignedHeaders(headersPrefix));
 
         // 测试包含空值的headers情况
         const headers5 = {

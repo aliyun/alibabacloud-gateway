@@ -315,13 +315,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // lower header key
         java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(headers);
         java.util.Map<String, String> newHeaders = new java.util.HashMap<>();
-        String tmp = "";
         for (String key : headersArray) {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
             String value = headers.get(key);
             if (!com.aliyun.teautil.Common.isUnset(value)) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey) || com.aliyun.darabonbastring.Client.equals(lowerKey, "host")) {
-                    tmp = "" + tmp + "," + lowerKey + "";
+                if (com.aliyun.teautil.Common.isUnset(newHeaders.get(lowerKey)) || com.aliyun.darabonbastring.Client.equals(lowerKey, "host")) {
                     newHeaders.put(lowerKey, com.aliyun.darabonbastring.Client.trim(value));
                 } else {
                     newHeaders.put(lowerKey, "" + newHeaders.get(lowerKey) + "," + com.aliyun.darabonbastring.Client.trim(value) + "");
@@ -350,18 +348,16 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
         java.util.List<String> sortedHeadersArray = com.aliyun.darabonba.array.Client.ascSort(newHeadersArray);
-        String tmp = "";
-        String separator = "";
+        java.util.List<String> result = new java.util.ArrayList<>();
         for (String key : sortedHeadersArray) {
             if (com.aliyun.darabonbastring.Client.hasPrefix(key, "x-acs-") || com.aliyun.darabonbastring.Client.equals(key, "host") || com.aliyun.darabonbastring.Client.equals(key, "content-type")) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, key)) {
-                    tmp = "" + tmp + "" + separator + "" + key + "";
-                    separator = ";";
+                if (!com.aliyun.darabonba.array.Client.contains(result, key)) {
+                    com.aliyun.darabonba.array.Client.append(result, key);
                 }
 
             }
 
         }
-        return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
+        return result;
     }
 }

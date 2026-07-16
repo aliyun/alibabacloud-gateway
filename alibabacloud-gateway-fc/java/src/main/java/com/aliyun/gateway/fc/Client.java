@@ -336,20 +336,18 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public java.util.List<String> getSignedHeaders(java.util.Map<String, String> headers) throws Exception {
         java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(headers);
         java.util.List<String> sortedHeadersArray = com.aliyun.darabonba.array.Client.ascSort(headersArray);
-        String tmp = "";
-        String separator = "";
+        java.util.List<String> result = new java.util.ArrayList<>();
         for (String key : sortedHeadersArray) {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
             if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-acs-") || com.aliyun.darabonbastring.Client.equals(lowerKey, "host") || com.aliyun.darabonbastring.Client.equals(lowerKey, "content-type")) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
-                    tmp = "" + tmp + "" + separator + "" + lowerKey + "";
-                    separator = ";";
+                if (!com.aliyun.darabonba.array.Client.contains(result, lowerKey)) {
+                    com.aliyun.darabonba.array.Client.append(result, lowerKey);
                 }
 
             }
 
         }
-        return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
+        return result;
     }
 
     public java.util.Map<String, ?> signRequest(HttpRequest request, com.aliyun.credentials.Client credential) throws Exception {

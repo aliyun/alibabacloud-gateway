@@ -41,7 +41,7 @@ namespace tests
             // 测试空headers
             var emptyHeaders = new Dictionary<string, string>();
             var result = client.GetSignedHeaders(emptyHeaders);
-            Assert.Equal(1, result.Count);
+            Assert.Equal(0, result.Count);
 
             // 测试只包含需要签名的headers
             var headers = new Dictionary<string, string>
@@ -96,6 +96,19 @@ namespace tests
             Assert.Equal("content-type", result[0]);
             Assert.Equal("host", result[1]);
             Assert.Equal("x-acs-action", result[2]);
+
+            // Prefix pairs must not be mis-deduped via substring contains
+            var prefixHeaders = new Dictionary<string, string>
+            {
+                { "host", "example.com" },
+                { "x-acs-foobar", "1" },
+                { "x-acs-foo", "2" }
+            };
+            result = client.GetSignedHeaders(prefixHeaders);
+            Assert.Equal(3, result.Count);
+            Assert.Equal("host", result[0]);
+            Assert.Equal("x-acs-foo", result[1]);
+            Assert.Equal("x-acs-foobar", result[2]);
         }
     }
 }

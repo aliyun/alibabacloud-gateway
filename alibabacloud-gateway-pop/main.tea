@@ -301,13 +301,13 @@ function buildCanonicalizedHeaders(headers: map[string]string): string {
   // lower header key
   var headersArray : [string] = Map.keySet(headers);
   var newHeaders : map[string]string = {};
-  var tmp : string = '';
   for(var key : headersArray) {
     var lowerKey = String.toLower(key);
     var value = headers[key];
     if (!Util.isUnset(value)) {
-      if (!String.contains(tmp, lowerKey) || String.equals(lowerKey, 'host')) {
-        tmp = `${tmp},${lowerKey}`;
+      // Use map membership (exact key) instead of String.contains on a joined
+      // string, which mis-merges prefix pairs like x-acs-foo / x-acs-foobar.
+      if (Util.isUnset(newHeaders[lowerKey]) || String.equals(lowerKey, 'host')) {
         newHeaders[lowerKey] = String.trim(value);
       } else {
         newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(value)}`;
@@ -334,16 +334,14 @@ function getSignedHeaders(headers: map[string]string): [string] {
     }
   }
   var sortedHeadersArray = Array.ascSort(newHeadersArray);
-  var tmp : string = '';
-  var separator : string = '';
+  var result : [string] = [];
   for(var key : sortedHeadersArray) {
     if (String.hasPrefix(key, 'x-acs-') || String.equals(key, 'host')
             || String.equals(key, 'content-type')) {
-      if (!String.contains(tmp, key)) {
-        tmp = `${tmp}${separator}${key}`;
-        separator = ';';
+      if (!Array.contains(result, key)) {
+        Array.append(result, key);
       }
     }
   }
-  return String.split(tmp, ';', null);
+  return result;
 }

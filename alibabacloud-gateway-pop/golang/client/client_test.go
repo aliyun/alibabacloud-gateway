@@ -37,7 +37,7 @@ func Test_GetSignedHeaders(t *testing.T) {
 
 	// 测试空headers
 	result := client.GetSignedHeaders(make(map[string]*string))
-	utils.AssertEqual(t, 1, len(result))
+	utils.AssertEqual(t, 0, len(result))
 
 	// 测试只包含需要签名的headers
 	headers := map[string]*string{
@@ -76,4 +76,16 @@ func Test_GetSignedHeaders(t *testing.T) {
 	utils.AssertEqual(t, 2, len(result))
 	utils.AssertEqual(t, "host", tea.StringValue(result[0]))
 	utils.AssertEqual(t, "x-acs-action", tea.StringValue(result[1]))
+
+	// Prefix pairs must not be mis-deduped via substring contains
+	prefixHeaders := map[string]*string{
+		"host":         tea.String("example.com"),
+		"x-acs-foobar": tea.String("1"),
+		"x-acs-foo":    tea.String("2"),
+	}
+	result = client.GetSignedHeaders(prefixHeaders)
+	utils.AssertEqual(t, 3, len(result))
+	utils.AssertEqual(t, "host", tea.StringValue(result[0]))
+	utils.AssertEqual(t, "x-acs-foo", tea.StringValue(result[1]))
+	utils.AssertEqual(t, "x-acs-foobar", tea.StringValue(result[2]))
 }

@@ -324,14 +324,12 @@ export default class Client extends SPI {
     // lower header key
     let headersArray : string[] = Map.keySet(headers);
     let newHeaders : {[key: string ]: string} = { };
-    let tmp : string = "";
 
     for (let key of headersArray) {
       let lowerKey = String.toLower(key);
       let value = headers[key];
       if (!Util.isUnset(value)) {
-        if (!String.contains(tmp, lowerKey) || String.equals(lowerKey, "host")) {
-          tmp = `${tmp},${lowerKey}`;
+        if (Util.isUnset(newHeaders[lowerKey]) || String.equals(lowerKey, "host")) {
           newHeaders[lowerKey] = String.trim(value);
         } else {
           newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(value)}`;
@@ -362,20 +360,18 @@ export default class Client extends SPI {
 
     }
     let sortedHeadersArray = Array.ascSort(newHeadersArray);
-    let tmp : string = "";
-    let separator : string = "";
+    let result : string[] = [ ];
 
     for (let key of sortedHeadersArray) {
       if (String.hasPrefix(key, "x-acs-") || String.equals(key, "host") || String.equals(key, "content-type")) {
-        if (!String.contains(tmp, key)) {
-          tmp = `${tmp}${separator}${key}`;
-          separator = ";";
+        if (!Array.contains(result, key)) {
+          Array.append(result, key);
         }
 
       }
 
     }
-    return String.split(tmp, ";", null);
+    return result;
   }
 
 }
