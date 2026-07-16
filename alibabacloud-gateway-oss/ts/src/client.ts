@@ -352,7 +352,7 @@ export default class Client extends SPI {
       if (String.contains(network, "internal")) {
         return `oss-${regionId}-internal.aliyuncs.com`;
       } else if (String.contains(network, "ipv6")) {
-        return `${regionId}oss.aliyuncs.com`;
+        return `${regionId}.oss.aliyuncs.com`;
       } else if (String.contains(network, "accelerate")) {
         return `oss-${network}.aliyuncs.com`;
       }

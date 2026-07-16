@@ -410,7 +410,7 @@ func (client *Client) GetEndpoint(regionId *string, network *string, endpoint *s
 			_result = tea.String("oss-" + tea.StringValue(regionId) + "-internal.aliyuncs.com")
 			return _result, _err
 		} else if tea.BoolValue(string_.Contains(network, tea.String("ipv6"))) {
-			_result = tea.String(tea.StringValue(regionId) + "oss.aliyuncs.com")
+			_result = tea.String(tea.StringValue(regionId) + ".oss.aliyuncs.com")
 			return _result, _err
 		} else if tea.BoolValue(string_.Contains(network, tea.String("accelerate"))) {
 			_result = tea.String("oss-" + tea.StringValue(network) + ".aliyuncs.com")

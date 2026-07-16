@@ -546,7 +546,7 @@ class Client(SPIClient):
             if StringClient.contains(network, 'internal'):
                 return f'oss-{region_id}-internal.aliyuncs.com'
             elif StringClient.contains(network, 'ipv6'):
-                return f'{region_id}oss.aliyuncs.com'
+                return f'{region_id}.oss.aliyuncs.com'
             elif StringClient.contains(network, 'accelerate'):
                 return f'oss-{network}.aliyuncs.com'
         return f'oss-{region_id}.aliyuncs.com'
@@ -565,7 +565,7 @@ class Client(SPIClient):
             if StringClient.contains(network, 'internal'):
                 return f'oss-{region_id}-internal.aliyuncs.com'
             elif StringClient.contains(network, 'ipv6'):
-                return f'{region_id}oss.aliyuncs.com'
+                return f'{region_id}.oss.aliyuncs.com'
             elif StringClient.contains(network, 'accelerate'):
                 return f'oss-{network}.aliyuncs.com'
         return f'oss-{region_id}.aliyuncs.com'

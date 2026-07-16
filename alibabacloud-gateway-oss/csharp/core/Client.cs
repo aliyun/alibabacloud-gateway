@@ -594,7 +594,7 @@ namespace AlibabaCloud.GatewayOss
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Contains(network, "ipv6"))
                 {
-                    return "" + regionId + "oss.aliyuncs.com";
+                    return "" + regionId + ".oss.aliyuncs.com";
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Contains(network, "accelerate"))
                 {
@@ -622,7 +622,7 @@ namespace AlibabaCloud.GatewayOss
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Contains(network, "ipv6"))
                 {
-                    return "" + regionId + "oss.aliyuncs.com";
+                    return "" + regionId + ".oss.aliyuncs.com";
                 }
                 else if (AlibabaCloud.DarabonbaString.StringUtil.Contains(network, "accelerate"))
                 {

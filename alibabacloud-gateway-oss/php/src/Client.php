@@ -336,7 +336,7 @@ class Client extends DarabonbaGatewaySpiClient {
                 return "oss-" . $regionId . "-internal.aliyuncs.com";
             }
             else if (StringUtil::contains($network, "ipv6")) {
-                return "" . $regionId . "oss.aliyuncs.com";
+                return "" . $regionId . ".oss.aliyuncs.com";
             }
             else if (StringUtil::contains($network, "accelerate")) {
                 return "oss-" . $network . ".aliyuncs.com";
