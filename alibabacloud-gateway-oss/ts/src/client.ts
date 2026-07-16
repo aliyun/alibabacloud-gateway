@@ -339,6 +339,26 @@ export default class Client extends SPI {
         return String.subString(endpoint, 4, idx);
       }
 
+      if (String.hasSuffix(endpoint, ".mgw.aliyuncs.com")) {
+        let idx = String.index(endpoint, ".mgw.aliyuncs.com");
+        return String.subString(endpoint, 0, idx);
+      }
+
+      if (String.hasSuffix(endpoint, ".mgw-internal.aliyuncs.com")) {
+        let idx = String.index(endpoint, ".mgw-internal.aliyuncs.com");
+        return String.subString(endpoint, 0, idx);
+      }
+
+      if (String.hasSuffix(endpoint, "-internal.oss-data-acc.aliyuncs.com")) {
+        let idx = String.index(endpoint, "-internal.oss-data-acc.aliyuncs.com");
+        return String.subString(endpoint, 0, idx);
+      }
+
+      if (String.hasSuffix(endpoint, ".oss-dls.aliyuncs.com")) {
+        let idx = String.index(endpoint, ".oss-dls.aliyuncs.com");
+        return String.subString(endpoint, 0, idx);
+      }
+
     }
 
     return "cn-hangzhou";
