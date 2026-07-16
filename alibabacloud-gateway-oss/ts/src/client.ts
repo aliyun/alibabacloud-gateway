@@ -18,6 +18,7 @@ import * as $tea from '@alicloud/tea-typescript';
 export default class Client extends SPI {
   _default_signed_params: string[];
   _except_signed_params: string[];
+  _default_additional_headers: string[];
 
   constructor() {
     super();
@@ -116,6 +117,10 @@ export default class Client extends SPI {
     this._except_signed_params = [
       "list-type",
       "regions"
+    ];
+    this._default_additional_headers = [
+      "range",
+      "if-modified-since"
     ];
   }
 
@@ -393,8 +398,14 @@ export default class Client extends SPI {
       }
 
       if (String.equals(signatureVersion, "v2")) {
-        sign = await this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
-        return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
+        let additionalHeaderNames = await this.getAdditionalHeaderNamesV2(headers);
+        sign = await this.getSignatureV2(bucketName, pathname, method, query, headers, secret, additionalHeaderNames);
+        let additionalHeaders = await this.joinSemicolon(additionalHeaderNames);
+        if (Util.empty(additionalHeaders)) {
+          return `OSS2 AccessKeyId:${ak},Signature:${sign}`;
+        }
+
+        return `OSS2 AccessKeyId:${ak},AdditionalHeaders:${additionalHeaders},Signature:${sign}`;
       }
 
     }
@@ -554,8 +565,120 @@ export default class Client extends SPI {
     return canonicalizedHeaders;
   }
 
-  async getSignatureV2(bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, secret: string): Promise<string> {
+  static v2UriEncode(value: string): string {
+    if (Util.empty(value)) {
+      return "";
+    }
+
+    let encoded = EncodeUtil.percentEncode(value);
+    encoded = String.replace(encoded, "+", "%20", null);
+    encoded = String.replace(encoded, "%7E", "~", null);
+    encoded = String.replace(encoded, "%2D", "-", null);
+    encoded = String.replace(encoded, "%5F", "_", null);
+    encoded = String.replace(encoded, "%2E", ".", null);
+    return encoded;
+  }
+
+  async getHeaderValue(headers: {[key: string ]: string}, name: string): Promise<string> {
+    if (!Util.isUnset(headers[name])) {
+      return headers[name];
+    }
+
+    for (let header of Map.keySet(headers)) {
+      if (String.equals(String.toLower(header), name)) {
+        return headers[header];
+      }
+    }
     return "";
+  }
+
+  async getAdditionalHeaderNamesV2(headers: {[key: string ]: string}): Promise<string[]> {
+    let additionalHeaders : {[key: string ]: string} = { };
+    for (let header of Map.keySet(headers)) {
+      let lowerHeader = String.toLower(header);
+      if (Array.contains(this._default_additional_headers, lowerHeader)) {
+        additionalHeaders[lowerHeader] = lowerHeader;
+      }
+    }
+    return Array.ascSort(Map.keySet(additionalHeaders));
+  }
+
+  async joinSemicolon(items: string[]): Promise<string> {
+    let result = "";
+    let separator = "";
+    for (let item of items) {
+      result = `${result}${separator}${item}`;
+      separator = ";";
+    }
+    return result;
+  }
+
+  async buildCanonicalizedOssHeadersV2(headers: {[key: string ]: string}, additionalHeaderNames: string[]): Promise<string> {
+    let canonHeaders : {[key: string ]: string} = { };
+    for (let header of Map.keySet(headers)) {
+      let lowerHeader = String.toLower(header);
+      if (String.hasPrefix(lowerHeader, "x-oss-")) {
+        canonHeaders[lowerHeader] = headers[header];
+      }
+    }
+    for (let name of additionalHeaderNames) {
+      canonHeaders[name] = await this.getHeaderValue(headers, name);
+    }
+    let canonicalizedHeaders = "";
+    for (let header of Array.ascSort(Map.keySet(canonHeaders))) {
+      canonicalizedHeaders = `${canonicalizedHeaders}${header}:${canonHeaders[header]}\n`;
+    }
+    return canonicalizedHeaders;
+  }
+
+  async buildCanonicalizedQueryStringV2(query: {[key: string ]: string}): Promise<string> {
+    let queryMap : {[key: string ]: string} = { };
+    if (!Util.isUnset(query)) {
+      for (let queryKey of Map.keySet(query)) {
+        let encodedKey = Client.v2UriEncode(queryKey);
+        let encodedValue = "";
+        if (!Util.empty(query[queryKey])) {
+          encodedValue = Client.v2UriEncode(query[queryKey]);
+        }
+        queryMap[encodedKey] = encodedValue;
+      }
+    }
+    if (Util.isUnset(queryMap) || Util.equalNumber(Array.size(Map.keySet(queryMap)), 0)) {
+      return "";
+    }
+    let canonicalizedQueryString = "?";
+    let separator = "";
+    for (let key of Array.ascSort(Map.keySet(queryMap))) {
+      canonicalizedQueryString = `${canonicalizedQueryString}${separator}${key}`;
+      if (!Util.empty(queryMap[key])) {
+        canonicalizedQueryString = `${canonicalizedQueryString}=${queryMap[key]}`;
+      }
+      separator = "&";
+    }
+    return canonicalizedQueryString;
+  }
+
+  async buildCanonicalizedResourceV2(bucketName: string, pathname: string, query: {[key: string ]: string}): Promise<string> {
+    let resourcePath = "/";
+    if (!Util.empty(bucketName)) {
+      resourcePath = `/${bucketName}${pathname}`;
+    } else if (!Util.empty(pathname)) {
+      resourcePath = pathname;
+    }
+    let canonicalizedResource = Client.v2UriEncode(resourcePath);
+    canonicalizedResource = `${canonicalizedResource}${await this.buildCanonicalizedQueryStringV2(query)}`;
+    return canonicalizedResource;
+  }
+
+  async getSignatureV2(bucketName: string, pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, secret: string, additionalHeaderNames: string[]): Promise<string> {
+    let contentMd5 = Util.defaultString(headers["content-md5"], "");
+    let contentType = Util.defaultString(headers["content-type"], "");
+    let date = Util.defaultString(headers["date"], "");
+    let canonicalizedOssHeaders = await this.buildCanonicalizedOssHeadersV2(headers, additionalHeaderNames);
+    let additionalHeaders = await this.joinSemicolon(additionalHeaderNames);
+    let canonicalizedResource = await this.buildCanonicalizedResourceV2(bucketName, pathname, query);
+    let stringToSign = `${method}\n${contentMd5}\n${contentType}\n${date}\n${canonicalizedOssHeaders}${additionalHeaders}\n${canonicalizedResource}`;
+    return EncodeUtil.base64EncodeToString(SignatureUtil.HmacSHA256Sign(stringToSign, secret));
   }
 
 }

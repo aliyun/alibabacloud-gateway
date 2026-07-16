@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_oss_py2.
 
-Created on 11/03/2024
+Created on 16/07/2026
 
 @author: Alibaba Cloud SDK
 """
@@ -42,7 +42,7 @@ REQUIRES = [
     "alibabacloud_credentials_py2>=0.1.1, <1.0.0",
     "alibabacloud_tea_util_py2>=0.0.9, <1.0.0",
     "alibabacloud_oss_util_py2>=0.0.1, <1.0.0",
-    "alibabacloud_openapi_util_py2>=0.1.1, <1.0.0",
+    "alibabacloud_openapi_util_py2>=0.1.2, <1.0.0",
     "alibabacloud_tea_xml_py2>=0.0.2, <1.0.0",
     "alibabacloud_darabonba_string_py2>=0.0.4, <1.0.0",
     "alibabacloud_darabonba_map_py2>=0.0.2, <1.0.0",

@@ -21,10 +21,11 @@ from alibabacloud_gateway_oss_util.client import Client as OSS_UtilClient
 class Client(SPIClient):
     _default_signed_params: List[str] = None
     _except_signed_params: List[str] = None
+    _default_additional_headers: List[str] = None
 
     def __init__(self):
         super().__init__()
-        self._default_signed_params = [
+        undefined._default_signed_params = [
             'response-content-type',
             'response-content-language',
             'response-cache-control',
@@ -139,9 +140,13 @@ class Client(SPIClient):
             'dfsadmin',
             'dfssecurity'
         ]
-        self._except_signed_params = [
+        undefined._except_signed_params = [
             'list-type',
             'regions'
+        ]
+        undefined._default_additional_headers = [
+            'range',
+            'if-modified-since'
         ]
 
     def modify_configuration(
@@ -194,7 +199,9 @@ class Client(SPIClient):
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
-                xml_str = OSS_UtilClient.to_xml(req_body_map)
+                # for python:
+                # xml_str = OSS_UtilClient.to_xml(req_body_map)
+                xml_str = XMLClient.to_xml(req_body_map)
                 request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
                 request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
@@ -271,7 +278,9 @@ class Client(SPIClient):
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'xml'):
                 req_body_map = UtilClient.assert_as_map(request.body)
-                xml_str = OSS_UtilClient.to_xml(req_body_map)
+                # for python:
+                # xml_str = OSS_UtilClient.to_xml(req_body_map)
+                xml_str = XMLClient.to_xml(req_body_map)
                 request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
                 request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
@@ -630,8 +639,12 @@ class Client(SPIClient):
                 sign = self.get_signature_v1(bucket_name, pathname, method, query, headers, secret)
                 return f'OSS {ak}:{sign}'
             if StringClient.equals(signature_version, 'v2'):
-                sign = self.get_signature_v2(bucket_name, pathname, method, query, headers, secret)
-                return f'OSS2 AccessKeyId:{ak},Signature:{sign}'
+                additional_header_names = self.get_additional_header_names_v2(headers)
+                sign = self.get_signature_v2(bucket_name, pathname, method, query, headers, secret, additional_header_names)
+                additional_headers = self.join_semicolon(additional_header_names)
+                if UtilClient.empty(additional_headers):
+                    return f'OSS2 AccessKeyId:{ak},Signature:{sign}'
+                return f'OSS2 AccessKeyId:{ak},AdditionalHeaders:{additional_headers},Signature:{sign}'
         date_time = OpenApiUtilClient.get_timestamp()
         date_time = StringClient.replace(date_time, '-', '', None)
         date_time = StringClient.replace(date_time, ':', '', None)
@@ -660,8 +673,12 @@ class Client(SPIClient):
                 sign = await self.get_signature_v1_async(bucket_name, pathname, method, query, headers, secret)
                 return f'OSS {ak}:{sign}'
             if StringClient.equals(signature_version, 'v2'):
-                sign = await self.get_signature_v2_async(bucket_name, pathname, method, query, headers, secret)
-                return f'OSS2 AccessKeyId:{ak},Signature:{sign}'
+                additional_header_names = await self.get_additional_header_names_v2_async(headers)
+                sign = await self.get_signature_v2_async(bucket_name, pathname, method, query, headers, secret, additional_header_names)
+                additional_headers = await self.join_semicolon_async(additional_header_names)
+                if UtilClient.empty(additional_headers):
+                    return f'OSS2 AccessKeyId:{ak},Signature:{sign}'
+                return f'OSS2 AccessKeyId:{ak},AdditionalHeaders:{additional_headers},Signature:{sign}'
         date_time = OpenApiUtilClient.get_timestamp()
         date_time = StringClient.replace(date_time, '-', '', None)
         date_time = StringClient.replace(date_time, ':', '', None)
@@ -956,6 +973,198 @@ class Client(SPIClient):
                 canonicalized_headers = f'{canonicalized_headers}{header}:{headers.get(header)}\n'
         return canonicalized_headers
 
+    @staticmethod
+    def v_2uri_encode(
+        value: str,
+    ) -> str:
+        if UtilClient.empty(value):
+            return ''
+        encoded = Encoder.percent_encode(value)
+        encoded = StringClient.replace(encoded, '+', '%20', None)
+        encoded = StringClient.replace(encoded, '%7E', '~', None)
+        encoded = StringClient.replace(encoded, '%2D', '-', None)
+        encoded = StringClient.replace(encoded, '%5F', '_', None)
+        encoded = StringClient.replace(encoded, '%2E', '.', None)
+        return encoded
+
+    def get_header_value(
+        self,
+        headers: Dict[str, str],
+        name: str,
+    ) -> str:
+        if not UtilClient.is_unset(headers.get(name)):
+            return headers.get(name)
+        for header in MapClient.key_set(headers):
+            if StringClient.equals(StringClient.to_lower(header), name):
+                return headers.get(header)
+        return ''
+
+    async def get_header_value_async(
+        self,
+        headers: Dict[str, str],
+        name: str,
+    ) -> str:
+        if not UtilClient.is_unset(headers.get(name)):
+            return headers.get(name)
+        for header in MapClient.key_set(headers):
+            if StringClient.equals(StringClient.to_lower(header), name):
+                return headers.get(header)
+        return ''
+
+    def get_additional_header_names_v2(
+        self,
+        headers: Dict[str, str],
+    ) -> List[str]:
+        additional_headers = {}
+        for header in MapClient.key_set(headers):
+            lower_header = StringClient.to_lower(header)
+            if ArrayClient.contains(self._default_additional_headers, lower_header):
+                additional_headers[lower_header] = lower_header
+        return ArrayClient.asc_sort(MapClient.key_set(additional_headers))
+
+    async def get_additional_header_names_v2_async(
+        self,
+        headers: Dict[str, str],
+    ) -> List[str]:
+        additional_headers = {}
+        for header in MapClient.key_set(headers):
+            lower_header = StringClient.to_lower(header)
+            if ArrayClient.contains(self._default_additional_headers, lower_header):
+                additional_headers[lower_header] = lower_header
+        return ArrayClient.asc_sort(MapClient.key_set(additional_headers))
+
+    def join_semicolon(
+        self,
+        items: List[str],
+    ) -> str:
+        result = ''
+        separator = ''
+        for item in items:
+            result = f'{result}{separator}{item}'
+            separator = ';'
+        return result
+
+    async def join_semicolon_async(
+        self,
+        items: List[str],
+    ) -> str:
+        result = ''
+        separator = ''
+        for item in items:
+            result = f'{result}{separator}{item}'
+            separator = ';'
+        return result
+
+    def build_canonicalized_oss_headers_v2(
+        self,
+        headers: Dict[str, str],
+        additional_header_names: List[str],
+    ) -> str:
+        canon_headers = {}
+        for header in MapClient.key_set(headers):
+            lower_header = StringClient.to_lower(header)
+            if StringClient.has_prefix(lower_header, 'x-oss-'):
+                canon_headers[lower_header] = headers.get(header)
+        for name in additional_header_names:
+            canon_headers[name] = self.get_header_value(headers, name)
+        canonicalized_headers = ''
+        for header in ArrayClient.asc_sort(MapClient.key_set(canon_headers)):
+            canonicalized_headers = f'{canonicalized_headers}{header}:{canon_headers.get(header)}\n'
+        return canonicalized_headers
+
+    async def build_canonicalized_oss_headers_v2_async(
+        self,
+        headers: Dict[str, str],
+        additional_header_names: List[str],
+    ) -> str:
+        canon_headers = {}
+        for header in MapClient.key_set(headers):
+            lower_header = StringClient.to_lower(header)
+            if StringClient.has_prefix(lower_header, 'x-oss-'):
+                canon_headers[lower_header] = headers.get(header)
+        for name in additional_header_names:
+            canon_headers[name] = await self.get_header_value_async(headers, name)
+        canonicalized_headers = ''
+        for header in ArrayClient.asc_sort(MapClient.key_set(canon_headers)):
+            canonicalized_headers = f'{canonicalized_headers}{header}:{canon_headers.get(header)}\n'
+        return canonicalized_headers
+
+    def build_canonicalized_query_string_v2(
+        self,
+        query: Dict[str, str],
+    ) -> str:
+        query_map = {}
+        if not UtilClient.is_unset(query):
+            for query_key in MapClient.key_set(query):
+                encoded_key = self.v_2uri_encode(query_key)
+                encoded_value = ''
+                if not UtilClient.empty(query.get(query_key)):
+                    encoded_value = self.v_2uri_encode(query.get(query_key))
+                query_map[encoded_key] = encoded_value
+        if UtilClient.is_unset(query_map) or UtilClient.equal_number(ArrayClient.size(MapClient.key_set(query_map)), 0):
+            return ''
+        canonicalized_query_string = '?'
+        separator = ''
+        for key in ArrayClient.asc_sort(MapClient.key_set(query_map)):
+            canonicalized_query_string = f'{canonicalized_query_string}{separator}{key}'
+            if not UtilClient.empty(query_map.get(key)):
+                canonicalized_query_string = f'{canonicalized_query_string}={query_map.get(key)}'
+            separator = '&'
+        return canonicalized_query_string
+
+    async def build_canonicalized_query_string_v2_async(
+        self,
+        query: Dict[str, str],
+    ) -> str:
+        query_map = {}
+        if not UtilClient.is_unset(query):
+            for query_key in MapClient.key_set(query):
+                encoded_key = self.v_2uri_encode(query_key)
+                encoded_value = ''
+                if not UtilClient.empty(query.get(query_key)):
+                    encoded_value = self.v_2uri_encode(query.get(query_key))
+                query_map[encoded_key] = encoded_value
+        if UtilClient.is_unset(query_map) or UtilClient.equal_number(ArrayClient.size(MapClient.key_set(query_map)), 0):
+            return ''
+        canonicalized_query_string = '?'
+        separator = ''
+        for key in ArrayClient.asc_sort(MapClient.key_set(query_map)):
+            canonicalized_query_string = f'{canonicalized_query_string}{separator}{key}'
+            if not UtilClient.empty(query_map.get(key)):
+                canonicalized_query_string = f'{canonicalized_query_string}={query_map.get(key)}'
+            separator = '&'
+        return canonicalized_query_string
+
+    def build_canonicalized_resource_v2(
+        self,
+        bucket_name: str,
+        pathname: str,
+        query: Dict[str, str],
+    ) -> str:
+        resource_path = '/'
+        if not UtilClient.empty(bucket_name):
+            resource_path = f'/{bucket_name}{pathname}'
+        elif not UtilClient.empty(pathname):
+            resource_path = pathname
+        canonicalized_resource = self.v_2uri_encode(resource_path)
+        canonicalized_resource = f'{canonicalized_resource}{self.build_canonicalized_query_string_v2(query)}'
+        return canonicalized_resource
+
+    async def build_canonicalized_resource_v2_async(
+        self,
+        bucket_name: str,
+        pathname: str,
+        query: Dict[str, str],
+    ) -> str:
+        resource_path = '/'
+        if not UtilClient.empty(bucket_name):
+            resource_path = f'/{bucket_name}{pathname}'
+        elif not UtilClient.empty(pathname):
+            resource_path = pathname
+        canonicalized_resource = self.v_2uri_encode(resource_path)
+        canonicalized_resource = f'{canonicalized_resource}{self.build_canonicalized_query_string_v2(query)}'
+        return canonicalized_resource
+
     def get_signature_v2(
         self,
         bucket_name: str,
@@ -964,8 +1173,16 @@ class Client(SPIClient):
         query: Dict[str, str],
         headers: Dict[str, str],
         secret: str,
+        additional_header_names: List[str],
     ) -> str:
-        return ''
+        content_md_5 = UtilClient.default_string(headers.get('content-md5'), '')
+        content_type = UtilClient.default_string(headers.get('content-type'), '')
+        date = UtilClient.default_string(headers.get('date'), '')
+        canonicalized_oss_headers = self.build_canonicalized_oss_headers_v2(headers, additional_header_names)
+        additional_headers = self.join_semicolon(additional_header_names)
+        canonicalized_resource = self.build_canonicalized_resource_v2(bucket_name, pathname, query)
+        string_to_sign = f'{method}\n{content_md_5}\n{content_type}\n{date}\n{canonicalized_oss_headers}{additional_headers}\n{canonicalized_resource}'
+        return Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, secret))
 
     async def get_signature_v2_async(
         self,
@@ -975,5 +1192,13 @@ class Client(SPIClient):
         query: Dict[str, str],
         headers: Dict[str, str],
         secret: str,
+        additional_header_names: List[str],
     ) -> str:
-        return ''
+        content_md_5 = UtilClient.default_string(headers.get('content-md5'), '')
+        content_type = UtilClient.default_string(headers.get('content-type'), '')
+        date = UtilClient.default_string(headers.get('date'), '')
+        canonicalized_oss_headers = await self.build_canonicalized_oss_headers_v2_async(headers, additional_header_names)
+        additional_headers = await self.join_semicolon_async(additional_header_names)
+        canonicalized_resource = await self.build_canonicalized_resource_v2_async(bucket_name, pathname, query)
+        string_to_sign = f'{method}\n{content_md_5}\n{content_type}\n{date}\n{canonicalized_oss_headers}{additional_headers}\n{canonicalized_resource}'
+        return Encoder.base_64encode_to_string(Signer.hmac_sha256sign(string_to_sign, secret))

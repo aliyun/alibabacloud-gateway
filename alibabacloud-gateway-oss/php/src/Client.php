@@ -13,8 +13,9 @@ use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\OSSUtils\OSSUtils;
 use AlibabaCloud\Tea\Tea;
-use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
+use AlibabaCloud\Tea\Exception\TeaError;
+use Darabonba\GatewayOss\Util\Client as DarabonbaGatewayOssUtilClient;
 use \Exception;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
@@ -24,6 +25,8 @@ class Client extends DarabonbaGatewaySpiClient {
     protected $_default_signed_params;
 
     protected $_except_signed_params;
+
+    protected $_default_additional_headers;
 
     public function __construct(){
         parent::__construct();
@@ -117,11 +120,38 @@ class Client extends DarabonbaGatewaySpiClient {
             "accessPointPolicyForObjectProcess",
             "bucketArchiveDirectRead",
             "responseHeader",
-            "userDefinedLogFieldsConfig"
+            "userDefinedLogFieldsConfig",
+            "reservedcapacity",
+            "requesterQosInfo",
+            "qosRequester",
+            "resourcePool",
+            "resourcePoolInfo",
+            "resourcePoolBuckets",
+            "processConfiguration",
+            "img",
+            "asyncFetch",
+            "virtualBucket",
+            "copy",
+            "userRegion",
+            "partSize",
+            "chunkSize",
+            "partUploadId",
+            "chunkNumber",
+            "userRegion",
+            "regionList",
+            "eventnotification",
+            "cacheConfiguration",
+            "dfs",
+            "dfsadmin",
+            "dfssecurity"
         ];
         $this->_except_signed_params = [
             "list-type",
             "regions"
+        ];
+        $this->_default_additional_headers = [
+            "range",
+            "if-modified-since"
         ];
     }
 
@@ -163,6 +193,9 @@ class Client extends DarabonbaGatewaySpiClient {
         }
         $config = $context->configuration;
         $regionId = $config->regionId;
+        if (Utils::isUnset($regionId) || Utils::empty_($regionId)) {
+            $regionId = $this->getRegionIdFromEndpoint($config->endpoint);
+        }
         $credential = $request->credential;
         $accessKeyId = $credential->getAccessKeyId();
         $accessKeySecret = $credential->getAccessKeySecret();
@@ -173,6 +206,8 @@ class Client extends DarabonbaGatewaySpiClient {
         if (!Utils::isUnset($request->body)) {
             if (StringUtil::equals($request->reqBodyType, "xml")) {
                 $reqBodyMap = Utils::assertAsMap($request->body);
+                // for python:
+                // xml_str = OSS_UtilClient.to_xml(req_body_map)
                 $xmlStr = XML::toXML($reqBodyMap);
                 $request->stream = $xmlStr;
                 $request->headers["content-type"] = "application/xml";
@@ -197,13 +232,33 @@ class Client extends DarabonbaGatewaySpiClient {
                 $request->headers["content-type"] = "application/octet-stream";
             }
         }
-        $host = $this->getHost($config->endpointType, $bucketName, $config->endpoint);
+        $host = $this->getHost($config->endpointType, $bucketName, $config->endpoint, $context);
         $request->headers = Tea::merge([
             "host" => $host,
             "date" => Utils::getDateUTCString(),
             "user-agent" => $request->userAgent
         ], $request->headers);
-        $signatureVersion = Utils::defaultString($request->signatureVersion, "v1");
+        $originPath = $request->pathname;
+        $originQuery = $request->query;
+        if (!Utils::empty_($originPath)) {
+            $pathAndQueries = StringUtil::split($originPath, "?", 2);
+            $request->pathname = @$pathAndQueries[0];
+            if (Utils::equalNumber(ArrayUtil::size($pathAndQueries), 2)) {
+                $pathQueries = StringUtil::split(@$pathAndQueries[1], "&", null);
+                foreach($pathQueries as $sub){
+                    $item = StringUtil::split($sub, "=", null);
+                    $queryKey = @$item[0];
+                    $queryValue = "";
+                    if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
+                        $queryValue = @$item[1];
+                    }
+                    if (Utils::empty_(@$originQuery[$queryKey])) {
+                        $request->query[$queryKey] = $queryValue;
+                    }
+                }
+            }
+        }
+        $signatureVersion = Utils::defaultString($request->signatureVersion, "v4");
         $request->headers["authorization"] = $this->getAuthorization($signatureVersion, $bucketName, $request->pathname, $request->method, $request->query, $request->headers, $accessKeyId, $accessKeySecret, $regionId);
     }
 
@@ -230,7 +285,8 @@ class Client extends DarabonbaGatewaySpiClient {
                         "requestId" => @$err["RequestId"],
                         "ecCode" => @$err["EC"],
                         "Recommend" => @$err["RecommendDoc"],
-                        "hostId" => @$err["HostId"]
+                        "hostId" => @$err["HostId"],
+                        "AccessDeniedDetail" => @$err["AccessDeniedDetail"]
                     ]
                 ]);
             }
@@ -278,19 +334,17 @@ class Client extends DarabonbaGatewaySpiClient {
                 $bodyStr = Utils::readAsString($response->body);
                 $response->deserializedBody = $bodyStr;
                 if (!Utils::empty_($bodyStr)) {
-                    $result = XML::parseXml($bodyStr, null);
-                    $list = MapUtil::keySet($result);
-                    if (Utils::equalNumber(ArrayUtil::size($list), 1)) {
-                        $tmp = @$list_[0];
-                        try {
-                            $response->deserializedBody = Utils::assertAsMap(@$result[$tmp]);
+                    $result = DarabonbaGatewayOssUtilClient::parseXml($bodyStr, $request->action);
+                    // for no util language
+                    // var result : any = XML.parseXml(bodyStr, null);
+                    try {
+                        $response->deserializedBody = Utils::assertAsMap($result);
+                    }
+                    catch (Exception $error) {
+                        if (!($error instanceof TeaError)) {
+                            $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
                         }
-                        catch (Exception $error) {
-                            if (!($error instanceof TeaError)) {
-                                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
-                            }
-                            $response->deserializedBody = $result;
-                        }
+                        $response->deserializedBody = $result;
                     }
                 }
             }
@@ -316,6 +370,37 @@ class Client extends DarabonbaGatewaySpiClient {
                 $response->deserializedBody = Utils::readAsString($response->body);
             }
         }
+    }
+
+    /**
+     * @param string $endpoint
+     * @return string
+     */
+    public function getRegionIdFromEndpoint($endpoint){
+        if (!Utils::empty_($endpoint)) {
+            $idx = -1;
+            if (StringUtil::hasPrefix($endpoint, "oss-") && StringUtil::hasSuffix($endpoint, ".aliyuncs.com")) {
+                $idx = StringUtil::index($endpoint, ".aliyuncs.com");
+                return StringUtil::subString($endpoint, 4, $idx);
+            }
+            if (StringUtil::hasSuffix($endpoint, ".mgw.aliyuncs.com")) {
+                $idx = StringUtil::index($endpoint, ".mgw.aliyuncs.com");
+                return StringUtil::subString($endpoint, 0, $idx);
+            }
+            if (StringUtil::hasSuffix($endpoint, ".mgw-internal.aliyuncs.com")) {
+                $idx = StringUtil::index($endpoint, ".mgw-internal.aliyuncs.com");
+                return StringUtil::subString($endpoint, 0, $idx);
+            }
+            if (StringUtil::hasSuffix($endpoint, "-internal.oss-data-acc.aliyuncs.com")) {
+                $idx = StringUtil::index($endpoint, "-internal.oss-data-acc.aliyuncs.com");
+                return StringUtil::subString($endpoint, 0, $idx);
+            }
+            if (StringUtil::hasSuffix($endpoint, ".oss-dls.aliyuncs.com")) {
+                $idx = StringUtil::index($endpoint, ".oss-dls.aliyuncs.com");
+                return StringUtil::subString($endpoint, 0, $idx);
+            }
+        }
+        return '';
     }
 
     /**
@@ -349,9 +434,16 @@ class Client extends DarabonbaGatewaySpiClient {
      * @param string $endpointType
      * @param string $bucketName
      * @param string $endpoint
+     * @param InterceptorContext $context
      * @return string
      */
-    public function getHost($endpointType, $bucketName, $endpoint){
+    public function getHost($endpointType, $bucketName, $endpoint, $context){
+        if (StringUtil::contains($endpoint, ".mgw.aliyuncs.com") && !Utils::isUnset(@$context->request->hostMap["userid"])) {
+            return "" . @$context->request->hostMap["userid"] . "." . $endpoint . "";
+        }
+        if (StringUtil::contains($endpoint, ".mgw-internal.aliyuncs.com") && !Utils::isUnset(@$context->request->hostMap["userid"])) {
+            return "" . @$context->request->hostMap["userid"] . "." . $endpoint . "";
+        }
         if (Utils::empty_($bucketName)) {
             return $endpoint;
         }
@@ -387,8 +479,13 @@ class Client extends DarabonbaGatewaySpiClient {
                 return "OSS " . $ak . ":" . $sign . "";
             }
             if (StringUtil::equals($signatureVersion, "v2")) {
-                $sign = $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret);
-                return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $sign . "";
+                $additionalHeaderNames = $this->getAdditionalHeaderNamesV2($headers);
+                $sign = $this->getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret, $additionalHeaderNames);
+                $additionalHeaders = $this->joinSemicolon($additionalHeaderNames);
+                if (Utils::empty_($additionalHeaders)) {
+                    return "OSS2 AccessKeyId:" . $ak . ",Signature:" . $sign . "";
+                }
+                return "OSS2 AccessKeyId:" . $ak . ",AdditionalHeaders:" . $additionalHeaders . ",Signature:" . $sign . "";
             }
         }
         $dateTime = OpenApiUtilClient::getTimestamp();
@@ -430,36 +527,25 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function getSignatureV4($bucketName, $pathname, $method, $query, $headers, $onlyDate, $regionId, $secret){
         $signingkey = $this->getSignKey($secret, $onlyDate, $regionId);
-        $objectName = "/";
-        $queryMap = [];
+        $canonicalizedUri = $pathname;
         if (!Utils::empty_($pathname)) {
-            $paths = StringUtil::split($pathname, "?", 2);
-            $objectName = @$paths[0];
-            if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
-                $subResources = StringUtil::split(@$paths[1], "&", null);
-                foreach($subResources as $sub){
-                    $item = StringUtil::split($sub, "=", null);
-                    $key = @$item[0];
-                    $key = EncodeUtil::percentEncode($key);
-                    $key = StringUtil::replace($key, "+", "%20", null);
-                    $value = null;
-                    if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
-                        $value = EncodeUtil::percentEncode(@$item[1]);
-                        $value = StringUtil::replace($value, "+", "%20", null);
-                    }
-                    // for go : queryMap[tea.StringValue(key)] = value
-                    $queryMap[$key] = $value;
-                }
+            if (!Utils::empty_($bucketName)) {
+                $canonicalizedUri = "/" . $bucketName . "" . $canonicalizedUri . "";
             }
         }
-        $canonicalizedUri = "/";
-        if (!Utils::empty_($bucketName)) {
-            $canonicalizedUri = "/" . $bucketName . "" . $objectName . "";
+        else {
+            if (!Utils::empty_($bucketName)) {
+                $canonicalizedUri = "/" . $bucketName . "/";
+            }
+            else {
+                $canonicalizedUri = "/";
+            }
         }
         // for java:
         // String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
         // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
         $canonicalizedUri = OpenApiUtilClient::getEncodePath($canonicalizedUri);
+        $queryMap = [];
         foreach(MapUtil::keySet($query) as $queryKey){
             $queryValue = null;
             if (!Utils::empty_(@$query[$queryKey])) {
@@ -548,58 +634,18 @@ class Client extends DarabonbaGatewaySpiClient {
      * @return string
      */
     public function buildCanonicalizedResource($pathname, $query){
-        $subResourcesMap = [];
         $canonicalizedResource = $pathname;
-        if (!Utils::empty_($pathname)) {
-            $paths = StringUtil::split($pathname, "?", 2);
-            $canonicalizedResource = @$paths[0];
-            if (Utils::equalNumber(ArrayUtil::size($paths), 2)) {
-                $subResources = StringUtil::split(@$paths[1], "&", null);
-                foreach($subResources as $sub){
-                    $hasExcepts = false;
-                    foreach($this->_except_signed_params as $excepts){
-                        if (StringUtil::contains($sub, $excepts)) {
-                            $hasExcepts = true;
-                        }
-                    }
-                    if (!$hasExcepts) {
-                        $item = StringUtil::split($sub, "=", null);
-                        $key = @$item[0];
-                        $value = null;
-                        if (Utils::equalNumber(ArrayUtil::size($item), 2)) {
-                            $value = @$item[1];
-                        }
-                        // for go : subResourcesMap[tea.StringValue(key)] = value
-                        $subResourcesMap[$key] = $value;
-                    }
-                }
-            }
-        }
-        $subResourcesArray = MapUtil::keySet($subResourcesMap);
-        $newQueryList = $subResourcesArray;
-        if (!Utils::isUnset($query)) {
-            $queryList = MapUtil::keySet($query);
-            $newQueryList = ArrayUtil::concat($queryList, $subResourcesArray);
-        }
-        $sortedParams = ArrayUtil::ascSort($newQueryList);
+        $queryKeys = MapUtil::keySet($query);
+        $sortedParams = ArrayUtil::ascSort($queryKeys);
         $separator = "?";
         foreach($sortedParams as $paramName){
-            if (ArrayUtil::contains($this->_default_signed_params, $paramName)) {
+            if (ArrayUtil::contains($this->_default_signed_params, $paramName) || StringUtil::hasPrefix($paramName, "x-oss-")) {
                 $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
-                if (!Utils::isUnset($query) && !Utils::isUnset(@$query[$paramName])) {
+                if (!Utils::empty_(@$query[$paramName])) {
                     $canonicalizedResource = "" . $canonicalizedResource . "=" . @$query[$paramName] . "";
                 }
-                else if (!Utils::isUnset(@$subResourcesMap[$paramName])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "=" . @$subResourcesMap[$paramName] . "";
-                }
+                $separator = "&";
             }
-            else if (ArrayUtil::contains($subResourcesArray, $paramName)) {
-                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . $paramName . "";
-                if (!Utils::isUnset(@$subResourcesMap[$paramName])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "=" . @$subResourcesMap[$paramName] . "";
-                }
-            }
-            $separator = "&";
         }
         return $canonicalizedResource;
     }
@@ -630,15 +676,159 @@ class Client extends DarabonbaGatewaySpiClient {
     }
 
     /**
+     * @param string $value
+     * @return string
+     */
+    public static function v2UriEncode($value){
+        if (Utils::empty_($value)) {
+            return '';
+        }
+        $encoded = EncodeUtil::percentEncode($value);
+        $encoded = StringUtil::replace($encoded, "+", "%20", null);
+        $encoded = StringUtil::replace($encoded, "%7E", "~", null);
+        $encoded = StringUtil::replace($encoded, "%2D", "-", null);
+        $encoded = StringUtil::replace($encoded, "%5F", "_", null);
+        $encoded = StringUtil::replace($encoded, "%2E", ".", null);
+        return $encoded;
+    }
+
+    /**
+     * @param string[] $headers
+     * @param string $name
+     * @return string
+     */
+    public function getHeaderValue($headers, $name){
+        if (!Utils::isUnset(@$headers[$name])) {
+            return @$headers[$name];
+        }
+        foreach(MapUtil::keySet($headers) as $header){
+            if (StringUtil::equals(StringUtil::toLower($header), $name)) {
+                return @$headers[$header];
+            }
+        }
+        return '';
+    }
+
+    /**
+     * @param string[] $headers
+     * @return array
+     */
+    public function getAdditionalHeaderNamesV2($headers){
+        $additionalHeaders = [];
+        foreach(MapUtil::keySet($headers) as $header){
+            $lowerHeader = StringUtil::toLower($header);
+            if (ArrayUtil::contains($this->_default_additional_headers, $lowerHeader)) {
+                $additionalHeaders[$lowerHeader] = $lowerHeader;
+            }
+        }
+        return ArrayUtil::ascSort(MapUtil::keySet($additionalHeaders));
+    }
+
+    /**
+     * @param string[] $items
+     * @return string
+     */
+    public function joinSemicolon($items){
+        $result = "";
+        $separator = "";
+        foreach($items as $item){
+            $result = "" . $result . "" . $separator . "" . $item . "";
+            $separator = ";";
+        }
+        return $result;
+    }
+
+    /**
+     * @param string[] $headers
+     * @param string[] $additionalHeaderNames
+     * @return string
+     */
+    public function buildCanonicalizedOssHeadersV2($headers, $additionalHeaderNames){
+        $canonHeaders = [];
+        foreach(MapUtil::keySet($headers) as $header){
+            $lowerHeader = StringUtil::toLower($header);
+            if (StringUtil::hasPrefix($lowerHeader, "x-oss-")) {
+                $canonHeaders[$lowerHeader] = @$headers[$header];
+            }
+        }
+        foreach($additionalHeaderNames as $name){
+            $canonHeaders[$name] = $this->getHeaderValue($headers, $name);
+        }
+        $canonicalizedHeaders = "";
+        foreach(ArrayUtil::ascSort(MapUtil::keySet($canonHeaders)) as $header){
+            $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $header . ":" . @$canonHeaders[$header] . "\n";
+        }
+        return $canonicalizedHeaders;
+    }
+
+    /**
+     * @param string[] $query
+     * @return string
+     */
+    public function buildCanonicalizedQueryStringV2($query){
+        $queryMap = [];
+        if (!Utils::isUnset($query)) {
+            foreach(MapUtil::keySet($query) as $queryKey){
+                $encodedKey = self::v2UriEncode($queryKey);
+                $encodedValue = "";
+                if (!Utils::empty_(@$query[$queryKey])) {
+                    $encodedValue = self::v2UriEncode(@$query[$queryKey]);
+                }
+                $queryMap[$encodedKey] = $encodedValue;
+            }
+        }
+        if (Utils::isUnset($queryMap) || Utils::equalNumber(ArrayUtil::size(MapUtil::keySet($queryMap)), 0)) {
+            return '';
+        }
+        $canonicalizedQueryString = "?";
+        $separator = "";
+        foreach(ArrayUtil::ascSort(MapUtil::keySet($queryMap)) as $key){
+            $canonicalizedQueryString = "" . $canonicalizedQueryString . "" . $separator . "" . $key . "";
+            if (!Utils::empty_(@$queryMap[$key])) {
+                $canonicalizedQueryString = "" . $canonicalizedQueryString . "=" . @$queryMap[$key] . "";
+            }
+            $separator = "&";
+        }
+        return $canonicalizedQueryString;
+    }
+
+    /**
+     * @param string $bucketName
+     * @param string $pathname
+     * @param string[] $query
+     * @return string
+     */
+    public function buildCanonicalizedResourceV2($bucketName, $pathname, $query){
+        $resourcePath = "/";
+        if (!Utils::empty_($bucketName)) {
+            $resourcePath = "/" . $bucketName . "" . $pathname . "";
+        }
+        else if (!Utils::empty_($pathname)) {
+            $resourcePath = $pathname;
+        }
+        $canonicalizedResource = self::v2UriEncode($resourcePath);
+        $canonicalizedResource = "" . $canonicalizedResource . "" . $this->buildCanonicalizedQueryStringV2($query) . "";
+        return $canonicalizedResource;
+    }
+
+    /**
      * @param string $bucketName
      * @param string $pathname
      * @param string $method
      * @param string[] $query
      * @param string[] $headers
      * @param string $secret
+     * @param string[] $additionalHeaderNames
      * @return string
      */
-    public function getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret){
-        return '';
+    public function getSignatureV2($bucketName, $pathname, $method, $query, $headers, $secret, $additionalHeaderNames){
+        $contentMd5 = Utils::defaultString(@$headers["content-md5"], "");
+        $contentType = Utils::defaultString(@$headers["content-type"], "");
+        $date = Utils::defaultString(@$headers["date"], "");
+        $canonicalizedOssHeaders = $this->buildCanonicalizedOssHeadersV2($headers, $additionalHeaderNames);
+        $additionalHeaders = $this->joinSemicolon($additionalHeaderNames);
+        $canonicalizedResource = $this->buildCanonicalizedResourceV2($bucketName, $pathname, $query);
+        $stringToSign = "" . $method . "\n" . $contentMd5 . "\n" . $contentType . "\n" . $date . "\n" . $canonicalizedOssHeaders . "" . $additionalHeaders . "\n" . $canonicalizedResource . "";
+        return EncodeUtil::base64EncodeToString(SignatureUtil::HmacSHA256Sign($stringToSign, $secret));
     }
 }
