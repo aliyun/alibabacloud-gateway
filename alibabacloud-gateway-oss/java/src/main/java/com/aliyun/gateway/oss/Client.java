@@ -388,7 +388,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             if (com.aliyun.darabonbastring.Client.contains(network, "internal")) {
                 return "oss-" + regionId + "-internal.aliyuncs.com";
             } else if (com.aliyun.darabonbastring.Client.contains(network, "ipv6")) {
-                return "" + regionId + "oss.aliyuncs.com";
+                return "" + regionId + ".oss.aliyuncs.com";
             } else if (com.aliyun.darabonbastring.Client.contains(network, "accelerate")) {
                 return "oss-" + network + ".aliyuncs.com";
             }

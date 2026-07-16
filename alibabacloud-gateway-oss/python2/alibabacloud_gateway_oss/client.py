@@ -272,7 +272,7 @@ class Client(SPIClient):
             if StringClient.contains(network, 'internal'):
                 return 'oss-%s-internal.aliyuncs.com' % TeaConverter.to_unicode(region_id)
             elif StringClient.contains(network, 'ipv6'):
-                return '%soss.aliyuncs.com' % TeaConverter.to_unicode(region_id)
+                return '%s.oss.aliyuncs.com' % TeaConverter.to_unicode(region_id)
             elif StringClient.contains(network, 'accelerate'):
                 return 'oss-%s.aliyuncs.com' % TeaConverter.to_unicode(network)
         return 'oss-%s.aliyuncs.com' % TeaConverter.to_unicode(region_id)
