@@ -400,7 +400,7 @@ class Client extends DarabonbaGatewaySpiClient {
                 return StringUtil::subString($endpoint, 0, $idx);
             }
         }
-        return '';
+        return "cn-hangzhou";
     }
 
     /**

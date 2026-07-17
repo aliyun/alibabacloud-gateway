@@ -516,7 +516,7 @@ class Client(SPIClient):
             if StringClient.has_suffix(endpoint, '.oss-dls.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.oss-dls.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
-        return ''
+        return 'cn-hangzhou'
 
     async def get_region_id_from_endpoint_async(
         self,
@@ -539,7 +539,7 @@ class Client(SPIClient):
             if StringClient.has_suffix(endpoint, '.oss-dls.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.oss-dls.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
-        return ''
+        return 'cn-hangzhou'
 
     def get_endpoint(
         self,
