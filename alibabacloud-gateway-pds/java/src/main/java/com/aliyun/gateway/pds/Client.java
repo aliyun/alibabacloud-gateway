@@ -93,11 +93,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 if (!com.aliyun.teautil.Common.isUnset(request.headers.get("content-type"))) {
                     headers = request.headers;
                 } else if (com.aliyun.darabonbastring.Client.equals(request.reqBodyType, "formData") && com.aliyun.darabonbastring.Client.equals(request.action, "DownloadFile") && com.aliyun.darabonbastring.Client.equals(request.pathname, "/v2/file/download")) {
-                    java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(request.headers);
-                    for (String key : headersArray) {
-                        headers.put(key, request.headers.get(key));
-                    }
-                    headers.put("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+                    request.headers.put("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+                    headers = request.headers;
                 } else {
                     headers = request.headers;
                 }

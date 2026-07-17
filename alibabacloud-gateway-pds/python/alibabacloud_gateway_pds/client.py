@@ -102,10 +102,8 @@ class Client(SPIClient):
                 if not UtilClient.is_unset(request.headers.get('content-type')):
                     headers = request.headers
                 elif StringClient.equals(request.req_body_type, 'formData') and StringClient.equals(request.action, 'DownloadFile') and StringClient.equals(request.pathname, '/v2/file/download'):
-                    headers_array = MapClient.key_set(request.headers)
-                    for key in headers_array:
-                        headers[key] = request.headers.get(key)
-                    headers['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+                    request.headers['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+                    headers = request.headers
                 else:
                     headers = request.headers
                 if StringClient.equals(signature_version, 'v4'):
@@ -184,10 +182,8 @@ class Client(SPIClient):
                 if not UtilClient.is_unset(request.headers.get('content-type')):
                     headers = request.headers
                 elif StringClient.equals(request.req_body_type, 'formData') and StringClient.equals(request.action, 'DownloadFile') and StringClient.equals(request.pathname, '/v2/file/download'):
-                    headers_array = MapClient.key_set(request.headers)
-                    for key in headers_array:
-                        headers[key] = request.headers.get(key)
-                    headers['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+                    request.headers['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+                    headers = request.headers
                 else:
                     headers = request.headers
                 if StringClient.equals(signature_version, 'v4'):

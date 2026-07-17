@@ -110,11 +110,8 @@ class Client extends DarabonbaGatewaySpiClient
                 if (!Utils::isUnset(@$request->headers["content-type"])) {
                     $headers = $request->headers;
                 } else if (StringUtil::equals($request->reqBodyType, "formData") && StringUtil::equals($request->action, "DownloadFile") && StringUtil::equals($request->pathname, "/v2/file/download")) {
-                    $headersArray = MapUtil::keySet($request->headers);
-                    foreach ($headersArray as $key) {
-                        $headers[$key] = @$request->headers[$key];
-                    }
-                    @$headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                    @$request->headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                    $headers = $request->headers;
                 } else {
                     $headers = $request->headers;
                 }

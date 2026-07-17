@@ -128,12 +128,8 @@ namespace AlibabaCloud.GatewayPds
                     }
                     else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Action, "DownloadFile") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Pathname, "/v2/file/download"))
                     {
-                        List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(request.Headers);
-
-                        foreach (var key in headersArray) {
-                            headers[key] = request.Headers.Get(key);
-                        }
-                        headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                        request.Headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                        headers = request.Headers;
                     }
                     else
                     {
@@ -251,12 +247,8 @@ namespace AlibabaCloud.GatewayPds
                     }
                     else if (AlibabaCloud.DarabonbaString.StringUtil.Equals(request.ReqBodyType, "formData") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Action, "DownloadFile") && AlibabaCloud.DarabonbaString.StringUtil.Equals(request.Pathname, "/v2/file/download"))
                     {
-                        List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(request.Headers);
-
-                        foreach (var key in headersArray) {
-                            headers[key] = request.Headers.Get(key);
-                        }
-                        headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                        request.Headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                        headers = request.Headers;
                     }
                     else
                     {

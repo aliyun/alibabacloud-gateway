@@ -128,11 +128,8 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			if !tea.BoolValue(util.IsUnset(request.Headers["content-type"])) {
 				headers = request.Headers
 			} else if tea.BoolValue(string_.Equals(request.ReqBodyType, tea.String("formData"))) && tea.BoolValue(string_.Equals(request.Action, tea.String("DownloadFile"))) && tea.BoolValue(string_.Equals(request.Pathname, tea.String("/v2/file/download"))) {
-				headersArray := map_.KeySet(request.Headers)
-				for _, key := range headersArray {
-					headers[tea.StringValue(key)] = request.Headers[tea.StringValue(key)]
-				}
-				headers["content-type"] = tea.String("application/x-www-form-urlencoded; charset=UTF-8")
+				request.Headers["content-type"] = tea.String("application/x-www-form-urlencoded; charset=UTF-8")
+				headers = request.Headers
 			} else {
 				headers = request.Headers
 			}

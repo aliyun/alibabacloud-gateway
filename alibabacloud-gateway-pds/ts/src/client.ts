@@ -99,12 +99,8 @@ export default class Client extends SPI {
         if (!Util.isUnset(request.headers["content-type"])) {
           headers = request.headers;
         } else if (String.equals(request.reqBodyType, "formData") && String.equals(request.action, "DownloadFile") && String.equals(request.pathname, "/v2/file/download")) {
-          let headersArray: string[] = Map.keySet(request.headers);
-
-          for (let key of headersArray) {
-            headers[key] = request.headers[key];
-          }
-          headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+          request.headers["content-type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+          headers = request.headers;
         } else {
           headers = request.headers;
         }
