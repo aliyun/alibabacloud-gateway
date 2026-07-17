@@ -89,7 +89,10 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	}
 
+	dateTime := tea.String("")
 	if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
+		dateTime = openapiutil.GetTimestamp()
+		request.Headers["x-acs-date"] = dateTime
 		if tea.BoolValue(util.EqualString(signatureAlgorithm, tea.String("ACS4-HMAC-SM3"))) {
 			request.Headers["x-acs-content-sm3"] = hashedRequestPayload
 		} else {
@@ -135,7 +138,8 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			}
 
 			if tea.BoolValue(string_.Equals(signatureVersion, tea.String("v4"))) {
-				dateNew := string_.SubString(date, tea.Int(0), tea.Int(10))
+				dateNew := string_.SubString(dateTime, tea.Int(0), tea.Int(10))
+				dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
 				region := client.GetRegion(config.Endpoint)
 				signingkey, _err := client.GetSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew)
 				if _err != nil {

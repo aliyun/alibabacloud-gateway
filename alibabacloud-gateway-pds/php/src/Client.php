@@ -78,7 +78,10 @@ class Client extends DarabonbaGatewaySpiClient
                 }
             }
         }
+        $dateTime = "";
         if (StringUtil::equals($signatureVersion, "v4")) {
+            $dateTime = OpenApiUtilClient::getTimestamp();
+            $request->headers["x-acs-date"] = $dateTime;
             if (Utils::equalString($signatureAlgorithm, "ACS4-HMAC-SM3")) {
                 $request->headers["x-acs-content-sm3"] = $hashedRequestPayload;
             } else {
@@ -116,7 +119,8 @@ class Client extends DarabonbaGatewaySpiClient
                     $headers = $request->headers;
                 }
                 if (StringUtil::equals($signatureVersion, "v4")) {
-                    $dateNew = StringUtil::subString($date, 0, 10);
+                    $dateNew = StringUtil::subString($dateTime, 0, 10);
+                    $dateNew = StringUtil::replace($dateNew, "-", "", null);
                     $region = $this->getRegion($config->endpoint);
                     $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $region, $dateNew);
                     $request->headers["Authorization"] = $this->getAuthorizationV4($request->pathname, $request->method, $request->query, $headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);

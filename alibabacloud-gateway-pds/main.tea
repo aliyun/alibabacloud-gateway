@@ -60,7 +60,12 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     }
   }
 
+  // V4 credential scope needs yyyyMMdd from ISO8601 (OpenApiUtil.getTimestamp),
+  // not RFC1123 Date header (Util.getDateUTCString). Align with gateway-pop.
+  var dateTime = '';
   if (String.equals(signatureVersion, 'v4')){
+    dateTime = OpenApiUtil.getTimestamp();
+    request.headers.x-acs-date = dateTime;
     if (Util.equalString(signatureAlgorithm, 'ACS4-HMAC-SM3')) {
       request.headers.x-acs-content-sm3 = hashedRequestPayload;
     } else {
@@ -100,7 +105,8 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
           headers = request.headers;
       }
       if (String.equals(signatureVersion, 'v4')) {
-        var dateNew = String.subString(date, 0, 10);
+        var dateNew = String.subString(dateTime, 0, 10);
+        dateNew = String.replace(dateNew, '-', '', null);
         var region = getRegion(config.endpoint);
         var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
         request.headers.Authorization = getAuthorizationV4(request.pathname, request.method, request.query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
