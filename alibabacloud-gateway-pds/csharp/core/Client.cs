@@ -569,42 +569,42 @@ namespace AlibabaCloud.GatewayPds
         {
             List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
             List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
-            string tmp = "";
-            string separator = "";
+            List<string> result = new List<string>
+            {
+            };
 
             foreach (var key in sortedHeadersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    if (!AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(result, lowerKey))
                     {
-                        tmp = "" + tmp + separator + lowerKey;
-                        separator = ";";
+                        AlibabaCloud.DarabonbaArray.ArrayUtil.Append(result, lowerKey);
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
+            return result;
         }
 
         public async Task<List<string>> GetSignedHeadersAsync(Dictionary<string, string> headers)
         {
             List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
             List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
-            string tmp = "";
-            string separator = "";
+            List<string> result = new List<string>
+            {
+            };
 
             foreach (var key in sortedHeadersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    if (!AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(result, lowerKey))
                     {
-                        tmp = "" + tmp + separator + lowerKey;
-                        separator = ";";
+                        AlibabaCloud.DarabonbaArray.ArrayUtil.Append(result, lowerKey);
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
+            return result;
         }
 
         public string GetRegion(string endpoint)

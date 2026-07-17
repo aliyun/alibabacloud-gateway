@@ -2,6 +2,7 @@
 
 namespace Darabonba\GatewayPop\Tests;
 
+use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use Darabonba\GatewayPop\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -93,6 +94,19 @@ final class UnitTest extends TestCase
         $this->assertEquals("content-type", $result[0]);
         $this->assertEquals("host", $result[1]);
         $this->assertEquals("x-acs-action", $result[2]);
+
+        // Prefix pairs must not be mis-deduped via substring contains
+        $prefixHeaders = [
+            "host" => "example.com",
+            "x-acs-foobar" => "1",
+            "x-acs-foo" => "2"
+        ];
+        $this->assertFalse(ArrayUtil::contains(["x-acs-foobar"], "x-acs-foo"));
+        $result = $client->getSignedHeaders($prefixHeaders);
+        $this->assertCount(3, $result);
+        $this->assertEquals("host", $result[0]);
+        $this->assertEquals("x-acs-foo", $result[1]);
+        $this->assertEquals("x-acs-foobar", $result[2]);
     }
 
 }

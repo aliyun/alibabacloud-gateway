@@ -225,12 +225,10 @@ class Client(SPIClient):
     def get_signed_headers(self, headers):
         headers_array = MapClient.key_set(headers)
         sorted_headers_array = ArrayClient.asc_sort(headers_array)
-        tmp = ''
-        separator = ''
+        result = []
         for key in sorted_headers_array:
             lower_key = StringClient.to_lower(key)
             if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
-                    tmp = '%s%s%s' % (TeaConverter.to_unicode(tmp), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(lower_key))
-                    separator = ';'
-        return StringClient.split(tmp, ';', None)
+                if not ArrayClient.contains(result, lower_key):
+                    ArrayClient.append(result, lower_key)
+        return result

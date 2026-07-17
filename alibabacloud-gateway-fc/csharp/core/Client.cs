@@ -757,42 +757,42 @@ namespace AlibabaCloud.GatewayFc
         {
             List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
             List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
-            string tmp = "";
-            string separator = "";
+            List<string> result = new List<string>
+            {
+            };
 
             foreach (var key in sortedHeadersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    if (!AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(result, lowerKey))
                     {
-                        tmp = "" + tmp + separator + lowerKey;
-                        separator = ";";
+                        AlibabaCloud.DarabonbaArray.ArrayUtil.Append(result, lowerKey);
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
+            return result;
         }
 
         public async Task<List<string>> GetSignedHeadersAsync(Dictionary<string, string> headers)
         {
             List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
             List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(headersArray);
-            string tmp = "";
-            string separator = "";
+            List<string> result = new List<string>
+            {
+            };
 
             foreach (var key in sortedHeadersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(lowerKey, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "content-type"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey))
+                    if (!AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(result, lowerKey))
                     {
-                        tmp = "" + tmp + separator + lowerKey;
-                        separator = ";";
+                        AlibabaCloud.DarabonbaArray.ArrayUtil.Append(result, lowerKey);
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
+            return result;
         }
 
         public Dictionary<string, object> SignRequest(HttpRequest request, Aliyun.Credentials.Client credential)

@@ -235,18 +235,17 @@ async function buildCanonicalizedHeaders(headers: map[string]string): string {
 async function getSignedHeaders(headers: map[string]string): [string] {
   var headersArray : [string] = Map.keySet(headers);
   var sortedHeadersArray = Array.ascSort(headersArray);
-  var tmp : string = '';
-  var separator : string = '';
+  var result : [string] = [];
   for(var key : sortedHeadersArray) {
     var lowerKey = String.toLower(key);
     if (String.hasPrefix(lowerKey, 'x-acs-')) {
-      if (!String.contains(tmp, lowerKey)) {
-        tmp = `${tmp}${separator}${lowerKey}`;
-        separator = ';';
+      // Array.contains: exact equality; String.contains on joined keys mis-dedups prefixes.
+      if (!Array.contains(result, lowerKey)) {
+        Array.append(result, lowerKey);
       }
     }
   }
-  return String.split(tmp, ';', null);
+  return result;
 }
 
 function getRegion(endpoint: string): string {

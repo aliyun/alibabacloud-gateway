@@ -575,16 +575,13 @@ namespace AlibabaCloud.GatewayPop
             // lower header key
             List<string> headersArray = AlibabaCloud.DarabonbaMap.MapUtil.KeySet(headers);
             Dictionary<string, string> newHeaders = new Dictionary<string, string>(){};
-            string tmp = "";
-
             foreach (var key in headersArray) {
                 string lowerKey = AlibabaCloud.DarabonbaString.StringUtil.ToLower(key);
                 string value = headers.Get(key);
                 if (!AlibabaCloud.TeaUtil.Common.IsUnset(value))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, lowerKey) || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host"))
+                    if (AlibabaCloud.TeaUtil.Common.IsUnset(newHeaders.Get(lowerKey)) || AlibabaCloud.DarabonbaString.StringUtil.Equals(lowerKey, "host"))
                     {
-                        tmp = "" + tmp + "," + lowerKey;
                         newHeaders[lowerKey] = AlibabaCloud.DarabonbaString.StringUtil.Trim(value);
                     }
                     else
@@ -618,20 +615,20 @@ namespace AlibabaCloud.GatewayPop
                 }
             }
             List<string> sortedHeadersArray = AlibabaCloud.DarabonbaArray.ArrayUtil.AscSort(newHeadersArray);
-            string tmp = "";
-            string separator = "";
+            List<string> result = new List<string>
+            {
+            };
 
             foreach (var key in sortedHeadersArray) {
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasPrefix(key, "x-acs-") || AlibabaCloud.DarabonbaString.StringUtil.Equals(key, "host") || AlibabaCloud.DarabonbaString.StringUtil.Equals(key, "content-type"))
                 {
-                    if (!AlibabaCloud.DarabonbaString.StringUtil.Contains(tmp, key))
+                    if (!AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(result, key))
                     {
-                        tmp = "" + tmp + separator + key;
-                        separator = ";";
+                        AlibabaCloud.DarabonbaArray.ArrayUtil.Append(result, key);
                     }
                 }
             }
-            return AlibabaCloud.DarabonbaString.StringUtil.Split(tmp, ";", null);
+            return result;
         }
 
     }

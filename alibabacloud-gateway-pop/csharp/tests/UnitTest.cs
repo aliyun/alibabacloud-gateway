@@ -41,7 +41,7 @@ namespace tests
             // 测试空headers
             var emptyHeaders = new Dictionary<string, string>();
             var result = client.GetSignedHeaders(emptyHeaders);
-            Assert.Equal(1, result.Count);
+            Assert.Equal(0, result.Count);
 
             // 测试只包含需要签名的headers
             var headers = new Dictionary<string, string>
@@ -96,6 +96,25 @@ namespace tests
             Assert.Equal("content-type", result[0]);
             Assert.Equal("host", result[1]);
             Assert.Equal("x-acs-action", result[2]);
+
+            // Prefix pairs must not be mis-deduped via substring contains
+            var prefixHeaders = new Dictionary<string, string>
+            {
+                { "host", "example.com" },
+                { "x-acs-foobar", "1" },
+                { "x-acs-foo", "2" }
+            };
+            Assert.False(AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(
+                new List<string> { "x-acs-foobar" }, "x-acs-foo"));
+            result = client.GetSignedHeaders(prefixHeaders);
+            Assert.Equal(3, result.Count);
+            Assert.Equal("host", result[0]);
+            Assert.Equal("x-acs-foo", result[1]);
+            Assert.Equal("x-acs-foobar", result[2]);
+
+            var canonical = client.BuildCanonicalizedHeaders(prefixHeaders);
+            Assert.Contains("x-acs-foo:2\n", canonical);
+            Assert.Contains("x-acs-foobar:1\n", canonical);
         }
     }
 }

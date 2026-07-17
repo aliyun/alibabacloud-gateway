@@ -247,20 +247,18 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public java.util.List<String> getSignedHeaders(java.util.Map<String, String> headers) throws Exception {
         java.util.List<String> headersArray = com.aliyun.darabonba.map.Client.keySet(headers);
         java.util.List<String> sortedHeadersArray = com.aliyun.darabonba.array.Client.ascSort(headersArray);
-        String tmp = "";
-        String separator = "";
+        java.util.List<String> result = new java.util.ArrayList<>();
         for (String key : sortedHeadersArray) {
             String lowerKey = com.aliyun.darabonbastring.Client.toLower(key);
             if (com.aliyun.darabonbastring.Client.hasPrefix(lowerKey, "x-acs-")) {
-                if (!com.aliyun.darabonbastring.Client.contains(tmp, lowerKey)) {
-                    tmp = "" + tmp + "" + separator + "" + lowerKey + "";
-                    separator = ";";
+                if (!com.aliyun.darabonba.array.Client.contains(result, lowerKey)) {
+                    com.aliyun.darabonba.array.Client.append(result, lowerKey);
                 }
 
             }
 
         }
-        return com.aliyun.darabonbastring.Client.split(tmp, ";", null);
+        return result;
     }
 
     public String getRegion(String endpoint) throws Exception {

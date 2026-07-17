@@ -375,21 +375,19 @@ export default class Client extends SPI {
   async getSignedHeaders(headers: {[key: string ]: string}): Promise<string[]> {
     let headersArray : string[] = Map.keySet(headers);
     let sortedHeadersArray = Array.ascSort(headersArray);
-    let tmp : string = "";
-    let separator : string = "";
+    let result : string[] = [];
 
     for (let key of sortedHeadersArray) {
       let lowerKey = String.toLower(key);
       if (String.hasPrefix(lowerKey, "x-acs-") || String.equals(lowerKey, "host") || String.equals(lowerKey, "content-type")) {
-        if (!String.contains(tmp, lowerKey)) {
-          tmp = `${tmp}${separator}${lowerKey}`;
-          separator = ";";
+        if (!Array.contains(result, lowerKey)) {
+          Array.append(result, lowerKey);
         }
 
       }
 
     }
-    return String.split(tmp, ";", null);
+    return result;
   }
 
   async signRequest(request: HttpRequest, credential: Credential): Promise<{[key: string ]: any}> {

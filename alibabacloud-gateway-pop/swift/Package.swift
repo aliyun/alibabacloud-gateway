@@ -43,6 +43,9 @@ let package = Package(
                         .product(name: "darabonba_Map", package: "darabonba_Map"),
                         .product(name: "darabonba_Array", package: "darabonba_Array")
                     ]),
+            .testTarget(
+                    name: "AlibabacloudGatewayPOPTests",
+                    dependencies: ["AlibabacloudGatewayPOP"]),
         ],
         swiftLanguageVersions: [.v5]
 )

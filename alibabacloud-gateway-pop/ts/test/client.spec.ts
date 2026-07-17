@@ -1,6 +1,7 @@
 import Client from '../src/client';
 import assert from 'assert';
 import 'mocha';
+import Array from '@alicloud/darabonba-array';
 
 describe('Client', function () {
 
@@ -57,7 +58,19 @@ describe('Client', function () {
 
         // 测试空headers情况
         const headers4 = {};
-        assert.deepStrictEqual([''], client.getSignedHeaders(headers4));
+        assert.deepStrictEqual([], client.getSignedHeaders(headers4));
+
+        // Prefix pairs must not be mis-deduped via substring contains
+        const headersPrefix = {
+            'host': 'example.com',
+            'x-acs-foobar': '1',
+            'x-acs-foo': '2'
+        };
+        assert.strictEqual(false, Array.contains(['x-acs-foobar'], 'x-acs-foo'));
+        assert.deepStrictEqual(['host', 'x-acs-foo', 'x-acs-foobar'], client.getSignedHeaders(headersPrefix));
+        const canonical = client.buildCanonicalizedHeaders(headersPrefix);
+        assert.ok(canonical.includes('x-acs-foo:2\n'));
+        assert.ok(canonical.includes('x-acs-foobar:1\n'));
 
         // 测试包含空值的headers情况
         const headers5 = {

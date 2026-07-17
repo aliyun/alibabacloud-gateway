@@ -352,22 +352,18 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*string, _err error) {
 	headersArray := map_.KeySet(headers)
 	sortedHeadersArray := array.AscSort(headersArray)
-	tmp := tea.String("")
-	separator := tea.String("")
+	result := []*string{}
 	for _, key := range sortedHeadersArray {
 		lowerKey := string_.ToLower(key)
 		if tea.BoolValue(string_.HasPrefix(lowerKey, tea.String("x-acs-"))) {
-			if !tea.BoolValue(string_.Contains(tmp, lowerKey)) {
-				tmp = tea.String(tea.StringValue(tmp) + tea.StringValue(separator) + tea.StringValue(lowerKey))
-				separator = tea.String(";")
+			if !tea.BoolValue(array.Contains(result, lowerKey)) {
+				result = append(result, lowerKey)
 			}
 
 		}
 
 	}
-	_result = make([]*string, 0)
-	_body := string_.Split(tmp, tea.String(";"), nil)
-	_result = _body
+	_result = result
 	return _result, _err
 }
 

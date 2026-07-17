@@ -39,7 +39,7 @@ public class UnitTest {
         // 测试空headers
         Map<String, String> emptyHeaders = new HashMap<>();
         List<String> result = client.getSignedHeaders(emptyHeaders);
-        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(0, result.size());
 
         // 测试只包含需要签名的headers
         Map<String, String> headers = new HashMap<>();
@@ -86,5 +86,31 @@ public class UnitTest {
         Assert.assertEquals("content-type", result.get(0));
         Assert.assertEquals("host", result.get(1));
         Assert.assertEquals("x-acs-action", result.get(2));
+
+        // Prefix pairs must not be mis-deduped (String.contains would treat x-acs-foo as inside x-acs-foobar)
+        Map<String, String> prefixHeaders = new HashMap<>();
+        prefixHeaders.put("host", "example.com");
+        prefixHeaders.put("x-acs-foobar", "1");
+        prefixHeaders.put("x-acs-foo", "2");
+        Assert.assertFalse(com.aliyun.darabonba.array.Client.contains(
+            java.util.Collections.singletonList("x-acs-foobar"), "x-acs-foo"));
+        result = client.getSignedHeaders(prefixHeaders);
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("host", result.get(0));
+        Assert.assertEquals("x-acs-foo", result.get(1));
+        Assert.assertEquals("x-acs-foobar", result.get(2));
+    }
+
+    @Test
+    public void buildCanonicalizedHeadersPrefixTest() throws Exception {
+        Client client = new Client();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("host", "example.com");
+        headers.put("x-acs-foobar", "bar");
+        headers.put("x-acs-foo", "foo");
+        String canonical = client.buildCanonicalizedHeaders(headers);
+        Assert.assertTrue(canonical.contains("x-acs-foo:foo\n"));
+        Assert.assertTrue(canonical.contains("x-acs-foobar:bar\n"));
+        Assert.assertTrue(canonical.contains("host:example.com\n"));
     }
 }

@@ -641,15 +641,13 @@ class Client(SPIClient):
     ) -> List[str]:
         headers_array = MapClient.key_set(headers)
         sorted_headers_array = ArrayClient.asc_sort(headers_array)
-        tmp = ''
-        separator = ''
+        result = []
         for key in sorted_headers_array:
             lower_key = StringClient.to_lower(key)
             if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
-                    tmp = f'{tmp}{separator}{lower_key}'
-                    separator = ';'
-        return StringClient.split(tmp, ';', None)
+                if not ArrayClient.contains(result, lower_key):
+                    result.append(lower_key)
+        return result
 
     async def get_signed_headers_async(
         self,
@@ -657,15 +655,13 @@ class Client(SPIClient):
     ) -> List[str]:
         headers_array = MapClient.key_set(headers)
         sorted_headers_array = ArrayClient.asc_sort(headers_array)
-        tmp = ''
-        separator = ''
+        result = []
         for key in sorted_headers_array:
             lower_key = StringClient.to_lower(key)
             if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not StringClient.contains(tmp, lower_key):
-                    tmp = f'{tmp}{separator}{lower_key}'
-                    separator = ';'
-        return StringClient.split(tmp, ';', None)
+                if not ArrayClient.contains(result, lower_key):
+                    result.append(lower_key)
+        return result
 
     def sign_request(
         self,

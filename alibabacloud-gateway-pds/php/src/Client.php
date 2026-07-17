@@ -302,18 +302,16 @@ class Client extends DarabonbaGatewaySpiClient
     {
         $headersArray = MapUtil::keySet($headers);
         $sortedHeadersArray = ArrayUtil::ascSort($headersArray);
-        $tmp = "";
-        $separator = "";
+        $result = [];
         foreach ($sortedHeadersArray as $key) {
             $lowerKey = StringUtil::toLower($key);
             if (StringUtil::hasPrefix($lowerKey, "x-acs-")) {
-                if (!StringUtil::contains($tmp, $lowerKey)) {
-                    $tmp = "" . $tmp . "" . $separator . "" . $lowerKey . "";
-                    $separator = ";";
+                if (!ArrayUtil::contains($result, $lowerKey)) {
+                    ArrayUtil::append($result, $lowerKey);
                 }
             }
         }
-        return StringUtil::split($tmp, ";", null);
+        return $result;
     }
 
     /**
