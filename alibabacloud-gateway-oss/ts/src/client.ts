@@ -338,6 +338,11 @@ export default class Client extends SPI {
         let idx = String.index(endpoint, ".aliyuncs.com");
         return String.subString(endpoint, 4, idx);
       }
+      // dual-stack / ipv6: {region}.oss.aliyuncs.com
+      if (String.hasSuffix(endpoint, ".oss.aliyuncs.com")) {
+        let idx = String.index(endpoint, ".oss.aliyuncs.com");
+        return String.subString(endpoint, 0, idx);
+      }
 
       if (String.hasSuffix(endpoint, ".mgw.aliyuncs.com")) {
         let idx = String.index(endpoint, ".mgw.aliyuncs.com");

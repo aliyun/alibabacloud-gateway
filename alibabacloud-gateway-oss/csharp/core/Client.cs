@@ -673,6 +673,12 @@ namespace AlibabaCloud.GatewayOss
                     idx = AlibabaCloud.DarabonbaString.StringUtil.Index(endpoint, ".aliyuncs.com");
                     return AlibabaCloud.DarabonbaString.StringUtil.SubString(endpoint, 4, idx);
                 }
+                // dual-stack / ipv6: {region}.oss.aliyuncs.com
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(endpoint, ".oss.aliyuncs.com"))
+                {
+                    idx = AlibabaCloud.DarabonbaString.StringUtil.Index(endpoint, ".oss.aliyuncs.com");
+                    return AlibabaCloud.DarabonbaString.StringUtil.SubString(endpoint, 0, idx);
+                }
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(endpoint, ".mgw.aliyuncs.com"))
                 {
                     idx = AlibabaCloud.DarabonbaString.StringUtil.Index(endpoint, ".mgw.aliyuncs.com");
@@ -706,6 +712,12 @@ namespace AlibabaCloud.GatewayOss
                 {
                     idx = AlibabaCloud.DarabonbaString.StringUtil.Index(endpoint, ".aliyuncs.com");
                     return AlibabaCloud.DarabonbaString.StringUtil.SubString(endpoint, 4, idx);
+                }
+                // dual-stack / ipv6: {region}.oss.aliyuncs.com
+                if (AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(endpoint, ".oss.aliyuncs.com"))
+                {
+                    idx = AlibabaCloud.DarabonbaString.StringUtil.Index(endpoint, ".oss.aliyuncs.com");
+                    return AlibabaCloud.DarabonbaString.StringUtil.SubString(endpoint, 0, idx);
                 }
                 if (AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(endpoint, ".mgw.aliyuncs.com"))
                 {

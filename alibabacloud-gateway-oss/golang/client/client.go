@@ -368,6 +368,14 @@ func (client *Client) GetRegionIdFromEndpoint (endpoint *string) (_result *strin
       return _result, _err
     }
 
+    // dual-stack / ipv6: {region}.oss.aliyuncs.com
+    if tea.BoolValue(string_.HasSuffix(endpoint, tea.String(".oss.aliyuncs.com"))) {
+      idx = string_.Index(endpoint, tea.String(".oss.aliyuncs.com"))
+      _body := string_.SubString(endpoint, tea.Int(0), idx)
+      _result = _body
+      return _result, _err
+    }
+
     if tea.BoolValue(string_.HasSuffix(endpoint, tea.String(".mgw.aliyuncs.com"))) {
       idx = string_.Index(endpoint, tea.String(".mgw.aliyuncs.com"))
       _body := string_.SubString(endpoint, tea.Int(0), idx)

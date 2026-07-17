@@ -126,4 +126,31 @@ public class UnitTest {
 
         Assert.assertEquals("?acl&versionId=123", client.buildCanonicalizedQueryStringV2(query));
     }
+
+    @Test
+    public void getRegionIdFromEndpointTest() throws Exception {
+        Client client = new Client();
+
+        // classic: oss-{region}.aliyuncs.com
+        Assert.assertEquals("cn-hangzhou",
+            client.getRegionIdFromEndpoint("oss-cn-hangzhou.aliyuncs.com"));
+        Assert.assertEquals("cn-shanghai",
+            client.getRegionIdFromEndpoint("oss-cn-shanghai.aliyuncs.com"));
+
+        // dual-stack / ipv6: {region}.oss.aliyuncs.com
+        Assert.assertEquals("cn-hangzhou",
+            client.getRegionIdFromEndpoint("cn-hangzhou.oss.aliyuncs.com"));
+        Assert.assertEquals("cn-shanghai",
+            client.getRegionIdFromEndpoint("cn-shanghai.oss.aliyuncs.com"));
+        Assert.assertEquals("ap-southeast-1",
+            client.getRegionIdFromEndpoint("ap-southeast-1.oss.aliyuncs.com"));
+
+        // fallback
+        Assert.assertEquals("cn-hangzhou",
+            client.getRegionIdFromEndpoint(null));
+        Assert.assertEquals("cn-hangzhou",
+            client.getRegionIdFromEndpoint(""));
+        Assert.assertEquals("cn-hangzhou",
+            client.getRegionIdFromEndpoint("custom.endpoint.com"));
+    }
 }

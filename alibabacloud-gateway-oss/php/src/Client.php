@@ -383,6 +383,11 @@ class Client extends DarabonbaGatewaySpiClient {
                 $idx = StringUtil::index($endpoint, ".aliyuncs.com");
                 return StringUtil::subString($endpoint, 4, $idx);
             }
+            // dual-stack / ipv6: {region}.oss.aliyuncs.com
+            if (StringUtil::hasSuffix($endpoint, ".oss.aliyuncs.com")) {
+                $idx = StringUtil::index($endpoint, ".oss.aliyuncs.com");
+                return StringUtil::subString($endpoint, 0, $idx);
+            }
             if (StringUtil::hasSuffix($endpoint, ".mgw.aliyuncs.com")) {
                 $idx = StringUtil::index($endpoint, ".mgw.aliyuncs.com");
                 return StringUtil::subString($endpoint, 0, $idx);
