@@ -249,6 +249,11 @@ async function getRegionIdFromEndpoint(endpoint: string) : string {
       idx = String.index(endpoint, '.aliyuncs.com');
       return String.subString(endpoint, 4, idx);
     }
+    // dual-stack / ipv6: {region}.oss.aliyuncs.com
+    if (String.hasSuffix(endpoint, '.oss.aliyuncs.com')) {
+      idx = String.index(endpoint, '.oss.aliyuncs.com');
+      return String.subString(endpoint, 0, idx);
+    }
     if (String.hasSuffix(endpoint, '.mgw.aliyuncs.com')) {
       idx = String.index(endpoint, '.mgw.aliyuncs.com');
       return String.subString(endpoint, 0, idx);

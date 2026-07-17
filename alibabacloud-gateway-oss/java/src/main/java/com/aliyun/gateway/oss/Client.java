@@ -355,6 +355,12 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 4, idx);
             }
 
+            // dual-stack / ipv6: {region}.oss.aliyuncs.com
+            if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".oss.aliyuncs.com")) {
+                idx = com.aliyun.darabonbastring.Client.index(endpoint, ".oss.aliyuncs.com");
+                return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
+            }
+
             if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, ".mgw.aliyuncs.com")) {
                 idx = com.aliyun.darabonbastring.Client.index(endpoint, ".mgw.aliyuncs.com");
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);

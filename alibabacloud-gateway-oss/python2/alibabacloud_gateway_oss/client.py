@@ -317,6 +317,10 @@ class Client(SPIClient):
             if StringClient.has_prefix(endpoint, 'oss-') and StringClient.has_suffix(endpoint, '.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 4, idx)
+            # dual-stack / ipv6: {region}.oss.aliyuncs.com
+            if StringClient.has_suffix(endpoint, '.oss.aliyuncs.com'):
+                idx = StringClient.index(endpoint, '.oss.aliyuncs.com')
+                return StringClient.sub_string(endpoint, 0, idx)
             if StringClient.has_suffix(endpoint, '.mgw.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.mgw.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
