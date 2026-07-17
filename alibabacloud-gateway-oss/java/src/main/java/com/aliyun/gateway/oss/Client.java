@@ -7,6 +7,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     public java.util.List<String> _default_signed_params;
     public java.util.List<String> _except_signed_params;
+    public java.util.List<String> _default_additional_headers;
     public Client() throws Exception {
         super();
         this._default_signed_params = java.util.Arrays.asList(
@@ -127,6 +128,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         this._except_signed_params = java.util.Arrays.asList(
             "list-type",
             "regions"
+        );
+        this._default_additional_headers = java.util.Arrays.asList(
+            "range",
+            "if-modified-since"
         );
     }
 
@@ -433,8 +438,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
             }
 
             if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v2")) {
-                sign = this.getSignatureV2(bucketName, pathname, method, query, headers, secret);
-                return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign + "";
+                java.util.List<String> additionalHeaderNames = this.getAdditionalHeaderNamesV2(headers);
+                sign = this.getSignatureV2(bucketName, pathname, method, query, headers, secret, additionalHeaderNames);
+                String additionalHeaders = this.joinSemicolon(additionalHeaderNames);
+                if (com.aliyun.teautil.Common.empty(additionalHeaders)) {
+                    return "OSS2 AccessKeyId:" + ak + ",Signature:" + sign + "";
+                }
+
+                return "OSS2 AccessKeyId:" + ak + ",AdditionalHeaders:" + additionalHeaders + ",Signature:" + sign + "";
             }
 
         }
@@ -479,8 +490,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // for java:
         // String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
         // canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
-        String suffix = (!canonicalizedUri.equals("/") && canonicalizedUri.endsWith("/"))? "/" : "";
-        canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri) + suffix;
+        canonicalizedUri = com.aliyun.openapiutil.Client.getEncodePath(canonicalizedUri);
         java.util.Map<String, String> queryMap = new java.util.HashMap<>();
         for (String queryKey : com.aliyun.darabonba.map.Client.keySet(query)) {
             String queryValue = null;
@@ -595,7 +605,127 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return canonicalizedHeaders;
     }
 
-    public String getSignatureV2(String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String secret) throws Exception {
+    public static String v2UriEncode(String value) throws Exception {
+        if (com.aliyun.teautil.Common.empty(value)) {
+            return "";
+        }
+
+        String encoded = com.aliyun.darabonba.encode.Encoder.percentEncode(value);
+        encoded = com.aliyun.darabonbastring.Client.replace(encoded, "+", "%20", null);
+        encoded = com.aliyun.darabonbastring.Client.replace(encoded, "%7E", "~", null);
+        encoded = com.aliyun.darabonbastring.Client.replace(encoded, "%2D", "-", null);
+        encoded = com.aliyun.darabonbastring.Client.replace(encoded, "%5F", "_", null);
+        encoded = com.aliyun.darabonbastring.Client.replace(encoded, "%2E", ".", null);
+        return encoded;
+    }
+
+    public String getHeaderValue(java.util.Map<String, String> headers, String name) throws Exception {
+        if (!com.aliyun.teautil.Common.isUnset(headers.get(name))) {
+            return headers.get(name);
+        }
+
+        for (String header : com.aliyun.darabonba.map.Client.keySet(headers)) {
+            if (com.aliyun.darabonbastring.Client.equals(com.aliyun.darabonbastring.Client.toLower(header), name)) {
+                return headers.get(header);
+            }
+
+        }
         return "";
+    }
+
+    public java.util.List<String> getAdditionalHeaderNamesV2(java.util.Map<String, String> headers) throws Exception {
+        java.util.Map<String, String> additionalHeaders = new java.util.HashMap<>();
+        for (String header : com.aliyun.darabonba.map.Client.keySet(headers)) {
+            String lowerHeader = com.aliyun.darabonbastring.Client.toLower(header);
+            if (com.aliyun.darabonba.array.Client.contains(_default_additional_headers, lowerHeader)) {
+                additionalHeaders.put(lowerHeader, lowerHeader);
+            }
+
+        }
+        return com.aliyun.darabonba.array.Client.ascSort(com.aliyun.darabonba.map.Client.keySet(additionalHeaders));
+    }
+
+    public String joinSemicolon(java.util.List<String> items) throws Exception {
+        String result = "";
+        String separator = "";
+        for (String item : items) {
+            result = "" + result + "" + separator + "" + item + "";
+            separator = ";";
+        }
+        return result;
+    }
+
+    public String buildCanonicalizedOssHeadersV2(java.util.Map<String, String> headers, java.util.List<String> additionalHeaderNames) throws Exception {
+        java.util.Map<String, String> canonHeaders = new java.util.HashMap<>();
+        for (String header : com.aliyun.darabonba.map.Client.keySet(headers)) {
+            String lowerHeader = com.aliyun.darabonbastring.Client.toLower(header);
+            if (com.aliyun.darabonbastring.Client.hasPrefix(lowerHeader, "x-oss-")) {
+                canonHeaders.put(lowerHeader, headers.get(header));
+            }
+
+        }
+        for (String name : additionalHeaderNames) {
+            canonHeaders.put(name, this.getHeaderValue(headers, name));
+        }
+        String canonicalizedHeaders = "";
+        for (String header : com.aliyun.darabonba.array.Client.ascSort(com.aliyun.darabonba.map.Client.keySet(canonHeaders))) {
+            canonicalizedHeaders = "" + canonicalizedHeaders + "" + header + ":" + canonHeaders.get(header) + "\n";
+        }
+        return canonicalizedHeaders;
+    }
+
+    public String buildCanonicalizedQueryStringV2(java.util.Map<String, String> query) throws Exception {
+        java.util.Map<String, String> queryMap = new java.util.HashMap<>();
+        if (!com.aliyun.teautil.Common.isUnset(query)) {
+            for (String queryKey : com.aliyun.darabonba.map.Client.keySet(query)) {
+                String encodedKey = Client.v2UriEncode(queryKey);
+                String encodedValue = "";
+                if (!com.aliyun.teautil.Common.empty(query.get(queryKey))) {
+                    encodedValue = Client.v2UriEncode(query.get(queryKey));
+                }
+
+                queryMap.put(encodedKey, encodedValue);
+            }
+        }
+
+        if (com.aliyun.teautil.Common.isUnset(queryMap) || com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(com.aliyun.darabonba.map.Client.keySet(queryMap)), 0)) {
+            return "";
+        }
+
+        String canonicalizedQueryString = "?";
+        String separator = "";
+        for (String key : com.aliyun.darabonba.array.Client.ascSort(com.aliyun.darabonba.map.Client.keySet(queryMap))) {
+            canonicalizedQueryString = "" + canonicalizedQueryString + "" + separator + "" + key + "";
+            if (!com.aliyun.teautil.Common.empty(queryMap.get(key))) {
+                canonicalizedQueryString = "" + canonicalizedQueryString + "=" + queryMap.get(key) + "";
+            }
+
+            separator = "&";
+        }
+        return canonicalizedQueryString;
+    }
+
+    public String buildCanonicalizedResourceV2(String bucketName, String pathname, java.util.Map<String, String> query) throws Exception {
+        String resourcePath = "/";
+        if (!com.aliyun.teautil.Common.empty(bucketName)) {
+            resourcePath = "/" + bucketName + "" + pathname + "";
+        } else if (!com.aliyun.teautil.Common.empty(pathname)) {
+            resourcePath = pathname;
+        }
+
+        String canonicalizedResource = Client.v2UriEncode(resourcePath);
+        canonicalizedResource = "" + canonicalizedResource + "" + this.buildCanonicalizedQueryStringV2(query) + "";
+        return canonicalizedResource;
+    }
+
+    public String getSignatureV2(String bucketName, String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String secret, java.util.List<String> additionalHeaderNames) throws Exception {
+        String contentMd5 = com.aliyun.teautil.Common.defaultString(headers.get("content-md5"), "");
+        String contentType = com.aliyun.teautil.Common.defaultString(headers.get("content-type"), "");
+        String date = com.aliyun.teautil.Common.defaultString(headers.get("date"), "");
+        String canonicalizedOssHeaders = this.buildCanonicalizedOssHeadersV2(headers, additionalHeaderNames);
+        String additionalHeaders = this.joinSemicolon(additionalHeaderNames);
+        String canonicalizedResource = this.buildCanonicalizedResourceV2(bucketName, pathname, query);
+        String stringToSign = "" + method + "\n" + contentMd5 + "\n" + contentType + "\n" + date + "\n" + canonicalizedOssHeaders + "" + additionalHeaders + "\n" + canonicalizedResource + "";
+        return com.aliyun.darabonba.encode.Encoder.base64EncodeToString(com.aliyun.darabonba.signature.Signer.HmacSHA256Sign(stringToSign, secret));
     }
 }
