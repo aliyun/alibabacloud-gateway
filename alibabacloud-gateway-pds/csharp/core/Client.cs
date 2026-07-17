@@ -82,8 +82,11 @@ namespace AlibabaCloud.GatewayPds
                     }
                 }
             }
+            string dateTime = "";
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
             {
+                dateTime = AlibabaCloud.OpenApiUtil.Client.GetTimestamp();
+                request.Headers["x-acs-date"] = dateTime;
                 if (AlibabaCloud.TeaUtil.Common.EqualString(signatureAlgorithm, "ACS4-HMAC-SM3"))
                 {
                     request.Headers["x-acs-content-sm3"] = hashedRequestPayload;
@@ -138,7 +141,8 @@ namespace AlibabaCloud.GatewayPds
                     }
                     if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
                     {
-                        string dateNew = AlibabaCloud.DarabonbaString.StringUtil.SubString(date, 0, 10);
+                        string dateNew = AlibabaCloud.DarabonbaString.StringUtil.SubString(dateTime, 0, 10);
+                        dateNew = AlibabaCloud.DarabonbaString.StringUtil.Replace(dateNew, "-", "", null);
                         string region = GetRegion(config.Endpoint);
                         byte[] signingkey = GetSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
                         request.Headers["Authorization"] = GetAuthorizationV4(request.Pathname, request.Method, request.Query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
@@ -201,8 +205,11 @@ namespace AlibabaCloud.GatewayPds
                     }
                 }
             }
+            string dateTime = "";
             if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
             {
+                dateTime = AlibabaCloud.OpenApiUtil.Client.GetTimestamp();
+                request.Headers["x-acs-date"] = dateTime;
                 if (AlibabaCloud.TeaUtil.Common.EqualString(signatureAlgorithm, "ACS4-HMAC-SM3"))
                 {
                     request.Headers["x-acs-content-sm3"] = hashedRequestPayload;
@@ -257,7 +264,8 @@ namespace AlibabaCloud.GatewayPds
                     }
                     if (AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, "v4"))
                     {
-                        string dateNew = AlibabaCloud.DarabonbaString.StringUtil.SubString(date, 0, 10);
+                        string dateNew = AlibabaCloud.DarabonbaString.StringUtil.SubString(dateTime, 0, 10);
+                        dateNew = AlibabaCloud.DarabonbaString.StringUtil.Replace(dateNew, "-", "", null);
                         string region = GetRegion(config.Endpoint);
                         byte[] signingkey = await GetSigningkeyAsync(signatureAlgorithm, accessKeySecret, region, dateNew);
                         request.Headers["Authorization"] = await GetAuthorizationV4Async(request.Pathname, request.Method, request.Query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);

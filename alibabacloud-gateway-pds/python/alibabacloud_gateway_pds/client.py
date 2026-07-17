@@ -73,7 +73,10 @@ class Client(SPIClient):
                     hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
+        date_time = ''
         if StringClient.equals(signature_version, 'v4'):
+            date_time = OpenApiUtilClient.get_timestamp()
+            request.headers['x-acs-date'] = date_time
             if UtilClient.equal_string(signature_algorithm, 'ACS4-HMAC-SM3'):
                 request.headers['x-acs-content-sm3'] = hashed_request_payload
             else:
@@ -106,7 +109,8 @@ class Client(SPIClient):
                 else:
                     headers = request.headers
                 if StringClient.equals(signature_version, 'v4'):
-                    date_new = StringClient.sub_string(date, 0, 10)
+                    date_new = StringClient.sub_string(date_time, 0, 10)
+                    date_new = StringClient.replace(date_new, '-', '', None)
                     region = self.get_region(config.endpoint)
                     signingkey = self.get_signingkey(signature_algorithm, access_key_secret, region, date_new)
                     request.headers['Authorization'] = self.get_authorization_v4(request.pathname, request.method, request.query, headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
@@ -151,7 +155,10 @@ class Client(SPIClient):
                     hashed_request_payload = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
+        date_time = ''
         if StringClient.equals(signature_version, 'v4'):
+            date_time = OpenApiUtilClient.get_timestamp()
+            request.headers['x-acs-date'] = date_time
             if UtilClient.equal_string(signature_algorithm, 'ACS4-HMAC-SM3'):
                 request.headers['x-acs-content-sm3'] = hashed_request_payload
             else:
@@ -184,7 +191,8 @@ class Client(SPIClient):
                 else:
                     headers = request.headers
                 if StringClient.equals(signature_version, 'v4'):
-                    date_new = StringClient.sub_string(date, 0, 10)
+                    date_new = StringClient.sub_string(date_time, 0, 10)
+                    date_new = StringClient.replace(date_new, '-', '', None)
                     region = self.get_region(config.endpoint)
                     signingkey = await self.get_signingkey_async(signature_algorithm, access_key_secret, region, date_new)
                     request.headers['Authorization'] = await self.get_authorization_v4_async(request.pathname, request.method, request.query, headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)

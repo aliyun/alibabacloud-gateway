@@ -64,7 +64,10 @@ export default class Client extends SPI {
 
     }
 
+    let dateTime = "";
     if (String.equals(signatureVersion, "v4")) {
+      dateTime = OpenApiUtil.getTimestamp();
+      request.headers["x-acs-date"] = dateTime;
       if (Util.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
         request.headers["x-acs-content-sm3"] = hashedRequestPayload;
       } else {
@@ -107,7 +110,8 @@ export default class Client extends SPI {
         }
 
         if (String.equals(signatureVersion, "v4")) {
-          let dateNew = String.subString(date, 0, 10);
+          let dateNew = String.subString(dateTime, 0, 10);
+          dateNew = String.replace(dateNew, "-", "", null);
           let region = this.getRegion(config.endpoint);
           let signingkey = await this.getSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
           request.headers["Authorization"] = await this.getAuthorizationV4(request.pathname, request.method, request.query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);

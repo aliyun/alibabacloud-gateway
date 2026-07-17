@@ -58,7 +58,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
+        String dateTime = "";
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
+            dateTime = com.aliyun.openapiutil.Client.getTimestamp();
+            request.headers.put("x-acs-date", dateTime);
             if (com.aliyun.teautil.Common.equalString(signatureAlgorithm, "ACS4-HMAC-SM3")) {
                 request.headers.put("x-acs-content-sm3", hashedRequestPayload);
             } else {
@@ -100,7 +103,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 }
 
                 if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
-                    String dateNew = com.aliyun.darabonbastring.Client.subString(date, 0, 10);
+                    String dateNew = com.aliyun.darabonbastring.Client.subString(dateTime, 0, 10);
+                    dateNew = com.aliyun.darabonbastring.Client.replace(dateNew, "-", "", null);
                     String region = this.getRegion(config.endpoint);
                     byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, region, dateNew);
                     request.headers.put("Authorization", this.getAuthorizationV4(request.pathname, request.method, request.query, headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
