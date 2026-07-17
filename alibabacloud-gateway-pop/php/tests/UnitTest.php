@@ -2,6 +2,7 @@
 
 namespace Darabonba\GatewayPop\Tests;
 
+use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use Darabonba\GatewayPop\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -100,6 +101,7 @@ final class UnitTest extends TestCase
             "x-acs-foobar" => "1",
             "x-acs-foo" => "2"
         ];
+        $this->assertFalse(ArrayUtil::contains(["x-acs-foobar"], "x-acs-foo"));
         $result = $client->getSignedHeaders($prefixHeaders);
         $this->assertCount(3, $result);
         $this->assertEquals("host", $result[0]);

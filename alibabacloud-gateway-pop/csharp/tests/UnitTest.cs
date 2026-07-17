@@ -104,11 +104,17 @@ namespace tests
                 { "x-acs-foobar", "1" },
                 { "x-acs-foo", "2" }
             };
+            Assert.False(AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(
+                new List<string> { "x-acs-foobar" }, "x-acs-foo"));
             result = client.GetSignedHeaders(prefixHeaders);
             Assert.Equal(3, result.Count);
             Assert.Equal("host", result[0]);
             Assert.Equal("x-acs-foo", result[1]);
             Assert.Equal("x-acs-foobar", result[2]);
+
+            var canonical = client.BuildCanonicalizedHeaders(prefixHeaders);
+            Assert.Contains("x-acs-foo:2\n", canonical);
+            Assert.Contains("x-acs-foobar:1\n", canonical);
         }
     }
 }

@@ -92,6 +92,8 @@ public class UnitTest {
         prefixHeaders.put("host", "example.com");
         prefixHeaders.put("x-acs-foobar", "1");
         prefixHeaders.put("x-acs-foo", "2");
+        Assert.assertFalse(com.aliyun.darabonba.array.Client.contains(
+            java.util.Collections.singletonList("x-acs-foobar"), "x-acs-foo"));
         result = client.getSignedHeaders(prefixHeaders);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("host", result.get(0));

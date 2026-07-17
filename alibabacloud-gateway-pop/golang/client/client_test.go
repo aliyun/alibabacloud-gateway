@@ -3,6 +3,7 @@ package client
 import (
 	"testing"
 
+	array "github.com/alibabacloud-go/darabonba-array/client"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/alibabacloud-go/tea/utils"
 )
@@ -83,9 +84,14 @@ func Test_GetSignedHeaders(t *testing.T) {
 		"x-acs-foobar": tea.String("1"),
 		"x-acs-foo":    tea.String("2"),
 	}
+	utils.AssertEqual(t, false, tea.BoolValue(array.Contains([]*string{tea.String("x-acs-foobar")}, tea.String("x-acs-foo"))))
 	result = client.GetSignedHeaders(prefixHeaders)
 	utils.AssertEqual(t, 3, len(result))
 	utils.AssertEqual(t, "host", tea.StringValue(result[0]))
 	utils.AssertEqual(t, "x-acs-foo", tea.StringValue(result[1]))
 	utils.AssertEqual(t, "x-acs-foobar", tea.StringValue(result[2]))
+
+	canonical := tea.StringValue(client.BuildCanonicalizedHeaders(prefixHeaders))
+	utils.AssertContains(t, canonical, "x-acs-foo:2\n")
+	utils.AssertContains(t, canonical, "x-acs-foobar:1\n")
 }
