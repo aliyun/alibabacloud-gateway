@@ -1,0 +1,42 @@
+name: Go CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-fc/util/golang
+
+jobs:
+
+  build:
+    name: alibabacloud-gateway-fc-util
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [1.10.x, 1.11.x, 1.12.x, 1.13.x, 1.14.x, 1.15.x, 1.16.x]
+
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: go build ./client
+
+    - name: Test
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic ./client/..
+      env:
+        ak: ${{ secrets.ak }}
+        sk: ${{ secrets.sk }}
+        url: ${{ secrets.url }}
+    
+    - name: CodeCov
+      run: bash <(curl -s https://codecov.io/bash) -cF golang

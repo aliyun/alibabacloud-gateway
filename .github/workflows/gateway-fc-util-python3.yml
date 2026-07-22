@@ -1,0 +1,38 @@
+name: Python3 CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-fc/util/python
+
+jobs:
+
+  build:
+    name: alibabacloud-gateway-fc-util
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: pip install alibabacloud-credentials requests coverage pytest
+    - name: Test with unittest
+      run: |
+        coverage run --source="./alibabacloud_gateway_fc_util" -m pytest tests/*_test.py
+      env:
+        ak: ${{ secrets.ak }}
+        sk: ${{ secrets.sk }}
+        url: ${{ secrets.url }}
+    - name: CodeCov
+      run: bash <(curl -s https://codecov.io/bash) -cF python
