@@ -99,11 +99,16 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     x-log-apiversion = '0.6.0',
     ...request.headers
   };
+  if (Util.equalString(request.bodyType, 'sse')) {
+    request.headers['accept'] = 'text/event-stream';
+  }
   request.headers['x-log-bodyrawsize'] = bodyRawSize;
   if (String.equals(request.action, 'PullLogs')) {
     request.headers['accept'] = 'application/x-protobuf';
   }
-  setDefaultAcceptEncoding(request.action, request.headers);
+  if (!Util.equalString(request.bodyType, 'sse')) {
+    setDefaultAcceptEncoding(request.action, request.headers);
+  }
 
   buildRequest(context); // move param in path to query
 
@@ -196,6 +201,10 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
         statusCode = response.statusCode,
       }
     };
+  }
+  if (Util.equalString(request.bodyType, 'sse')) {
+    response.deserializedBody = response.body;
+    return;
   }
   if (!Util.isUnset(response.body)) {
     var bodyrawSize = response.headers['x-log-bodyrawsize'];
@@ -439,4 +448,4 @@ async function getDateISO8601() : string {
   var date = OpenApiUtil.getTimestamp(); // 2024-02-04T11:31:58Z
   date = String.replace(date, '-', '', null);
   return String.replace(date, ':', '', null);
-} 
+}
