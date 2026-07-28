@@ -1,5 +1,6 @@
 package com.aliyun.gateway.oss;
 
+import com.aliyun.gateway.spi.models.InterceptorContext;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
@@ -145,6 +146,17 @@ public class UnitTest {
         Assert.assertEquals("ap-southeast-1",
             client.getRegionIdFromEndpoint("ap-southeast-1.oss.aliyuncs.com"));
 
+        // IDPT MGW: {service}.{region}.mgw.{idptcloud variant}.alibaba
+        Assert.assertEquals("ap-jakarta-idpt2",
+            client.getRegionIdFromEndpoint(
+                "mgw.ap-jakarta-idpt2.mgw.idptcloud03api.alibaba"));
+        Assert.assertEquals("ap-jakarta-idpt2",
+            client.getRegionIdFromEndpoint(
+                "mgw-internal.ap-jakarta-idpt2.mgw.idptcloud03api.alibaba"));
+        Assert.assertEquals("ap-paris-idpt",
+            client.getRegionIdFromEndpoint(
+                "mgw.ap-paris-idpt.mgw.idptcloud06api.alibaba"));
+
         // fallback
         Assert.assertEquals("cn-hangzhou",
             client.getRegionIdFromEndpoint(null));
@@ -152,5 +164,31 @@ public class UnitTest {
             client.getRegionIdFromEndpoint(""));
         Assert.assertEquals("cn-hangzhou",
             client.getRegionIdFromEndpoint("custom.endpoint.com"));
+    }
+
+    @Test
+    public void getIdptMgwHostTest() throws Exception {
+        Client client = new Client();
+        InterceptorContext context = new InterceptorContext();
+        context.request = new InterceptorContext.InterceptorContextRequest();
+        context.request.hostMap = new HashMap<String, String>();
+        context.request.hostMap.put("userid", "123456789");
+
+        assertIdptMgwHost(client, context,
+            "mgw.ap-jakarta-idpt2.mgw.idptcloud03api.alibaba");
+        assertIdptMgwHost(client, context,
+            "mgw-internal.ap-jakarta-idpt2.mgw.idptcloud03api.alibaba");
+        assertIdptMgwHost(client, context,
+            "mgw.ap-paris-idpt.mgw.idptcloud06api.alibaba");
+    }
+
+    private void assertIdptMgwHost(
+        Client client,
+        InterceptorContext context,
+        String endpoint) throws Exception {
+
+        Assert.assertEquals(
+            "123456789." + endpoint,
+            client.getHost(null, null, endpoint, context));
     }
 }
