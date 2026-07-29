@@ -19,7 +19,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 16.x, 18.x, 20.x]
+        # Node 10/12 fail on current transitive deps (ip-address optional chaining);
+        # keep LTS-era versions that the package itself still exercises.
+        node-version: [14.x, 16.x, 18.x, 20.x]
       fail-fast: false
 
     steps:
