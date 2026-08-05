@@ -8,8 +8,8 @@
 package client
 
 import (
-	"encoding/json"
 	"reflect"
+	"strings"
 
 	hcs_mgw_models "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client/hcs_mgw_models"
 	models "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client/models"
@@ -185,24 +185,111 @@ func ParseXml(bodyStr *string, apiName *string) (_result interface{}, _err error
 	return normalizeParsedXml(parsed), nil
 }
 
-// normalizeParsedXml flattens nested typed structs into map[string]interface{} /
-// []interface{} so jsonpath and AssertAsMap callers can traverse the body safely.
-var (
-	jsonMarshal   = json.Marshal
-	jsonUnmarshal = json.Unmarshal
-)
-
+// normalizeParsedXml converts typed structs (from tea-xml + typeRegistry) into
+// nested map[string]interface{} / []interface{} for jsonpath / AssertAsMap.
+// Unlike json.Marshal/Unmarshal, it only strips structs/pointers and keeps
+// original scalar kinds (int32, int64, bool, string, …).
 func normalizeParsedXml(parsed map[string]interface{}) map[string]interface{} {
 	if parsed == nil {
 		return nil
 	}
-	byt, err := jsonMarshal(parsed)
-	if err != nil {
-		return parsed
+	out := make(map[string]interface{}, len(parsed))
+	for k, v := range parsed {
+		out[k] = toGenericValue(v)
 	}
+	return out
+}
+
+type toMapper interface {
+	ToMap() map[string]interface{}
+}
+
+func toGenericValue(v interface{}) interface{} {
+	if v == nil {
+		return nil
+	}
+	if m, ok := v.(toMapper); ok {
+		return m.ToMap()
+	}
+	return reflectToGeneric(reflect.ValueOf(v))
+}
+
+func reflectToGeneric(rv reflect.Value) interface{} {
+	if !rv.IsValid() {
+		return nil
+	}
+	for rv.Kind() == reflect.Interface {
+		if rv.IsNil() {
+			return nil
+		}
+		rv = rv.Elem()
+	}
+	for rv.Kind() == reflect.Ptr {
+		if rv.IsNil() {
+			return nil
+		}
+		if m, ok := rv.Interface().(toMapper); ok {
+			return m.ToMap()
+		}
+		rv = rv.Elem()
+	}
+	if !rv.IsValid() {
+		return nil
+	}
+	switch rv.Kind() {
+	case reflect.Struct:
+		return structToGenericMap(rv)
+	case reflect.Map:
+		if rv.Type().Key().Kind() != reflect.String {
+			return rv.Interface()
+		}
+		out := make(map[string]interface{}, rv.Len())
+		iter := rv.MapRange()
+		for iter.Next() {
+			out[iter.Key().String()] = reflectToGeneric(iter.Value())
+		}
+		return out
+	case reflect.Slice, reflect.Array:
+		n := rv.Len()
+		out := make([]interface{}, n)
+		for i := 0; i < n; i++ {
+			out[i] = reflectToGeneric(rv.Index(i))
+		}
+		return out
+	default:
+		return rv.Interface()
+	}
+}
+
+func structToGenericMap(rv reflect.Value) map[string]interface{} {
 	out := make(map[string]interface{})
-	if err := jsonUnmarshal(byt, &out); err != nil {
-		return parsed
+	rt := rv.Type()
+	for i := 0; i < rt.NumField(); i++ {
+		field := rt.Field(i)
+		if field.PkgPath != "" {
+			continue // unexported
+		}
+		name := field.Name
+		if tag, ok := field.Tag.Lookup("json"); ok {
+			parts := strings.Split(tag, ",")
+			if parts[0] == "-" {
+				continue
+			}
+			if parts[0] != "" {
+				name = parts[0]
+			}
+		}
+		fv := rv.Field(i)
+		if !fv.IsValid() {
+			continue
+		}
+		switch fv.Kind() {
+		case reflect.Ptr, reflect.Interface, reflect.Slice, reflect.Map:
+			if fv.IsNil() {
+				continue
+			}
+		}
+		out[name] = reflectToGeneric(fv)
 	}
 	return out
 }
