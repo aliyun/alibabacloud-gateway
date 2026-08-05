@@ -8,6 +8,7 @@
 package client
 
 import (
+	"encoding/json"
 	"reflect"
 
 	hcs_mgw_models "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client/hcs_mgw_models"
@@ -173,8 +174,35 @@ func init() {
 
 func ParseXml(bodyStr *string, apiName *string) (_result interface{}, _err error) {
 	var bodyStruct interface{} = nil
-	if typ, ok := typeRegistry[*apiName]; ok {
-		bodyStruct = reflect.New(typ).Interface()
+	if apiName != nil {
+		if typ, ok := typeRegistry[*apiName]; ok {
+			// Keep typed target so tea-xml can honor list/struct shapes from models,
+			// then normalize to a generic map for common/callApi consumers (e.g. Terraform).
+			bodyStruct = reflect.New(typ).Interface()
+		}
 	}
-	return xml.ParseXml(bodyStr, bodyStruct), nil
+	parsed := xml.ParseXml(bodyStr, bodyStruct)
+	return normalizeParsedXml(parsed), nil
+}
+
+// normalizeParsedXml flattens nested typed structs into map[string]interface{} /
+// []interface{} so jsonpath and AssertAsMap callers can traverse the body safely.
+var (
+	jsonMarshal   = json.Marshal
+	jsonUnmarshal = json.Unmarshal
+)
+
+func normalizeParsedXml(parsed map[string]interface{}) map[string]interface{} {
+	if parsed == nil {
+		return nil
+	}
+	byt, err := jsonMarshal(parsed)
+	if err != nil {
+		return parsed
+	}
+	out := make(map[string]interface{})
+	if err := jsonUnmarshal(byt, &out); err != nil {
+		return parsed
+	}
+	return out
 }
