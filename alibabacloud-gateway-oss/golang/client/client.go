@@ -390,6 +390,13 @@ func (client *Client) GetRegionIdFromEndpoint (endpoint *string) (_result *strin
       return _result, _err
     }
 
+    endpointParts := string_.Split(endpoint, tea.String("."), nil)
+    if tea.BoolValue(util.EqualNumber(array.Size(endpointParts), tea.Int(5))) && tea.BoolValue(string_.Equals(endpointParts[2], tea.String("mgw"))) && tea.BoolValue(string_.HasPrefix(endpointParts[3], tea.String("idptcloud"))) && tea.BoolValue(string_.Equals(endpointParts[4], tea.String("alibaba"))) {
+      idptRegionId := endpointParts[1]
+      _result = idptRegionId
+      return _result , _err
+    }
+
     if tea.BoolValue(string_.HasSuffix(endpoint, tea.String("-internal.oss-data-acc.aliyuncs.com"))) {
       idx = string_.Index(endpoint, tea.String("-internal.oss-data-acc.aliyuncs.com"))
       _body := string_.SubString(endpoint, tea.Int(0), idx)
@@ -406,8 +413,9 @@ func (client *Client) GetRegionIdFromEndpoint (endpoint *string) (_result *strin
 
   }
 
-  _result = tea.String("cn-hangzhou")
-  return _result, _err
+  defaultRegionId := tea.String("cn-hangzhou")
+  _result = defaultRegionId
+  return _result , _err
 }
 
 func (client *Client) GetEndpoint (regionId *string, network *string, endpoint *string) (_result *string, _err error) {
@@ -447,6 +455,15 @@ func (client *Client) GetHost (endpointType *string, bucketName *string, endpoin
   if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw-internal.aliyuncs.com"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
     _result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
     return _result, _err
+  }
+
+  if !tea.BoolValue(util.Empty(endpoint)) {
+    endpointParts := string_.Split(endpoint, tea.String("."), nil)
+    if tea.BoolValue(util.EqualNumber(array.Size(endpointParts), tea.Int(5))) && tea.BoolValue(string_.Equals(endpointParts[2], tea.String("mgw"))) && tea.BoolValue(string_.HasPrefix(endpointParts[3], tea.String("idptcloud"))) && tea.BoolValue(string_.Equals(endpointParts[4], tea.String("alibaba"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
+      _result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
+      return _result, _err
+    }
+
   }
 
   if tea.BoolValue(util.Empty(bucketName)) {

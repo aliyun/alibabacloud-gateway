@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for alibabacloud_gateway_oss.
 
-Created on 16/07/2026
+Created on 28/07/2026
 
 @author: Alibaba Cloud SDK
 """

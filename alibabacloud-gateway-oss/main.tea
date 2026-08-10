@@ -262,6 +262,14 @@ async function getRegionIdFromEndpoint(endpoint: string) : string {
       idx = String.index(endpoint, '.mgw-internal.aliyuncs.com');
       return String.subString(endpoint, 0, idx);
     }
+    var endpointParts : [string] = String.split(endpoint, '.', null);
+    if (Util.equalNumber(Array.size(endpointParts), 5)
+        && String.equals(endpointParts[2], 'mgw')
+        && String.hasPrefix(endpointParts[3], 'idptcloud')
+        && String.equals(endpointParts[4], 'alibaba')) {
+      var idptRegionId = endpointParts[1];
+      return idptRegionId;
+    }
     if (String.hasSuffix(endpoint, '-internal.oss-data-acc.aliyuncs.com')) {
       idx = String.index(endpoint, '-internal.oss-data-acc.aliyuncs.com');
       return String.subString(endpoint, 0, idx);
@@ -271,7 +279,8 @@ async function getRegionIdFromEndpoint(endpoint: string) : string {
       return String.subString(endpoint, 0, idx);
     }
   }
-  return 'cn-hangzhou';
+  var defaultRegionId = 'cn-hangzhou';
+  return defaultRegionId;
 }
 
 async function getEndpoint(regionId: string, network: string, endpoint: string) : string{
@@ -299,6 +308,16 @@ async function getHost(endpointType: string, bucketName: string, endpoint: strin
   }
   if (String.contains(endpoint,'.mgw-internal.aliyuncs.com') && !Util.isUnset(context.request.hostMap.userid)) {
     return `${context.request.hostMap.userid}.${endpoint}`;
+  }
+  if (!Util.empty(endpoint)) {
+    var endpointParts : [string] = String.split(endpoint, '.', null);
+    if (Util.equalNumber(Array.size(endpointParts), 5)
+        && String.equals(endpointParts[2], 'mgw')
+        && String.hasPrefix(endpointParts[3], 'idptcloud')
+        && String.equals(endpointParts[4], 'alibaba')
+        && !Util.isUnset(context.request.hostMap.userid)) {
+      return `${context.request.hostMap.userid}.${endpoint}`;
+    }
   }
   if (Util.empty(bucketName)) {
     return endpoint;

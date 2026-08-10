@@ -371,6 +371,12 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
             }
 
+            java.util.List<String> endpointParts = com.aliyun.darabonbastring.Client.split(endpoint, ".", null);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(endpointParts), 5) && com.aliyun.darabonbastring.Client.equals(endpointParts.get(2), "mgw") && com.aliyun.darabonbastring.Client.hasPrefix(endpointParts.get(3), "idptcloud") && com.aliyun.darabonbastring.Client.equals(endpointParts.get(4), "alibaba")) {
+                String idptRegionId = endpointParts.get(1);
+                return idptRegionId;
+            }
+
             if (com.aliyun.darabonbastring.Client.hasSuffix(endpoint, "-internal.oss-data-acc.aliyuncs.com")) {
                 idx = com.aliyun.darabonbastring.Client.index(endpoint, "-internal.oss-data-acc.aliyuncs.com");
                 return com.aliyun.darabonbastring.Client.subString(endpoint, 0, idx);
@@ -383,7 +389,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
-        return "cn-hangzhou";
+        String defaultRegionId = "cn-hangzhou";
+        return defaultRegionId;
     }
 
     public String getEndpoint(String regionId, String network, String endpoint) throws Exception {
@@ -416,6 +423,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         if (com.aliyun.darabonbastring.Client.contains(endpoint, ".mgw-internal.aliyuncs.com") && !com.aliyun.teautil.Common.isUnset(context.request.hostMap.get("userid"))) {
             return "" + context.request.hostMap.get("userid") + "." + endpoint + "";
+        }
+
+        if (!com.aliyun.teautil.Common.empty(endpoint)) {
+            java.util.List<String> endpointParts = com.aliyun.darabonbastring.Client.split(endpoint, ".", null);
+            if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(endpointParts), 5) && com.aliyun.darabonbastring.Client.equals(endpointParts.get(2), "mgw") && com.aliyun.darabonbastring.Client.hasPrefix(endpointParts.get(3), "idptcloud") && com.aliyun.darabonbastring.Client.equals(endpointParts.get(4), "alibaba") && !com.aliyun.teautil.Common.isUnset(context.request.hostMap.get("userid"))) {
+                return "" + context.request.hostMap.get("userid") + "." + endpoint + "";
+            }
+
         }
 
         if (com.aliyun.teautil.Common.empty(bucketName)) {

@@ -514,13 +514,18 @@ class Client(SPIClient):
             if StringClient.has_suffix(endpoint, '.mgw-internal.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.mgw-internal.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
+            endpoint_parts = StringClient.split(endpoint, '.', None)
+            if UtilClient.equal_number(ArrayClient.size(endpoint_parts), 5) and StringClient.equals(endpoint_parts[2], 'mgw') and StringClient.has_prefix(endpoint_parts[3], 'idptcloud') and StringClient.equals(endpoint_parts[4], 'alibaba'):
+                idpt_region_id = endpoint_parts[1]
+                return idpt_region_id
             if StringClient.has_suffix(endpoint, '-internal.oss-data-acc.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '-internal.oss-data-acc.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
             if StringClient.has_suffix(endpoint, '.oss-dls.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.oss-dls.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
-        return 'cn-hangzhou'
+        default_region_id = 'cn-hangzhou'
+        return default_region_id
 
     async def get_region_id_from_endpoint_async(
         self,
@@ -541,13 +546,18 @@ class Client(SPIClient):
             if StringClient.has_suffix(endpoint, '.mgw-internal.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.mgw-internal.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
+            endpoint_parts = StringClient.split(endpoint, '.', None)
+            if UtilClient.equal_number(ArrayClient.size(endpoint_parts), 5) and StringClient.equals(endpoint_parts[2], 'mgw') and StringClient.has_prefix(endpoint_parts[3], 'idptcloud') and StringClient.equals(endpoint_parts[4], 'alibaba'):
+                idpt_region_id = endpoint_parts[1]
+                return idpt_region_id
             if StringClient.has_suffix(endpoint, '-internal.oss-data-acc.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '-internal.oss-data-acc.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
             if StringClient.has_suffix(endpoint, '.oss-dls.aliyuncs.com'):
                 idx = StringClient.index(endpoint, '.oss-dls.aliyuncs.com')
                 return StringClient.sub_string(endpoint, 0, idx)
-        return 'cn-hangzhou'
+        default_region_id = 'cn-hangzhou'
+        return default_region_id
 
     def get_endpoint(
         self,
@@ -598,6 +608,10 @@ class Client(SPIClient):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
         if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
+        if not UtilClient.empty(endpoint):
+            endpoint_parts = StringClient.split(endpoint, '.', None)
+            if UtilClient.equal_number(ArrayClient.size(endpoint_parts), 5) and StringClient.equals(endpoint_parts[2], 'mgw') and StringClient.has_prefix(endpoint_parts[3], 'idptcloud') and StringClient.equals(endpoint_parts[4], 'alibaba') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+                return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'
@@ -619,6 +633,10 @@ class Client(SPIClient):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
         if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
+        if not UtilClient.empty(endpoint):
+            endpoint_parts = StringClient.split(endpoint, '.', None)
+            if UtilClient.equal_number(ArrayClient.size(endpoint_parts), 5) and StringClient.equals(endpoint_parts[2], 'mgw') and StringClient.has_prefix(endpoint_parts[3], 'idptcloud') and StringClient.equals(endpoint_parts[4], 'alibaba') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+                return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'
