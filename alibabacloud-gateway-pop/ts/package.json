@@ -32,7 +32,8 @@
     "@alicloud/darabonba-string": "^1.0.2",
     "@alicloud/darabonba-map": "^0.0.1",
     "@alicloud/darabonba-array": "^0.1.2",
-    "@alicloud/tea-xml": "0.0.3"
+    "@alicloud/tea-xml": "0.0.3",
+    "ip-address": "10.1.1"
   },
   "files": [
     "dist",

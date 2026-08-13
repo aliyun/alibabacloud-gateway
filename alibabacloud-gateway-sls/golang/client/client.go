@@ -279,13 +279,30 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			return _err
 		}
 
+		// Standard SLS errors use errorCode/errorMessage + x-log-requestid; some
+		// services (e.g. /chat) return {"error": "..."} + X-Log-Request-Id instead.
+		errorCode := resMap["errorCode"]
+		if tea.BoolValue(util.IsUnset(errorCode)) {
+			errorCode = resMap["code"]
+		}
+		errorMessage := resMap["errorMessage"]
+		if tea.BoolValue(util.IsUnset(errorMessage)) {
+			errorMessage = resMap["error"]
+		}
+		if tea.BoolValue(util.IsUnset(errorMessage)) {
+			errorMessage = resMap["message"]
+		}
+		requestId := response.Headers["x-log-requestid"]
+		if tea.BoolValue(util.IsUnset(requestId)) {
+			requestId = response.Headers["x-log-request-id"]
+		}
 		_err = tea.NewSDKError(map[string]interface{}{
-			"code":               resMap["errorCode"],
-			"message":            resMap["errorMessage"],
+			"code":               errorCode,
+			"message":            errorMessage,
 			"accessDeniedDetail": resMap["accessDeniedDetail"],
 			"data": map[string]interface{}{
 				"httpCode":   tea.IntValue(response.StatusCode),
-				"requestId":  tea.StringValue(response.Headers["x-log-requestid"]),
+				"requestId":  tea.StringValue(requestId),
 				"statusCode": tea.IntValue(response.StatusCode),
 			},
 		})
@@ -293,6 +310,12 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 	}
 
 	if !tea.BoolValue(util.IsUnset(response.Body)) {
+		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("sse"))) {
+			// SSE: pass the raw stream through untouched (no decompression, no
+			// consumption); the runtime reads it with readAsSSE.
+			response.DeserializedBody = response.Body
+			return _err
+		}
 		bodyrawSize := response.Headers["x-log-bodyrawsize"]
 		compressType := response.Headers["x-log-compresstype"]
 		uncompressedData := response.Body
@@ -303,7 +326,6 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 			}
 
 		}
-
 		if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
 			response.DeserializedBody = uncompressedData
 		} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
