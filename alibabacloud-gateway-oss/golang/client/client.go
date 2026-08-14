@@ -3,7 +3,6 @@ package client
 
 import (
   spi  "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
-  credential  "github.com/aliyun/credentials-go/credentials"
   util  "github.com/alibabacloud-go/tea-utils/v2/service"
   ossutil  "github.com/alibabacloud-go/tea-oss-utils/service"
   openapiutil  "github.com/alibabacloud-go/openapi-util/service"
@@ -13,7 +12,6 @@ import (
   array  "github.com/alibabacloud-go/darabonba-array/client"
   encodeutil  "github.com/alibabacloud-go/darabonba-encode-util/client"
   signatureutil  "github.com/alibabacloud-go/darabonba-signature-util/client"
-  time  "github.com/alibabacloud-go/darabonba-time/client"
   oss_util  "github.com/alibabacloud-go/alibabacloud-gateway-oss-util/client"
   "github.com/alibabacloud-go/tea/tea"
 )
@@ -839,7 +837,12 @@ func (client *Client) BuildCanonicalizedResourceV2 (bucketName *string, pathname
   }
 
   canonicalizedResource := V2UriEncode(resourcePath)
-  canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(client.BuildCanonicalizedQueryStringV2(query)))
+  canonicalizedQueryString, _err := client.BuildCanonicalizedQueryStringV2(query)
+  if _err != nil {
+    return _result, _err
+  }
+
+  canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(canonicalizedQueryString))
   _result = canonicalizedResource
   return _result , _err
 }
@@ -868,4 +871,3 @@ func (client *Client) GetSignatureV2 (bucketName *string, pathname *string, meth
   _result = _body
   return _result, _err
 }
-

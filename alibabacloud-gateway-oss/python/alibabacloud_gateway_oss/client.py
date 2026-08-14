@@ -25,7 +25,7 @@ class Client(SPIClient):
 
     def __init__(self):
         super().__init__()
-        undefined._default_signed_params = [
+        self._default_signed_params = [
             'response-content-type',
             'response-content-language',
             'response-cache-control',
@@ -140,11 +140,11 @@ class Client(SPIClient):
             'dfsadmin',
             'dfssecurity'
         ]
-        undefined._except_signed_params = [
+        self._except_signed_params = [
             'list-type',
             'regions'
         ]
-        undefined._default_additional_headers = [
+        self._default_additional_headers = [
             'range',
             'if-modified-since'
         ]
@@ -201,7 +201,7 @@ class Client(SPIClient):
                 req_body_map = UtilClient.assert_as_map(request.body)
                 # for python:
                 # xml_str = OSS_UtilClient.to_xml(req_body_map)
-                xml_str = XMLClient.to_xml(req_body_map)
+                xml_str = OSS_UtilClient.to_xml(req_body_map)
                 request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
                 request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
@@ -280,7 +280,7 @@ class Client(SPIClient):
                 req_body_map = UtilClient.assert_as_map(request.body)
                 # for python:
                 # xml_str = OSS_UtilClient.to_xml(req_body_map)
-                xml_str = XMLClient.to_xml(req_body_map)
+                xml_str = OSS_UtilClient.to_xml(req_body_map)
                 request.stream = xml_str
                 request.headers['content-type'] = 'application/xml'
                 request.headers['content-md5'] = Encoder.base_64encode_to_string(Signer.md5sign(xml_str))
