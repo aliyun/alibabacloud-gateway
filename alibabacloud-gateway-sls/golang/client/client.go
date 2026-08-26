@@ -148,10 +148,17 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		"user-agent":       request.UserAgent,
 		"x-log-apiversion": tea.String("0.6.0"),
 	}, request.Headers)
+	// SSE: override accept header to text/event-stream
+	if tea.BoolValue(util.EqualString(request.BodyType, tea.String("sse"))) {
+		request.Headers["accept"] = tea.String("text/event-stream")
+	}
 	request.Headers["x-log-bodyrawsize"] = bodyRawSize
-	_err = client.SetDefaultAcceptEncoding(request.Action, request.Headers)
-	if _err != nil {
-		return _err
+	// SSE: skip Accept-Encoding setup, SSE responses should not be compressed
+	if !tea.BoolValue(util.EqualString(request.BodyType, tea.String("sse"))) {
+		_err = client.SetDefaultAcceptEncoding(request.Action, request.Headers)
+		if _err != nil {
+			return _err
+		}
 	}
 	_err = client.BuildRequest(context)
 	if _err != nil {
@@ -289,6 +296,12 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				"statusCode": tea.IntValue(response.StatusCode),
 			},
 		})
+		return _err
+	}
+
+	// SSE pass-through: return raw stream for SSE body type
+	if tea.BoolValue(util.EqualString(request.BodyType, tea.String("sse"))) {
+		response.DeserializedBody = response.Body
 		return _err
 	}
 

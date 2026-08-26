@@ -112,12 +112,19 @@ public class Client extends com.aliyun.gateway.spi.Client {
             ),
             request.headers
         );
+        if (com.aliyun.teautil.Common.equalString(request.bodyType, "sse")) {
+            request.headers.put("accept", "text/event-stream");
+        }
+
         request.headers.put("x-log-bodyrawsize", bodyRawSize);
         if (com.aliyun.darabonbastring.Client.equals(request.action, "PullLogs")) {
             request.headers.put("accept", "application/x-protobuf");
         }
 
-        this.setDefaultAcceptEncoding(request.action, request.headers);
+        if (!com.aliyun.teautil.Common.equalString(request.bodyType, "sse")) {
+            this.setDefaultAcceptEncoding(request.action, request.headers);
+        }
+
         this.buildRequest(context);
         // move param in path to query
         if (com.aliyun.darabonbastring.Client.equals(signatureVersion, "v4")) {
@@ -220,6 +227,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
                     new TeaPair("statusCode", response.statusCode)
                 ))
             ));
+        }
+
+        if (com.aliyun.teautil.Common.equalString(request.bodyType, "sse")) {
+            response.deserializedBody = response.body;
+            return ;
         }
 
         if (!com.aliyun.teautil.Common.isUnset(response.body)) {
