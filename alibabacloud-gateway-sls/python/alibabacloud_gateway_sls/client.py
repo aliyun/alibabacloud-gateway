@@ -336,17 +336,35 @@ class Client(SPIClient):
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             error = UtilClient.read_as_json(response.body)
             res_map = UtilClient.assert_as_map(error)
+            # Standard SLS errors use errorCode/errorMessage + x-log-requestid; some
+            # services (e.g. /chat) return {"error": "..."} + X-Log-Request-Id instead.
+            error_code = res_map.get('errorCode')
+            if UtilClient.is_unset(error_code):
+                error_code = res_map.get('code')
+            error_message = res_map.get('errorMessage')
+            if UtilClient.is_unset(error_message):
+                error_message = res_map.get('error')
+            if UtilClient.is_unset(error_message):
+                error_message = res_map.get('message')
+            request_id = response.headers.get('x-log-requestid')
+            if UtilClient.is_unset(request_id):
+                request_id = response.headers.get('x-log-request-id')
             raise TeaException({
-                'code': res_map.get('errorCode'),
-                'message': res_map.get('errorMessage'),
+                'code': error_code,
+                'message': error_message,
                 'accessDeniedDetail': res_map.get('accessDeniedDetail'),
                 'data': {
                     'httpCode': response.status_code,
-                    'requestId': response.headers.get('x-log-requestid'),
+                    'requestId': request_id,
                     'statusCode': response.status_code
                 }
             })
         if not UtilClient.is_unset(response.body):
+            if UtilClient.equal_string(request.body_type, 'sse'):
+                # SSE: pass the raw stream through untouched (no decompression, no
+                # consumption); the runtime reads it with read_as_sse.
+                response.deserialized_body = response.body
+                return
             bodyraw_size = response.headers.get('x-log-bodyrawsize')
             compress_type = response.headers.get('x-log-compresstype')
             uncompressed_data = response.body
@@ -381,17 +399,35 @@ class Client(SPIClient):
         if UtilClient.is_4xx(response.status_code) or UtilClient.is_5xx(response.status_code):
             error = await UtilClient.read_as_json_async(response.body)
             res_map = UtilClient.assert_as_map(error)
+            # Standard SLS errors use errorCode/errorMessage + x-log-requestid; some
+            # services (e.g. /chat) return {"error": "..."} + X-Log-Request-Id instead.
+            error_code = res_map.get('errorCode')
+            if UtilClient.is_unset(error_code):
+                error_code = res_map.get('code')
+            error_message = res_map.get('errorMessage')
+            if UtilClient.is_unset(error_message):
+                error_message = res_map.get('error')
+            if UtilClient.is_unset(error_message):
+                error_message = res_map.get('message')
+            request_id = response.headers.get('x-log-requestid')
+            if UtilClient.is_unset(request_id):
+                request_id = response.headers.get('x-log-request-id')
             raise TeaException({
-                'code': res_map.get('errorCode'),
-                'message': res_map.get('errorMessage'),
+                'code': error_code,
+                'message': error_message,
                 'accessDeniedDetail': res_map.get('accessDeniedDetail'),
                 'data': {
                     'httpCode': response.status_code,
-                    'requestId': response.headers.get('x-log-requestid'),
+                    'requestId': request_id,
                     'statusCode': response.status_code
                 }
             })
         if not UtilClient.is_unset(response.body):
+            if UtilClient.equal_string(request.body_type, 'sse'):
+                # SSE: pass the raw stream through untouched (no decompression, no
+                # consumption); the runtime reads it with read_as_sse.
+                response.deserialized_body = response.body
+                return
             bodyraw_size = response.headers.get('x-log-bodyrawsize')
             compress_type = response.headers.get('x-log-compresstype')
             uncompressed_data = response.body

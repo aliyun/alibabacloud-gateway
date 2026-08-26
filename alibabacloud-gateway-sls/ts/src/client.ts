@@ -211,19 +211,43 @@ export default class Client extends SPI {
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       let error = await Util.readAsJSON(response.body);
       let resMap = Util.assertAsMap(error);
+      // Standard SLS errors use errorCode/errorMessage + x-log-requestid; some
+      // services (e.g. /chat) return {"error": "..."} + X-Log-Request-Id instead.
+      let errorCode = resMap["errorCode"];
+      if (Util.isUnset(errorCode)) {
+        errorCode = resMap["code"];
+      }
+      let errorMessage = resMap["errorMessage"];
+      if (Util.isUnset(errorMessage)) {
+        errorMessage = resMap["error"];
+      }
+      if (Util.isUnset(errorMessage)) {
+        errorMessage = resMap["message"];
+      }
+      let requestId = response.headers["x-log-requestid"];
+      if (Util.isUnset(requestId)) {
+        requestId = response.headers["x-log-request-id"];
+      }
       throw $tea.newError({
-        code: resMap["errorCode"],
-        message: resMap["errorMessage"],
+        code: errorCode,
+        message: errorMessage,
         accessDeniedDetail: resMap["accessDeniedDetail"],
         data: {
           httpCode: response.statusCode,
-          requestId: response.headers["x-log-requestid"],
+          requestId: requestId,
           statusCode: response.statusCode,
         },
       });
     }
 
     if (!Util.isUnset(response.body)) {
+      if (Util.equalString(request.bodyType, "sse")) {
+        // SSE: pass the raw stream through untouched (no decompression, no
+        // consumption); the runtime reads it with readAsSSE.
+        response.deserializedBody = response.body;
+        return ;
+      }
+
       let bodyrawSize = response.headers["x-log-bodyrawsize"];
       let compressType = response.headers["x-log-compresstype"];
       let uncompressedData : Readable = response.body;
