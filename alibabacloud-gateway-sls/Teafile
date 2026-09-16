@@ -93,7 +93,7 @@
   },
   "releaselog": {
     "changelog": [
-      "feat: automatically use V4 signing for ACDR UT regions when signatureVersion is unset."
+      "feat: automatically select V4 signing for supported regions when signatureVersion is unset."
     ],
     "compatible": true
   }
