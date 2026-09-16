@@ -513,7 +513,13 @@ export default class Client extends SPI {
       return;
     }
     const config = context.configuration;
-    const region = config.regionId || this.parseRegion(config.endpoint);
+    let region = config.regionId;
+    if (!region) {
+      if (!config.endpoint || !config.endpoint.includes("-acdr-ut-")) {
+        return;
+      }
+      region = this.parseRegion(config.endpoint);
+    }
     if (region.includes("-acdr-ut-")) {
       if (!config.regionId) {
         config.regionId = region;

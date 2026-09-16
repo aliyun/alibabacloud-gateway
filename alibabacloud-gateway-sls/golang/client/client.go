@@ -655,7 +655,11 @@ func (client *Client) SetSignV4IfInAcdr(context *spi.InterceptorContext) {
 	config := context.Configuration
 	region := tea.StringValue(config.RegionId)
 	if region == "" {
-		region = client.ParseRegion(tea.StringValue(config.Endpoint))
+		endpoint := tea.StringValue(config.Endpoint)
+		if !strings.Contains(endpoint, "-acdr-ut-") {
+			return
+		}
+		region = client.ParseRegion(endpoint)
 	}
 	if strings.Contains(region, "-acdr-ut-") {
 		if tea.StringValue(config.RegionId) == "" {

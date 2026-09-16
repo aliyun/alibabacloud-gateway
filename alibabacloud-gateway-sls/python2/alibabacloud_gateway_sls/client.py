@@ -306,7 +306,11 @@ class Client(SPIClient):
         if context.request.signature_version:
             return
         config = context.configuration
-        region = config.region_id or self.parse_region(config.endpoint)
+        region = config.region_id
+        if not region:
+            if not config.endpoint or '-acdr-ut-' not in config.endpoint:
+                return
+            region = self.parse_region(config.endpoint)
         if '-acdr-ut-' in region:
             if not config.region_id:
                 config.region_id = region

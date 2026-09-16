@@ -450,6 +450,9 @@ async function setSignV4IfInAcdr(context: SPI.InterceptorContext): void {
   var config = context.configuration;
   var region = config.regionId;
   if (Util.isUnset(region) || String.equals(region, '')) {
+    if (Util.empty(config.endpoint) || !String.contains(config.endpoint, '-acdr-ut-')) {
+      return;
+    }
     region = parseRegion(config.endpoint);
   }
   if (!Util.empty(region) && String.contains(region, '-acdr-ut-')) {

@@ -1053,6 +1053,10 @@ namespace AlibabaCloud.GatewaySls
             var region = config.RegionId;
             if (string.IsNullOrEmpty(region))
             {
+                if (config.Endpoint == null || !config.Endpoint.Contains("-acdr-ut-"))
+                {
+                    return;
+                }
                 region = ParseRegion(config.Endpoint);
             }
             if (region.Contains("-acdr-ut-"))

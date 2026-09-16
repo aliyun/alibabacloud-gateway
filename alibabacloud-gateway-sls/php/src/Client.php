@@ -585,6 +585,9 @@ class Client extends DarabonbaGatewaySpiClient {
         $config = $context->configuration;
         $region = $config->regionId;
         if ($region === null || $region === '') {
+            if ($config->endpoint === null || strpos($config->endpoint, '-acdr-ut-') === false) {
+                return;
+            }
             $region = $this->parseRegion($config->endpoint);
         }
         if (strpos($region, '-acdr-ut-') !== false) {

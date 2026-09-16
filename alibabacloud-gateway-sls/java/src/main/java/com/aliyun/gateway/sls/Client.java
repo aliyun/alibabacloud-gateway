@@ -498,6 +498,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         String region = config.regionId;
         if (region == null || region.isEmpty()) {
+            if (config.endpoint == null || !config.endpoint.contains("-acdr-ut-")) {
+                return;
+            }
             region = this.parseRegion(config.endpoint);
         }
         if (region.contains("-acdr-ut-")) {
