@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 using Tea;
 using Tea.Utils;
@@ -14,6 +15,9 @@ namespace AlibabaCloud.GatewaySls
 {
     public class Client : AlibabaCloud.GatewaySpi.Client
     {
+        private static readonly Regex SlsEndpointPattern = new Regex(
+            @"\A(?:https?://)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com\z", RegexOptions.CultureInvariant);
+
         protected Dictionary<string, List<string>> _respBodyDecompressType;
         protected Dictionary<string, List<string>> _reqBodyCompressType;
 
@@ -1039,18 +1043,17 @@ namespace AlibabaCloud.GatewaySls
 
         public string GetSignatureVersion(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
         {
-            string signatureVersion = context.Request.SignatureVersion;
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion) && !AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, ""))
+            if (!string.IsNullOrEmpty(context.Request.SignatureVersion))
             {
-                return signatureVersion;
+                return context.Request.SignatureVersion;
             }
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            string region = config.RegionId;
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(region) || AlibabaCloud.DarabonbaString.StringUtil.Equals(region, ""))
+            var config = context.Configuration;
+            var region = config.RegionId;
+            if (string.IsNullOrEmpty(region))
             {
                 region = ParseRegion(config.Endpoint);
             }
-            if (!AlibabaCloud.TeaUtil.Common.Empty(region) && AlibabaCloud.DarabonbaString.StringUtil.Contains(region, "-acdr-ut-"))
+            if (region.Contains("-acdr-ut-"))
             {
                 config.RegionId = region;
                 return "v4";
@@ -1058,179 +1061,37 @@ namespace AlibabaCloud.GatewaySls
             return "v1";
         }
 
-        public async Task<string> GetSignatureVersionAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
+        public Task<string> GetSignatureVersionAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
         {
-            string signatureVersion = context.Request.SignatureVersion;
-            if (!AlibabaCloud.TeaUtil.Common.IsUnset(signatureVersion) && !AlibabaCloud.DarabonbaString.StringUtil.Equals(signatureVersion, ""))
-            {
-                return signatureVersion;
-            }
-            AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            string region = config.RegionId;
-            if (AlibabaCloud.TeaUtil.Common.IsUnset(region) || AlibabaCloud.DarabonbaString.StringUtil.Equals(region, ""))
-            {
-                region = await ParseRegionAsync(config.Endpoint);
-            }
-            if (!AlibabaCloud.TeaUtil.Common.Empty(region) && AlibabaCloud.DarabonbaString.StringUtil.Contains(region, "-acdr-ut-"))
-            {
-                config.RegionId = region;
-                return "v4";
-            }
-            return "v1";
+            return Task.FromResult(GetSignatureVersion(context));
         }
 
-        // Return an empty string for endpoints outside the standard SLS endpoint format.
+        // Return an empty string for nonstandard SLS endpoints.
         public string ParseRegion(string endpoint)
         {
-            if (AlibabaCloud.TeaUtil.Common.Empty(endpoint))
+            if (endpoint == null)
             {
                 return "";
             }
-            string host = endpoint;
-            List<string> schemeParts = AlibabaCloud.DarabonbaString.StringUtil.Split(host, "://", null);
-            if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(schemeParts), 2))
+            var match = SlsEndpointPattern.Match(endpoint);
+            if (!match.Success)
             {
-                if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(schemeParts[0], "http") && !AlibabaCloud.DarabonbaString.StringUtil.Equals(schemeParts[0], "https"))
+                return "";
+            }
+            var region = match.Groups[1].Value;
+            foreach (var suffix in new[] { "-intranet", "-share", "-vpc", "-internal" })
+            {
+                if (region.EndsWith(suffix, StringComparison.Ordinal))
                 {
-                    return "";
-                }
-                host = schemeParts[1];
-                if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(endpoint, "" + schemeParts[0] + "://" + host))
-                {
-                    return "";
-                }
-            }
-            else if (!AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(schemeParts), 1))
-            {
-                return "";
-            }
-            List<string> parts = AlibabaCloud.DarabonbaString.StringUtil.Split(host, ".", null);
-            if (!AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(parts), 4))
-            {
-                return "";
-            }
-            if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[1], "sls") && !AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[1], "log"))
-            {
-                return "";
-            }
-            if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[2], "aliyuncs") || !AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[3], "com"))
-            {
-                return "";
-            }
-            if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(host, "" + parts[0] + "." + parts[1] + "." + parts[2] + "." + parts[3]))
-            {
-                return "";
-            }
-            string region = parts[0];
-            if (AlibabaCloud.TeaUtil.Common.Empty(region))
-            {
-                return "";
-            }
-            // String has no portable regex API. Remove the allowed ASCII characters
-            // to validate the same region alphabet as [a-z0-9-]+ in every language.
-            string remaining = region;
-            List<string> allowed = AlibabaCloud.DarabonbaString.StringUtil.Split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-", ",", null);
-
-            foreach (var character in allowed) {
-                remaining = AlibabaCloud.DarabonbaString.StringUtil.Replace(remaining, character, "", null);
-            }
-            if (!AlibabaCloud.TeaUtil.Common.Empty(remaining))
-            {
-                return "";
-            }
-            List<string> suffixes = new List<string>
-            {
-                "-intranet",
-                "-share",
-                "-vpc",
-                "-internal"
-            };
-
-            foreach (var suffix in suffixes) {
-                if (AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(region, suffix))
-                {
-                    // The dot anchors replacement to the suffix without using subString.
-                    return AlibabaCloud.DarabonbaString.StringUtil.Replace("" + region + ".", "" + suffix + ".", "", null);
+                    return region.Substring(0, region.Length - suffix.Length);
                 }
             }
             return region;
         }
 
-        // Return an empty string for endpoints outside the standard SLS endpoint format.
-        public async Task<string> ParseRegionAsync(string endpoint)
+        public Task<string> ParseRegionAsync(string endpoint)
         {
-            if (AlibabaCloud.TeaUtil.Common.Empty(endpoint))
-            {
-                return "";
-            }
-            string host = endpoint;
-            List<string> schemeParts = AlibabaCloud.DarabonbaString.StringUtil.Split(host, "://", null);
-            if (AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(schemeParts), 2))
-            {
-                if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(schemeParts[0], "http") && !AlibabaCloud.DarabonbaString.StringUtil.Equals(schemeParts[0], "https"))
-                {
-                    return "";
-                }
-                host = schemeParts[1];
-                if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(endpoint, "" + schemeParts[0] + "://" + host))
-                {
-                    return "";
-                }
-            }
-            else if (!AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(schemeParts), 1))
-            {
-                return "";
-            }
-            List<string> parts = AlibabaCloud.DarabonbaString.StringUtil.Split(host, ".", null);
-            if (!AlibabaCloud.TeaUtil.Common.EqualNumber(AlibabaCloud.DarabonbaArray.ArrayUtil.Size(parts), 4))
-            {
-                return "";
-            }
-            if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[1], "sls") && !AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[1], "log"))
-            {
-                return "";
-            }
-            if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[2], "aliyuncs") || !AlibabaCloud.DarabonbaString.StringUtil.Equals(parts[3], "com"))
-            {
-                return "";
-            }
-            if (!AlibabaCloud.DarabonbaString.StringUtil.Equals(host, "" + parts[0] + "." + parts[1] + "." + parts[2] + "." + parts[3]))
-            {
-                return "";
-            }
-            string region = parts[0];
-            if (AlibabaCloud.TeaUtil.Common.Empty(region))
-            {
-                return "";
-            }
-            // String has no portable regex API. Remove the allowed ASCII characters
-            // to validate the same region alphabet as [a-z0-9-]+ in every language.
-            string remaining = region;
-            List<string> allowed = AlibabaCloud.DarabonbaString.StringUtil.Split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-", ",", null);
-
-            foreach (var character in allowed) {
-                remaining = AlibabaCloud.DarabonbaString.StringUtil.Replace(remaining, character, "", null);
-            }
-            if (!AlibabaCloud.TeaUtil.Common.Empty(remaining))
-            {
-                return "";
-            }
-            List<string> suffixes = new List<string>
-            {
-                "-intranet",
-                "-share",
-                "-vpc",
-                "-internal"
-            };
-
-            foreach (var suffix in suffixes) {
-                if (AlibabaCloud.DarabonbaString.StringUtil.HasSuffix(region, suffix))
-                {
-                    // The dot anchors replacement to the suffix without using subString.
-                    return AlibabaCloud.DarabonbaString.StringUtil.Replace("" + region + ".", "" + suffix + ".", "", null);
-                }
-            }
-            return region;
+            return Task.FromResult(ParseRegion(endpoint));
         }
 
         #pragma warning restore 1998

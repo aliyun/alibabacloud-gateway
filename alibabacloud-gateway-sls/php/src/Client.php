@@ -578,81 +578,34 @@ class Client extends DarabonbaGatewaySpiClient {
      */
     public function getSignatureVersion($context){
         $signatureVersion = $context->request->signatureVersion;
-        if (!Utils::isUnset($signatureVersion) && !StringUtil::equals($signatureVersion, "")) {
+        if ($signatureVersion !== null && $signatureVersion !== '') {
             return $signatureVersion;
         }
         $config = $context->configuration;
         $region = $config->regionId;
-        if (Utils::isUnset($region) || StringUtil::equals($region, "")) {
+        if ($region === null || $region === '') {
             $region = $this->parseRegion($config->endpoint);
         }
-        if (!Utils::empty_($region) && StringUtil::contains($region, "-acdr-ut-")) {
+        if (strpos($region, '-acdr-ut-') !== false) {
             $config->regionId = $region;
-            return "v4";
+            return 'v4';
         }
-        return "v1";
+        return 'v1';
     }
 
     /**
-     * Return an empty string for endpoints outside the standard SLS endpoint format.
+     * Return an empty string for nonstandard SLS endpoints.
      * @param string $endpoint
      * @return string
      */
     public function parseRegion($endpoint){
-        if (Utils::empty_($endpoint)) {
+        if ($endpoint === null || !preg_match('~\A(?:https?://)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com\z~', $endpoint, $matches)) {
             return '';
         }
-        $host = $endpoint;
-        $schemeParts = StringUtil::split($host, "://", null);
-        if (Utils::equalNumber(ArrayUtil::size($schemeParts), 2)) {
-            if (!StringUtil::equals(@$schemeParts[0], "http") && !StringUtil::equals(@$schemeParts[0], "https")) {
-                return '';
-            }
-            $host = @$schemeParts[1];
-            if (!StringUtil::equals($endpoint, "" . @$schemeParts[0] . "://" . $host . "")) {
-                return '';
-            }
-        }
-        else if (!Utils::equalNumber(ArrayUtil::size($schemeParts), 1)) {
-            return '';
-        }
-        $parts = StringUtil::split($host, ".", null);
-        if (!Utils::equalNumber(ArrayUtil::size($parts), 4)) {
-            return '';
-        }
-        if (!StringUtil::equals(@$parts[1], "sls") && !StringUtil::equals(@$parts[1], "log")) {
-            return '';
-        }
-        if (!StringUtil::equals(@$parts[2], "aliyuncs") || !StringUtil::equals(@$parts[3], "com")) {
-            return '';
-        }
-        if (!StringUtil::equals($host, "" . @$parts[0] . "." . @$parts[1] . "." . @$parts[2] . "." . @$parts[3] . "")) {
-            return '';
-        }
-        $region = @$parts[0];
-        if (Utils::empty_($region)) {
-            return '';
-        }
-        // String has no portable regex API. Remove the allowed ASCII characters
-        // to validate the same region alphabet as [a-z0-9-]+ in every language.
-        $remaining = $region;
-        $allowed = StringUtil::split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-", ",", null);
-        foreach($allowed as $character){
-            $remaining = StringUtil::replace($remaining, $character, "", null);
-        }
-        if (!Utils::empty_($remaining)) {
-            return '';
-        }
-        $suffixes = [
-            "-intranet",
-            "-share",
-            "-vpc",
-            "-internal"
-        ];
-        foreach($suffixes as $suffix){
-            if (StringUtil::hasSuffix($region, $suffix)) {
-                // The dot anchors replacement to the suffix without using subString.
-                return StringUtil::replace("" . $region . ".", "" . $suffix . ".", "", null);
+        $region = $matches[1];
+        foreach (['-intranet', '-share', '-vpc', '-internal'] as $suffix) {
+            if (substr($region, -strlen($suffix)) === $suffix) {
+                return substr($region, 0, -strlen($suffix));
             }
         }
         return $region;

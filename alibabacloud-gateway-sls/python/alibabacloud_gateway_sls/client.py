@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+import re
+
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from alibabacloud_darabonba_signature_util.signer import Signer
 from Tea.exceptions import TeaException
@@ -14,6 +16,9 @@ from alibabacloud_gateway_sls_util.client import Client as SLS_UtilClient
 from alibabacloud_darabonba_map.client import Client as MapClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_openapi_util.client import Client as OpenApiUtilClient
+
+
+_SLS_ENDPOINT_PATTERN = re.compile(r'\A(?:https?://)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com\Z')
 
 
 class Client(SPIClient):
@@ -900,136 +905,30 @@ class Client(SPIClient):
         date = StringClient.replace(date, '-', '', None)
         return StringClient.replace(date, ':', '', None)
 
-    def get_signature_version(
-        self,
-        context: spi_models.InterceptorContext,
-    ) -> str:
+    def get_signature_version(self, context: spi_models.InterceptorContext) -> str:
         signature_version = context.request.signature_version
-        if not UtilClient.is_unset(signature_version) and not StringClient.equals(signature_version, ''):
+        if signature_version:
             return signature_version
         config = context.configuration
-        region = config.region_id
-        if UtilClient.is_unset(region) or StringClient.equals(region, ''):
-            region = self.parse_region(config.endpoint)
-        if not UtilClient.empty(region) and StringClient.contains(region, '-acdr-ut-'):
+        region = config.region_id or self.parse_region(config.endpoint)
+        if '-acdr-ut-' in region:
             config.region_id = region
             return 'v4'
         return 'v1'
 
-    async def get_signature_version_async(
-        self,
-        context: spi_models.InterceptorContext,
-    ) -> str:
-        signature_version = context.request.signature_version
-        if not UtilClient.is_unset(signature_version) and not StringClient.equals(signature_version, ''):
-            return signature_version
-        config = context.configuration
-        region = config.region_id
-        if UtilClient.is_unset(region) or StringClient.equals(region, ''):
-            region = await self.parse_region_async(config.endpoint)
-        if not UtilClient.empty(region) and StringClient.contains(region, '-acdr-ut-'):
-            config.region_id = region
-            return 'v4'
-        return 'v1'
-
-    def parse_region(
-        self,
-        endpoint: str,
-    ) -> str:
-        """
-        Return an empty string for endpoints outside the standard SLS endpoint format.
-        """
-        if UtilClient.empty(endpoint):
+    def parse_region(self, endpoint: str) -> str:
+        """Return an empty string for nonstandard SLS endpoints."""
+        match = _SLS_ENDPOINT_PATTERN.match(endpoint or '')
+        if not match:
             return ''
-        host = endpoint
-        scheme_parts = StringClient.split(host, '://', None)
-        if UtilClient.equal_number(ArrayClient.size(scheme_parts), 2):
-            if not StringClient.equals(scheme_parts[0], 'http') and not StringClient.equals(scheme_parts[0], 'https'):
-                return ''
-            host = scheme_parts[1]
-            if not StringClient.equals(endpoint, f'{scheme_parts[0]}://{host}'):
-                return ''
-        elif not UtilClient.equal_number(ArrayClient.size(scheme_parts), 1):
-            return ''
-        parts = StringClient.split(host, '.', None)
-        if not UtilClient.equal_number(ArrayClient.size(parts), 4):
-            return ''
-        if not StringClient.equals(parts[1], 'sls') and not StringClient.equals(parts[1], 'log'):
-            return ''
-        if not StringClient.equals(parts[2], 'aliyuncs') or not StringClient.equals(parts[3], 'com'):
-            return ''
-        if not StringClient.equals(host, f'{parts[0]}.{parts[1]}.{parts[2]}.{parts[3]}'):
-            return ''
-        region = parts[0]
-        if UtilClient.empty(region):
-            return ''
-        # String has no portable regex API. Remove the allowed ASCII characters
-        # to validate the same region alphabet as [a-z0-9-]+ in every language.
-        remaining = region
-        allowed = StringClient.split('a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-', ',', None)
-        for character in allowed:
-            remaining = StringClient.replace(remaining, character, '', None)
-        if not UtilClient.empty(remaining):
-            return ''
-        suffixes = [
-            '-intranet',
-            '-share',
-            '-vpc',
-            '-internal'
-        ]
-        for suffix in suffixes:
-            if StringClient.has_suffix(region, suffix):
-                # The dot anchors replacement to the suffix without using subString.
-                return StringClient.replace(f'{region}.', f'{suffix}.', '', None)
+        region = match.group(1)
+        for suffix in ('-intranet', '-share', '-vpc', '-internal'):
+            if region.endswith(suffix):
+                return region[:-len(suffix)]
         return region
 
-    async def parse_region_async(
-        self,
-        endpoint: str,
-    ) -> str:
-        """
-        Return an empty string for endpoints outside the standard SLS endpoint format.
-        """
-        if UtilClient.empty(endpoint):
-            return ''
-        host = endpoint
-        scheme_parts = StringClient.split(host, '://', None)
-        if UtilClient.equal_number(ArrayClient.size(scheme_parts), 2):
-            if not StringClient.equals(scheme_parts[0], 'http') and not StringClient.equals(scheme_parts[0], 'https'):
-                return ''
-            host = scheme_parts[1]
-            if not StringClient.equals(endpoint, f'{scheme_parts[0]}://{host}'):
-                return ''
-        elif not UtilClient.equal_number(ArrayClient.size(scheme_parts), 1):
-            return ''
-        parts = StringClient.split(host, '.', None)
-        if not UtilClient.equal_number(ArrayClient.size(parts), 4):
-            return ''
-        if not StringClient.equals(parts[1], 'sls') and not StringClient.equals(parts[1], 'log'):
-            return ''
-        if not StringClient.equals(parts[2], 'aliyuncs') or not StringClient.equals(parts[3], 'com'):
-            return ''
-        if not StringClient.equals(host, f'{parts[0]}.{parts[1]}.{parts[2]}.{parts[3]}'):
-            return ''
-        region = parts[0]
-        if UtilClient.empty(region):
-            return ''
-        # String has no portable regex API. Remove the allowed ASCII characters
-        # to validate the same region alphabet as [a-z0-9-]+ in every language.
-        remaining = region
-        allowed = StringClient.split('a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-', ',', None)
-        for character in allowed:
-            remaining = StringClient.replace(remaining, character, '', None)
-        if not UtilClient.empty(remaining):
-            return ''
-        suffixes = [
-            '-intranet',
-            '-share',
-            '-vpc',
-            '-internal'
-        ]
-        for suffix in suffixes:
-            if StringClient.has_suffix(region, suffix):
-                # The dot anchors replacement to the suffix without using subString.
-                return StringClient.replace(f'{region}.', f'{suffix}.', '', None)
-        return region
+    async def get_signature_version_async(self, context: spi_models.InterceptorContext) -> str:
+        return self.get_signature_version(context)
+
+    async def parse_region_async(self, endpoint: str) -> str:
+        return self.parse_region(endpoint)

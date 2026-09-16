@@ -2,8 +2,12 @@
 package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Client extends com.aliyun.gateway.spi.Client {
+    private static final Pattern SLS_ENDPOINT_PATTERN = Pattern.compile(
+        "(?:https?://)?([a-z0-9-]+)\\.(?:sls|log)\\.aliyuncs\\.com");
 
     public java.util.Map<String, java.util.List<String>> _respBodyDecompressType;
     public java.util.Map<String, java.util.List<String>> _reqBodyCompressType;
@@ -485,93 +489,37 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return com.aliyun.darabonbastring.Client.replace(date, ":", "", null);
     }
 
-    public String getSignatureVersion(com.aliyun.gateway.spi.models.InterceptorContext context) throws Exception {
+    public String getSignatureVersion(com.aliyun.gateway.spi.models.InterceptorContext context) {
         String signatureVersion = context.request.signatureVersion;
-        if (!com.aliyun.teautil.Common.isUnset(signatureVersion) && !com.aliyun.darabonbastring.Client.equals(signatureVersion, "")) {
+        if (signatureVersion != null && !signatureVersion.isEmpty()) {
             return signatureVersion;
         }
-
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         String region = config.regionId;
-        if (com.aliyun.teautil.Common.isUnset(region) || com.aliyun.darabonbastring.Client.equals(region, "")) {
+        if (region == null || region.isEmpty()) {
             region = this.parseRegion(config.endpoint);
         }
-
-        if (!com.aliyun.teautil.Common.empty(region) && com.aliyun.darabonbastring.Client.contains(region, "-acdr-ut-")) {
+        if (region.contains("-acdr-ut-")) {
             config.regionId = region;
             return "v4";
         }
-
         return "v1";
     }
 
-    // Return an empty string for endpoints outside the standard SLS endpoint format.
-    public String parseRegion(String endpoint) throws Exception {
-        if (com.aliyun.teautil.Common.empty(endpoint)) {
+    // Return an empty string for nonstandard SLS endpoints.
+    public String parseRegion(String endpoint) {
+        if (endpoint == null) {
             return "";
         }
-
-        String host = endpoint;
-        java.util.List<String> schemeParts = com.aliyun.darabonbastring.Client.split(host, "://", null);
-        if (com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(schemeParts), 2)) {
-            if (!com.aliyun.darabonbastring.Client.equals(schemeParts.get(0), "http") && !com.aliyun.darabonbastring.Client.equals(schemeParts.get(0), "https")) {
-                return "";
+        Matcher matcher = SLS_ENDPOINT_PATTERN.matcher(endpoint);
+        if (!matcher.matches()) {
+            return "";
+        }
+        String region = matcher.group(1);
+        for (String suffix : new String[]{"-intranet", "-share", "-vpc", "-internal"}) {
+            if (region.endsWith(suffix)) {
+                return region.substring(0, region.length() - suffix.length());
             }
-
-            host = schemeParts.get(1);
-            if (!com.aliyun.darabonbastring.Client.equals(endpoint, "" + schemeParts.get(0) + "://" + host + "")) {
-                return "";
-            }
-
-        } else if (!com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(schemeParts), 1)) {
-            return "";
-        }
-
-        java.util.List<String> parts = com.aliyun.darabonbastring.Client.split(host, ".", null);
-        if (!com.aliyun.teautil.Common.equalNumber(com.aliyun.darabonba.array.Client.size(parts), 4)) {
-            return "";
-        }
-
-        if (!com.aliyun.darabonbastring.Client.equals(parts.get(1), "sls") && !com.aliyun.darabonbastring.Client.equals(parts.get(1), "log")) {
-            return "";
-        }
-
-        if (!com.aliyun.darabonbastring.Client.equals(parts.get(2), "aliyuncs") || !com.aliyun.darabonbastring.Client.equals(parts.get(3), "com")) {
-            return "";
-        }
-
-        if (!com.aliyun.darabonbastring.Client.equals(host, "" + parts.get(0) + "." + parts.get(1) + "." + parts.get(2) + "." + parts.get(3) + "")) {
-            return "";
-        }
-
-        String region = parts.get(0);
-        if (com.aliyun.teautil.Common.empty(region)) {
-            return "";
-        }
-
-        // String has no portable regex API. Remove the allowed ASCII characters
-        // to validate the same region alphabet as [a-z0-9-]+ in every language.
-        String remaining = region;
-        java.util.List<String> allowed = com.aliyun.darabonbastring.Client.split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-", ",", null);
-        for (String character : allowed) {
-            remaining = com.aliyun.darabonbastring.Client.replace(remaining, character, "", null);
-        }
-        if (!com.aliyun.teautil.Common.empty(remaining)) {
-            return "";
-        }
-
-        java.util.List<String> suffixes = java.util.Arrays.asList(
-            "-intranet",
-            "-share",
-            "-vpc",
-            "-internal"
-        );
-        for (String suffix : suffixes) {
-            if (com.aliyun.darabonbastring.Client.hasSuffix(region, suffix)) {
-                // The dot anchors replacement to the suffix without using subString.
-                return com.aliyun.darabonbastring.Client.replace("" + region + ".", "" + suffix + ".", "", null);
-            }
-
         }
         return region;
     }
