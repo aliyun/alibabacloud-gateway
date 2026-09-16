@@ -62,6 +62,7 @@ namespace AlibabaCloud.GatewaySls
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             config.Endpoint = GetEndpoint(config.RegionId, config.Network, config.Endpoint);
+            SetSignV4IfInAcdr(context);
         }
 
         #pragma warning disable 1998
@@ -69,6 +70,7 @@ namespace AlibabaCloud.GatewaySls
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             config.Endpoint = await GetEndpointAsync(config.RegionId, config.Network, config.Endpoint);
+            SetSignV4IfInAcdr(context);
         }
 
         public void ModifyRequest(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -90,7 +92,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 request.Headers["x-acs-security-token"] = securityToken;
             }
-            string signatureVersion = GetSignatureVersion(context);
+            string signatureVersion = AlibabaCloud.TeaUtil.Common.DefaultString(request.SignatureVersion, "v1");
             string finalCompressType = GetFinalRequestCompressType(request.Action, request.Headers);
             string contentHash = "";
             // get body bytes
@@ -188,7 +190,7 @@ namespace AlibabaCloud.GatewaySls
             {
                 request.Headers["x-acs-security-token"] = securityToken;
             }
-            string signatureVersion = await GetSignatureVersionAsync(context);
+            string signatureVersion = AlibabaCloud.TeaUtil.Common.DefaultString(request.SignatureVersion, "v1");
             string finalCompressType = await GetFinalRequestCompressTypeAsync(request.Action, request.Headers);
             string contentHash = "";
             // get body bytes
@@ -1041,11 +1043,11 @@ namespace AlibabaCloud.GatewaySls
             return AlibabaCloud.DarabonbaString.StringUtil.Replace(date, ":", "", null);
         }
 
-        public string GetSignatureVersion(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
+        public void SetSignV4IfInAcdr(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
         {
             if (!string.IsNullOrEmpty(context.Request.SignatureVersion))
             {
-                return context.Request.SignatureVersion;
+                return;
             }
             var config = context.Configuration;
             var region = config.RegionId;
@@ -1055,15 +1057,12 @@ namespace AlibabaCloud.GatewaySls
             }
             if (region.Contains("-acdr-ut-"))
             {
-                config.RegionId = region;
-                return "v4";
+                if (string.IsNullOrEmpty(config.RegionId))
+                {
+                    config.RegionId = region;
+                }
+                context.Request.SignatureVersion = "v4";
             }
-            return "v1";
-        }
-
-        public Task<string> GetSignatureVersionAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
-        {
-            return Task.FromResult(GetSignatureVersion(context));
         }
 
         // Return an empty string for nonstandard SLS endpoints.
@@ -1087,11 +1086,6 @@ namespace AlibabaCloud.GatewaySls
                 }
             }
             return region;
-        }
-
-        public Task<string> ParseRegionAsync(string endpoint)
-        {
-            return Task.FromResult(ParseRegion(endpoint));
         }
 
         #pragma warning restore 1998

@@ -58,6 +58,7 @@ class Client(SPIClient):
     ) -> None:
         config = context.configuration
         config.endpoint = self.get_endpoint(config.region_id, config.network, config.endpoint)
+        self.set_sign_v4_if_in_acdr(context)
 
     async def modify_configuration_async(
         self,
@@ -66,6 +67,7 @@ class Client(SPIClient):
     ) -> None:
         config = context.configuration
         config.endpoint = await self.get_endpoint_async(config.region_id, config.network, config.endpoint)
+        self.set_sign_v4_if_in_acdr(context)
 
     def modify_request(
         self,
@@ -85,7 +87,7 @@ class Client(SPIClient):
         security_token = credential_model.security_token
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
-        signature_version = self.get_signature_version(context)
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
         final_compress_type = self.get_final_request_compress_type(request.action, request.headers)
         content_hash = ''
         # get body bytes
@@ -165,7 +167,7 @@ class Client(SPIClient):
         security_token = credential_model.security_token
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
-        signature_version = await self.get_signature_version_async(context)
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
         final_compress_type = await self.get_final_request_compress_type_async(request.action, request.headers)
         content_hash = ''
         # get body bytes
@@ -905,16 +907,15 @@ class Client(SPIClient):
         date = StringClient.replace(date, '-', '', None)
         return StringClient.replace(date, ':', '', None)
 
-    def get_signature_version(self, context: spi_models.InterceptorContext) -> str:
-        signature_version = context.request.signature_version
-        if signature_version:
-            return signature_version
+    def set_sign_v4_if_in_acdr(self, context: spi_models.InterceptorContext) -> None:
+        if context.request.signature_version:
+            return
         config = context.configuration
         region = config.region_id or self.parse_region(config.endpoint)
         if '-acdr-ut-' in region:
-            config.region_id = region
-            return 'v4'
-        return 'v1'
+            if not config.region_id:
+                config.region_id = region
+            context.request.signature_version = 'v4'
 
     def parse_region(self, endpoint: str) -> str:
         """Return an empty string for nonstandard SLS endpoints."""
@@ -926,9 +927,3 @@ class Client(SPIClient):
             if region.endswith(suffix):
                 return region[:-len(suffix)]
         return region
-
-    async def get_signature_version_async(self, context: spi_models.InterceptorContext) -> str:
-        return self.get_signature_version(context)
-
-    async def parse_region_async(self, endpoint: str) -> str:
-        return self.parse_region(endpoint)

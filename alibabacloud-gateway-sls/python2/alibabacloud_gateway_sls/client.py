@@ -29,6 +29,7 @@ class Client(SPIClient):
     def modify_configuration(self, context, attribute_map):
         config = context.configuration
         config.endpoint = self.get_endpoint(config.region_id, config.network, config.endpoint)
+        self.set_sign_v4_if_in_acdr(context)
 
     def modify_request(self, context, attribute_map):
         request = context.request
@@ -43,7 +44,7 @@ class Client(SPIClient):
         security_token = credential.get_security_token()
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
-        signature_version = self.get_signature_version(context)
+        signature_version = UtilClient.default_string(request.signature_version, 'v1')
         content_hash = ''
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'protobuf'):
@@ -301,16 +302,15 @@ class Client(SPIClient):
         date = StringClient.replace(date, '-', '', None)
         return StringClient.replace(date, ':', '', None)
 
-    def get_signature_version(self, context):
-        signature_version = context.request.signature_version
-        if signature_version:
-            return signature_version
+    def set_sign_v4_if_in_acdr(self, context):
+        if context.request.signature_version:
+            return
         config = context.configuration
         region = config.region_id or self.parse_region(config.endpoint)
         if '-acdr-ut-' in region:
-            config.region_id = region
-            return 'v4'
-        return 'v1'
+            if not config.region_id:
+                config.region_id = region
+            context.request.signature_version = 'v4'
 
     def parse_region(self, endpoint):
         """Return an empty string for nonstandard SLS endpoints."""

@@ -44,6 +44,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         config.endpoint = this.getEndpoint(config.regionId, config.network, config.endpoint);
+        this.setSignV4IfInAcdr(context);
     }
 
     public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
@@ -64,7 +65,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             request.headers.put("x-acs-security-token", securityToken);
         }
 
-        String signatureVersion = this.getSignatureVersion(context);
+        String signatureVersion = com.aliyun.teautil.Common.defaultString(request.signatureVersion, "v1");
         String finalCompressType = this.getFinalRequestCompressType(request.action, request.headers);
         String contentHash = "";
         // get body bytes
@@ -489,10 +490,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return com.aliyun.darabonbastring.Client.replace(date, ":", "", null);
     }
 
-    public String getSignatureVersion(com.aliyun.gateway.spi.models.InterceptorContext context) {
+    public void setSignV4IfInAcdr(com.aliyun.gateway.spi.models.InterceptorContext context) {
         String signatureVersion = context.request.signatureVersion;
         if (signatureVersion != null && !signatureVersion.isEmpty()) {
-            return signatureVersion;
+            return;
         }
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         String region = config.regionId;
@@ -500,10 +501,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
             region = this.parseRegion(config.endpoint);
         }
         if (region.contains("-acdr-ut-")) {
-            config.regionId = region;
-            return "v4";
+            if (config.regionId == null || config.regionId.isEmpty()) {
+                config.regionId = region;
+            }
+            context.request.signatureVersion = "v4";
         }
-        return "v1";
     }
 
     // Return an empty string for nonstandard SLS endpoints.

@@ -60,6 +60,7 @@ class Client extends DarabonbaGatewaySpiClient {
     public function modifyConfiguration($context, $attributeMap){
         $config = $context->configuration;
         $config->endpoint = $this->getEndpoint($config->regionId, $config->network, $config->endpoint);
+        $this->setSignV4IfInAcdr($context);
     }
 
     /**
@@ -83,7 +84,7 @@ class Client extends DarabonbaGatewaySpiClient {
         if (!Utils::empty_($securityToken)) {
             $request->headers["x-acs-security-token"] = $securityToken;
         }
-        $signatureVersion = $this->getSignatureVersion($context);
+        $signatureVersion = Utils::defaultString($request->signatureVersion, "v1");
         $finalCompressType = $this->getFinalRequestCompressType($request->action, $request->headers);
         $contentHash = "";
         // get body bytes
@@ -574,12 +575,12 @@ class Client extends DarabonbaGatewaySpiClient {
 
     /**
      * @param InterceptorContext $context
-     * @return string
+     * @return void
      */
-    public function getSignatureVersion($context){
+    public function setSignV4IfInAcdr($context){
         $signatureVersion = $context->request->signatureVersion;
         if ($signatureVersion !== null && $signatureVersion !== '') {
-            return $signatureVersion;
+            return;
         }
         $config = $context->configuration;
         $region = $config->regionId;
@@ -587,10 +588,11 @@ class Client extends DarabonbaGatewaySpiClient {
             $region = $this->parseRegion($config->endpoint);
         }
         if (strpos($region, '-acdr-ut-') !== false) {
-            $config->regionId = $region;
-            return 'v4';
+            if ($config->regionId === null || $config->regionId === '') {
+                $config->regionId = $region;
+            }
+            $context->request->signatureVersion = 'v4';
         }
-        return 'v1';
     }
 
     /**

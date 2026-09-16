@@ -53,6 +53,7 @@ export default class Client extends SPI {
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let config = context.configuration;
     config.endpoint = await this.getEndpoint(config.regionId, config.network, config.endpoint);
+    this.setSignV4IfInAcdr(context);
   }
 
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -73,7 +74,7 @@ export default class Client extends SPI {
       request.headers["x-acs-security-token"] = securityToken;
     }
 
-    let signatureVersion = this.getSignatureVersion(context);
+    let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
     let finalCompressType = await this.getFinalRequestCompressType(request.action, request.headers);
     let contentHash = "";
     // get body bytes
@@ -507,17 +508,18 @@ export default class Client extends SPI {
     return hmac.digest();
   }
 
-  getSignatureVersion(context: $SPI.InterceptorContext): string {
+  setSignV4IfInAcdr(context: $SPI.InterceptorContext): void {
     if (context.request.signatureVersion) {
-      return context.request.signatureVersion;
+      return;
     }
     const config = context.configuration;
     const region = config.regionId || this.parseRegion(config.endpoint);
     if (region.includes("-acdr-ut-")) {
-      config.regionId = region;
-      return "v4";
+      if (!config.regionId) {
+        config.regionId = region;
+      }
+      context.request.signatureVersion = "v4";
     }
-    return "v1";
   }
 
   // Return an empty string for nonstandard SLS endpoints.

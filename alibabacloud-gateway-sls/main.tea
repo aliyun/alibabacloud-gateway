@@ -30,6 +30,7 @@ init(){
 async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
   var config = context.configuration;
   config.endpoint = getEndpoint(config.regionId, config.network, config.endpoint);
+  setSignV4IfInAcdr(context);
 }
 
 async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.AttributeMap): void {
@@ -48,7 +49,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   if (!Util.empty(securityToken)) {
       request.headers['x-acs-security-token'] = securityToken;
   }
-  var signatureVersion = getSignatureVersion(context);
+  var signatureVersion = Util.defaultString(request.signatureVersion, 'v1');
 
   var finalCompressType = getFinalRequestCompressType(request.action, request.headers);
 
@@ -441,10 +442,10 @@ async function getDateISO8601() : string {
   return String.replace(date, ':', '', null);
 }
 
-async function getSignatureVersion(context: SPI.InterceptorContext): string {
+async function setSignV4IfInAcdr(context: SPI.InterceptorContext): void {
   var signatureVersion = context.request.signatureVersion;
   if (!Util.isUnset(signatureVersion) && !String.equals(signatureVersion, '')) {
-    return signatureVersion;
+    return;
   }
   var config = context.configuration;
   var region = config.regionId;
@@ -452,10 +453,11 @@ async function getSignatureVersion(context: SPI.InterceptorContext): string {
     region = parseRegion(config.endpoint);
   }
   if (!Util.empty(region) && String.contains(region, '-acdr-ut-')) {
-    config.regionId = region;
-    return 'v4';
+    if (Util.isUnset(config.regionId) || String.equals(config.regionId, '')) {
+      config.regionId = region;
+    }
+    context.request.signatureVersion = 'v4';
   }
-  return 'v1';
 }
 
 // Return an empty string for endpoints outside the standard SLS endpoint format.

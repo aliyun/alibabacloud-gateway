@@ -55,6 +55,7 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 		return _err
 	}
 
+	client.SetSignV4IfInAcdr(context)
 	return _err
 }
 
@@ -80,7 +81,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		request.Headers["x-acs-security-token"] = securityToken
 	}
 
-	signatureVersion := tea.String(client.GetSignatureVersion(context))
+	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v1"))
 	finalCompressType, _err := client.GetFinalRequestCompressType(request.Action, request.Headers)
 	if _err != nil {
 		return _err
@@ -647,9 +648,9 @@ func (client *Client) GetDateISO8601() (_result *string, _err error) {
 	return _result, _err
 }
 
-func (client *Client) GetSignatureVersion(context *spi.InterceptorContext) string {
-	if version := tea.StringValue(context.Request.SignatureVersion); version != "" {
-		return version
+func (client *Client) SetSignV4IfInAcdr(context *spi.InterceptorContext) {
+	if tea.StringValue(context.Request.SignatureVersion) != "" {
+		return
 	}
 	config := context.Configuration
 	region := tea.StringValue(config.RegionId)
@@ -657,10 +658,11 @@ func (client *Client) GetSignatureVersion(context *spi.InterceptorContext) strin
 		region = client.ParseRegion(tea.StringValue(config.Endpoint))
 	}
 	if strings.Contains(region, "-acdr-ut-") {
-		config.RegionId = tea.String(region)
-		return "v4"
+		if tea.StringValue(config.RegionId) == "" {
+			config.RegionId = tea.String(region)
+		}
+		context.Request.SignatureVersion = tea.String("v4")
 	}
-	return "v1"
 }
 
 // ParseRegion returns an empty string for nonstandard SLS endpoints.
