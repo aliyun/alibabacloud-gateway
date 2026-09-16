@@ -75,7 +75,10 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		request.Headers["x-acs-security-token"] = securityToken
 	}
 
-	signatureVersion := util.DefaultString(request.SignatureVersion, tea.String("v1"))
+	signatureVersion, _err := client.GetSignatureVersion(context)
+	if _err != nil {
+		return _err
+	}
 	finalCompressType, _err := client.GetFinalRequestCompressType(request.Action, request.Headers)
 	if _err != nil {
 		return _err
@@ -639,5 +642,111 @@ func (client *Client) GetDateISO8601() (_result *string, _err error) {
 	date = string_.Replace(date, tea.String("-"), tea.String(""), nil)
 	_body := string_.Replace(date, tea.String(":"), tea.String(""), nil)
 	_result = _body
+	return _result, _err
+}
+
+func (client *Client) GetSignatureVersion(context *spi.InterceptorContext) (_result *string, _err error) {
+	signatureVersion := context.Request.SignatureVersion
+	if !tea.BoolValue(util.IsUnset(signatureVersion)) && !tea.BoolValue(string_.Equals(signatureVersion, tea.String(""))) {
+		_result = signatureVersion
+		return _result, _err
+	}
+
+	config := context.Configuration
+	region := config.RegionId
+	if tea.BoolValue(util.IsUnset(region)) || tea.BoolValue(string_.Equals(region, tea.String(""))) {
+		region, _err = client.ParseRegion(config.Endpoint)
+		if _err != nil {
+			return _result, _err
+		}
+
+	}
+
+	if !tea.BoolValue(util.Empty(region)) && tea.BoolValue(string_.Contains(region, tea.String("-acdr-ut-"))) {
+		config.RegionId = region
+		_result = tea.String("v4")
+		return _result, _err
+	}
+
+	_result = tea.String("v1")
+	return _result, _err
+}
+
+// Return an empty string for endpoints outside the standard SLS endpoint format.
+func (client *Client) ParseRegion(endpoint *string) (_result *string, _err error) {
+	if tea.BoolValue(util.Empty(endpoint)) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	host := endpoint
+	schemeParts := string_.Split(host, tea.String("://"), nil)
+	if tea.BoolValue(util.EqualNumber(array.Size(schemeParts), tea.Int(2))) {
+		if !tea.BoolValue(string_.Equals(schemeParts[0], tea.String("http"))) && !tea.BoolValue(string_.Equals(schemeParts[0], tea.String("https"))) {
+			_result = tea.String("")
+			return _result, _err
+		}
+
+		host = schemeParts[1]
+		if !tea.BoolValue(string_.Equals(endpoint, tea.String(tea.StringValue(schemeParts[0])+"://"+tea.StringValue(host)))) {
+			_result = tea.String("")
+			return _result, _err
+		}
+
+	} else if !tea.BoolValue(util.EqualNumber(array.Size(schemeParts), tea.Int(1))) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	parts := string_.Split(host, tea.String("."), nil)
+	if !tea.BoolValue(util.EqualNumber(array.Size(parts), tea.Int(4))) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	if !tea.BoolValue(string_.Equals(parts[1], tea.String("sls"))) && !tea.BoolValue(string_.Equals(parts[1], tea.String("log"))) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	if !tea.BoolValue(string_.Equals(parts[2], tea.String("aliyuncs"))) || !tea.BoolValue(string_.Equals(parts[3], tea.String("com"))) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	if !tea.BoolValue(string_.Equals(host, tea.String(tea.StringValue(parts[0])+"."+tea.StringValue(parts[1])+"."+tea.StringValue(parts[2])+"."+tea.StringValue(parts[3])))) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	region := parts[0]
+	if tea.BoolValue(util.Empty(region)) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	// String has no portable regex API. Remove the allowed ASCII characters
+	// to validate the same region alphabet as [a-z0-9-]+ in every language.
+	remaining := region
+	allowed := string_.Split(tea.String("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-"), tea.String(","), nil)
+	for _, character := range allowed {
+		remaining = string_.Replace(remaining, character, tea.String(""), nil)
+	}
+	if !tea.BoolValue(util.Empty(remaining)) {
+		_result = tea.String("")
+		return _result, _err
+	}
+
+	suffixes := []*string{tea.String("-intranet"), tea.String("-share"), tea.String("-vpc"), tea.String("-internal")}
+	for _, suffix := range suffixes {
+		if tea.BoolValue(string_.HasSuffix(region, suffix)) {
+			// The dot anchors replacement to the suffix without using subString.
+			_body := string_.Replace(tea.String(tea.StringValue(region)+"."), tea.String(tea.StringValue(suffix)+"."), tea.String(""), nil)
+			_result = _body
+			return _result, _err
+		}
+
+	}
+	_result = region
 	return _result, _err
 }

@@ -71,7 +71,7 @@ export default class Client extends SPI {
       request.headers["x-acs-security-token"] = securityToken;
     }
 
-    let signatureVersion = Util.defaultString(request.signatureVersion, "v1");
+    let signatureVersion = await this.getSignatureVersion(context);
     let finalCompressType = await this.getFinalRequestCompressType(request.action, request.headers);
     let contentHash = "";
     // get body bytes
@@ -504,4 +504,98 @@ export default class Client extends SPI {
     hmac.update(data);
     return hmac.digest();
   }
+
+  async getSignatureVersion(context: $SPI.InterceptorContext): Promise<string> {
+    let signatureVersion = context.request.signatureVersion;
+    if (!Util.isUnset(signatureVersion) && !String.equals(signatureVersion, "")) {
+      return signatureVersion;
+    }
+
+    let config = context.configuration;
+    let region = config.regionId;
+    if (Util.isUnset(region) || String.equals(region, "")) {
+      region = await this.parseRegion(config.endpoint);
+    }
+
+    if (!Util.empty(region) && String.contains(region, "-acdr-ut-")) {
+      config.regionId = region;
+      return "v4";
+    }
+
+    return "v1";
+  }
+
+  // Return an empty string for endpoints outside the standard SLS endpoint format.
+  async parseRegion(endpoint: string): Promise<string> {
+    if (Util.empty(endpoint)) {
+      return "";
+    }
+
+    let host = endpoint;
+    let schemeParts = String.split(host, "://", null);
+    if (Util.equalNumber(Array.size(schemeParts), 2)) {
+      if (!String.equals(schemeParts[0], "http") && !String.equals(schemeParts[0], "https")) {
+        return "";
+      }
+
+      host = schemeParts[1];
+      if (!String.equals(endpoint, `${schemeParts[0]}://${host}`)) {
+        return "";
+      }
+
+    } else if (!Util.equalNumber(Array.size(schemeParts), 1)) {
+      return "";
+    }
+
+    let parts = String.split(host, ".", null);
+    if (!Util.equalNumber(Array.size(parts), 4)) {
+      return "";
+    }
+
+    if (!String.equals(parts[1], "sls") && !String.equals(parts[1], "log")) {
+      return "";
+    }
+
+    if (!String.equals(parts[2], "aliyuncs") || !String.equals(parts[3], "com")) {
+      return "";
+    }
+
+    if (!String.equals(host, `${parts[0]}.${parts[1]}.${parts[2]}.${parts[3]}`)) {
+      return "";
+    }
+
+    let region = parts[0];
+    if (Util.empty(region)) {
+      return "";
+    }
+
+    // String has no portable regex API. Remove the allowed ASCII characters
+    // to validate the same region alphabet as [a-z0-9-]+ in every language.
+    let remaining = region;
+    let allowed = String.split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-", ",", null);
+
+    for (let character of allowed) {
+      remaining = String.replace(remaining, character, "", null);
+    }
+    if (!Util.empty(remaining)) {
+      return "";
+    }
+
+    let suffixes = [
+      "-intranet",
+      "-share",
+      "-vpc",
+      "-internal"
+    ];
+
+    for (let suffix of suffixes) {
+      if (String.hasSuffix(region, suffix)) {
+        // The dot anchors replacement to the suffix without using subString.
+        return String.replace(`${region}.`, `${suffix}.`, "", null);
+      }
+
+    }
+    return region;
+  }
+
 }

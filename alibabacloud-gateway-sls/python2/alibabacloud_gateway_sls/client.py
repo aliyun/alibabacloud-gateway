@@ -38,7 +38,7 @@ class Client(SPIClient):
         security_token = credential.get_security_token()
         if not UtilClient.empty(security_token):
             request.headers['x-acs-security-token'] = security_token
-        signature_version = UtilClient.default_string(request.signature_version, 'v1')
+        signature_version = self.get_signature_version(context)
         content_hash = ''
         if not UtilClient.is_unset(request.body):
             if StringClient.equals(request.req_body_type, 'protobuf'):
@@ -295,3 +295,64 @@ class Client(SPIClient):
         # 2024-02-04T11:31:58Z
         date = StringClient.replace(date, '-', '', None)
         return StringClient.replace(date, ':', '', None)
+
+    def get_signature_version(self, context):
+        signature_version = context.request.signature_version
+        if not UtilClient.is_unset(signature_version) and not StringClient.equals(signature_version, ''):
+            return signature_version
+        config = context.configuration
+        region = config.region_id
+        if UtilClient.is_unset(region) or StringClient.equals(region, ''):
+            region = self.parse_region(config.endpoint)
+        if not UtilClient.empty(region) and StringClient.contains(region, '-acdr-ut-'):
+            config.region_id = region
+            return 'v4'
+        return 'v1'
+
+    def parse_region(self, endpoint):
+        """
+        Return an empty string for endpoints outside the standard SLS endpoint format.
+        """
+        if UtilClient.empty(endpoint):
+            return ''
+        host = endpoint
+        scheme_parts = StringClient.split(host, '://', None)
+        if UtilClient.equal_number(ArrayClient.size(scheme_parts), 2):
+            if not StringClient.equals(scheme_parts[0], 'http') and not StringClient.equals(scheme_parts[0], 'https'):
+                return ''
+            host = scheme_parts[1]
+            if not StringClient.equals(endpoint, '%s://%s' % (TeaConverter.to_unicode(scheme_parts[0]), TeaConverter.to_unicode(host))):
+                return ''
+        elif not UtilClient.equal_number(ArrayClient.size(scheme_parts), 1):
+            return ''
+        parts = StringClient.split(host, '.', None)
+        if not UtilClient.equal_number(ArrayClient.size(parts), 4):
+            return ''
+        if not StringClient.equals(parts[1], 'sls') and not StringClient.equals(parts[1], 'log'):
+            return ''
+        if not StringClient.equals(parts[2], 'aliyuncs') or not StringClient.equals(parts[3], 'com'):
+            return ''
+        if not StringClient.equals(host, '%s.%s.%s.%s' % (TeaConverter.to_unicode(parts[0]), TeaConverter.to_unicode(parts[1]), TeaConverter.to_unicode(parts[2]), TeaConverter.to_unicode(parts[3]))):
+            return ''
+        region = parts[0]
+        if UtilClient.empty(region):
+            return ''
+        # String has no portable regex API. Remove the allowed ASCII characters
+        # to validate the same region alphabet as [a-z0-9-]+ in every language.
+        remaining = region
+        allowed = StringClient.split('a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,-', ',', None)
+        for character in allowed:
+            remaining = StringClient.replace(remaining, character, '', None)
+        if not UtilClient.empty(remaining):
+            return ''
+        suffixes = [
+            '-intranet',
+            '-share',
+            '-vpc',
+            '-internal'
+        ]
+        for suffix in suffixes:
+            if StringClient.has_suffix(region, suffix):
+                # The dot anchors replacement to the suffix without using subString.
+                return StringClient.replace('%s.' % TeaConverter.to_unicode(region), '%s.' % TeaConverter.to_unicode(suffix), '', None)
+        return region

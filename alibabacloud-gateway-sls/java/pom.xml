@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.aliyun</groupId>
   <artifactId>alibabacloud-gateway-sls</artifactId>
-  <version>0.5.0</version>
+  <version>0.5.1</version>
   <packaging>jar</packaging>
   <name>alibabacloud-gateway-sls</name>
   <description>
@@ -46,6 +46,12 @@
     <url>https://github.com/aliyun/alibabacloud-gateway</url>
   </scm>
   <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>alibabacloud-gateway-spi</artifactId>
