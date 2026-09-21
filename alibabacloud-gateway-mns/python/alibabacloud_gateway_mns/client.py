@@ -98,8 +98,9 @@ class Client(SPIClient):
                 security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['security-token'] = security_token
-                request.headers['date'] = UtilClient.get_date_utcstring()
-                date = self.get_date_iso8601()
+                date_utc = UtilClient.get_date_utcstring()
+                request.headers['date'] = date_utc
+                date = self._get_date_iso8601_from_utc(date_utc)
                 request.headers['authorization'] = self.get_authorization_v4(context, date, access_key_id, access_key_secret)
 
     async def modify_request_async(
@@ -157,8 +158,9 @@ class Client(SPIClient):
                 security_token = credential_model.security_token
                 if not UtilClient.empty(security_token):
                     request.headers['security-token'] = security_token
-                request.headers['date'] = UtilClient.get_date_utcstring()
-                date = await self.get_date_iso8601_async()
+                date_utc = UtilClient.get_date_utcstring()
+                request.headers['date'] = date_utc
+                date = self._get_date_iso8601_from_utc(date_utc)
                 request.headers['authorization'] = await self.get_authorization_v4_async(context, date, access_key_id, access_key_secret)
 
     def modify_response(
@@ -672,12 +674,35 @@ class Client(SPIClient):
             })
         return region
 
-    def get_date_iso8601(self) -> str:
-        date = OpenApiUtilClient.get_timestamp()
-        date = StringClient.replace(date, '-', '', None)
-        return StringClient.replace(date, ':', '', None)
+    def _get_date_iso8601_from_utc(self, utc: str) -> str:
+        parts = StringClient.split(utc, ' ', None)
+        day = parts[1]
+        month = self._month_to_number(parts[2])
+        year = parts[3]
+        time = StringClient.replace(parts[4], ':', '', None)
+        return f'{year}{month}{day}T{time}Z'
 
-    async def get_date_iso8601_async(self) -> str:
-        date = OpenApiUtilClient.get_timestamp()
-        date = StringClient.replace(date, '-', '', None)
-        return StringClient.replace(date, ':', '', None)
+    def _month_to_number(self, month: str) -> str:
+        if StringClient.equals(month, 'Jan'):
+            return '01'
+        if StringClient.equals(month, 'Feb'):
+            return '02'
+        if StringClient.equals(month, 'Mar'):
+            return '03'
+        if StringClient.equals(month, 'Apr'):
+            return '04'
+        if StringClient.equals(month, 'May'):
+            return '05'
+        if StringClient.equals(month, 'Jun'):
+            return '06'
+        if StringClient.equals(month, 'Jul'):
+            return '07'
+        if StringClient.equals(month, 'Aug'):
+            return '08'
+        if StringClient.equals(month, 'Sep'):
+            return '09'
+        if StringClient.equals(month, 'Oct'):
+            return '10'
+        if StringClient.equals(month, 'Nov'):
+            return '11'
+        return '12'

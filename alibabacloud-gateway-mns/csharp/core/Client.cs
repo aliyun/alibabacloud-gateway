@@ -115,8 +115,9 @@ namespace AlibabaCloud.GatewayMns
                     {
                         request.Headers["security-token"] = securityToken;
                     }
-                    request.Headers["date"] = AlibabaCloud.TeaUtil.Common.GetDateUTCString();
-                    string date = GetDateISO8601();
+                    string dateUtc = AlibabaCloud.TeaUtil.Common.GetDateUTCString();
+                    request.Headers["date"] = dateUtc;
+                    string date = GetDateISO8601FromUTC(dateUtc);
                     request.Headers["authorization"] = GetAuthorizationV4(context, date, accessKeyId, accessKeySecret);
                 }
             }
@@ -199,8 +200,9 @@ namespace AlibabaCloud.GatewayMns
                     {
                         request.Headers["security-token"] = securityToken;
                     }
-                    request.Headers["date"] = AlibabaCloud.TeaUtil.Common.GetDateUTCString();
-                    string date = await GetDateISO8601Async();
+                    string dateUtc = AlibabaCloud.TeaUtil.Common.GetDateUTCString();
+                    request.Headers["date"] = dateUtc;
+                    string date = GetDateISO8601FromUTC(dateUtc);
                     request.Headers["authorization"] = await GetAuthorizationV4Async(context, date, accessKeyId, accessKeySecret);
                 }
             }
@@ -789,18 +791,63 @@ namespace AlibabaCloud.GatewayMns
             return region;
         }
 
-        public string GetDateISO8601()
+        private string GetDateISO8601FromUTC(string utc)
         {
-            string date = AlibabaCloud.OpenApiUtil.Client.GetTimestamp();
-            date = AlibabaCloud.DarabonbaString.StringUtil.Replace(date, "-", "", null);
-            return AlibabaCloud.DarabonbaString.StringUtil.Replace(date, ":", "", null);
+            List<string> parts = AlibabaCloud.DarabonbaString.StringUtil.Split(utc, " ", null);
+            string day = parts[1];
+            string month = MonthToNumber(parts[2]);
+            string year = parts[3];
+            string time = AlibabaCloud.DarabonbaString.StringUtil.Replace(parts[4], ":", "", null);
+            return year + month + day + "T" + time + "Z";
         }
 
-        public async Task<string> GetDateISO8601Async()
+        private string MonthToNumber(string month)
         {
-            string date = AlibabaCloud.OpenApiUtil.Client.GetTimestamp();
-            date = AlibabaCloud.DarabonbaString.StringUtil.Replace(date, "-", "", null);
-            return AlibabaCloud.DarabonbaString.StringUtil.Replace(date, ":", "", null);
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Jan"))
+            {
+                return "01";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Feb"))
+            {
+                return "02";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Mar"))
+            {
+                return "03";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Apr"))
+            {
+                return "04";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "May"))
+            {
+                return "05";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Jun"))
+            {
+                return "06";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Jul"))
+            {
+                return "07";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Aug"))
+            {
+                return "08";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Sep"))
+            {
+                return "09";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Oct"))
+            {
+                return "10";
+            }
+            if (AlibabaCloud.DarabonbaString.StringUtil.Equals(month, "Nov"))
+            {
+                return "11";
+            }
+            return "12";
         }
 
     }

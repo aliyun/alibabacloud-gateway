@@ -107,8 +107,9 @@ class Client extends DarabonbaGatewaySpiClient {
                 if (!Utils::empty_($securityToken)) {
                     $request->headers["security-token"] = $securityToken;
                 }
-                $request->headers["date"] = Utils::getDateUTCString();
-                $date = $this->getDateISO8601();
+                $dateUtc = Utils::getDateUTCString();
+                $request->headers["date"] = $dateUtc;
+                $date = $this->getDateISO8601FromUTC($dateUtc);
                 $request->headers["authorization"] = $this->getAuthorizationV4($context, $date, $accessKeyId, $accessKeySecret);
             }
         }
@@ -473,11 +474,56 @@ class Client extends DarabonbaGatewaySpiClient {
     }
 
     /**
+     * @param string $utc
      * @return string
      */
-    public function getDateISO8601(){
-        $date = OpenApiUtilClient::getTimestamp();
-        $date = StringUtil::replace($date, "-", "", null);
-        return StringUtil::replace($date, ":", "", null);
+    private function getDateISO8601FromUTC($utc){
+        $parts = StringUtil::split($utc, " ", null);
+        $day = $parts[1];
+        $month = $this->monthToNumber($parts[2]);
+        $year = $parts[3];
+        $time = StringUtil::replace($parts[4], ":", "", null);
+        return "" . $year . "" . $month . "" . $day . "T" . $time . "Z";
+    }
+
+    /**
+     * @param string $month
+     * @return string
+     */
+    private function monthToNumber($month){
+        if (StringUtil::equals($month, "Jan")) {
+            return "01";
+        }
+        if (StringUtil::equals($month, "Feb")) {
+            return "02";
+        }
+        if (StringUtil::equals($month, "Mar")) {
+            return "03";
+        }
+        if (StringUtil::equals($month, "Apr")) {
+            return "04";
+        }
+        if (StringUtil::equals($month, "May")) {
+            return "05";
+        }
+        if (StringUtil::equals($month, "Jun")) {
+            return "06";
+        }
+        if (StringUtil::equals($month, "Jul")) {
+            return "07";
+        }
+        if (StringUtil::equals($month, "Aug")) {
+            return "08";
+        }
+        if (StringUtil::equals($month, "Sep")) {
+            return "09";
+        }
+        if (StringUtil::equals($month, "Oct")) {
+            return "10";
+        }
+        if (StringUtil::equals($month, "Nov")) {
+            return "11";
+        }
+        return "12";
     }
 }

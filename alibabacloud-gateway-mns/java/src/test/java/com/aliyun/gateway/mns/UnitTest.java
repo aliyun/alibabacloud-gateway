@@ -176,6 +176,18 @@ public class UnitTest {
     }
 
     @Test
+    public void getDateISO8601FromUTCTest() throws Exception {
+        Client client = new Client();
+        java.lang.reflect.Method method = Client.class.getDeclaredMethod("getDateISO8601FromUTC", String.class);
+        method.setAccessible(true);
+        Assert.assertEquals("20200206T073254Z", method.invoke(client, "Thu, 06 Feb 2020 07:32:54 GMT"));
+        Assert.assertEquals("20250603T112348Z", method.invoke(client, RFC822_2025_06_03));
+        Assert.assertEquals("20251203T112348Z", method.invoke(client, RFC822_2025_12_03));
+        Assert.assertEquals("20260101T000000Z", method.invoke(client, "Thu, 01 Jan 2026 00:00:00 GMT"));
+        Assert.assertEquals("20261231T235959Z", method.invoke(client, "Thu, 31 Dec 2026 23:59:59 GMT"));
+    }
+
+    @Test
     public void hasSignedHeaderV4Test() throws Exception {
         Client client = new Client();
         Assert.assertTrue(client.hasSignedHeaderV4("content-type"));

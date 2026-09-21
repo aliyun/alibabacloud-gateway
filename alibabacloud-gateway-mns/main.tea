@@ -91,8 +91,11 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
         request.headers['security-token'] = securityToken;
       }
 
-      request.headers['date'] = Util.getDateUTCString();
-      var date = getDateISO8601();
+      // Date header is RFC1123 GMT; V4 credential uses compact ISO8601.
+      // Derive both from one clock read so they cannot cross midnight independently.
+      var dateUtc = Util.getDateUTCString();
+      request.headers['date'] = dateUtc;
+      var date = getDateISO8601FromUTC(dateUtc);
       request.headers['authorization'] = getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
     }
   }
@@ -349,8 +352,49 @@ async function getRegion(context: SPI.InterceptorContext): string {
   return region;
 }
 
-async function getDateISO8601() : string {
-  var date = OpenApiUtil.getTimestamp();
-  date = String.replace(date, '-', '', null);
-  return String.replace(date, ':', '', null);
+// Convert RFC1123 UTC, e.g. 'Thu, 06 Feb 2020 07:32:54 GMT', to '20200206T073254Z'.
+async function getDateISO8601FromUTC(utc: string): string {
+  var parts : [string] = String.split(utc, ' ', null);
+  var day = parts[1];
+  var month = monthToNumber(parts[2]);
+  var year = parts[3];
+  var time = String.replace(parts[4], ':', '', null);
+  return `${year}${month}${day}T${time}Z`;
+}
+
+function monthToNumber(month: string): string {
+  if (String.equals(month, 'Jan')) {
+    return '01';
+  }
+  if (String.equals(month, 'Feb')) {
+    return '02';
+  }
+  if (String.equals(month, 'Mar')) {
+    return '03';
+  }
+  if (String.equals(month, 'Apr')) {
+    return '04';
+  }
+  if (String.equals(month, 'May')) {
+    return '05';
+  }
+  if (String.equals(month, 'Jun')) {
+    return '06';
+  }
+  if (String.equals(month, 'Jul')) {
+    return '07';
+  }
+  if (String.equals(month, 'Aug')) {
+    return '08';
+  }
+  if (String.equals(month, 'Sep')) {
+    return '09';
+  }
+  if (String.equals(month, 'Oct')) {
+    return '10';
+  }
+  if (String.equals(month, 'Nov')) {
+    return '11';
+  }
+  return '12';
 }

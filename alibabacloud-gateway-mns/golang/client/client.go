@@ -128,8 +128,9 @@ func (client *Client) ModifyRequest (context *spi.InterceptorContext, attributeM
         request.Headers["security-token"] = securityToken
       }
 
-      request.Headers["date"] = util.GetDateUTCString()
-      date, _err := client.GetDateISO8601()
+      dateUtc := util.GetDateUTCString()
+      request.Headers["date"] = dateUtc
+      date, _err := client.getDateISO8601FromUTC(dateUtc)
       if _err != nil {
         return _err
       }
@@ -532,11 +533,62 @@ func (client *Client) GetRegion (context *spi.InterceptorContext) (_result *stri
   return _result , _err
 }
 
-func (client *Client) GetDateISO8601 () (_result *string, _err error) {
-  date := openapiutil.GetTimestamp()
-  date = string_.Replace(date, tea.String("-"), tea.String(""), nil)
-  _body := string_.Replace(date, tea.String(":"), tea.String(""), nil)
-  _result = _body
+func (client *Client) getDateISO8601FromUTC (utc *string) (_result *string, _err error) {
+  parts := string_.Split(utc, tea.String(" "), nil)
+  day := parts[1]
+  month := client.monthToNumber(parts[2])
+  year := parts[3]
+  time := string_.Replace(parts[4], tea.String(":"), tea.String(""), nil)
+  _result = tea.String(tea.StringValue(year) + tea.StringValue(month) + tea.StringValue(day) + "T" + tea.StringValue(time) + "Z")
   return _result, _err
+}
+
+func (client *Client) monthToNumber (month *string) (_result *string) {
+  if tea.BoolValue(string_.Equals(month, tea.String("Jan"))) {
+    _result = tea.String("01")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Feb"))) {
+    _result = tea.String("02")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Mar"))) {
+    _result = tea.String("03")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Apr"))) {
+    _result = tea.String("04")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("May"))) {
+    _result = tea.String("05")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Jun"))) {
+    _result = tea.String("06")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Jul"))) {
+    _result = tea.String("07")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Aug"))) {
+    _result = tea.String("08")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Sep"))) {
+    _result = tea.String("09")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Oct"))) {
+    _result = tea.String("10")
+    return _result
+  }
+  if tea.BoolValue(string_.Equals(month, tea.String("Nov"))) {
+    _result = tea.String("11")
+    return _result
+  }
+  _result = tea.String("12")
+  return _result
 }
 

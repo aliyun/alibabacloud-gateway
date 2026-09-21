@@ -92,8 +92,9 @@ export default class Client extends SPI {
           request.headers["security-token"] = securityToken;
         }
 
-        request.headers["date"] = Util.getDateUTCString();
-        let date = await this.getDateISO8601();
+        let dateUtc = Util.getDateUTCString();
+        request.headers["date"] = dateUtc;
+        let date = await this.getDateISO8601FromUTC(dateUtc);
         request.headers["authorization"] = await this.getAuthorizationV4(context, date, accessKeyId, accessKeySecret);
 
       }
@@ -384,10 +385,61 @@ export default class Client extends SPI {
     return region;
   }
 
-  async getDateISO8601(): Promise<string> {
-    let date = OpenApiUtil.getTimestamp();
-    date = String.replace(date, "-", "", null);
-    return String.replace(date, ":", "", null);
+  private async getDateISO8601FromUTC(utc: string): Promise<string> {
+    let parts = String.split(utc, " ", null);
+    let day = parts[1];
+    let month = this.monthToNumber(parts[2]);
+    let year = parts[3];
+    let time = String.replace(parts[4], ":", "", null);
+    return `${year}${month}${day}T${time}Z`;
+  }
+
+  private monthToNumber(month: string): string {
+    if (String.equals(month, "Jan")) {
+      return "01";
+    }
+
+    if (String.equals(month, "Feb")) {
+      return "02";
+    }
+
+    if (String.equals(month, "Mar")) {
+      return "03";
+    }
+
+    if (String.equals(month, "Apr")) {
+      return "04";
+    }
+
+    if (String.equals(month, "May")) {
+      return "05";
+    }
+
+    if (String.equals(month, "Jun")) {
+      return "06";
+    }
+
+    if (String.equals(month, "Jul")) {
+      return "07";
+    }
+
+    if (String.equals(month, "Aug")) {
+      return "08";
+    }
+
+    if (String.equals(month, "Sep")) {
+      return "09";
+    }
+
+    if (String.equals(month, "Oct")) {
+      return "10";
+    }
+
+    if (String.equals(month, "Nov")) {
+      return "11";
+    }
+
+    return "12";
   }
 
 }
