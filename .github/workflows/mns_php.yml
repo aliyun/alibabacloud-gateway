@@ -1,0 +1,37 @@
+name: MNS PHP CI with Composer
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-mns/php
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1']
+      fail-fast: false
+    name: PHP ${{ matrix.php-versions }} Test
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: mbstring, intl
+        coverage: none
+        tools: phpunit
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Require phpunit
+      run: composer require phpunit/phpunit --dev
+    - name: Run test case
+      run: composer test
