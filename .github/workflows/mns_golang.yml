@@ -3,8 +3,14 @@ name: MNS Go
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_golang.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_golang.yml'
 permissions:
   contents: read
 defaults:

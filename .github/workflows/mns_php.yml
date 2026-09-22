@@ -3,8 +3,14 @@ name: MNS PHP CI with Composer
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_php.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_php.yml'
 permissions:
   contents: read
 defaults:

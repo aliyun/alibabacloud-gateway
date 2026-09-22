@@ -3,8 +3,14 @@ name: MNS Node.js CI
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_ts.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_ts.yml'
 
 permissions:
   contents: read

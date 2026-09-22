@@ -3,8 +3,14 @@ name: POP Go
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_golang.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_golang.yml'
 defaults:
   run:
     shell: bash

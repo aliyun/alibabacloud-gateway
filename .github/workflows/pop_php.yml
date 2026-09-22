@@ -6,8 +6,14 @@ name: POP PHP CI with Composer
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_php.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_php.yml'
 defaults:
   run:
     shell: bash

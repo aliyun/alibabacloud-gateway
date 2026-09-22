@@ -3,8 +3,14 @@ name: MNS Python Test
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_python.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_python.yml'
 permissions:
   contents: read
 defaults:
