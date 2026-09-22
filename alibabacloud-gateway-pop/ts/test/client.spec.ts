@@ -98,4 +98,19 @@ describe('Client', function () {
         assert.deepStrictEqual(['content-type', 'host', 'x-acs-aaa', 'x-acs-zzz'], client.getSignedHeaders(headers7)); // 应该按字典序排列
     });
 
+    it('validateSignedHeaders should require host and x-acs-date', function () {
+        var client = new Client();
+        client.validateSignedHeaders(['content-type', 'host', 'x-acs-date']);
+        assert.throws(() => client.validateSignedHeaders(['host']));
+        assert.throws(() => client.validateSignedHeaders(['x-acs-date']));
+        assert.throws(() => client.validateSignedHeaders([]));
+
+        const signingkey = client.getSigningkey(client._sha256, 'secret', 'ecs', 'cn-hangzhou', '20240101');
+        assert.throws(() => client.getSignature('/', 'GET', {}, { host: 'example.com' }, client._sha256, '', signingkey));
+        assert.ok(client.getSignature('/', 'GET', {}, {
+            host: 'example.com',
+            'x-acs-date': '2024-01-01T00:00:00Z'
+        }, client._sha256, '', signingkey));
+    });
+
 });
