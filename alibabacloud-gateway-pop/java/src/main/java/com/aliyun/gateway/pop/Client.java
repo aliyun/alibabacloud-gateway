@@ -224,6 +224,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String canonicalizedResource = this.buildCanonicalizedResource(query);
         String canonicalizedHeaders = this.buildCanonicalizedHeaders(headers);
         java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
+        this.validateSignedHeaders(signedHeaders);
         String signedHeadersStr = com.aliyun.darabonba.array.Client.join(signedHeaders, ";");
         stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload + "";
         String hex = com.aliyun.darabonba.encode.Encoder.hexEncode(com.aliyun.darabonba.encode.Encoder.hash(com.aliyun.teautil.Common.toBytes(stringToSign), signatureAlgorithm));
@@ -334,6 +335,15 @@ public class Client extends com.aliyun.gateway.spi.Client {
             canonicalizedHeaders = "" + canonicalizedHeaders + "" + header + ":" + newHeaders.get(header) + "\n";
         }
         return canonicalizedHeaders;
+    }
+
+    public void validateSignedHeaders(java.util.List<String> signedHeaders) throws Exception {
+        if (!com.aliyun.darabonba.array.Client.contains(signedHeaders, "host") || !com.aliyun.darabonba.array.Client.contains(signedHeaders, "x-acs-date")) {
+            throw new TeaException(TeaConverter.buildMap(
+                new TeaPair("code", "InvalidSignedHeaders"),
+                new TeaPair("message", "signed headers must include host and x-acs-date")
+            ));
+        }
     }
 
     public java.util.List<String> getSignedHeaders(java.util.Map<String, String> headers) throws Exception {

@@ -170,7 +170,10 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			dateNew = string_.Replace(dateNew, tea.String("-"), tea.String(""), nil)
 			region := client.GetRegion(request.ProductId, config.Endpoint, config.RegionId)
 			signingkey := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
-			request.Headers["Authorization"] = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
+			request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
+			if _err != nil {
+				return _err
+			}
 		}
 
 	}
@@ -304,15 +307,18 @@ func (client *Client) DefaultAny(inputValue interface{}, defaultValue interface{
 	return _result
 }
 
-func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string) (_result *string) {
-	signature := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey)
+func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string) (_result *string, _err error) {
+	signature, _err := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey)
+	if _err != nil {
+		return _result, _err
+	}
 	signedHeaders := client.GetSignedHeaders(headers)
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
 	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + "/" + tea.StringValue(date) + "/" + tea.StringValue(region) + "/" + tea.StringValue(product) + "/" + tea.StringValue(client.SignPrefix) + "_request,SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
-	return _result
+	return _result, _err
 }
 
-func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string) {
+func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string, _err error) {
 	canonicalURI := tea.String("/")
 	if !tea.BoolValue(util.Empty(pathname)) {
 		canonicalURI = pathname
@@ -322,6 +328,10 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 	canonicalizedResource := client.BuildCanonicalizedResource(query)
 	canonicalizedHeaders := client.BuildCanonicalizedHeaders(headers)
 	signedHeaders := client.GetSignedHeaders(headers)
+	_err = client.ValidateSignedHeaders(signedHeaders)
+	if _err != nil {
+		return _result, _err
+	}
 	signedHeadersStr := array.Join(signedHeaders, tea.String(";"))
 	stringToSign = tea.String(tea.StringValue(method) + "\n" + tea.StringValue(canonicalURI) + "\n" + tea.StringValue(canonicalizedResource) + "\n" + tea.StringValue(canonicalizedHeaders) + "\n" + tea.StringValue(signedHeadersStr) + "\n" + tea.StringValue(payload))
 	hex := encodeutil.HexEncode(encodeutil.Hash(util.ToBytes(stringToSign), signatureAlgorithm))
@@ -335,7 +345,18 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 
 	_body := encodeutil.HexEncode(signature)
 	_result = _body
-	return _result
+	return _result, _err
+}
+
+func (client *Client) ValidateSignedHeaders(signedHeaders []*string) (_err error) {
+	if !tea.BoolValue(array.Contains(signedHeaders, tea.String("host"))) || !tea.BoolValue(array.Contains(signedHeaders, tea.String("x-acs-date"))) {
+		_err = tea.NewSDKError(map[string]interface{}{
+			"code":    "InvalidSignedHeaders",
+			"message": "signed headers must include host and x-acs-date",
+		})
+		return _err
+	}
+	return _err
 }
 
 func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte) {

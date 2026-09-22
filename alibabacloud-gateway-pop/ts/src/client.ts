@@ -232,6 +232,7 @@ export default class Client extends SPI {
     let canonicalizedResource = this.buildCanonicalizedResource(query);
     let canonicalizedHeaders = this.buildCanonicalizedHeaders(headers);
     let signedHeaders = this.getSignedHeaders(headers);
+    this.validateSignedHeaders(signedHeaders);
     let signedHeadersStr = Array.join(signedHeaders, ";");
     stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
     let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
@@ -345,6 +346,15 @@ export default class Client extends SPI {
       canonicalizedHeaders = `${canonicalizedHeaders}${header}:${newHeaders[header]}\n`;
     }
     return canonicalizedHeaders;
+  }
+
+  validateSignedHeaders(signedHeaders: string[]): void {
+    if (!Array.contains(signedHeaders, "host") || !Array.contains(signedHeaders, "x-acs-date")) {
+      throw $tea.newError({
+        code: "InvalidSignedHeaders",
+        message: "signed headers must include host and x-acs-date",
+      });
+    }
   }
 
   getSignedHeaders(headers: {[key: string ]: string}): string[] {

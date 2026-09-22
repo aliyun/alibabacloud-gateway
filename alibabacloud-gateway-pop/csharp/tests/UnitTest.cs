@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using AlibabaCloud.GatewayPop;
-
+using Tea;
 using Xunit;
 
 namespace tests
@@ -115,6 +114,37 @@ namespace tests
             var canonical = client.BuildCanonicalizedHeaders(prefixHeaders);
             Assert.Contains("x-acs-foo:2\n", canonical);
             Assert.Contains("x-acs-foobar:1\n", canonical);
+        }
+
+        [Fact]
+        public void Test_ValidateSignedHeaders()
+        {
+            Client client = new Client();
+            client.ValidateSignedHeaders(new List<string> { "content-type", "host", "x-acs-date" });
+
+            var missingDate = Assert.Throws<TeaException>(() =>
+                client.ValidateSignedHeaders(new List<string> { "host" }));
+            Assert.Equal("InvalidSignedHeaders", missingDate.Code);
+
+            Assert.Throws<TeaException>(() =>
+                client.ValidateSignedHeaders(new List<string> { "x-acs-date" }));
+            Assert.Throws<TeaException>(() =>
+                client.ValidateSignedHeaders(new List<string>()));
+
+            const string sha256 = "ACS4-HMAC-SHA256";
+            var signingkey = client.GetSigningkey(sha256, "secret", "ecs", "cn-hangzhou", "20240101");
+            Assert.Throws<TeaException>(() =>
+                client.GetSignature("/", "GET", new Dictionary<string, string>(),
+                    new Dictionary<string, string> { { "host", "example.com" } },
+                    sha256, "", signingkey));
+
+            Assert.NotNull(client.GetSignature("/", "GET", new Dictionary<string, string>(),
+                new Dictionary<string, string>
+                {
+                    { "host", "example.com" },
+                    { "x-acs-date", "2024-01-01T00:00:00Z" }
+                },
+                sha256, "", signingkey));
         }
     }
 }

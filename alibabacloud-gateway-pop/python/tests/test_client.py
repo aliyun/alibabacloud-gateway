@@ -104,3 +104,23 @@ class TestClient(unittest.TestCase):
         }
         result7 = client.get_signed_headers(headers7)
         self.assertEqual(['content-type', 'host', 'x-acs-aaa', 'x-acs-zzz'], result7)  # 应该按字典序排列
+
+    def test_validate_signed_headers(self):
+        from Tea.exceptions import TeaException
+        client = Client()
+        client.validate_signed_headers(['content-type', 'host', 'x-acs-date'])
+        with self.assertRaises(TeaException) as ctx:
+            client.validate_signed_headers(['host'])
+        self.assertEqual('InvalidSignedHeaders', ctx.exception.code)
+        with self.assertRaises(TeaException):
+            client.validate_signed_headers(['x-acs-date'])
+        with self.assertRaises(TeaException):
+            client.validate_signed_headers([])
+
+        signingkey = client.get_signingkey(client._sha_256, 'secret', 'ecs', 'cn-hangzhou', '20240101')
+        with self.assertRaises(TeaException):
+            client.get_signature('/', 'GET', {}, {'host': 'example.com'}, client._sha_256, '', signingkey)
+        self.assertTrue(client.get_signature('/', 'GET', {}, {
+            'host': 'example.com',
+            'x-acs-date': '2024-01-01T00:00:00Z',
+        }, client._sha_256, '', signingkey))
