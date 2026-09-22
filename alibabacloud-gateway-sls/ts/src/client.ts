@@ -14,6 +14,8 @@ import * as $tea from '@alicloud/tea-typescript';
 import crypto from 'crypto';
 
 
+const SLS_ENDPOINT_PATTERN = /^(?:https?:\/\/)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com$/;
+
 export default class Client extends SPI {
   _respBodyDecompressType: {[key: string ]: string[]};
   _reqBodyCompressType: {[key: string ]: string[]};
@@ -51,6 +53,7 @@ export default class Client extends SPI {
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let config = context.configuration;
     config.endpoint = await this.getEndpoint(config.regionId, config.network, config.endpoint);
+    this.setSignV4IfInAcdr(context);
   }
 
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -503,5 +506,44 @@ export default class Client extends SPI {
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(data);
     return hmac.digest();
+  }
+
+  setSignV4IfInAcdr(context: $SPI.InterceptorContext): void {
+    if (context.request.signatureVersion) {
+      return;
+    }
+    const config = context.configuration;
+    let region = config.regionId;
+    if (!region) {
+      if (!config.endpoint || !config.endpoint.includes("-acdr-ut-")) {
+        return;
+      }
+      region = this.parseRegion(config.endpoint);
+    }
+    if (region.includes("-acdr-ut-")) {
+      if (!config.regionId) {
+        config.regionId = region;
+      }
+      context.request.signatureVersion = "v4";
+    }
+  }
+
+  // Return an empty string for nonstandard SLS endpoints.
+  parseRegion(endpoint: string): string {
+    if (!endpoint) {
+      return "";
+    }
+    const match = SLS_ENDPOINT_PATTERN.exec(endpoint);
+    // JavaScript's $ anchor also matches before a final newline.
+    if (!match || match[0] !== endpoint) {
+      return "";
+    }
+    const region = match[1];
+    for (const suffix of ["-intranet", "-share", "-vpc", "-internal"]) {
+      if (region.endsWith(suffix)) {
+        return region.slice(0, -suffix.length);
+      }
+    }
+    return region;
   }
 }

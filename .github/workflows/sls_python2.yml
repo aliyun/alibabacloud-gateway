@@ -1,0 +1,40 @@
+name: SLS Python2 Test
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_python2.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_python2.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-sls/python2
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: python:2.7-buster
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        pip install setuptools typing 'cryptography>=2.6.0,<3.4' \
+          alibabacloud_gateway_spi_py2 alibabacloud_credentials_py2 alibabacloud_tea_util_py2 \
+          alibabacloud_openapi_util_py2 alibabacloud_darabonba_string_py2 alibabacloud_darabonba_map_py2 \
+          alibabacloud_darabonba_array_py2 alibabacloud_darabonba_encode_util_py2 \
+          alibabacloud_darabonba_signature_util_py2
+        pip install ../util/python2
+        pip install --no-deps .
+    - name: Test with unittest
+      run: python -m unittest discover -s tests

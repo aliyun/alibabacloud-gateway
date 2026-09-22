@@ -2,6 +2,9 @@
 package client
 
 import (
+	"regexp"
+	"strings"
+
 	sls_util "github.com/alibabacloud-go/alibabacloud-gateway-sls-util/client"
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	array "github.com/alibabacloud-go/darabonba-array/client"
@@ -13,6 +16,8 @@ import (
 	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
 )
+
+var slsEndpointPattern = regexp.MustCompile(`^(?:https?://)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com$`)
 
 type Client struct {
 	spi.Client
@@ -50,6 +55,7 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 		return _err
 	}
 
+	client.SetSignV4IfInAcdr(context)
 	return _err
 }
 
@@ -640,4 +646,40 @@ func (client *Client) GetDateISO8601() (_result *string, _err error) {
 	_body := string_.Replace(date, tea.String(":"), tea.String(""), nil)
 	_result = _body
 	return _result, _err
+}
+
+func (client *Client) SetSignV4IfInAcdr(context *spi.InterceptorContext) {
+	if tea.StringValue(context.Request.SignatureVersion) != "" {
+		return
+	}
+	config := context.Configuration
+	region := tea.StringValue(config.RegionId)
+	if region == "" {
+		endpoint := tea.StringValue(config.Endpoint)
+		if !strings.Contains(endpoint, "-acdr-ut-") {
+			return
+		}
+		region = client.ParseRegion(endpoint)
+	}
+	if strings.Contains(region, "-acdr-ut-") {
+		if tea.StringValue(config.RegionId) == "" {
+			config.RegionId = tea.String(region)
+		}
+		context.Request.SignatureVersion = tea.String("v4")
+	}
+}
+
+// ParseRegion returns an empty string for nonstandard SLS endpoints.
+func (client *Client) ParseRegion(endpoint string) string {
+	matches := slsEndpointPattern.FindStringSubmatch(endpoint)
+	if matches == nil {
+		return ""
+	}
+	region := matches[1]
+	for _, suffix := range []string{"-intranet", "-share", "-vpc", "-internal"} {
+		if strings.HasSuffix(region, suffix) {
+			return strings.TrimSuffix(region, suffix)
+		}
+	}
+	return region
 }

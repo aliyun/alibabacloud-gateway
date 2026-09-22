@@ -2,8 +2,12 @@
 package com.aliyun.gateway.sls;
 
 import com.aliyun.tea.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Client extends com.aliyun.gateway.spi.Client {
+    private static final Pattern SLS_ENDPOINT_PATTERN = Pattern.compile(
+        "(?:https?://)?([a-z0-9-]+)\\.(?:sls|log)\\.aliyuncs\\.com");
 
     public java.util.Map<String, java.util.List<String>> _respBodyDecompressType;
     public java.util.Map<String, java.util.List<String>> _reqBodyCompressType;
@@ -40,6 +44,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
         config.endpoint = this.getEndpoint(config.regionId, config.network, config.endpoint);
+        this.setSignV4IfInAcdr(context);
     }
 
     public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
@@ -483,5 +488,44 @@ public class Client extends com.aliyun.gateway.spi.Client {
         // 2024-02-04T11:31:58Z
         date = com.aliyun.darabonbastring.Client.replace(date, "-", "", null);
         return com.aliyun.darabonbastring.Client.replace(date, ":", "", null);
+    }
+
+    public void setSignV4IfInAcdr(com.aliyun.gateway.spi.models.InterceptorContext context) {
+        String signatureVersion = context.request.signatureVersion;
+        if (signatureVersion != null && !signatureVersion.isEmpty()) {
+            return;
+        }
+        com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
+        String region = config.regionId;
+        if (region == null || region.isEmpty()) {
+            if (config.endpoint == null || !config.endpoint.contains("-acdr-ut-")) {
+                return;
+            }
+            region = this.parseRegion(config.endpoint);
+        }
+        if (region.contains("-acdr-ut-")) {
+            if (config.regionId == null || config.regionId.isEmpty()) {
+                config.regionId = region;
+            }
+            context.request.signatureVersion = "v4";
+        }
+    }
+
+    // Return an empty string for nonstandard SLS endpoints.
+    public String parseRegion(String endpoint) {
+        if (endpoint == null) {
+            return "";
+        }
+        Matcher matcher = SLS_ENDPOINT_PATTERN.matcher(endpoint);
+        if (!matcher.matches()) {
+            return "";
+        }
+        String region = matcher.group(1);
+        for (String suffix : new String[]{"-intranet", "-share", "-vpc", "-internal"}) {
+            if (region.endsWith(suffix)) {
+                return region.substring(0, region.length() - suffix.length());
+            }
+        }
+        return region;
     }
 }

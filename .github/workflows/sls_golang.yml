@@ -1,0 +1,47 @@
+name: SLS Go
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_golang.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_golang.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-sls/golang
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ["1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20", "1.21"]
+      fail-fast: false
+
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Test
+      env:
+        GO111MODULE: on
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic ./client/...
+    - name: CodeCov
+      run: bash <(curl -s https://codecov.io/bash) -cF golang

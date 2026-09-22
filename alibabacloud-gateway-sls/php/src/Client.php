@@ -60,6 +60,7 @@ class Client extends DarabonbaGatewaySpiClient {
     public function modifyConfiguration($context, $attributeMap){
         $config = $context->configuration;
         $config->endpoint = $this->getEndpoint($config->regionId, $config->network, $config->endpoint);
+        $this->setSignV4IfInAcdr($context);
     }
 
     /**
@@ -570,5 +571,48 @@ class Client extends DarabonbaGatewaySpiClient {
         // 2024-02-04T11:31:58Z
         $date = StringUtil::replace($date, "-", "", null);
         return StringUtil::replace($date, ":", "", null);
+    }
+
+    /**
+     * @param InterceptorContext $context
+     * @return void
+     */
+    public function setSignV4IfInAcdr($context){
+        $signatureVersion = $context->request->signatureVersion;
+        if ($signatureVersion !== null && $signatureVersion !== '') {
+            return;
+        }
+        $config = $context->configuration;
+        $region = $config->regionId;
+        if ($region === null || $region === '') {
+            if ($config->endpoint === null || strpos($config->endpoint, '-acdr-ut-') === false) {
+                return;
+            }
+            $region = $this->parseRegion($config->endpoint);
+        }
+        if (strpos($region, '-acdr-ut-') !== false) {
+            if ($config->regionId === null || $config->regionId === '') {
+                $config->regionId = $region;
+            }
+            $context->request->signatureVersion = 'v4';
+        }
+    }
+
+    /**
+     * Return an empty string for nonstandard SLS endpoints.
+     * @param string $endpoint
+     * @return string
+     */
+    public function parseRegion($endpoint){
+        if ($endpoint === null || !preg_match('~\A(?:https?://)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com\z~', $endpoint, $matches)) {
+            return '';
+        }
+        $region = $matches[1];
+        foreach (['-intranet', '-share', '-vpc', '-internal'] as $suffix) {
+            if (substr($region, -strlen($suffix)) === $suffix) {
+                return substr($region, 0, -strlen($suffix));
+            }
+        }
+        return $region;
     }
 }

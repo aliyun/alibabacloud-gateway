@@ -1,0 +1,56 @@
+name: SLS PHP CI with Composer
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_php.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_php.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-sls/php
+jobs:
+  build:
+
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1']
+      fail-fast: false
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: mbstring, intl
+        ini-values: post_max_size=256M, max_execution_time=180
+        coverage: xdebug
+        tools: php-cs-fixer, phpunit
+
+    - name: Validate composer.json
+      run: composer validate --no-check-lock
+
+    - name: Install dependencies
+      run: composer update --prefer-dist --no-progress --no-suggest
+
+    - name: Run test case
+      run: composer test
+
+    - name: Code coverage
+      run: bash <(curl -s https://codecov.io/bash) -cF php

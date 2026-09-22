@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 using Tea;
 using Tea.Utils;
@@ -14,6 +15,9 @@ namespace AlibabaCloud.GatewaySls
 {
     public class Client : AlibabaCloud.GatewaySpi.Client
     {
+        private static readonly Regex SlsEndpointPattern = new Regex(
+            @"\A(?:https?://)?([a-z0-9-]+)\.(?:sls|log)\.aliyuncs\.com\z", RegexOptions.CultureInvariant);
+
         protected Dictionary<string, List<string>> _respBodyDecompressType;
         protected Dictionary<string, List<string>> _reqBodyCompressType;
 
@@ -58,6 +62,7 @@ namespace AlibabaCloud.GatewaySls
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             config.Endpoint = GetEndpoint(config.RegionId, config.Network, config.Endpoint);
+            SetSignV4IfInAcdr(context);
         }
 
         #pragma warning disable 1998
@@ -65,6 +70,7 @@ namespace AlibabaCloud.GatewaySls
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
             config.Endpoint = await GetEndpointAsync(config.RegionId, config.Network, config.Endpoint);
+            SetSignV4IfInAcdr(context);
         }
 
         public void ModifyRequest(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -1036,6 +1042,56 @@ namespace AlibabaCloud.GatewaySls
             date = AlibabaCloud.DarabonbaString.StringUtil.Replace(date, "-", "", null);
             return AlibabaCloud.DarabonbaString.StringUtil.Replace(date, ":", "", null);
         }
+
+        public void SetSignV4IfInAcdr(AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
+        {
+            if (!string.IsNullOrEmpty(context.Request.SignatureVersion))
+            {
+                return;
+            }
+            var config = context.Configuration;
+            var region = config.RegionId;
+            if (string.IsNullOrEmpty(region))
+            {
+                if (config.Endpoint == null || !config.Endpoint.Contains("-acdr-ut-"))
+                {
+                    return;
+                }
+                region = ParseRegion(config.Endpoint);
+            }
+            if (region.Contains("-acdr-ut-"))
+            {
+                if (string.IsNullOrEmpty(config.RegionId))
+                {
+                    config.RegionId = region;
+                }
+                context.Request.SignatureVersion = "v4";
+            }
+        }
+
+        // Return an empty string for nonstandard SLS endpoints.
+        public string ParseRegion(string endpoint)
+        {
+            if (endpoint == null)
+            {
+                return "";
+            }
+            var match = SlsEndpointPattern.Match(endpoint);
+            if (!match.Success)
+            {
+                return "";
+            }
+            var region = match.Groups[1].Value;
+            foreach (var suffix in new[] { "-intranet", "-share", "-vpc", "-internal" })
+            {
+                if (region.EndsWith(suffix, StringComparison.Ordinal))
+                {
+                    return region.Substring(0, region.Length - suffix.Length);
+                }
+            }
+            return region;
+        }
+
         #pragma warning restore 1998
     }
 }
