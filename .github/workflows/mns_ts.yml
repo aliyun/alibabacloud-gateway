@@ -1,0 +1,39 @@
+name: MNS Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_ts.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_ts.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-mns/ts
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x, 20.x]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: npm run test-cov

@@ -3,8 +3,14 @@ name: POP .NET Core
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_csharp.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_csharp.yml'
 defaults:
   run:
     shell: bash

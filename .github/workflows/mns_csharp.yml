@@ -1,0 +1,34 @@
+name: MNS .NET Core
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_csharp.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-mns/**'
+      - '.github/workflows/mns_csharp.yml'
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-mns/csharp
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x'
+    - name: Install dependencies
+      run: dotnet restore tests/
+    - name: Test
+      run: dotnet test tests/ --no-restore

@@ -27,8 +27,14 @@
       "Darabonba\\GatewayMns\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Darabonba\\GatewayMns\\Tests\\": "tests"
+    }
+  },
   "scripts": {
-    "fixer": "php-cs-fixer fix ./"
+    "fixer": "php-cs-fixer fix ./",
+    "test": "./vendor/bin/phpunit --colors=always"
   },
   "config": {
     "sort-packages": true,

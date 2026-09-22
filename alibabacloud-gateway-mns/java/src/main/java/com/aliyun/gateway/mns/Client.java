@@ -85,8 +85,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
                     request.headers.put("security-token", securityToken);
                 }
 
-                request.headers.put("date", com.aliyun.teautil.Common.getDateUTCString());
-                String date = this.getDateISO8601();
+                String dateUtc = com.aliyun.teautil.Common.getDateUTCString();
+                request.headers.put("date", dateUtc);
+                String date = this.getDateISO8601FromUTC(dateUtc);
                 request.headers.put("authorization", this.getAuthorizationV4(context, date, accessKeyId, accessKeySecret));
 
             }
@@ -370,9 +371,60 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return region;
     }
 
-    public String getDateISO8601() throws Exception {
-        String date = com.aliyun.openapiutil.Client.getTimestamp();
-        date = com.aliyun.darabonbastring.Client.replace(date, "-", "", null);
-        return com.aliyun.darabonbastring.Client.replace(date, ":", "", null);
+    private String getDateISO8601FromUTC(String utc) throws Exception {
+        java.util.List<String> parts = com.aliyun.darabonbastring.Client.split(utc, " ", null);
+        String day = parts.get(1);
+        String month = this.monthToNumber(parts.get(2));
+        String year = parts.get(3);
+        String time = com.aliyun.darabonbastring.Client.replace(parts.get(4), ":", "", null);
+        return "" + year + "" + month + "" + day + "T" + time + "Z";
+    }
+
+    private String monthToNumber(String month) throws Exception {
+        if (com.aliyun.darabonbastring.Client.equals(month, "Jan")) {
+            return "01";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Feb")) {
+            return "02";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Mar")) {
+            return "03";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Apr")) {
+            return "04";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "May")) {
+            return "05";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Jun")) {
+            return "06";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Jul")) {
+            return "07";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Aug")) {
+            return "08";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Sep")) {
+            return "09";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Oct")) {
+            return "10";
+        }
+
+        if (com.aliyun.darabonbastring.Client.equals(month, "Nov")) {
+            return "11";
+        }
+
+        return "12";
     }
 }

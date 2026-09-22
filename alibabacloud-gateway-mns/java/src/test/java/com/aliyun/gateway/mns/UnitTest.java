@@ -5,8 +5,12 @@ import com.aliyun.tea.TeaException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.SimpleTimeZone;
 
 public class UnitTest {
 
@@ -176,6 +180,33 @@ public class UnitTest {
     }
 
     @Test
+    public void getDateISO8601FromUTCTest() throws Exception {
+        Assert.assertEquals("20200206T073254Z", invokeGetDateISO8601FromUTC("Thu, 06 Feb 2020 07:32:54 GMT"));
+        Assert.assertEquals("20250603T112348Z", invokeGetDateISO8601FromUTC(RFC822_2025_06_03));
+        Assert.assertEquals("20251203T112348Z", invokeGetDateISO8601FromUTC(RFC822_2025_12_03));
+        Assert.assertEquals("20260101T000000Z", invokeGetDateISO8601FromUTC("Thu, 01 Jan 2026 00:00:00 GMT"));
+        Assert.assertEquals("20261231T235959Z", invokeGetDateISO8601FromUTC("Thu, 31 Dec 2026 23:59:59 GMT"));
+    }
+
+    @Test
+    public void getDateISO8601FromUTCRoundTripTest() throws Exception {
+        String rfc = com.aliyun.teautil.Common.getDateUTCString();
+        Assert.assertTrue(rfc.matches("^[A-Z][a-z]{2}, \\d{2} [A-Z][a-z]{2} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT$"));
+
+        SimpleDateFormat rfcFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        rfcFormat.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        Date parsed = rfcFormat.parse(rfc);
+
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US);
+        isoFormat.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        String expected = isoFormat.format(parsed);
+
+        String actual = invokeGetDateISO8601FromUTC(rfc);
+        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(actual.matches("^\\d{8}T\\d{6}Z$"));
+    }
+
+    @Test
     public void hasSignedHeaderV4Test() throws Exception {
         Client client = new Client();
         Assert.assertTrue(client.hasSignedHeaderV4("content-type"));
@@ -213,6 +244,12 @@ public class UnitTest {
         context.request.headers = new HashMap<String, String>();
         context.request.query = new HashMap<String, String>();
         client.modifyRequest(context, null);
+    }
+
+    private static String invokeGetDateISO8601FromUTC(String utc) throws Exception {
+        java.lang.reflect.Method method = Client.class.getDeclaredMethod("getDateISO8601FromUTC", String.class);
+        method.setAccessible(true);
+        return (String) method.invoke(new Client(), utc);
     }
 
     private InterceptorContext buildV4Context(String regionId, String method, String pathname) {

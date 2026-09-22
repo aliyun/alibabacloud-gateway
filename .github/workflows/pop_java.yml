@@ -6,8 +6,14 @@ name: POP Java CI with Maven
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_java.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_java.yml'
 defaults:
   run:
     shell: bash

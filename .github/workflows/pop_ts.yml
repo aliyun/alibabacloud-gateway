@@ -6,8 +6,14 @@ name: POP Node.js CI
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_ts.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_ts.yml'
 defaults:
   run:
     shell: bash

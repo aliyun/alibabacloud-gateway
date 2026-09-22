@@ -25,3 +25,5 @@
 .agents/
 .DS_Store
 .venv/
+
+package-lock.json
