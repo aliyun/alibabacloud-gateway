@@ -1,0 +1,43 @@
+name: SLS Java CI with Maven
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_java.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-sls/**'
+      - '.github/workflows/sls_java.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-sls/java
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [8, 11, 17]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - name: Install local SLS util
+      working-directory: alibabacloud-gateway-sls/util/java
+      run: mvn install -DskipTests -Dgpg.skip=true -B
+    - name: Build with Maven
+      run: mvn test -B
+    - name: CodeCov
+      run: bash <(curl -s https://codecov.io/bash) -cF java
