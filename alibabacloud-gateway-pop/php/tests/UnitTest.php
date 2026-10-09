@@ -3,6 +3,7 @@
 namespace Darabonba\GatewayPop\Tests;
 
 use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
+use AlibabaCloud\Tea\Exception\TeaError;
 use Darabonba\GatewayPop\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -107,6 +108,29 @@ final class UnitTest extends TestCase
         $this->assertEquals("host", $result[0]);
         $this->assertEquals("x-acs-foo", $result[1]);
         $this->assertEquals("x-acs-foobar", $result[2]);
+    }
+
+    public function testValidateSignedHeaders()
+    {
+        $client = new Client();
+        $client->validateSignedHeaders(['content-type', 'host', 'x-acs-date']);
+
+        try {
+            $client->validateSignedHeaders(['host']);
+            $this->fail();
+        } catch (TeaError $e) {
+            $this->assertEquals('InvalidSignedHeaders', $e->getErrorInfo()['code']);
+        }
+
+        try {
+            $client->validateSignedHeaders(['x-acs-date']);
+            $this->fail();
+        } catch (TeaError $e) {
+            $this->assertEquals('InvalidSignedHeaders', $e->getErrorInfo()['code']);
+        }
+
+        $this->expectException(TeaError::class);
+        $client->validateSignedHeaders([]);
     }
 
 }

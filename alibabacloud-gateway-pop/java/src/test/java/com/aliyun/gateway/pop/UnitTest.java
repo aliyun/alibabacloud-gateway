@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.aliyun.tea.TeaException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -112,5 +113,47 @@ public class UnitTest {
         Assert.assertTrue(canonical.contains("x-acs-foo:foo\n"));
         Assert.assertTrue(canonical.contains("x-acs-foobar:bar\n"));
         Assert.assertTrue(canonical.contains("host:example.com\n"));
+    }
+
+    @Test
+    public void validateSignedHeadersTest() throws Exception {
+        Client client = new Client();
+        client.validateSignedHeaders(java.util.Arrays.asList("content-type", "host", "x-acs-date"));
+
+        try {
+            client.validateSignedHeaders(java.util.Arrays.asList("host"));
+            Assert.fail();
+        } catch (TeaException e) {
+            Assert.assertEquals("InvalidSignedHeaders", e.getCode());
+        }
+
+        try {
+            client.validateSignedHeaders(java.util.Arrays.asList("x-acs-date"));
+            Assert.fail();
+        } catch (TeaException e) {
+            Assert.assertEquals("InvalidSignedHeaders", e.getCode());
+        }
+
+        try {
+            client.validateSignedHeaders(new java.util.ArrayList<String>());
+            Assert.fail();
+        } catch (TeaException e) {
+            Assert.assertEquals("InvalidSignedHeaders", e.getCode());
+        }
+
+        Map<String, String> missingDate = new HashMap<String, String>();
+        missingDate.put("host", "example.com");
+        byte[] signingkey = client.getSigningkey(client._sha256, "secret", "ecs", "cn-hangzhou", "20240101");
+        try {
+            client.getSignature("/", "GET", new HashMap<String, String>(), missingDate, client._sha256, "", signingkey);
+            Assert.fail();
+        } catch (TeaException e) {
+            Assert.assertEquals("InvalidSignedHeaders", e.getCode());
+        }
+
+        Map<String, String> complete = new HashMap<String, String>();
+        complete.put("host", "example.com");
+        complete.put("x-acs-date", "2024-01-01T00:00:00Z");
+        Assert.assertNotNull(client.getSignature("/", "GET", new HashMap<String, String>(), complete, client._sha256, "", signingkey));
     }
 }

@@ -469,6 +469,7 @@ namespace AlibabaCloud.GatewayPop
             string canonicalizedResource = BuildCanonicalizedResource(query);
             string canonicalizedHeaders = BuildCanonicalizedHeaders(headers);
             List<string> signedHeaders = GetSignedHeaders(headers);
+            ValidateSignedHeaders(signedHeaders);
             string signedHeadersStr = AlibabaCloud.DarabonbaArray.ArrayUtil.Join(signedHeaders, ";");
             stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
             string hex = AlibabaCloud.DarabonbaEncodeUtil.Encoder.HexEncode(AlibabaCloud.DarabonbaEncodeUtil.Encoder.Hash(AlibabaCloud.TeaUtil.Common.ToBytes(stringToSign), signatureAlgorithm));
@@ -597,6 +598,18 @@ namespace AlibabaCloud.GatewayPop
                 canonicalizedHeaders = "" + canonicalizedHeaders + header + ":" + newHeaders.Get(header) + "\n";
             }
             return canonicalizedHeaders;
+        }
+
+        public void ValidateSignedHeaders(List<string> signedHeaders)
+        {
+            if (!AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(signedHeaders, "host") || !AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(signedHeaders, "x-acs-date"))
+            {
+                throw new TeaException(new Dictionary<string, object>
+                {
+                    { "code", "InvalidSignedHeaders" },
+                    { "message", "signed headers must include host and x-acs-date" }
+                });
+            }
         }
 
         public List<string> GetSignedHeaders(Dictionary<string, string> headers)

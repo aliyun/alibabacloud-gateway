@@ -21,4 +21,12 @@ final class ClientTests: XCTestCase {
         XCTAssertTrue(canonical.contains("x-acs-foo:foo\n"))
         XCTAssertTrue(canonical.contains("x-acs-foobar:bar\n"))
     }
+
+    func testValidateSignedHeaders() throws {
+        let client = Client()
+        try client.validateSignedHeaders(["content-type", "host", "x-acs-date"])
+        XCTAssertThrowsError(try client.validateSignedHeaders(["host"]))
+        XCTAssertThrowsError(try client.validateSignedHeaders(["x-acs-date"]))
+        XCTAssertThrowsError(try client.validateSignedHeaders([]))
+    }
 }

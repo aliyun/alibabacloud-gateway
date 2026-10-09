@@ -133,7 +133,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
                 dateNew = DarabonbaString.Client.replace(dateNew, "-", "", nil)
                 var region: String = getRegion(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "")
                 var signingkey: [UInt8] = getSigningkey(signatureAlgorithm as! String, accessKeySecret as! String, request.productId ?? "", region as! String, dateNew as! String)
-                request.headers!["Authorization"] = getAuthorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String);
+                request.headers!["Authorization"] = try getAuthorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String);
             }
         }
     }
@@ -203,14 +203,14 @@ open class Client : AlibabacloudGatewaySPI.Client {
         return inputValue as! Any
     }
 
-    public func getAuthorization(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ ak: String, _ signingkey: [UInt8], _ product: String, _ region: String, _ date: String) -> String {
-        var signature: String = getSignature(pathname as! String, method as! String, query as! [String: String], headers as! [String: String], signatureAlgorithm as! String, payload as! String, signingkey as! [UInt8])
+    public func getAuthorization(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ ak: String, _ signingkey: [UInt8], _ product: String, _ region: String, _ date: String) throws -> String {
+        var signature: String = try getSignature(pathname as! String, method as! String, query as! [String: String], headers as! [String: String], signatureAlgorithm as! String, payload as! String, signingkey as! [UInt8])
         var signedHeaders: [String] = getSignedHeaders(headers as! [String: String])
         var signedHeadersStr: String = DarabonbaArray.Client.join(signedHeaders, ";")
         return (signatureAlgorithm as! String) + " Credential=" + (ak as! String) + "/" + (date as! String) + "/" + (region as! String) + "/" + (product as! String) + "/" + (self._signPrefix ?? "") + "_request,SignedHeaders=" + (signedHeadersStr as! String) + ",Signature=" + (signature as! String)
     }
 
-    public func getSignature(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ signingkey: [UInt8]) -> String {
+    public func getSignature(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ signingkey: [UInt8]) throws -> String {
         var canonicalURI: String = "/"
         if (!TeaUtils.Client.empty(pathname)) {
             canonicalURI = pathname as! String
@@ -219,6 +219,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
         var canonicalizedResource: String = buildCanonicalizedResource(query as! [String: String])
         var canonicalizedHeaders: String = buildCanonicalizedHeaders(headers as! [String: String])
         var signedHeaders: [String] = getSignedHeaders(headers as! [String: String])
+        try validateSignedHeaders(signedHeaders)
         var signedHeadersStr: String = DarabonbaArray.Client.join(signedHeaders, ";")
         stringToSign = (method as! String) + "\n" + (canonicalURI as! String) + "\n" + (canonicalizedResource as! String) + "\n" + (canonicalizedHeaders as! String) + "\n" + (signedHeadersStr as! String) + "\n" + (payload as! String)
         var hex: String = DarabonbaEncodeUtil.Client.hexEncode(DarabonbaEncodeUtil.Client.hash(TeaUtils.Client.toBytes(stringToSign), signatureAlgorithm))
@@ -308,6 +309,15 @@ open class Client : AlibabacloudGatewaySPI.Client {
             canonicalizedHeaders = (canonicalizedHeaders as! String) + (header as! String) + ":" + (DarabonbaString.Client.trim(headers[header as! String])) + "\n"
         }
         return canonicalizedHeaders as! String
+    }
+
+    public func validateSignedHeaders(_ signedHeaders: [String]) throws {
+        if (!signedHeaders.contains("host") || !signedHeaders.contains("x-acs-date")) {
+            throw Tea.ReuqestError([
+                "code": "InvalidSignedHeaders",
+                "message": "signed headers must include host and x-acs-date"
+            ])
+        }
     }
 
     public func getSignedHeaders(_ headers: [String: String]) -> [String] {

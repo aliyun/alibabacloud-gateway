@@ -377,6 +377,7 @@ class Client(SPIClient):
         canonicalized_resource = self.build_canonicalized_resource(query)
         canonicalized_headers = self.build_canonicalized_headers(headers)
         signed_headers = self.get_signed_headers(headers)
+        self.validate_signed_headers(signed_headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
         string_to_sign = f'{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
@@ -474,6 +475,16 @@ class Client(SPIClient):
         for header in sorted_headers:
             canonicalized_headers = f'{canonicalized_headers}{header}:{new_headers.get(header)}\n'
         return canonicalized_headers
+
+    def validate_signed_headers(
+        self,
+        signed_headers: List[str],
+    ) -> None:
+        if not ArrayClient.contains(signed_headers, 'host') or not ArrayClient.contains(signed_headers, 'x-acs-date'):
+            raise TeaException({
+                'code': 'InvalidSignedHeaders',
+                'message': 'signed headers must include host and x-acs-date'
+            })
 
     def get_signed_headers(
         self,

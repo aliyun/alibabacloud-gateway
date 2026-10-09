@@ -95,3 +95,33 @@ func Test_GetSignedHeaders(t *testing.T) {
 	utils.AssertContains(t, canonical, "x-acs-foo:2\n")
 	utils.AssertContains(t, canonical, "x-acs-foobar:1\n")
 }
+
+func Test_ValidateSignedHeaders(t *testing.T) {
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+
+	err = client.ValidateSignedHeaders([]*string{tea.String("content-type"), tea.String("host"), tea.String("x-acs-date")})
+	utils.AssertNil(t, err)
+
+	err = client.ValidateSignedHeaders([]*string{tea.String("host")})
+	utils.AssertNotNil(t, err)
+
+	err = client.ValidateSignedHeaders([]*string{tea.String("x-acs-date")})
+	utils.AssertNotNil(t, err)
+
+	err = client.ValidateSignedHeaders([]*string{})
+	utils.AssertNotNil(t, err)
+
+	signingkey := client.GetSigningkey(client.Sha256, tea.String("secret"), tea.String("ecs"), tea.String("cn-hangzhou"), tea.String("20240101"))
+	_, err = client.GetSignature(tea.String("/"), tea.String("GET"), map[string]*string{}, map[string]*string{
+		"host": tea.String("example.com"),
+	}, client.Sha256, tea.String(""), signingkey)
+	utils.AssertNotNil(t, err)
+
+	signature, err := client.GetSignature(tea.String("/"), tea.String("GET"), map[string]*string{}, map[string]*string{
+		"host":       tea.String("example.com"),
+		"x-acs-date": tea.String("2024-01-01T00:00:00Z"),
+	}, client.Sha256, tea.String(""), signingkey)
+	utils.AssertNil(t, err)
+	utils.AssertNotNil(t, signature)
+}

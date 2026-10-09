@@ -14,6 +14,10 @@
 
 **/.idea/
 **/target/
+**/*.egg-info/
+**/python/build/
+**/python2/build/
+**/dependency-reduced-pom.xml
 **/*.iml
 **/*.sh
 

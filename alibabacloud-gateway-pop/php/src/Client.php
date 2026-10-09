@@ -286,6 +286,7 @@ class Client extends DarabonbaGatewaySpiClient
         $canonicalizedResource = $this->buildCanonicalizedResource($query);
         $canonicalizedHeaders = $this->buildCanonicalizedHeaders($headers);
         $signedHeaders = $this->getSignedHeaders($headers);
+        $this->validateSignedHeaders($signedHeaders);
         $signedHeadersStr = ArrayUtil::join($signedHeaders, ";");
         $stringToSign = "" . $method . "\n" . $canonicalURI . "\n" . $canonicalizedResource . "\n" . $canonicalizedHeaders . "\n" . $signedHeadersStr . "\n" . $payload . "";
         $hex = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($stringToSign), $signatureAlgorithm));
@@ -410,6 +411,24 @@ class Client extends DarabonbaGatewaySpiClient
             $canonicalizedHeaders = "" . $canonicalizedHeaders . "" . $header . ":" . @$newHeaders[$header] . "\n";
         }
         return $canonicalizedHeaders;
+    }
+
+    /**
+     * @param string[] $headers
+     * @return array
+     */
+    /**
+     * @param string[] $signedHeaders
+     * @return void
+     */
+    public function validateSignedHeaders($signedHeaders)
+    {
+        if (!ArrayUtil::contains($signedHeaders, "host") || !ArrayUtil::contains($signedHeaders, "x-acs-date")) {
+            throw new TeaError([
+                "code" => "InvalidSignedHeaders",
+                "message" => "signed headers must include host and x-acs-date"
+            ]);
+        }
     }
 
     /**

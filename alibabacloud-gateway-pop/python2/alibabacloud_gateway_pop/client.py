@@ -156,6 +156,7 @@ class Client(SPIClient):
         canonicalized_resource = self.build_canonicalized_resource(query)
         canonicalized_headers = self.build_canonicalized_headers(headers)
         signed_headers = self.get_signed_headers(headers)
+        self.validate_signed_headers(signed_headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
         string_to_sign = '%s\n%s\n%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(method), TeaConverter.to_unicode(canonical_uri), TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(payload))
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
@@ -221,6 +222,13 @@ class Client(SPIClient):
         for header in sorted_headers:
             canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(header), TeaConverter.to_unicode(StringClient.trim(headers.get(header))))
         return canonicalized_headers
+
+    def validate_signed_headers(self, signed_headers):
+        if not ArrayClient.contains(signed_headers, 'host') or not ArrayClient.contains(signed_headers, 'x-acs-date'):
+            raise TeaException({
+                'code': 'InvalidSignedHeaders',
+                'message': 'signed headers must include host and x-acs-date'
+            })
 
     def get_signed_headers(self, headers):
         headers_array = MapClient.key_set(headers)

@@ -204,14 +204,14 @@ function defaultAny(inputValue: any, defaultValue: any): any {
   return inputValue;
 }
 
-function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, signingkey: bytes, product: string, region: string, date: string): string {
+function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, signingkey: bytes, product: string, region: string, date: string) throws: string {
   var signature = getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
   var signedHeaders = getSignedHeaders(headers);
   var signedHeadersStr = Array.join(signedHeaders, ';');
   return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${@signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
 }
 
-function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, signingkey: bytes): string {
+function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, signingkey: bytes) throws: string {
   var canonicalURI : string = '/';
   if (!Util.empty(pathname)) {
     canonicalURI = pathname;
@@ -220,6 +220,7 @@ function getSignature(pathname: string, method: string, query: map[string]string
   var canonicalizedResource = buildCanonicalizedResource(query);
   var canonicalizedHeaders = buildCanonicalizedHeaders(headers);
   var signedHeaders = getSignedHeaders(headers);
+  validateSignedHeaders(signedHeaders);
   var signedHeadersStr = Array.join(signedHeaders, ';');
   stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
   var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
@@ -321,6 +322,15 @@ function buildCanonicalizedHeaders(headers: map[string]string): string {
     canonicalizedHeaders = `${canonicalizedHeaders}${header}:${newHeaders[header]}\n`;
   }
   return canonicalizedHeaders;
+}
+
+function validateSignedHeaders(signedHeaders: [string]) throws: void {
+  if (!Array.contains(signedHeaders, 'host') || !Array.contains(signedHeaders, 'x-acs-date')) {
+    throw {
+      code = 'InvalidSignedHeaders',
+      message = 'signed headers must include host and x-acs-date'
+    };
+  }
 }
 
 function getSignedHeaders(headers: map[string]string): [string] {
