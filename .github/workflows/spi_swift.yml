@@ -1,0 +1,82 @@
+name: SPI Swift
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-spi/swift/**'
+      - '.github/workflows/spi_swift.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-spi/swift/**'
+      - '.github/workflows/spi_swift.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: alibabacloud-gateway-spi/swift
+
+jobs:
+  macos:
+    name: SPI Swift on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Select Xcode 16.4
+      if: matrix.os == 'macos-15'
+      run: sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+    - name: Check out Swift integration dependencies
+      if: github.event_name == 'pull_request' && github.event.pull_request.number == 184
+      uses: actions/checkout@v4
+      with:
+        repository: aliyun/tea-swift
+        ref: 71901ca834f3bf40b01bb1320197dad0bfab1be6
+        path: .swift-ci/tea-swift
+        persist-credentials: false
+    - name: Prepare Swift integration dependencies
+      if: github.event_name == 'pull_request' && github.event.pull_request.number == 184
+      run: python3 "$GITHUB_WORKSPACE/.swift-ci/tea-swift/.github/scripts/prepare-swift-dependencies.py" "$GITHUB_WORKSPACE/alibabacloud-gateway-spi/swift"
+    - name: Swift version
+      run: swift --version
+    - name: Build
+      run: swift build
+
+  linux:
+    name: SPI Linux Swift ${{ matrix.swift }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        swift: ["5.10", "6.1"]
+    container: swift:${{ matrix.swift }}-jammy
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Check out Swift integration dependencies
+      if: github.event_name == 'pull_request' && github.event.pull_request.number == 184
+      uses: actions/checkout@v4
+      with:
+        repository: aliyun/tea-swift
+        ref: 71901ca834f3bf40b01bb1320197dad0bfab1be6
+        path: .swift-ci/tea-swift
+        persist-credentials: false
+    - name: Prepare Swift integration dependencies
+      if: github.event_name == 'pull_request' && github.event.pull_request.number == 184
+      run: python3 "$GITHUB_WORKSPACE/.swift-ci/tea-swift/.github/scripts/prepare-swift-dependencies.py" "$GITHUB_WORKSPACE/alibabacloud-gateway-spi/swift"
+    - name: Swift version
+      run: swift --version
+    - name: Build
+      run: swift build
