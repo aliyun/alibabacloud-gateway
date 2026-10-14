@@ -1,6 +1,10 @@
 package com.aliyun.gateway.oss;
 
 import com.aliyun.gateway.spi.models.InterceptorContext;
+import com.aliyun.gateway.oss.util.hcs_mgw_models.FilterRule;
+import com.aliyun.gateway.oss.util.hcs_mgw_models.PrefixFilters;
+import com.aliyun.gateway.oss.util.hcs_mgw_models.PrefixFiltersIncludeItem;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
@@ -126,6 +130,25 @@ public class UnitTest {
         query.put("acl", "");
 
         Assert.assertEquals("?acl&versionId=123", client.buildCanonicalizedQueryStringV2(query));
+    }
+
+    @Test
+    public void prefixFiltersXmlTest() throws Exception {
+        FilterRule filterRule = new FilterRule().setPrefixFilters(
+            new PrefixFilters().setIncludes(
+                new PrefixFiltersIncludeItem().setPrefix(Arrays.asList(
+                    "source-prefix/dir-a/",
+                    "source-prefix/dir-b/"))));
+        Map<String, Object> body = new HashMap<String, Object>();
+        body.put("FilterRule", filterRule.toMap());
+
+        String xml = com.aliyun.teaxml.Client.toXML(body);
+
+        Assert.assertTrue(xml.contains(
+            "<PrefixFilters><Includes>"
+                + "<Prefix>source-prefix/dir-a/</Prefix>"
+                + "<Prefix>source-prefix/dir-b/</Prefix>"
+                + "</Includes></PrefixFilters>"));
     }
 
     @Test
