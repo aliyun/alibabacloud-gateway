@@ -35,6 +35,12 @@
     <Reference Include="System.Configuration"/>
     <Reference Include="System.Net.Http"/>
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0"/>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0"/>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2">
       <PrivateAssets>all</PrivateAssets>
@@ -42,15 +48,8 @@
     </PackageReference>
     <PackageReference Include="AlibabaCloud.GatewaySpi" Version="0.0.3"/>
     <PackageReference Include="Aliyun.Credentials" Version="1.5.2"/>
-    <PackageReference Include="AlibabaCloud.TeaUtil" Version="0.1.19"/>
-    <PackageReference Include="AlibabaCloud.OpenApiUtil" Version="1.1.2"/>
-    <PackageReference Include="AlibabaCloud.EndpointUtil" Version="0.1.2"/>
-    <PackageReference Include="AlibabaCloud.DarabonbaEncodeUtil" Version="0.0.2"/>
-    <PackageReference Include="AlibabaCloud.DarabonbaSignatureUtil" Version="0.0.5"/>
-    <PackageReference Include="AlibabaCloud.DarabonbaString" Version="1.0.4"/>
-    <PackageReference Include="AlibabaCloud.DarabonbaMap" Version="0.0.2"/>
-    <PackageReference Include="AlibabaCloud.DarabonbaArray" Version="0.1.0"/>
-    <PackageReference Include="Tea" Version="1.1.3"/>
+    <PackageReference Include="Darabonba" Version="1.0.2"/>
+    <PackageReference Include="Tea" Version="1.1.4"/>
     <PackageReference Include="AlibabaCloud.TeaXML" Version="0.0.5"/>
   </ItemGroup>
 </Project>

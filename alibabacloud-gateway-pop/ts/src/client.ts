@@ -1,9 +1,7 @@
 // This file is auto-generated, don't edit it
 import SPI, * as $SPI from '@alicloud/gateway-spi';
 import Credential, * as $Credential from '@alicloud/credentials';
-import Util from '@alicloud/tea-util';
-import OpenApiUtil from '@alicloud/openapi-util';
-import EndpointUtil from '@alicloud/endpoint-util';
+import * as runtime from './runtime';
 import XML from '@alicloud/tea-xml';
 import * as codec from './codec';
 import * as $tea from '@alicloud/tea-typescript';
@@ -32,7 +30,7 @@ export default class Client extends SPI {
     let request = context.request;
     let config = context.configuration;
     let attributes = attributeMap.key;
-    if (!Util.isUnset(attributes)) {
+    if (!runtime.isUnset(attributes)) {
       this._signatureTypePrefix = attributes["signatureTypePrefix"];
       this._signPrefix = attributes["signPrefix"];
       this._endpointSuffix = attributes["endpointSuffix"];
@@ -46,42 +44,42 @@ export default class Client extends SPI {
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
-    let date = OpenApiUtil.getTimestamp();
+    let date = runtime.getTimestamp();
     request.headers = {
       host: config.endpoint,
       'x-acs-version': request.version,
       'user-agent': request.userAgent,
       'x-acs-date': date,
-      'x-acs-signature-nonce': Util.getNonce(),
+      'x-acs-signature-nonce': runtime.getNonce(),
       accept: "application/json",
       ...request.headers,
     };
-    if (!Util.empty(request.action)) {
+    if (!runtime.empty(request.action)) {
       request.headers["x-acs-action"] = request.action;
     }
 
-    let signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, this._sha256);
-    let hashedRequestPayload = codec.hexEncode(codec.hash(Util.toBytes(""), signatureAlgorithm));
-    if (!Util.isUnset(request.stream)) {
-      let tmp = await Util.readAsBytes(request.stream);
+    let signatureAlgorithm : string = runtime.defaultString(request.signatureAlgorithm, this._sha256);
+    let hashedRequestPayload = codec.hexEncode(codec.hash(runtime.toBytes(""), signatureAlgorithm));
+    if (!runtime.isUnset(request.stream)) {
+      let tmp = await runtime.readAsBytes(request.stream);
       hashedRequestPayload = codec.hexEncode(codec.hash(tmp, signatureAlgorithm));
       request.stream = new $tea.BytesReadable(tmp);
       request.headers["content-type"] = "application/octet-stream";
     } else {
-      if (!Util.isUnset(request.body)) {
-        if (Util.equalString(request.reqBodyType, "byte")) {
-          let byteObj = Util.assertAsBytes(request.body);
+      if (!runtime.isUnset(request.body)) {
+        if (runtime.equalString(request.reqBodyType, "byte")) {
+          let byteObj = runtime.assertAsBytes(request.body);
           hashedRequestPayload = codec.hexEncode(codec.hash(byteObj, signatureAlgorithm));
           request.stream = new $tea.BytesReadable(byteObj);
-        } else if (Util.equalString(request.reqBodyType, "json")) {
-          let jsonObj = Util.toJSONString(request.body);
-          hashedRequestPayload = codec.hexEncode(codec.hash(Util.toBytes(jsonObj), signatureAlgorithm));
+        } else if (runtime.equalString(request.reqBodyType, "json")) {
+          let jsonObj = runtime.toJSONString(request.body);
+          hashedRequestPayload = codec.hexEncode(codec.hash(runtime.toBytes(jsonObj), signatureAlgorithm));
           request.stream = new $tea.BytesReadable(jsonObj);
           request.headers["content-type"] = "application/json; charset=utf-8";
         } else {
-          let m = Util.assertAsMap(request.body);
-          let formObj = OpenApiUtil.toForm(m);
-          hashedRequestPayload = codec.hexEncode(codec.hash(Util.toBytes(formObj), signatureAlgorithm));
+          let m = runtime.assertAsMap(request.body);
+          let formObj = runtime.toForm(m);
+          hashedRequestPayload = codec.hexEncode(codec.hash(runtime.toBytes(formObj), signatureAlgorithm));
           request.stream = new $tea.BytesReadable(formObj);
           request.headers["content-type"] = "application/x-www-form-urlencoded";
         }
@@ -90,15 +88,15 @@ export default class Client extends SPI {
 
     }
 
-    if (Util.equalString(signatureAlgorithm, this._sm3)) {
+    if (runtime.equalString(signatureAlgorithm, this._sm3)) {
       request.headers["x-acs-content-sm3"] = hashedRequestPayload;
     } else {
       request.headers["x-acs-content-sha256"] = hashedRequestPayload;
     }
 
-    if (!Util.equalString(request.authType, "Anonymous")) {
+    if (!runtime.equalString(request.authType, "Anonymous")) {
       let credential : Credential = request.credential;
-      if (Util.isUnset(credential)) {
+      if (runtime.isUnset(credential)) {
         throw $tea.newError({
           code: "ParameterMissing",
           message: "'config.credential' can not be unset",
@@ -106,24 +104,24 @@ export default class Client extends SPI {
       }
 
       let credentialModel = await credential.getCredential();
-      if (!Util.empty(credentialModel.providerName)) {
+      if (!runtime.empty(credentialModel.providerName)) {
         request.headers["x-acs-credentials-provider"] = credentialModel.providerName;
       }
 
       let authType = credentialModel.type;
-      if (Util.equalString(authType, "bearer")) {
+      if (runtime.equalString(authType, "bearer")) {
         let bearerToken = credentialModel.bearerToken;
         request.headers["x-acs-bearer-token"] = bearerToken;
         request.headers["x-acs-signature-type"] = "BEARERTOKEN";
         request.headers["Authorization"] = `Bearer ${bearerToken}`;
-      } else if (Util.equalString(authType, "id_token")) {
+      } else if (runtime.equalString(authType, "id_token")) {
         let idToken = credentialModel.securityToken;
         request.headers["x-acs-zero-trust-idtoken"] = idToken;
       } else {
         let accessKeyId = credentialModel.accessKeyId;
         let accessKeySecret = credentialModel.accessKeySecret;
         let securityToken = credentialModel.securityToken;
-        if (!Util.empty(securityToken)) {
+        if (!runtime.empty(securityToken)) {
           request.headers["x-acs-accesskey-id"] = accessKeyId;
           request.headers["x-acs-security-token"] = securityToken;
         }
@@ -142,19 +140,19 @@ export default class Client extends SPI {
   async modifyResponse(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let response = context.response;
-    if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
+    if (runtime.is4xx(response.statusCode) || runtime.is5xx(response.statusCode)) {
       let err : {[key: string ]: any} = { };
-      if (!Util.isUnset(response.headers["content-type"]) && codec.contains(response.headers["content-type"], "text/xml")) {
-        let _str = await Util.readAsString(response.body);
+      if (!runtime.isUnset(response.headers["content-type"]) && codec.contains(response.headers["content-type"], "text/xml")) {
+        let _str = await runtime.readAsString(response.body);
         let respMap = XML.parseXml(_str, null);
-        err = Util.assertAsMap(respMap["Error"]);
+        err = runtime.assertAsMap(respMap["Error"]);
       } else {
-        let _res = await Util.readAsJSON(response.body);
-        err = Util.assertAsMap(_res);
+        let _res = await runtime.readAsJSON(response.body);
+        err = runtime.assertAsMap(_res);
       }
 
       let requestId = this.defaultAny(err["RequestId"], err["requestId"]);
-      if (!Util.isUnset(response.headers["x-acs-request-id"])) {
+      if (!runtime.isUnset(response.headers["x-acs-request-id"])) {
         requestId = response.headers["x-acs-request-id"];
       }
 
@@ -168,43 +166,43 @@ export default class Client extends SPI {
       });
     }
 
-    if (Util.equalNumber(response.statusCode, 204)) {
-      await Util.readAsString(response.body);
-    } else if (Util.equalString(request.bodyType, "binary")) {
+    if (runtime.equalNumber(response.statusCode, 204)) {
+      await runtime.readAsString(response.body);
+    } else if (runtime.equalString(request.bodyType, "binary")) {
       response.deserializedBody = response.body;
-    } else if (Util.equalString(request.bodyType, "byte")) {
-      let byt = await Util.readAsBytes(response.body);
+    } else if (runtime.equalString(request.bodyType, "byte")) {
+      let byt = await runtime.readAsBytes(response.body);
       response.deserializedBody = byt;
-    } else if (Util.equalString(request.bodyType, "string")) {
-      let str = await Util.readAsString(response.body);
+    } else if (runtime.equalString(request.bodyType, "string")) {
+      let str = await runtime.readAsString(response.body);
       response.deserializedBody = str;
-    } else if (Util.equalString(request.bodyType, "json")) {
-      let obj = await Util.readAsJSON(response.body);
-      let res = Util.assertAsMap(obj);
+    } else if (runtime.equalString(request.bodyType, "json")) {
+      let obj = await runtime.readAsJSON(response.body);
+      let res = runtime.assertAsMap(obj);
       response.deserializedBody = res;
-    } else if (Util.equalString(request.bodyType, "array")) {
-      let arr = await Util.readAsJSON(response.body);
+    } else if (runtime.equalString(request.bodyType, "array")) {
+      let arr = await runtime.readAsJSON(response.body);
       response.deserializedBody = arr;
     } else {
-      response.deserializedBody = await Util.readAsString(response.body);
+      response.deserializedBody = await runtime.readAsString(response.body);
     }
 
   }
 
   getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string): string {
-    if (!Util.empty(endpoint)) {
+    if (!runtime.empty(endpoint)) {
       return endpoint;
     }
 
-    if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
+    if (!runtime.isUnset(endpointMap) && !runtime.empty(endpointMap[regionId])) {
       return endpointMap[regionId];
     }
 
-    return EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+    return runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix);
   }
 
   defaultAny(inputValue: any, defaultValue: any): any {
-    if (Util.isUnset(inputValue)) {
+    if (runtime.isUnset(inputValue)) {
       return defaultValue;
     }
 
@@ -220,7 +218,7 @@ export default class Client extends SPI {
 
   getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer): string {
     let canonicalURI : string = "/";
-    if (!Util.empty(pathname)) {
+    if (!runtime.empty(pathname)) {
       canonicalURI = pathname;
     }
 
@@ -231,12 +229,12 @@ export default class Client extends SPI {
     this.validateSignedHeaders(signedHeaders);
     let signedHeadersStr = codec.join(signedHeaders, ";");
     stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
-    let hex = codec.hexEncode(codec.hash(Util.toBytes(stringToSign), signatureAlgorithm));
+    let hex = codec.hexEncode(codec.hash(runtime.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
-    let signature = Util.toBytes("");
-    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+    let signature = runtime.toBytes("");
+    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
       signature = codec.hmacSha256ByBytes(stringToSign, signingkey);
-    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
       signature = codec.hmacSm3ByBytes(stringToSign, signingkey);
     }
 
@@ -245,31 +243,31 @@ export default class Client extends SPI {
 
   getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Buffer {
     let sc1 = `${this._signPrefix}${secret}`;
-    let sc2 = Util.toBytes("");
-    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+    let sc2 = runtime.toBytes("");
+    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
       sc2 = codec.hmacSha256(date, sc1);
-    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
       sc2 = codec.hmacSm3(date, sc1);
     }
 
-    let sc3 = Util.toBytes("");
-    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+    let sc3 = runtime.toBytes("");
+    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
       sc3 = codec.hmacSha256ByBytes(region, sc2);
-    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
       sc3 = codec.hmacSm3ByBytes(region, sc2);
     }
 
-    let sc4 = Util.toBytes("");
-    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+    let sc4 = runtime.toBytes("");
+    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
       sc4 = codec.hmacSha256ByBytes(product, sc3);
-    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
       sc4 = codec.hmacSm3ByBytes(product, sc3);
     }
 
-    let hmac = Util.toBytes("");
-    if (Util.equalString(signatureAlgorithm, this._sha256)) {
+    let hmac = runtime.toBytes("");
+    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
       hmac = codec.hmacSha256ByBytes(`${this._signPrefix}_request`, sc4);
-    } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
       hmac = codec.hmacSm3ByBytes(`${this._signPrefix}_request`, sc4);
     }
 
@@ -277,12 +275,12 @@ export default class Client extends SPI {
   }
 
   getRegion(product: string, endpoint: string, regionId: string): string {
-    if (!Util.empty(regionId)) {
+    if (!runtime.empty(regionId)) {
       return regionId;
     }
 
     let region = "center";
-    if (Util.empty(product) || Util.empty(endpoint)) {
+    if (runtime.empty(product) || runtime.empty(endpoint)) {
       return region;
     }
 
@@ -290,7 +288,7 @@ export default class Client extends SPI {
     let withoutPort : string = strs[0];
     let preRegion : string = codec.replace(withoutPort, `.${this._endpointSuffix}`, "", null);
     let nodes = codec.split(preRegion, ".", null);
-    if (Util.equalNumber(codec.size(nodes), 2)) {
+    if (runtime.equalNumber(codec.size(nodes), 2)) {
       region = nodes[1];
     }
 
@@ -299,14 +297,14 @@ export default class Client extends SPI {
 
   buildCanonicalizedResource(query: {[key: string ]: string}): string {
     let canonicalizedResource : string = "";
-    if (!Util.isUnset(query)) {
+    if (!runtime.isUnset(query)) {
       let queryArray : string[] = codec.keySet(query);
       let sortedQueryArray = codec.ascSort(queryArray);
       let separator : string = "";
 
       for (let key of sortedQueryArray) {
         canonicalizedResource = `${canonicalizedResource}${separator}${codec.percentEncode(key)}=`;
-        if (!Util.empty(query[key])) {
+        if (!runtime.empty(query[key])) {
           canonicalizedResource = `${canonicalizedResource}${codec.percentEncode(query[key])}`;
         }
 
@@ -325,8 +323,8 @@ export default class Client extends SPI {
     for (let key of headersArray) {
       let lowerKey = codec.toLower(key);
       let value = headers[key];
-      if (!Util.isUnset(value)) {
-        if (Util.isUnset(newHeaders[lowerKey]) || codec.equals(lowerKey, "host")) {
+      if (!runtime.isUnset(value)) {
+        if (runtime.isUnset(newHeaders[lowerKey]) || codec.equals(lowerKey, "host")) {
           newHeaders[lowerKey] = codec.trim(value);
         } else {
           newHeaders[lowerKey] = `${newHeaders[lowerKey]},${codec.trim(value)}`;
@@ -360,7 +358,7 @@ export default class Client extends SPI {
     for (let key of headersArray) {
       let lowerKey = codec.toLower(key);
       let value = headers[key];
-      if (!Util.isUnset(value)) {
+      if (!runtime.isUnset(value)) {
         codec.append(newHeadersArray, lowerKey);
       }
 

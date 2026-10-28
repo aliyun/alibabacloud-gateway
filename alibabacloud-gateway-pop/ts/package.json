@@ -3,6 +3,12 @@
   "version": "0.1.6",
   "description": "",
   "main": "dist/client.js",
+  "exports": {
+    ".": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    }
+  },
   "scripts": {
     "test": "mocha -r ts-node/register -r source-map-support/register test/**/*.spec.ts",
     "test-cov": "nyc -e .ts -r=html -r=text -r=lcov npm run test",
@@ -21,12 +27,10 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@alicloud/tea-typescript": "^1.7.1",
+    "@alicloud/tea-typescript": "^1.8.0",
+    "@darabonba/typescript": "^1.0.5",
     "@alicloud/gateway-spi": "^0.0.8",
     "@alicloud/credentials": "^2.4.2",
-    "@alicloud/tea-util": "^1.4.9",
-    "@alicloud/openapi-util": "^0.3.2",
-    "@alicloud/endpoint-util": "^0.0.2",
     "@alicloud/tea-xml": "0.0.3"
   },
   "files": [

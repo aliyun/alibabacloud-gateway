@@ -11,11 +11,10 @@
   ],
   "require": {
     "php": ">5.5",
-    "alibabacloud/gateway-spi": "^1",
     "alibabacloud/credentials": "^1.2.2",
-    "alibabacloud/tea-utils": "^0.2.21",
-    "alibabacloud/openapi-util": "^0.1.10|^0.2.1",
-    "alibabacloud/endpoint-util": "^0.1.0",
+    "alibabacloud/darabonba": "^1.0.6",
+    "alibabacloud/gateway-spi": "^1",
+    "alibabacloud/tea": "^3.2.1",
     "alibabacloud/tea-xml": "^0.2",
     "lizhichao/one-sm": "^1.5"
   },

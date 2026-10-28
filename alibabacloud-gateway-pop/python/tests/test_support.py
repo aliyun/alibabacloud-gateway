@@ -1,7 +1,7 @@
 import unittest
 from urllib.parse import quote
 
-from alibabacloud_gateway_pop import codec, support
+from alibabacloud_gateway_pop import _codec as codec, _support as support
 
 
 class TestSupport(unittest.TestCase):

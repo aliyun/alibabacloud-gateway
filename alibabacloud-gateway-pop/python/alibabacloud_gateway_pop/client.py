@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from . import codec
-from . import support
+from . import _codec as codec
+from . import _support as support
 from Tea.exceptions import TeaException
 from Tea.core import TeaCore
 from typing import Dict, Any, List
