@@ -4,12 +4,8 @@ import Credential, * as $Credential from '@alicloud/credentials';
 import Util from '@alicloud/tea-util';
 import OpenApiUtil from '@alicloud/openapi-util';
 import EndpointUtil from '@alicloud/endpoint-util';
-import EncodeUtil from '@alicloud/darabonba-encode-util';
-import SignatureUtil from '@alicloud/darabonba-signature-util';
-import String from '@alicloud/darabonba-string';
-import Map from '@alicloud/darabonba-map';
-import Array from '@alicloud/darabonba-array';
 import XML from '@alicloud/tea-xml';
+import * as codec from './codec';
 import * as $tea from '@alicloud/tea-typescript';
 
 
@@ -65,27 +61,27 @@ export default class Client extends SPI {
     }
 
     let signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, this._sha256);
-    let hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(""), signatureAlgorithm));
+    let hashedRequestPayload = codec.hexEncode(codec.hash(Util.toBytes(""), signatureAlgorithm));
     if (!Util.isUnset(request.stream)) {
       let tmp = await Util.readAsBytes(request.stream);
-      hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(tmp, signatureAlgorithm));
+      hashedRequestPayload = codec.hexEncode(codec.hash(tmp, signatureAlgorithm));
       request.stream = new $tea.BytesReadable(tmp);
       request.headers["content-type"] = "application/octet-stream";
     } else {
       if (!Util.isUnset(request.body)) {
         if (Util.equalString(request.reqBodyType, "byte")) {
           let byteObj = Util.assertAsBytes(request.body);
-          hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(byteObj, signatureAlgorithm));
+          hashedRequestPayload = codec.hexEncode(codec.hash(byteObj, signatureAlgorithm));
           request.stream = new $tea.BytesReadable(byteObj);
         } else if (Util.equalString(request.reqBodyType, "json")) {
           let jsonObj = Util.toJSONString(request.body);
-          hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(jsonObj), signatureAlgorithm));
+          hashedRequestPayload = codec.hexEncode(codec.hash(Util.toBytes(jsonObj), signatureAlgorithm));
           request.stream = new $tea.BytesReadable(jsonObj);
           request.headers["content-type"] = "application/json; charset=utf-8";
         } else {
           let m = Util.assertAsMap(request.body);
           let formObj = OpenApiUtil.toForm(m);
-          hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(formObj), signatureAlgorithm));
+          hashedRequestPayload = codec.hexEncode(codec.hash(Util.toBytes(formObj), signatureAlgorithm));
           request.stream = new $tea.BytesReadable(formObj);
           request.headers["content-type"] = "application/x-www-form-urlencoded";
         }
@@ -132,8 +128,8 @@ export default class Client extends SPI {
           request.headers["x-acs-security-token"] = securityToken;
         }
 
-        let dateNew = String.subString(date, 0, 10);
-        dateNew = String.replace(dateNew, "-", "", null);
+        let dateNew = codec.subString(date, 0, 10);
+        dateNew = codec.replace(dateNew, "-", "", null);
         let region = this.getRegion(request.productId, config.endpoint, config.regionId);
         let signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
         request.headers["Authorization"] = this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
@@ -148,7 +144,7 @@ export default class Client extends SPI {
     let response = context.response;
     if (Util.is4xx(response.statusCode) || Util.is5xx(response.statusCode)) {
       let err : {[key: string ]: any} = { };
-      if (!Util.isUnset(response.headers["content-type"]) && String.contains(response.headers["content-type"], "text/xml")) {
+      if (!Util.isUnset(response.headers["content-type"]) && codec.contains(response.headers["content-type"], "text/xml")) {
         let _str = await Util.readAsString(response.body);
         let respMap = XML.parseXml(_str, null);
         err = Util.assertAsMap(respMap["Error"]);
@@ -218,7 +214,7 @@ export default class Client extends SPI {
   getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, signingkey: Buffer, product: string, region: string, date: string): string {
     let signature = this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
     let signedHeaders = this.getSignedHeaders(headers);
-    let signedHeadersStr = Array.join(signedHeaders, ";");
+    let signedHeadersStr = codec.join(signedHeaders, ";");
     return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${this._signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
@@ -233,48 +229,48 @@ export default class Client extends SPI {
     let canonicalizedHeaders = this.buildCanonicalizedHeaders(headers);
     let signedHeaders = this.getSignedHeaders(headers);
     this.validateSignedHeaders(signedHeaders);
-    let signedHeadersStr = Array.join(signedHeaders, ";");
+    let signedHeadersStr = codec.join(signedHeaders, ";");
     stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
-    let hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
+    let hex = codec.hexEncode(codec.hash(Util.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
     let signature = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
-      signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
+      signature = codec.hmacSha256ByBytes(stringToSign, signingkey);
     } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
-      signature = SignatureUtil.HmacSM3SignByBytes(stringToSign, signingkey);
+      signature = codec.hmacSm3ByBytes(stringToSign, signingkey);
     }
 
-    return EncodeUtil.hexEncode(signature);
+    return codec.hexEncode(signature);
   }
 
   getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Buffer {
     let sc1 = `${this._signPrefix}${secret}`;
     let sc2 = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
-      sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
+      sc2 = codec.hmacSha256(date, sc1);
     } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
-      sc2 = SignatureUtil.HmacSM3Sign(date, sc1);
+      sc2 = codec.hmacSm3(date, sc1);
     }
 
     let sc3 = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
-      sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
+      sc3 = codec.hmacSha256ByBytes(region, sc2);
     } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
-      sc3 = SignatureUtil.HmacSM3SignByBytes(region, sc2);
+      sc3 = codec.hmacSm3ByBytes(region, sc2);
     }
 
     let sc4 = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
-      sc4 = SignatureUtil.HmacSHA256SignByBytes(product, sc3);
+      sc4 = codec.hmacSha256ByBytes(product, sc3);
     } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
-      sc4 = SignatureUtil.HmacSM3SignByBytes(product, sc3);
+      sc4 = codec.hmacSm3ByBytes(product, sc3);
     }
 
     let hmac = Util.toBytes("");
     if (Util.equalString(signatureAlgorithm, this._sha256)) {
-      hmac = SignatureUtil.HmacSHA256SignByBytes(`${this._signPrefix}_request`, sc4);
+      hmac = codec.hmacSha256ByBytes(`${this._signPrefix}_request`, sc4);
     } else if (Util.equalString(signatureAlgorithm, this._sm3)) {
-      hmac = SignatureUtil.HmacSM3SignByBytes(`${this._signPrefix}_request`, sc4);
+      hmac = codec.hmacSm3ByBytes(`${this._signPrefix}_request`, sc4);
     }
 
     return hmac;
@@ -290,11 +286,11 @@ export default class Client extends SPI {
       return region;
     }
 
-    let strs : string[] = String.split(endpoint, ":", null);
+    let strs : string[] = codec.split(endpoint, ":", null);
     let withoutPort : string = strs[0];
-    let preRegion : string = String.replace(withoutPort, `.${this._endpointSuffix}`, "", null);
-    let nodes = String.split(preRegion, ".", null);
-    if (Util.equalNumber(Array.size(nodes), 2)) {
+    let preRegion : string = codec.replace(withoutPort, `.${this._endpointSuffix}`, "", null);
+    let nodes = codec.split(preRegion, ".", null);
+    if (Util.equalNumber(codec.size(nodes), 2)) {
       region = nodes[1];
     }
 
@@ -304,14 +300,14 @@ export default class Client extends SPI {
   buildCanonicalizedResource(query: {[key: string ]: string}): string {
     let canonicalizedResource : string = "";
     if (!Util.isUnset(query)) {
-      let queryArray : string[] = Map.keySet(query);
-      let sortedQueryArray = Array.ascSort(queryArray);
+      let queryArray : string[] = codec.keySet(query);
+      let sortedQueryArray = codec.ascSort(queryArray);
       let separator : string = "";
 
       for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}=`;
+        canonicalizedResource = `${canonicalizedResource}${separator}${codec.percentEncode(key)}=`;
         if (!Util.empty(query[key])) {
-          canonicalizedResource = `${canonicalizedResource}${EncodeUtil.percentEncode(query[key])}`;
+          canonicalizedResource = `${canonicalizedResource}${codec.percentEncode(query[key])}`;
         }
 
         separator = "&";
@@ -323,17 +319,17 @@ export default class Client extends SPI {
 
   buildCanonicalizedHeaders(headers: {[key: string ]: string}): string {
     // lower header key
-    let headersArray : string[] = Map.keySet(headers);
+    let headersArray : string[] = codec.keySet(headers);
     let newHeaders : {[key: string ]: string} = { };
 
     for (let key of headersArray) {
-      let lowerKey = String.toLower(key);
+      let lowerKey = codec.toLower(key);
       let value = headers[key];
       if (!Util.isUnset(value)) {
-        if (Util.isUnset(newHeaders[lowerKey]) || String.equals(lowerKey, "host")) {
-          newHeaders[lowerKey] = String.trim(value);
+        if (Util.isUnset(newHeaders[lowerKey]) || codec.equals(lowerKey, "host")) {
+          newHeaders[lowerKey] = codec.trim(value);
         } else {
-          newHeaders[lowerKey] = `${newHeaders[lowerKey]},${String.trim(value)}`;
+          newHeaders[lowerKey] = `${newHeaders[lowerKey]},${codec.trim(value)}`;
         }
 
       }
@@ -349,7 +345,7 @@ export default class Client extends SPI {
   }
 
   validateSignedHeaders(signedHeaders: string[]): void {
-    if (!Array.contains(signedHeaders, "host") || !Array.contains(signedHeaders, "x-acs-date")) {
+    if (!codec.listContains(signedHeaders, "host") || !codec.listContains(signedHeaders, "x-acs-date")) {
       throw $tea.newError({
         code: "InvalidSignedHeaders",
         message: "signed headers must include host and x-acs-date",
@@ -358,24 +354,24 @@ export default class Client extends SPI {
   }
 
   getSignedHeaders(headers: {[key: string ]: string}): string[] {
-    let headersArray : string[] = Map.keySet(headers);
+    let headersArray : string[] = codec.keySet(headers);
     let newHeadersArray : string[] = [ ];
 
     for (let key of headersArray) {
-      let lowerKey = String.toLower(key);
+      let lowerKey = codec.toLower(key);
       let value = headers[key];
       if (!Util.isUnset(value)) {
-        Array.append(newHeadersArray, lowerKey);
+        codec.append(newHeadersArray, lowerKey);
       }
 
     }
-    let sortedHeadersArray = Array.ascSort(newHeadersArray);
+    let sortedHeadersArray = codec.ascSort(newHeadersArray);
     let result : string[] = [ ];
 
     for (let key of sortedHeadersArray) {
-      if (String.hasPrefix(key, "x-acs-") || String.equals(key, "host") || String.equals(key, "content-type")) {
-        if (!Array.contains(result, key)) {
-          Array.append(result, key);
+      if (codec.hasPrefix(key, "x-acs-") || codec.equals(key, "host") || codec.equals(key, "content-type")) {
+        if (!codec.listContains(result, key)) {
+          codec.append(result, key);
         }
 
       }

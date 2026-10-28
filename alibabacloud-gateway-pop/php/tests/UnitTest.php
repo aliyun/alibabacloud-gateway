@@ -2,9 +2,9 @@
 
 namespace Darabonba\GatewayPop\Tests;
 
-use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
 use AlibabaCloud\Tea\Exception\TeaError;
 use Darabonba\GatewayPop\Client;
+use Darabonba\GatewayPop\Codec;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,6 +13,15 @@ use PHPUnit\Framework\TestCase;
  */
 final class UnitTest extends TestCase
 {
+
+    public function testCodecSha256()
+    {
+        $hashed = Codec::hexEncode(Codec::hash([104, 101, 108, 108, 111], 'ACS4-HMAC-SHA256'));
+        $this->assertEquals(hash('sha256', 'hello'), $hashed);
+        $signed = Codec::hexEncode(Codec::HmacSHA256Sign('data', 'secret'));
+        $this->assertEquals(hash_hmac('sha256', 'data', 'secret'), $signed);
+        $this->assertEquals('a%20b%2A~', Codec::percentEncode('a b*~'));
+    }
 
     public function testGetRegion()
     {
@@ -102,7 +111,7 @@ final class UnitTest extends TestCase
             "x-acs-foobar" => "1",
             "x-acs-foo" => "2"
         ];
-        $this->assertFalse(ArrayUtil::contains(["x-acs-foobar"], "x-acs-foo"));
+        $this->assertFalse(Codec::contains(["x-acs-foobar"], "x-acs-foo"));
         $result = $client->getSignedHeaders($prefixHeaders);
         $this->assertCount(3, $result);
         $this->assertEquals("host", $result[0]);

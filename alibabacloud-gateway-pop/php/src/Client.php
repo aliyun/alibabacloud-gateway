@@ -8,13 +8,8 @@ use AlibabaCloud\Tea\Utils\Utils;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\OpenApiUtil\OpenApiUtilClient;
 use AlibabaCloud\Tea\Tea;
-use AlibabaCloud\Darabonba\EncodeUtil\EncodeUtil;
-use AlibabaCloud\Darabonba\String\StringUtil;
 use AlibabaCloud\Tea\XML\XML;
 use AlibabaCloud\Endpoint\Endpoint;
-use AlibabaCloud\Darabonba\ArrayUtil\ArrayUtil;
-use AlibabaCloud\Darabonba\SignatureUtil\SignatureUtil;
-use AlibabaCloud\Darabonba\MapUtil\MapUtil;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
@@ -86,27 +81,27 @@ class Client extends DarabonbaGatewaySpiClient
             $request->headers["x-acs-action"] = $request->action;
         }
         $signatureAlgorithm = Utils::defaultString($request->signatureAlgorithm, $this->_sha256);
-        $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes(""), $signatureAlgorithm));
+        $hashedRequestPayload = Codec::hexEncode(Codec::hash(Utils::toBytes(""), $signatureAlgorithm));
         if (!Utils::isUnset($request->stream)) {
             $tmp = Utils::readAsBytes($request->stream);
-            $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash($tmp, $signatureAlgorithm));
+            $hashedRequestPayload = Codec::hexEncode(Codec::hash($tmp, $signatureAlgorithm));
             $request->stream = $tmp;
             $request->headers["content-type"] = "application/octet-stream";
         } else {
             if (!Utils::isUnset($request->body)) {
                 if (Utils::equalString($request->reqBodyType, "byte")) {
                     $byteObj = Utils::assertAsBytes($request->body);
-                    $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash($byteObj, $signatureAlgorithm));
+                    $hashedRequestPayload = Codec::hexEncode(Codec::hash($byteObj, $signatureAlgorithm));
                     $request->stream = $byteObj;
                 } else if (Utils::equalString($request->reqBodyType, "json")) {
                     $jsonObj = Utils::toJSONString($request->body);
-                    $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($jsonObj), $signatureAlgorithm));
+                    $hashedRequestPayload = Codec::hexEncode(Codec::hash(Utils::toBytes($jsonObj), $signatureAlgorithm));
                     $request->stream = $jsonObj;
                     $request->headers["content-type"] = "application/json; charset=utf-8";
                 } else {
                     $m = Utils::assertAsMap($request->body);
                     $formObj = OpenApiUtilClient::toForm($m);
-                    $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($formObj), $signatureAlgorithm));
+                    $hashedRequestPayload = Codec::hexEncode(Codec::hash(Utils::toBytes($formObj), $signatureAlgorithm));
                     $request->stream = $formObj;
                     $request->headers["content-type"] = "application/x-www-form-urlencoded";
                 }
@@ -146,8 +141,8 @@ class Client extends DarabonbaGatewaySpiClient
                     $request->headers["x-acs-accesskey-id"] = $accessKeyId;
                     $request->headers["x-acs-security-token"] = $securityToken;
                 }
-                $dateNew = StringUtil::subString($date, 0, 10);
-                $dateNew = StringUtil::replace($dateNew, "-", "", null);
+                $dateNew = Codec::subString($date, 0, 10);
+                $dateNew = Codec::replace($dateNew, "-", "", null);
                 $region = $this->getRegion($request->productId, $config->endpoint, $config->regionId);
                 $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew);
                 $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
@@ -167,7 +162,7 @@ class Client extends DarabonbaGatewaySpiClient
         $response = $context->response;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $err = [];
-            if (!Utils::isUnset(@$response->headers["content-type"]) && StringUtil::contains(@$response->headers["content-type"], "text/xml")) {
+            if (!Utils::isUnset(@$response->headers["content-type"]) && Codec::contains(@$response->headers["content-type"], "text/xml")) {
                 $_str = Utils::readAsString($response->body);
                 $respMap = XML::parseXml($_str, null);
                 $err = Utils::assertAsMap(@$respMap["Error"]);
@@ -262,7 +257,7 @@ class Client extends DarabonbaGatewaySpiClient
     {
         $signature = $this->getSignature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $signingkey);
         $signedHeaders = $this->getSignedHeaders($headers);
-        $signedHeadersStr = ArrayUtil::join($signedHeaders, ";");
+        $signedHeadersStr = Codec::join($signedHeaders, ";");
         return "" . $signatureAlgorithm . " Credential=" . $ak . "/" . $date . "/" . $region . "/" . $product . "/" . $this->_signPrefix . "_request,SignedHeaders=" . $signedHeadersStr . ",Signature=" . $signature . "";
     }
 
@@ -287,17 +282,17 @@ class Client extends DarabonbaGatewaySpiClient
         $canonicalizedHeaders = $this->buildCanonicalizedHeaders($headers);
         $signedHeaders = $this->getSignedHeaders($headers);
         $this->validateSignedHeaders($signedHeaders);
-        $signedHeadersStr = ArrayUtil::join($signedHeaders, ";");
+        $signedHeadersStr = Codec::join($signedHeaders, ";");
         $stringToSign = "" . $method . "\n" . $canonicalURI . "\n" . $canonicalizedResource . "\n" . $canonicalizedHeaders . "\n" . $signedHeadersStr . "\n" . $payload . "";
-        $hex = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes($stringToSign), $signatureAlgorithm));
+        $hex = Codec::hexEncode(Codec::hash(Utils::toBytes($stringToSign), $signatureAlgorithm));
         $stringToSign = "" . $signatureAlgorithm . "\n" . $hex . "";
         $signature = Utils::toBytes("");
         if (Utils::equalString($signatureAlgorithm, $this->_sha256)) {
-            $signature = SignatureUtil::HmacSHA256SignByBytes($stringToSign, $signingkey);
+            $signature = Codec::HmacSHA256SignByBytes($stringToSign, $signingkey);
         } else if (Utils::equalString($signatureAlgorithm, $this->_sm3)) {
-            $signature = SignatureUtil::HmacSM3SignByBytes($stringToSign, $signingkey);
+            $signature = Codec::HmacSM3SignByBytes($stringToSign, $signingkey);
         }
-        return EncodeUtil::hexEncode($signature);
+        return Codec::hexEncode($signature);
     }
 
     /**
@@ -313,27 +308,27 @@ class Client extends DarabonbaGatewaySpiClient
         $sc1 = "" . $this->_signPrefix . "" . $secret . "";
         $sc2 = Utils::toBytes("");
         if (Utils::equalString($signatureAlgorithm, $this->_sha256)) {
-            $sc2 = SignatureUtil::HmacSHA256Sign($date, $sc1);
+            $sc2 = Codec::HmacSHA256Sign($date, $sc1);
         } else if (Utils::equalString($signatureAlgorithm, $this->_sm3)) {
-            $sc2 = SignatureUtil::HmacSM3Sign($date, $sc1);
+            $sc2 = Codec::HmacSM3Sign($date, $sc1);
         }
         $sc3 = Utils::toBytes("");
         if (Utils::equalString($signatureAlgorithm, $this->_sha256)) {
-            $sc3 = SignatureUtil::HmacSHA256SignByBytes($region, $sc2);
+            $sc3 = Codec::HmacSHA256SignByBytes($region, $sc2);
         } else if (Utils::equalString($signatureAlgorithm, $this->_sm3)) {
-            $sc3 = SignatureUtil::HmacSM3SignByBytes($region, $sc2);
+            $sc3 = Codec::HmacSM3SignByBytes($region, $sc2);
         }
         $sc4 = Utils::toBytes("");
         if (Utils::equalString($signatureAlgorithm, $this->_sha256)) {
-            $sc4 = SignatureUtil::HmacSHA256SignByBytes($product, $sc3);
+            $sc4 = Codec::HmacSHA256SignByBytes($product, $sc3);
         } else if (Utils::equalString($signatureAlgorithm, $this->_sm3)) {
-            $sc4 = SignatureUtil::HmacSM3SignByBytes($product, $sc3);
+            $sc4 = Codec::HmacSM3SignByBytes($product, $sc3);
         }
         $hmac = Utils::toBytes("");
         if (Utils::equalString($signatureAlgorithm, $this->_sha256)) {
-            $hmac = SignatureUtil::HmacSHA256SignByBytes("" . $this->_signPrefix . "_request", $sc4);
+            $hmac = Codec::HmacSHA256SignByBytes("" . $this->_signPrefix . "_request", $sc4);
         } else if (Utils::equalString($signatureAlgorithm, $this->_sm3)) {
-            $hmac = SignatureUtil::HmacSM3SignByBytes("" . $this->_signPrefix . "_request", $sc4);
+            $hmac = Codec::HmacSM3SignByBytes("" . $this->_signPrefix . "_request", $sc4);
         }
         return $hmac;
     }
@@ -353,11 +348,11 @@ class Client extends DarabonbaGatewaySpiClient
         if (Utils::empty_($product) || Utils::empty_($endpoint)) {
             return $region;
         }
-        $strs = StringUtil::split($endpoint, ":", null);
+        $strs = Codec::split($endpoint, ":", null);
         $withoutPort = @$strs[0];
-        $preRegion = StringUtil::replace($withoutPort, "." . $this->_endpointSuffix . "", "", null);
-        $nodes = StringUtil::split($preRegion, ".", null);
-        if (Utils::equalNumber(ArrayUtil::size($nodes), 2)) {
+        $preRegion = Codec::replace($withoutPort, "." . $this->_endpointSuffix . "", "", null);
+        $nodes = Codec::split($preRegion, ".", null);
+        if (Utils::equalNumber(Codec::size($nodes), 2)) {
             $region = @$nodes[1];
         }
         return $region;
@@ -371,13 +366,13 @@ class Client extends DarabonbaGatewaySpiClient
     {
         $canonicalizedResource = "";
         if (!Utils::isUnset($query)) {
-            $queryArray = MapUtil::keySet($query);
-            $sortedQueryArray = ArrayUtil::ascSort($queryArray);
+            $queryArray = Codec::keySet($query);
+            $sortedQueryArray = Codec::ascSort($queryArray);
             $separator = "";
             foreach ($sortedQueryArray as $key) {
-                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . EncodeUtil::percentEncode($key) . "=";
+                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . Codec::percentEncode($key) . "=";
                 if (!Utils::empty_(@$query[$key])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "" . EncodeUtil::percentEncode(@$query[$key]) . "";
+                    $canonicalizedResource = "" . $canonicalizedResource . "" . Codec::percentEncode(@$query[$key]) . "";
                 }
                 $separator = "&";
             }
@@ -392,16 +387,16 @@ class Client extends DarabonbaGatewaySpiClient
     public function buildCanonicalizedHeaders($headers)
     {
         // lower header key
-        $headersArray = MapUtil::keySet($headers);
+        $headersArray = Codec::keySet($headers);
         $newHeaders = [];
         foreach ($headersArray as $key) {
-            $lowerKey = StringUtil::toLower($key);
+            $lowerKey = Codec::toLower($key);
             $value = @$headers[$key];
             if (!Utils::isUnset($value)) {
-                if (Utils::isUnset(@$newHeaders[$lowerKey]) || StringUtil::equals($lowerKey, "host")) {
-                    $newHeaders[$lowerKey] = StringUtil::trim($value);
+                if (Utils::isUnset(@$newHeaders[$lowerKey]) || Codec::equals($lowerKey, "host")) {
+                    $newHeaders[$lowerKey] = Codec::trim($value);
                 } else {
-                    $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . StringUtil::trim($value) . "";
+                    $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . Codec::trim($value) . "";
                 }
             }
         }
@@ -423,7 +418,7 @@ class Client extends DarabonbaGatewaySpiClient
      */
     public function validateSignedHeaders($signedHeaders)
     {
-        if (!ArrayUtil::contains($signedHeaders, "host") || !ArrayUtil::contains($signedHeaders, "x-acs-date")) {
+        if (!Codec::contains($signedHeaders, "host") || !Codec::contains($signedHeaders, "x-acs-date")) {
             throw new TeaError([
                 "code" => "InvalidSignedHeaders",
                 "message" => "signed headers must include host and x-acs-date"
@@ -437,21 +432,21 @@ class Client extends DarabonbaGatewaySpiClient
      */
     public function getSignedHeaders($headers)
     {
-        $headersArray = MapUtil::keySet($headers);
+        $headersArray = Codec::keySet($headers);
         $newHeadersArray = [];
         foreach ($headersArray as $key) {
-            $lowerKey = StringUtil::toLower($key);
+            $lowerKey = Codec::toLower($key);
             $value = @$headers[$key];
             if (!Utils::isUnset($value)) {
-                ArrayUtil::append($newHeadersArray, $lowerKey);
+                Codec::append($newHeadersArray, $lowerKey);
             }
         }
-        $sortedHeadersArray = ArrayUtil::ascSort($newHeadersArray);
+        $sortedHeadersArray = Codec::ascSort($newHeadersArray);
         $result = [];
         foreach ($sortedHeadersArray as $key) {
-            if (StringUtil::hasPrefix($key, "x-acs-") || StringUtil::equals($key, "host") || StringUtil::equals($key, "content-type")) {
-                if (!ArrayUtil::contains($result, $key)) {
-                    ArrayUtil::append($result, $key);
+            if (Codec::hasPrefix($key, "x-acs-") || Codec::equals($key, "host") || Codec::equals($key, "content-type")) {
+                if (!Codec::contains($result, $key)) {
+                    Codec::append($result, $key);
                 }
             }
         }
