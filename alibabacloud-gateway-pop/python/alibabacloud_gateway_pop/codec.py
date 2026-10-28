@@ -24,7 +24,9 @@ def hash_bytes(raw: bytes, signature_algorithm: str) -> bytes:
 
 
 def percent_encode(raw: str) -> str:
-    return quote(raw, safe='~', encoding='utf-8')
+    # Same result as quote(raw, safe='~') and darabonba Url.percent_encode for strings.
+    encoded = quote(raw, safe='', encoding='utf-8')
+    return encoded.replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
 
 
 def hmac_sha256(string_to_sign: str, secret: str) -> bytes:

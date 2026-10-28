@@ -39,9 +39,7 @@ VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
     "alibabacloud_gateway_spi>=0.0.2, <1.0.0",
     "alibabacloud_credentials>=1.0.2, <2.0.0",
-    "alibabacloud_tea_util>=0.3.13, <1.0.0",
-    "alibabacloud_openapi_util>=0.2.2, <1.0.0",
-    "alibabacloud_endpoint_util>=0.0.4, <1.0.0",
+    "darabonba-core>=1.0.8, <2.0.0",
     "alibabacloud_tea_xml>=0.0.3, <1.0.0"
 ]
 

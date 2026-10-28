@@ -61,16 +61,19 @@
       <groupId>com.aliyun</groupId>
       <artifactId>tea-util</artifactId>
       <version>0.2.23</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>openapiutil</artifactId>
       <version>0.2.2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>endpoint-util</artifactId>
       <version>0.0.8</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>

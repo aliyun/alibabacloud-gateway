@@ -3,11 +3,8 @@ package client
 
 import (
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
-	endpointutil "github.com/alibabacloud-go/endpoint-util/service"
-	openapiutil "github.com/alibabacloud-go/openapi-util/service"
-	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	xml "github.com/alibabacloud-go/tea-xml/service"
-	"github.com/alibabacloud-go/tea/tea"
+	"github.com/alibabacloud-go/tea/dara"
 )
 
 type Client struct {
@@ -31,12 +28,12 @@ func (client *Client) Init() (_err error) {
 		return _err
 	}
 	// CLOUD4-
-	client.SignatureTypePrefix = tea.String("ACS4-")
+	client.SignatureTypePrefix = dara.String("ACS4-")
 	// cloud_v4
-	client.SignPrefix = tea.String("aliyun_v4")
-	client.EndpointSuffix = tea.String("aliyuncs.com")
-	client.Sha256 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
-	client.Sm3 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
+	client.SignPrefix = dara.String("aliyun_v4")
+	client.EndpointSuffix = dara.String("aliyuncs.com")
+	client.Sha256 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
+	client.Sm3 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
 	return nil
 }
 
@@ -44,12 +41,12 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 	request := context.Request
 	config := context.Configuration
 	attributes := attributeMap.Key
-	if !tea.BoolValue(util.IsUnset(attributes)) {
+	if !dara.BoolValue(isUnset(attributes)) {
 		client.SignatureTypePrefix = attributes["signatureTypePrefix"]
 		client.SignPrefix = attributes["signPrefix"]
 		client.EndpointSuffix = attributes["endpointSuffix"]
-		client.Sha256 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
-		client.Sm3 = tea.String(tea.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
+		client.Sha256 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
+		client.Sm3 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
 	}
 
 	config.Endpoint, _err = client.GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint)
@@ -63,71 +60,71 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
 	request := context.Request
 	config := context.Configuration
-	date := openapiutil.GetTimestamp()
-	request.Headers = tea.Merge(map[string]*string{
+	date := getTimestamp()
+	request.Headers = dara.Merge(map[string]*string{
 		"host":                  config.Endpoint,
 		"x-acs-version":         request.Version,
 		"user-agent":            request.UserAgent,
 		"x-acs-date":            date,
-		"x-acs-signature-nonce": util.GetNonce(),
-		"accept":                tea.String("application/json"),
+		"x-acs-signature-nonce": getNonce(),
+		"accept":                dara.String("application/json"),
 	}, request.Headers)
-	if !tea.BoolValue(util.Empty(request.Action)) {
+	if !dara.BoolValue(emptyString(request.Action)) {
 		request.Headers["x-acs-action"] = request.Action
 	}
 
-	signatureAlgorithm := util.DefaultString(request.SignatureAlgorithm, client.Sha256)
-	hashedRequestPayload := hexEncode(hashBytes(util.ToBytes(tea.String("")), signatureAlgorithm))
-	if !tea.BoolValue(util.IsUnset(request.Stream)) {
-		tmp, _err := util.ReadAsBytes(request.Stream)
+	signatureAlgorithm := defaultString(request.SignatureAlgorithm, client.Sha256)
+	hashedRequestPayload := hexEncode(hashBytes(toBytes(dara.String("")), signatureAlgorithm))
+	if !dara.BoolValue(isUnset(request.Stream)) {
+		tmp, _err := dara.ReadAsBytes(request.Stream)
 		if _err != nil {
 			return _err
 		}
 
 		hashedRequestPayload = hexEncode(hashBytes(tmp, signatureAlgorithm))
-		request.Stream = tea.ToReader(tmp)
-		request.Headers["content-type"] = tea.String("application/octet-stream")
+		request.Stream = dara.ToReader(tmp)
+		request.Headers["content-type"] = dara.String("application/octet-stream")
 	} else {
-		if !tea.BoolValue(util.IsUnset(request.Body)) {
-			if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("byte"))) {
-				byteObj, _err := util.AssertAsBytes(request.Body)
+		if !dara.BoolValue(isUnset(request.Body)) {
+			if dara.BoolValue(equalString(request.ReqBodyType, dara.String("byte"))) {
+				byteObj, _err := assertAsBytes(request.Body)
 				if _err != nil {
 					return _err
 				}
 
 				hashedRequestPayload = hexEncode(hashBytes(byteObj, signatureAlgorithm))
-				request.Stream = tea.ToReader(byteObj)
-			} else if tea.BoolValue(util.EqualString(request.ReqBodyType, tea.String("json"))) {
-				jsonObj := util.ToJSONString(request.Body)
-				hashedRequestPayload = hexEncode(hashBytes(util.ToBytes(jsonObj), signatureAlgorithm))
-				request.Stream = tea.ToReader(jsonObj)
-				request.Headers["content-type"] = tea.String("application/json; charset=utf-8")
+				request.Stream = dara.ToReader(byteObj)
+			} else if dara.BoolValue(equalString(request.ReqBodyType, dara.String("json"))) {
+				jsonObj := toJSONString(request.Body)
+				hashedRequestPayload = hexEncode(hashBytes(toBytes(jsonObj), signatureAlgorithm))
+				request.Stream = dara.ToReader(jsonObj)
+				request.Headers["content-type"] = dara.String("application/json; charset=utf-8")
 			} else {
-				m, _err := util.AssertAsMap(request.Body)
+				m, _err := assertAsMap(request.Body)
 				if _err != nil {
 					return _err
 				}
 
-				formObj := openapiutil.ToForm(m)
-				hashedRequestPayload = hexEncode(hashBytes(util.ToBytes(formObj), signatureAlgorithm))
-				request.Stream = tea.ToReader(formObj)
-				request.Headers["content-type"] = tea.String("application/x-www-form-urlencoded")
+				formObj := toForm(m)
+				hashedRequestPayload = hexEncode(hashBytes(toBytes(formObj), signatureAlgorithm))
+				request.Stream = dara.ToReader(formObj)
+				request.Headers["content-type"] = dara.String("application/x-www-form-urlencoded")
 			}
 
 		}
 
 	}
 
-	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+	if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
 		request.Headers["x-acs-content-sm3"] = hashedRequestPayload
 	} else {
 		request.Headers["x-acs-content-sha256"] = hashedRequestPayload
 	}
 
-	if !tea.BoolValue(util.EqualString(request.AuthType, tea.String("Anonymous"))) {
+	if !dara.BoolValue(equalString(request.AuthType, dara.String("Anonymous"))) {
 		credential := request.Credential
-		if tea.BoolValue(util.IsUnset(credential)) {
-			_err = tea.NewSDKError(map[string]interface{}{
+		if dara.BoolValue(isUnset(credential)) {
+			_err = dara.NewSDKError(map[string]interface{}{
 				"code":    "ParameterMissing",
 				"message": "'config.credential' can not be unset",
 			})
@@ -139,30 +136,30 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 			return _err
 		}
 
-		if !tea.BoolValue(util.Empty(credentialModel.ProviderName)) {
+		if !dara.BoolValue(emptyString(credentialModel.ProviderName)) {
 			request.Headers["x-acs-credentials-provider"] = credentialModel.ProviderName
 		}
 
 		authType := credentialModel.Type
-		if tea.BoolValue(util.EqualString(authType, tea.String("bearer"))) {
+		if dara.BoolValue(equalString(authType, dara.String("bearer"))) {
 			bearerToken := credentialModel.BearerToken
 			request.Headers["x-acs-bearer-token"] = bearerToken
-			request.Headers["x-acs-signature-type"] = tea.String("BEARERTOKEN")
-			request.Headers["Authorization"] = tea.String("Bearer " + tea.StringValue(bearerToken))
-		} else if tea.BoolValue(util.EqualString(authType, tea.String("id_token"))) {
+			request.Headers["x-acs-signature-type"] = dara.String("BEARERTOKEN")
+			request.Headers["Authorization"] = dara.String("Bearer " + dara.StringValue(bearerToken))
+		} else if dara.BoolValue(equalString(authType, dara.String("id_token"))) {
 			idToken := credentialModel.SecurityToken
 			request.Headers["x-acs-zero-trust-idtoken"] = idToken
 		} else {
 			accessKeyId := credentialModel.AccessKeyId
 			accessKeySecret := credentialModel.AccessKeySecret
 			securityToken := credentialModel.SecurityToken
-			if !tea.BoolValue(util.Empty(securityToken)) {
+			if !dara.BoolValue(emptyString(securityToken)) {
 				request.Headers["x-acs-accesskey-id"] = accessKeyId
 				request.Headers["x-acs-security-token"] = securityToken
 			}
 
-			dateNew := subString(date, tea.Int(0), tea.Int(10))
-			dateNew = replaceString(dateNew, tea.String("-"), tea.String(""), nil)
+			dateNew := subString(date, dara.Int(0), dara.Int(10))
+			dateNew = replaceString(dateNew, dara.String("-"), dara.String(""), nil)
 			region := client.GetRegion(request.ProductId, config.Endpoint, config.RegionId)
 			signingkey := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
 			request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
@@ -179,27 +176,27 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
 	request := context.Request
 	response := context.Response
-	if tea.BoolValue(util.Is4xx(response.StatusCode)) || tea.BoolValue(util.Is5xx(response.StatusCode)) {
+	if dara.BoolValue(is4xx(response.StatusCode)) || dara.BoolValue(is5xx(response.StatusCode)) {
 		err := map[string]interface{}{}
-		if !tea.BoolValue(util.IsUnset(response.Headers["content-type"])) && tea.BoolValue(containsString(response.Headers["content-type"], tea.String("text/xml"))) {
-			_str, _err := util.ReadAsString(response.Body)
+		if !dara.BoolValue(isUnset(response.Headers["content-type"])) && dara.BoolValue(containsString(response.Headers["content-type"], dara.String("text/xml"))) {
+			_str, _err := readAsString(response.Body)
 			if _err != nil {
 				return _err
 			}
 
 			respMap := xml.ParseXml(_str, nil)
-			err, _err = util.AssertAsMap(respMap["Error"])
+			err, _err = assertAsMap(respMap["Error"])
 			if _err != nil {
 				return _err
 			}
 
 		} else {
-			_res, _err := util.ReadAsJSON(response.Body)
+			_res, _err := dara.ReadAsJSON(response.Body)
 			if _err != nil {
 				return _err
 			}
 
-			err, _err = util.AssertAsMap(_res)
+			err, _err = assertAsMap(_res)
 			if _err != nil {
 				return _err
 			}
@@ -207,63 +204,63 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		}
 
 		requestId := client.DefaultAny(err["RequestId"], err["requestId"])
-		if !tea.BoolValue(util.IsUnset(response.Headers["x-acs-request-id"])) {
+		if !dara.BoolValue(isUnset(response.Headers["x-acs-request-id"])) {
 			requestId = response.Headers["x-acs-request-id"]
 		}
 
 		err["statusCode"] = response.StatusCode
-		_err = tea.NewSDKError(map[string]interface{}{
-			"code":               tea.ToString(client.DefaultAny(err["Code"], err["code"])),
-			"message":            "code: " + tea.ToString(tea.IntValue(response.StatusCode)) + ", " + tea.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + tea.ToString(requestId),
+		_err = dara.NewSDKError(map[string]interface{}{
+			"code":               dara.ToString(client.DefaultAny(err["Code"], err["code"])),
+			"message":            "code: " + dara.ToString(dara.IntValue(response.StatusCode)) + ", " + dara.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + dara.ToString(requestId),
 			"data":               err,
-			"description":        tea.ToString(client.DefaultAny(err["Description"], err["description"])),
+			"description":        dara.ToString(client.DefaultAny(err["Description"], err["description"])),
 			"accessDeniedDetail": client.DefaultAny(err["AccessDeniedDetail"], err["accessDeniedDetail"]),
 		})
 		return _err
 	}
 
-	if tea.BoolValue(util.EqualNumber(response.StatusCode, tea.Int(204))) {
-		_, _err = util.ReadAsString(response.Body)
+	if dara.BoolValue(equalNumber(response.StatusCode, dara.Int(204))) {
+		_, _err = readAsString(response.Body)
 		if _err != nil {
 			return _err
 		}
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("binary"))) {
+	} else if dara.BoolValue(equalString(request.BodyType, dara.String("binary"))) {
 		response.DeserializedBody = response.Body
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("byte"))) {
-		byt, _err := util.ReadAsBytes(response.Body)
+	} else if dara.BoolValue(equalString(request.BodyType, dara.String("byte"))) {
+		byt, _err := dara.ReadAsBytes(response.Body)
 		if _err != nil {
 			return _err
 		}
 
 		response.DeserializedBody = byt
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("string"))) {
-		str, _err := util.ReadAsString(response.Body)
+	} else if dara.BoolValue(equalString(request.BodyType, dara.String("string"))) {
+		str, _err := readAsString(response.Body)
 		if _err != nil {
 			return _err
 		}
 
 		response.DeserializedBody = str
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("json"))) {
-		obj, _err := util.ReadAsJSON(response.Body)
+	} else if dara.BoolValue(equalString(request.BodyType, dara.String("json"))) {
+		obj, _err := dara.ReadAsJSON(response.Body)
 		if _err != nil {
 			return _err
 		}
 
-		res, _err := util.AssertAsMap(obj)
+		res, _err := assertAsMap(obj)
 		if _err != nil {
 			return _err
 		}
 
 		response.DeserializedBody = res
-	} else if tea.BoolValue(util.EqualString(request.BodyType, tea.String("array"))) {
-		arr, _err := util.ReadAsJSON(response.Body)
+	} else if dara.BoolValue(equalString(request.BodyType, dara.String("array"))) {
+		arr, _err := dara.ReadAsJSON(response.Body)
 		if _err != nil {
 			return _err
 		}
 
 		response.DeserializedBody = arr
 	} else {
-		response.DeserializedBody, _err = util.ReadAsString(response.Body)
+		response.DeserializedBody, _err = readAsString(response.Body)
 		if _err != nil {
 			return _err
 		}
@@ -274,17 +271,17 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 }
 
 func (client *Client) GetEndpoint(productId *string, regionId *string, endpointRule *string, network *string, suffix *string, endpointMap map[string]*string, endpoint *string) (_result *string, _err error) {
-	if !tea.BoolValue(util.Empty(endpoint)) {
+	if !dara.BoolValue(emptyString(endpoint)) {
 		_result = endpoint
 		return _result, _err
 	}
 
-	if !tea.BoolValue(util.IsUnset(endpointMap)) && !tea.BoolValue(util.Empty(endpointMap[tea.StringValue(regionId)])) {
-		_result = endpointMap[tea.StringValue(regionId)]
+	if !dara.BoolValue(isUnset(endpointMap)) && !dara.BoolValue(emptyString(endpointMap[dara.StringValue(regionId)])) {
+		_result = endpointMap[dara.StringValue(regionId)]
 		return _result, _err
 	}
 
-	_body, _err := endpointutil.GetEndpointRules(productId, regionId, endpointRule, network, suffix)
+	_body, _err := getEndpointRules(productId, regionId, endpointRule, network, suffix)
 	if _err != nil {
 		return _result, _err
 	}
@@ -293,7 +290,7 @@ func (client *Client) GetEndpoint(productId *string, regionId *string, endpointR
 }
 
 func (client *Client) DefaultAny(inputValue interface{}, defaultValue interface{}) (_result interface{}) {
-	if tea.BoolValue(util.IsUnset(inputValue)) {
+	if dara.BoolValue(isUnset(inputValue)) {
 		_result = defaultValue
 		return _result
 	}
@@ -308,18 +305,18 @@ func (client *Client) GetAuthorization(pathname *string, method *string, query m
 		return _result, _err
 	}
 	signedHeaders := client.GetSignedHeaders(headers)
-	signedHeadersStr := join(signedHeaders, tea.String(";"))
-	_result = tea.String(tea.StringValue(signatureAlgorithm) + " Credential=" + tea.StringValue(ak) + "/" + tea.StringValue(date) + "/" + tea.StringValue(region) + "/" + tea.StringValue(product) + "/" + tea.StringValue(client.SignPrefix) + "_request,SignedHeaders=" + tea.StringValue(signedHeadersStr) + ",Signature=" + tea.StringValue(signature))
+	signedHeadersStr := join(signedHeaders, dara.String(";"))
+	_result = dara.String(dara.StringValue(signatureAlgorithm) + " Credential=" + dara.StringValue(ak) + "/" + dara.StringValue(date) + "/" + dara.StringValue(region) + "/" + dara.StringValue(product) + "/" + dara.StringValue(client.SignPrefix) + "_request,SignedHeaders=" + dara.StringValue(signedHeadersStr) + ",Signature=" + dara.StringValue(signature))
 	return _result, _err
 }
 
 func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string, _err error) {
-	canonicalURI := tea.String("/")
-	if !tea.BoolValue(util.Empty(pathname)) {
+	canonicalURI := dara.String("/")
+	if !dara.BoolValue(emptyString(pathname)) {
 		canonicalURI = pathname
 	}
 
-	stringToSign := tea.String("")
+	stringToSign := dara.String("")
 	canonicalizedResource := client.BuildCanonicalizedResource(query)
 	canonicalizedHeaders := client.BuildCanonicalizedHeaders(headers)
 	signedHeaders := client.GetSignedHeaders(headers)
@@ -327,14 +324,14 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 	if _err != nil {
 		return _result, _err
 	}
-	signedHeadersStr := join(signedHeaders, tea.String(";"))
-	stringToSign = tea.String(tea.StringValue(method) + "\n" + tea.StringValue(canonicalURI) + "\n" + tea.StringValue(canonicalizedResource) + "\n" + tea.StringValue(canonicalizedHeaders) + "\n" + tea.StringValue(signedHeadersStr) + "\n" + tea.StringValue(payload))
-	hex := hexEncode(hashBytes(util.ToBytes(stringToSign), signatureAlgorithm))
-	stringToSign = tea.String(tea.StringValue(signatureAlgorithm) + "\n" + tea.StringValue(hex))
-	signature := util.ToBytes(tea.String(""))
-	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+	signedHeadersStr := join(signedHeaders, dara.String(";"))
+	stringToSign = dara.String(dara.StringValue(method) + "\n" + dara.StringValue(canonicalURI) + "\n" + dara.StringValue(canonicalizedResource) + "\n" + dara.StringValue(canonicalizedHeaders) + "\n" + dara.StringValue(signedHeadersStr) + "\n" + dara.StringValue(payload))
+	hex := hexEncode(hashBytes(toBytes(stringToSign), signatureAlgorithm))
+	stringToSign = dara.String(dara.StringValue(signatureAlgorithm) + "\n" + dara.StringValue(hex))
+	signature := toBytes(dara.String(""))
+	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
 		signature = hmacSHA256ByBytes(stringToSign, signingkey)
-	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
 		signature = hmacSM3ByBytes(stringToSign, signingkey)
 	}
 
@@ -344,8 +341,8 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 }
 
 func (client *Client) ValidateSignedHeaders(signedHeaders []*string) (_err error) {
-	if !tea.BoolValue(listContains(signedHeaders, tea.String("host"))) || !tea.BoolValue(listContains(signedHeaders, tea.String("x-acs-date"))) {
-		_err = tea.NewSDKError(map[string]interface{}{
+	if !dara.BoolValue(listContains(signedHeaders, dara.String("host"))) || !dara.BoolValue(listContains(signedHeaders, dara.String("x-acs-date"))) {
+		_err = dara.NewSDKError(map[string]interface{}{
 			"code":    "InvalidSignedHeaders",
 			"message": "signed headers must include host and x-acs-date",
 		})
@@ -355,33 +352,33 @@ func (client *Client) ValidateSignedHeaders(signedHeaders []*string) (_err error
 }
 
 func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte) {
-	sc1 := tea.String(tea.StringValue(client.SignPrefix) + tea.StringValue(secret))
-	sc2 := util.ToBytes(tea.String(""))
-	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+	sc1 := dara.String(dara.StringValue(client.SignPrefix) + dara.StringValue(secret))
+	sc2 := toBytes(dara.String(""))
+	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
 		sc2 = hmacSHA256(date, sc1)
-	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
 		sc2 = hmacSM3(date, sc1)
 	}
 
-	sc3 := util.ToBytes(tea.String(""))
-	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+	sc3 := toBytes(dara.String(""))
+	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
 		sc3 = hmacSHA256ByBytes(region, sc2)
-	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
 		sc3 = hmacSM3ByBytes(region, sc2)
 	}
 
-	sc4 := util.ToBytes(tea.String(""))
-	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
+	sc4 := toBytes(dara.String(""))
+	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
 		sc4 = hmacSHA256ByBytes(product, sc3)
-	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
 		sc4 = hmacSM3ByBytes(product, sc3)
 	}
 
-	hmac := util.ToBytes(tea.String(""))
-	if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sha256)) {
-		hmac = hmacSHA256ByBytes(tea.String(tea.StringValue(client.SignPrefix)+"_request"), sc4)
-	} else if tea.BoolValue(util.EqualString(signatureAlgorithm, client.Sm3)) {
-		hmac = hmacSM3ByBytes(tea.String(tea.StringValue(client.SignPrefix)+"_request"), sc4)
+	hmac := toBytes(dara.String(""))
+	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
+		hmac = hmacSHA256ByBytes(dara.String(dara.StringValue(client.SignPrefix)+"_request"), sc4)
+	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
+		hmac = hmacSM3ByBytes(dara.String(dara.StringValue(client.SignPrefix)+"_request"), sc4)
 	}
 
 	_result = hmac
@@ -389,22 +386,22 @@ func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, 
 }
 
 func (client *Client) GetRegion(product *string, endpoint *string, regionId *string) (_result *string) {
-	if !tea.BoolValue(util.Empty(regionId)) {
+	if !dara.BoolValue(emptyString(regionId)) {
 		_result = regionId
 		return _result
 	}
 
-	region := tea.String("center")
-	if tea.BoolValue(util.Empty(product)) || tea.BoolValue(util.Empty(endpoint)) {
+	region := dara.String("center")
+	if dara.BoolValue(emptyString(product)) || dara.BoolValue(emptyString(endpoint)) {
 		_result = region
 		return _result
 	}
 
-	strs := splitString(endpoint, tea.String(":"), nil)
+	strs := splitString(endpoint, dara.String(":"), nil)
 	withoutPort := strs[0]
-	preRegion := replaceString(withoutPort, tea.String("."+tea.StringValue(client.EndpointSuffix)), tea.String(""), nil)
-	nodes := splitString(preRegion, tea.String("."), nil)
-	if tea.BoolValue(util.EqualNumber(sizeOf(nodes), tea.Int(2))) {
+	preRegion := replaceString(withoutPort, dara.String("."+dara.StringValue(client.EndpointSuffix)), dara.String(""), nil)
+	nodes := splitString(preRegion, dara.String("."), nil)
+	if dara.BoolValue(equalNumber(sizeOf(nodes), dara.Int(2))) {
 		region = nodes[1]
 	}
 
@@ -413,18 +410,18 @@ func (client *Client) GetRegion(product *string, endpoint *string, regionId *str
 }
 
 func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_result *string) {
-	canonicalizedResource := tea.String("")
-	if !tea.BoolValue(util.IsUnset(query)) {
+	canonicalizedResource := dara.String("")
+	if !dara.BoolValue(isUnset(query)) {
 		queryArray := keySet(query)
 		sortedQueryArray := ascSort(queryArray)
-		separator := tea.String("")
+		separator := dara.String("")
 		for _, key := range sortedQueryArray {
-			canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(separator) + tea.StringValue(percentEncode(key)) + "=")
-			if !tea.BoolValue(util.Empty(query[tea.StringValue(key)])) {
-				canonicalizedResource = tea.String(tea.StringValue(canonicalizedResource) + tea.StringValue(percentEncode(query[tea.StringValue(key)])))
+			canonicalizedResource = dara.String(dara.StringValue(canonicalizedResource) + dara.StringValue(separator) + dara.StringValue(percentEncode(key)) + "=")
+			if !dara.BoolValue(emptyString(query[dara.StringValue(key)])) {
+				canonicalizedResource = dara.String(dara.StringValue(canonicalizedResource) + dara.StringValue(percentEncode(query[dara.StringValue(key)])))
 			}
 
-			separator = tea.String("&")
+			separator = dara.String("&")
 		}
 	}
 
@@ -438,21 +435,21 @@ func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_re
 	newHeaders := make(map[string]*string)
 	for _, key := range headersArray {
 		lowerKey := toLower(key)
-		value := headers[tea.StringValue(key)]
-		if !tea.BoolValue(util.IsUnset(value)) {
-			if tea.BoolValue(util.IsUnset(newHeaders[tea.StringValue(lowerKey)])) || tea.BoolValue(equalsString(lowerKey, tea.String("host"))) {
-				newHeaders[tea.StringValue(lowerKey)] = trimString(value)
+		value := headers[dara.StringValue(key)]
+		if !dara.BoolValue(isUnset(value)) {
+			if dara.BoolValue(isUnset(newHeaders[dara.StringValue(lowerKey)])) || dara.BoolValue(equalsString(lowerKey, dara.String("host"))) {
+				newHeaders[dara.StringValue(lowerKey)] = trimString(value)
 			} else {
-				newHeaders[tea.StringValue(lowerKey)] = tea.String(tea.StringValue(newHeaders[tea.StringValue(lowerKey)]) + "," + tea.StringValue(trimString(value)))
+				newHeaders[dara.StringValue(lowerKey)] = dara.String(dara.StringValue(newHeaders[dara.StringValue(lowerKey)]) + "," + dara.StringValue(trimString(value)))
 			}
 
 		}
 
 	}
-	canonicalizedHeaders := tea.String("")
+	canonicalizedHeaders := dara.String("")
 	sortedHeaders := client.GetSignedHeaders(headers)
 	for _, header := range sortedHeaders {
-		canonicalizedHeaders = tea.String(tea.StringValue(canonicalizedHeaders) + tea.StringValue(header) + ":" + tea.StringValue(newHeaders[tea.StringValue(header)]) + "\n")
+		canonicalizedHeaders = dara.String(dara.StringValue(canonicalizedHeaders) + dara.StringValue(header) + ":" + dara.StringValue(newHeaders[dara.StringValue(header)]) + "\n")
 	}
 	_result = canonicalizedHeaders
 	return _result
@@ -463,8 +460,8 @@ func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*s
 	newHeadersArray := []*string{}
 	for _, key := range headersArray {
 		lowerKey := toLower(key)
-		value := headers[tea.StringValue(key)]
-		if !tea.BoolValue(util.IsUnset(value)) {
+		value := headers[dara.StringValue(key)]
+		if !dara.BoolValue(isUnset(value)) {
 			newHeadersArray = append(newHeadersArray, lowerKey)
 		}
 
@@ -472,8 +469,8 @@ func (client *Client) GetSignedHeaders(headers map[string]*string) (_result []*s
 	sortedHeadersArray := ascSort(newHeadersArray)
 	result := []*string{}
 	for _, key := range sortedHeadersArray {
-		if tea.BoolValue(hasPrefix(key, tea.String("x-acs-"))) || tea.BoolValue(equalsString(key, tea.String("host"))) || tea.BoolValue(equalsString(key, tea.String("content-type"))) {
-			if !tea.BoolValue(listContains(result, key)) {
+		if dara.BoolValue(hasPrefix(key, dara.String("x-acs-"))) || dara.BoolValue(equalsString(key, dara.String("host"))) || dara.BoolValue(equalsString(key, dara.String("content-type"))) {
+			if !dara.BoolValue(listContains(result, key)) {
 				result = append(result, key)
 			}
 
