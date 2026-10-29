@@ -53,7 +53,14 @@ jobs:
 
     - name: Run test case
       run: composer test
-    
-    - name: Code coverage
-      run: bash <(curl -s https://codecov.io/bash) -cF php
+    - name: Verify coverage report
+      if: matrix.php-versions == '8.1'
+      run: test -f cache/coverage.clover
+    - uses: codecov/codecov-action@v4
+      if: matrix.php-versions == '8.1'
+      with:
+        files: alibabacloud-gateway-pop/php/cache/coverage.clover
+        flags: php
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
 

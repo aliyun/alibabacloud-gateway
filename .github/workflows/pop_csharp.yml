@@ -34,6 +34,12 @@ jobs:
       run: cd core/ && dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test tests/ /p:AltCover=true
-    - name: CodeCov
-      run: bash <(curl -s https://codecov.io/bash) -cF csharp
+    - name: Verify coverage report
+      run: test -f tests/coverage.xml
+    - uses: codecov/codecov-action@v4
+      with:
+        files: alibabacloud-gateway-pop/csharp/tests/coverage.xml
+        flags: csharp
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
 
