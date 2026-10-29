@@ -41,7 +41,7 @@ trait Runtime
 
     private static function hash($raw, $algorithm)
     {
-        if (empty($raw) || empty($algorithm)) {
+        if (!is_array($raw) || empty($algorithm)) {
             return null;
         }
         $str = BytesUtil::toString($raw);

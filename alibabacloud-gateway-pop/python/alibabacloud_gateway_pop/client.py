@@ -67,7 +67,7 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        date = OpenApisupport.get_timestamp()
+        date = support.get_timestamp()
         request.headers = TeaCore.merge({
             'host': config.endpoint,
             'x-acs-version': request.version,
@@ -98,7 +98,7 @@ class Client(SPIClient):
                     request.headers['content-type'] = 'application/json; charset=utf-8'
                 else:
                     m = support.assert_as_map(request.body)
-                    form_obj = OpenApisupport.to_form(m)
+                    form_obj = support.to_form(m)
                     hashed_request_payload = codec.hex_encode(codec.hash_bytes(support.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
@@ -145,7 +145,7 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        date = OpenApisupport.get_timestamp()
+        date = support.get_timestamp()
         request.headers = TeaCore.merge({
             'host': config.endpoint,
             'x-acs-version': request.version,
@@ -176,7 +176,7 @@ class Client(SPIClient):
                     request.headers['content-type'] = 'application/json; charset=utf-8'
                 else:
                     m = support.assert_as_map(request.body)
-                    form_obj = OpenApisupport.to_form(m)
+                    form_obj = support.to_form(m)
                     hashed_request_payload = codec.hex_encode(codec.hash_bytes(support.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
@@ -324,7 +324,7 @@ class Client(SPIClient):
             return endpoint
         if not support.is_unset(endpoint_map) and not support.empty(endpoint_map.get(region_id)):
             return endpoint_map.get(region_id)
-        return Endpointsupport.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix)
+        return support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix)
 
     def default_any(
         self,

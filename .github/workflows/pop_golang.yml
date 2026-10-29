@@ -41,5 +41,11 @@ jobs:
       run: go mod tidy
     - name: Test
       run: go test -race -coverprofile=coverage.txt -covermode=atomic ./client/...
-    - name: CodeCov
-      run: bash <(curl -s https://codecov.io/bash) -cF golang
+    - name: Verify coverage report
+      run: test -f coverage.txt
+    - uses: codecov/codecov-action@v4
+      with:
+        files: alibabacloud-gateway-pop/golang/coverage.txt
+        flags: golang
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false

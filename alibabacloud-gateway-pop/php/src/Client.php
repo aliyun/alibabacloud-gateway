@@ -161,7 +161,8 @@ class Client extends DarabonbaGatewaySpiClient
         $response = $context->response;
         if (self::is4xx($response->statusCode) || self::is5xx($response->statusCode)) {
             $err = [];
-            if (!self::isUnset(@$response->headers["content-type"]) && self::contains(@$response->headers["content-type"], "text/xml")) {
+            $contentType = isset($response->headers["content-type"]) ? $response->headers["content-type"] : null;
+            if (!self::isUnset($contentType) && self::contains($contentType, "text/xml")) {
                 $_str = self::readAsString($response->body);
                 $respMap = XML::parseXml($_str, null);
                 $err = self::assertAsMap(@$respMap["Error"]);
@@ -170,8 +171,9 @@ class Client extends DarabonbaGatewaySpiClient
                 $err = self::assertAsMap($_res);
             }
             $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
-            if (!self::isUnset(@$response->headers["x-acs-request-id"])) {
-                $requestId = @$response->headers["x-acs-request-id"];
+            $requestIdHeader = isset($response->headers["x-acs-request-id"]) ? $response->headers["x-acs-request-id"] : null;
+            if (!self::isUnset($requestIdHeader)) {
+                $requestId = $requestIdHeader;
             }
             @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
@@ -392,7 +394,8 @@ class Client extends DarabonbaGatewaySpiClient
             $lowerKey = self::toLower($key);
             $value = @$headers[$key];
             if (!self::isUnset($value)) {
-                if (self::isUnset(@$newHeaders[$lowerKey]) || self::equals($lowerKey, "host")) {
+                $existingHeader = array_key_exists($lowerKey, $newHeaders) ? $newHeaders[$lowerKey] : null;
+                if (self::isUnset($existingHeader) || self::equals($lowerKey, "host")) {
                     $newHeaders[$lowerKey] = self::trim($value);
                 } else {
                     $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . self::trim($value) . "";
