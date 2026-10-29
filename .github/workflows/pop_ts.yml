@@ -36,5 +36,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run test-cov
-    - name: CodeCov
-      run: bash <(curl -s https://codecov.io/bash) -cF ts
+    - name: Verify coverage report
+      run: test -f coverage/lcov.info
+    - uses: codecov/codecov-action@v4
+      with:
+        files: alibabacloud-gateway-pop/ts/coverage/lcov.info
+        flags: ts
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false

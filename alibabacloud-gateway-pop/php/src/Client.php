@@ -86,7 +86,7 @@ class Client extends DarabonbaGatewaySpiClient
             $request->headers["x-acs-action"] = $request->action;
         }
         $signatureAlgorithm = Utils::defaultString($request->signatureAlgorithm, $this->_sha256);
-        $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash(Utils::toBytes(""), $signatureAlgorithm));
+        $hashedRequestPayload = EncodeUtil::hexEncode($this->hashBytes(Utils::toBytes(""), $signatureAlgorithm));
         if (!Utils::isUnset($request->stream)) {
             $tmp = Utils::readAsBytes($request->stream);
             $hashedRequestPayload = EncodeUtil::hexEncode(EncodeUtil::hash($tmp, $signatureAlgorithm));
@@ -167,7 +167,8 @@ class Client extends DarabonbaGatewaySpiClient
         $response = $context->response;
         if (Utils::is4xx($response->statusCode) || Utils::is5xx($response->statusCode)) {
             $err = [];
-            if (!Utils::isUnset(@$response->headers["content-type"]) && StringUtil::contains(@$response->headers["content-type"], "text/xml")) {
+            $contentType = isset($response->headers["content-type"]) ? $response->headers["content-type"] : null;
+            if (!Utils::isUnset($contentType) && StringUtil::contains($contentType, "text/xml")) {
                 $_str = Utils::readAsString($response->body);
                 $respMap = XML::parseXml($_str, null);
                 $err = Utils::assertAsMap(@$respMap["Error"]);
@@ -176,8 +177,9 @@ class Client extends DarabonbaGatewaySpiClient
                 $err = Utils::assertAsMap($_res);
             }
             $requestId = $this->defaultAny(@$err["RequestId"], @$err["requestId"]);
-            if (!Utils::isUnset(@$response->headers["x-acs-request-id"])) {
-                $requestId = @$response->headers["x-acs-request-id"];
+            $requestIdHeader = isset($response->headers["x-acs-request-id"]) ? $response->headers["x-acs-request-id"] : null;
+            if (!Utils::isUnset($requestIdHeader)) {
+                $requestId = $requestIdHeader;
             }
             @$err["statusCode"] = $response->statusCode;
             throw new TeaError([
@@ -398,7 +400,8 @@ class Client extends DarabonbaGatewaySpiClient
             $lowerKey = StringUtil::toLower($key);
             $value = @$headers[$key];
             if (!Utils::isUnset($value)) {
-                if (Utils::isUnset(@$newHeaders[$lowerKey]) || StringUtil::equals($lowerKey, "host")) {
+                $existingHeader = array_key_exists($lowerKey, $newHeaders) ? $newHeaders[$lowerKey] : null;
+                if (Utils::isUnset($existingHeader) || StringUtil::equals($lowerKey, "host")) {
                     $newHeaders[$lowerKey] = StringUtil::trim($value);
                 } else {
                     $newHeaders[$lowerKey] = "" . @$newHeaders[$lowerKey] . "," . StringUtil::trim($value) . "";
@@ -456,5 +459,29 @@ class Client extends DarabonbaGatewaySpiClient
             }
         }
         return $result;
+    }
+
+    /**
+     * encode-util 0.0.2 treats an empty byte array as unset and returns null.
+     * An empty payload still has a defined digest, matching the other languages.
+     *
+     * @param array $raw
+     * @param string $algorithm
+     * @return array
+     */
+    private function hashBytes($raw, $algorithm)
+    {
+        $hashed = EncodeUtil::hash($raw, $algorithm);
+        if (!is_null($hashed)) {
+            return $hashed;
+        }
+        if (empty($raw)) {
+            if (false !== strpos($algorithm, "SM3")) {
+                $hashed = Utils::toBytes(hex2bin((new \OneSm\Sm3())->sign("")));
+            } else {
+                $hashed = Utils::toBytes(hash("sha256", "", true));
+            }
+        }
+        return $hashed;
     }
 }

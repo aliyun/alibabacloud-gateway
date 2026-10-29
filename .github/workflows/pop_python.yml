@@ -34,5 +34,12 @@ jobs:
     - name: Test with unittest
       run: |
         coverage run -m unittest discover
-    - name: CodeCov
-      run: bash <(curl -s https://codecov.io/bash) -cF python
+        coverage xml -o coverage.xml
+    - name: Verify coverage report
+      run: test -f coverage.xml
+    - uses: codecov/codecov-action@v4
+      with:
+        files: alibabacloud-gateway-pop/python/coverage.xml
+        flags: python
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
