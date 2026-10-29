@@ -56,10 +56,19 @@ func (f fixedCredential) GetType() *string {
 	return f.model.Type
 }
 
-type errReader struct{}
+// A non-zero field keeps this value visible to tea-utils IsUnset.
+// On Go 1.13, IsUnset treats the zero value of a struct as unset, so an
+// empty reader never reaches Read.
+type errReader struct {
+	failed bool
+}
 
 func (errReader) Read([]byte) (int, error) {
 	return 0, errors.New("read failed")
+}
+
+func failingReader() errReader {
+	return errReader{failed: true}
 }
 
 func akCredential() credentials.Credential {
@@ -348,7 +357,7 @@ func TestModifyRequestBodiesAndAuth(t *testing.T) {
 	utils.AssertNotNil(t, err)
 
 	badStream := baseRequest()
-	badStream.Stream = errReader{}
+	badStream.Stream = failingReader()
 	err = client.ModifyRequest(newContext(badStream, baseConfig()), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
 }
@@ -427,21 +436,21 @@ func TestModifyResponse(t *testing.T) {
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "plain", tea.StringValue(otherCtx.Response.DeserializedBody.(*string)))
 
-	err = client.ModifyResponse(responseContext(400, "application/json", errReader{}, "json"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(400, "application/json", failingReader(), "json"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(500, "text/xml", errReader{}, "xml"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(500, "text/xml", failingReader(), "xml"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(200, "", errReader{}, "string"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(200, "", failingReader(), "string"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(200, "", errReader{}, "byte"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(200, "", failingReader(), "byte"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(200, "", errReader{}, "json"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(200, "", failingReader(), "json"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(200, "", errReader{}, "array"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(200, "", failingReader(), "array"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(200, "", errReader{}, "other"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(200, "", failingReader(), "other"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	err = client.ModifyResponse(responseContext(204, "", errReader{}, "string"), &spi.AttributeMap{})
+	err = client.ModifyResponse(responseContext(204, "", failingReader(), "string"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
 
 	badJSON := responseContext(200, "", strings.NewReader(`{"ok":`), "json")
