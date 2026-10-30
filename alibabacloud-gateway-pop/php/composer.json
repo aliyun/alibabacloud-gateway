@@ -15,7 +15,6 @@
     "alibabacloud/darabonba": "^1.0.6",
     "alibabacloud/gateway-spi": "^1",
     "alibabacloud/tea": "^3.2.1",
-    "alibabacloud/tea-xml": "^0.2",
     "lizhichao/one-sm": "^1.5"
   },
   "autoload": {

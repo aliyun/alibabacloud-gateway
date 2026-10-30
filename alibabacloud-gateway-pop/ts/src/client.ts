@@ -2,7 +2,6 @@
 import SPI, * as $SPI from '@alicloud/gateway-spi';
 import Credential, * as $Credential from '@alicloud/credentials';
 import * as runtime from './runtime';
-import XML from '@alicloud/tea-xml';
 import * as codec from './codec';
 import * as $tea from '@alicloud/tea-typescript';
 
@@ -144,7 +143,7 @@ export default class Client extends SPI {
       let err : {[key: string ]: any} = { };
       if (!runtime.isUnset(response.headers["content-type"]) && codec.contains(response.headers["content-type"], "text/xml")) {
         let _str = await runtime.readAsString(response.body);
-        let respMap = XML.parseXml(_str, null);
+        let respMap = runtime.parseXml(_str);
         err = runtime.assertAsMap(respMap["Error"]);
       } else {
         let _res = await runtime.readAsJSON(response.body);

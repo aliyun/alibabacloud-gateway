@@ -302,7 +302,7 @@ namespace AlibabaCloud.GatewayPop
                 if (!Runtime.IsUnset(response.Headers.Get("content-type")) && Runtime.Contains(response.Headers.Get("content-type"), "text/xml"))
                 {
                     string _str = Runtime.ReadAsString(response.Body);
-                    Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(_str, null);
+                    Dictionary<string, object> respMap = Runtime.ParseXml(_str);
                     err = Runtime.AssertAsMap(respMap.Get("Error"));
                 }
                 else
@@ -370,7 +370,7 @@ namespace AlibabaCloud.GatewayPop
                 if (!Runtime.IsUnset(response.Headers.Get("content-type")) && Runtime.Contains(response.Headers.Get("content-type"), "text/xml"))
                 {
                     string _str = Runtime.ReadAsString(response.Body);
-                    Dictionary<string, object> respMap = AlibabaCloud.TeaXML.Client.ParseXml(_str, null);
+                    Dictionary<string, object> respMap = Runtime.ParseXml(_str);
                     err = Runtime.AssertAsMap(respMap.Get("Error"));
                 }
                 else

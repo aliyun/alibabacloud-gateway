@@ -207,7 +207,7 @@ final class Codec {
             return Class.forName(name);
         } catch (ClassNotFoundException ex) {
             throw new ClassNotFoundException(
-                    "SM3 requires org.bouncycastle:bcprov-jdk18on on the classpath", ex);
+                    "SM3 requires org.bouncycastle:bcprov-jdk15on on the classpath", ex);
         }
     }
 }

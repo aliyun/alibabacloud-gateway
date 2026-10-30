@@ -3,7 +3,6 @@ package client
 
 import (
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
-	xml "github.com/alibabacloud-go/tea-xml/service"
 	"github.com/alibabacloud-go/tea/dara"
 )
 
@@ -184,7 +183,7 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return _err
 			}
 
-			respMap := xml.ParseXml(_str, nil)
+			respMap := parseXml(_str)
 			err, _err = assertAsMap(respMap["Error"])
 			if _err != nil {
 				return _err

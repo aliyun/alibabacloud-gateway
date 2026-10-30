@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto.Digests;
@@ -507,6 +508,64 @@ namespace AlibabaCloud.GatewayPop
                 return value.Value;
             }
             return token;
+        }
+
+        internal static Dictionary<string, object> ParseXml(string xml)
+        {
+            if (string.IsNullOrEmpty(xml))
+            {
+                return new Dictionary<string, object>();
+            }
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.DtdProcessing = DtdProcessing.Prohibit;
+            settings.XmlResolver = null;
+            XmlDocument document = new XmlDocument();
+            document.XmlResolver = null;
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml), settings))
+            {
+                document.Load(reader);
+            }
+            XmlElement root = document.DocumentElement;
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            result[root.LocalName] = ReadXmlElement(root);
+            return result;
+        }
+
+        private static object ReadXmlElement(XmlElement element)
+        {
+            Dictionary<string, object> map = new Dictionary<string, object>();
+            bool hasElement = false;
+            foreach (XmlNode node in element.ChildNodes)
+            {
+                XmlElement child = node as XmlElement;
+                if (child == null)
+                {
+                    continue;
+                }
+                hasElement = true;
+                object value = ReadXmlElement(child);
+                string name = child.LocalName;
+                if (!map.ContainsKey(name))
+                {
+                    map[name] = value;
+                }
+                else
+                {
+                    List<object> list = map[name] as List<object>;
+                    if (list == null)
+                    {
+                        list = new List<object>();
+                        list.Add(map[name]);
+                        map[name] = list;
+                    }
+                    list.Add(value);
+                }
+            }
+            if (!hasElement)
+            {
+                return element.InnerText == null ? "" : element.InnerText.Trim();
+            }
+            return map;
         }
     }
 }

@@ -6,7 +6,6 @@ namespace Darabonba\GatewayPop;
 use Darabonba\GatewaySpi\Client as DarabonbaGatewaySpiClient;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Tea\Tea;
-use AlibabaCloud\Tea\XML\XML;
 
 use Darabonba\GatewaySpi\Models\InterceptorContext;
 use Darabonba\GatewaySpi\Models\AttributeMap;
@@ -164,7 +163,7 @@ class Client extends DarabonbaGatewaySpiClient
             $contentType = isset($response->headers["content-type"]) ? $response->headers["content-type"] : null;
             if (!self::isUnset($contentType) && self::contains($contentType, "text/xml")) {
                 $_str = self::readAsString($response->body);
-                $respMap = XML::parseXml($_str, null);
+                $respMap = self::parseXml($_str);
                 $err = self::assertAsMap(@$respMap["Error"]);
             } else {
                 $_res = self::readAsJSON($response->body);

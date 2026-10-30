@@ -8,9 +8,6 @@ from typing import Dict, Any, List
 
 from alibabacloud_gateway_spi.client import Client as SPIClient
 from alibabacloud_gateway_spi import models as spi_models
-from alibabacloud_tea_xml.client import Client as XMLClient
-
-
 class Client(SPIClient):
     _endpoint_suffix: str = None
     _signature_type_prefix: str = None
@@ -227,7 +224,7 @@ class Client(SPIClient):
             err = {}
             if not support.is_unset(response.headers.get('content-type')) and codec.contains(response.headers.get('content-type'), 'text/xml'):
                 _str = support.read_as_string(response.body)
-                resp_map = XMLClient.parse_xml(_str, None)
+                resp_map = support.parse_xml(_str)
                 err = support.assert_as_map(resp_map.get('Error'))
             else:
                 _res = support.read_as_json(response.body)
@@ -274,7 +271,7 @@ class Client(SPIClient):
             err = {}
             if not support.is_unset(response.headers.get('content-type')) and codec.contains(response.headers.get('content-type'), 'text/xml'):
                 _str = await support.read_as_string_async(response.body)
-                resp_map = XMLClient.parse_xml(_str, None)
+                resp_map = support.parse_xml(_str)
                 err = support.assert_as_map(resp_map.get('Error'))
             else:
                 _res = await support.read_as_json_async(response.body)

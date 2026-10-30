@@ -30,8 +30,7 @@
     "@alicloud/tea-typescript": "^1.8.0",
     "@darabonba/typescript": "^1.0.5",
     "@alicloud/gateway-spi": "^0.0.8",
-    "@alicloud/credentials": "^2.4.2",
-    "@alicloud/tea-xml": "0.0.3"
+    "@alicloud/credentials": "^2.4.2"
   },
   "files": [
     "dist",

@@ -59,32 +59,14 @@
     </dependency>
     <dependency>
       <groupId>com.aliyun</groupId>
-      <artifactId>tea-util</artifactId>
-      <version>0.2.23</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>openapiutil</artifactId>
-      <version>0.2.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>endpoint-util</artifactId>
-      <version>0.0.8</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
       <artifactId>credentials-java</artifactId>
       <version>1.0.2</version>
     </dependency>
     <!-- SM3 only. SHA-256 signing does not use this jar. Optional so product SDKs do not inherit it. -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.78.1</version>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.70</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -92,41 +74,6 @@
       <artifactId>junit</artifactId>
       <version>4.13.1</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>darabonba-encode-util</artifactId>
-      <version>0.0.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>darabonba-signature-util</artifactId>
-      <version>0.0.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>darabonba-string</artifactId>
-      <version>0.0.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>darabonba-map</artifactId>
-      <version>0.0.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>darabonba-array</artifactId>
-      <version>0.1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.aliyun</groupId>
-      <artifactId>tea-xml</artifactId>
-      <version>0.1.6</version>
     </dependency>
   </dependencies>
   <build>
@@ -136,8 +83,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
       <plugin>

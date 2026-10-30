@@ -5,12 +5,9 @@ from alibabacloud_gateway_pop import _codec as codec, _support as support
 
 
 class TestSupport(unittest.TestCase):
-    def test_percent_encode_matches_previous_and_darabonba(self):
-        from darabonba.url import Url
+    def test_percent_encode(self):
         for raw in ['', 'a b*~', '中文', 'a+b', '100%', '/', '~']:
-            previous = quote(raw, safe='~', encoding='utf-8')
-            self.assertEqual(previous, codec.percent_encode(raw))
-            self.assertEqual(previous, Url.percent_encode(raw))
+            self.assertEqual(quote(raw, safe='~', encoding='utf-8'), codec.percent_encode(raw))
 
     def test_endpoint_and_form_match_previous_libraries(self):
         self.assertEqual(

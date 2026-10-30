@@ -142,7 +142,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             java.util.Map<String, Object> err = new java.util.HashMap<>();
             if (!Support.isUnset(response.headers.get("content-type")) && Codec.contains(response.headers.get("content-type"), "text/xml")) {
                 String _str = Support.readAsString(response.body);
-                java.util.Map<String, Object> respMap = com.aliyun.teaxml.Client.parseXml(_str, null);
+                java.util.Map<String, Object> respMap = Support.parseXml(_str);
                 err = Support.assertAsMap(respMap.get("Error"));
             } else {
                 Object _res = Support.readAsJSON(response.body);

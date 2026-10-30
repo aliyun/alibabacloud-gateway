@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,13 +17,21 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 final class Support {
     private static final AtomicLong SEQ_ID = new AtomicLong(0);
@@ -278,5 +287,58 @@ final class Support {
 
     private static boolean isEmptyText(final CharSequence cs) {
         return cs == null || cs.length() == 0;
+    }
+
+    static Map<String, Object> parseXml(String xml) throws Exception {
+        if (xml == null || xml.length() == 0) {
+            return new HashMap<String, Object>();
+        }
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(false);
+        try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        } catch (Exception ignored) {
+        }
+        Element root = factory.newDocumentBuilder()
+                .parse(new ByteArrayInputStream(xml.getBytes(UTF8)))
+                .getDocumentElement();
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put(root.getNodeName(), readXmlElement(root));
+        return result;
+    }
+
+    private static Object readXmlElement(Element element) {
+        NodeList children = element.getChildNodes();
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        boolean hasElement = false;
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+            if (node.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            hasElement = true;
+            Element child = (Element) node;
+            Object value = readXmlElement(child);
+            String name = child.getNodeName();
+            if (!map.containsKey(name)) {
+                map.put(name, value);
+            } else {
+                Object existing = map.get(name);
+                List<Object> list;
+                if (existing instanceof List) {
+                    list = (List<Object>) existing;
+                } else {
+                    list = new ArrayList<Object>();
+                    list.add(existing);
+                    map.put(name, list);
+                }
+                list.add(value);
+            }
+        }
+        if (!hasElement) {
+            String text = element.getTextContent();
+            return text == null ? "" : text.trim();
+        }
+        return map;
     }
 }

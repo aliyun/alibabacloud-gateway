@@ -38,8 +38,8 @@ jobs:
     - name: Export Env
       run: export GO111MODULE=on
     - name: Tidy modules
-      # Go 1.13 and 1.14 load tests of dependencies during tidy. tea-xml pulls
-      # mxj, whose tests import go-cmp tests that reference net/netip (Go 1.18+).
+      # Go 1.13 and 1.14 load tests of dependencies during tidy. tea/dara imports
+      # mxj, whose tests pull go-cmp tests that reference net/netip (Go 1.18+).
       # The gateway itself builds and tests on these releases; tidy is not required for that.
       if: matrix.go != '1.13' && matrix.go != '1.14'
       run: go mod tidy

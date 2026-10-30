@@ -3,8 +3,10 @@ import hashlib
 import random
 import threading
 import time
+from collections import defaultdict
 from typing import Any, Dict
 from urllib.parse import urlencode
+from xml.etree import ElementTree
 
 from Tea.model import TeaModel
 from Tea.stream import READABLE, STREAM_CLASS
@@ -151,6 +153,36 @@ def _object_handler(key, value, out):
             out[key] = str(value, encoding='utf-8')
         elif not isinstance(value, STREAM_CLASS):
             out[key] = str(value)
+
+
+def parse_xml(body):
+    if not body:
+        return {}
+    return _parse_xml_element(ElementTree.fromstring(body))
+
+
+def _parse_xml_element(element):
+    children = list(element)
+    if children:
+        grouped = defaultdict(list)
+        for child in children:
+            parsed = _parse_xml_element(child)
+            for key, value in parsed.items():
+                grouped[key].append(value)
+        value = {key: items[0] if len(items) == 1 else items for key, items in grouped.items()}
+    elif element.attrib:
+        value = {}
+    else:
+        text = element.text.strip() if element.text else ''
+        return {element.tag: text}
+    if element.attrib:
+        for key, attr in element.attrib.items():
+            value['@' + key] = attr
+    if element.text:
+        text = element.text.strip()
+        if text:
+            value['#text'] = text
+    return {element.tag: value}
 
 
 def _to_form_string(val: Dict[str, Any]):
