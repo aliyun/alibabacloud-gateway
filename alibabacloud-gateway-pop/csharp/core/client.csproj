@@ -48,7 +48,6 @@
     </PackageReference>
     <PackageReference Include="AlibabaCloud.GatewaySpi" Version="0.0.3"/>
     <PackageReference Include="Aliyun.Credentials" Version="1.5.2"/>
-    <PackageReference Include="Darabonba" Version="1.0.2"/>
     <PackageReference Include="Tea" Version="1.1.4"/>
     <PackageReference Include="AlibabaCloud.TeaXML" Version="0.0.5"/>
   </ItemGroup>

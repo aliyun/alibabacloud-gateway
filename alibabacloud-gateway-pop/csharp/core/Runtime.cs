@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Darabonba;
-using Darabonba.Utils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -21,7 +22,7 @@ namespace AlibabaCloud.GatewayPop
     {
         internal static bool IsUnset(object obj)
         {
-            return Extensions.IsNull(obj);
+            return obj == null;
         }
 
         internal static string GetNonce()
@@ -45,22 +46,45 @@ namespace AlibabaCloud.GatewayPop
 
         internal static byte[] ToBytes(string val)
         {
-            return BytesUtils.From(val, "utf-8");
+            if (val == null)
+            {
+                return null;
+            }
+            return Encoding.UTF8.GetBytes(val);
         }
 
-        internal static byte[] ReadAsBytes(System.IO.Stream stream)
+        internal static byte[] ReadAsBytes(Stream stream)
         {
-            return StreamUtils.ReadAsBytes(stream);
+            int bufferLength = 4096;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                byte[] buffer = new byte[bufferLength];
+                while (true)
+                {
+                    int length = stream.Read(buffer, 0, bufferLength);
+                    if (length == 0)
+                    {
+                        break;
+                    }
+                    ms.Write(buffer, 0, length);
+                }
+                return ms.ToArray();
+            }
         }
 
-        internal static string ReadAsString(System.IO.Stream stream)
+        internal static string ReadAsString(Stream stream)
         {
-            return StreamUtils.ReadAsString(stream);
+            byte[] bytes = ReadAsBytes(stream);
+            if (bytes == null)
+            {
+                return null;
+            }
+            return Encoding.UTF8.GetString(bytes);
         }
 
-        internal static object ReadAsJSON(System.IO.Stream stream)
+        internal static object ReadAsJSON(Stream stream)
         {
-            return StreamUtils.ReadAsJSON(stream);
+            return ParseJSON(ReadAsString(stream));
         }
 
         internal static byte[] AssertAsBytes(object obj)
@@ -84,16 +108,21 @@ namespace AlibabaCloud.GatewayPop
                 }
                 return dicObj;
             }
-            if (value is Newtonsoft.Json.Linq.JObject)
+            JObject jobject = value as JObject;
+            if (jobject != null)
             {
-                return (Dictionary<string, object>)JSONUtils.Deserialize(value);
+                return (Dictionary<string, object>)ConvertJSON(jobject);
             }
             throw new ArgumentException("The value is not Dictionary");
         }
 
         internal static string ToJSONString(object value)
         {
-            return JSONUtils.SerializeObject(value);
+            if (value is string)
+            {
+                return (string)value;
+            }
+            return JsonConvert.SerializeObject(value);
         }
 
         internal static bool EqualString(string val1, string val2)
@@ -180,12 +209,40 @@ namespace AlibabaCloud.GatewayPop
 
         internal static string PercentEncode(string value)
         {
-            return URL.PercentEncode(value);
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            const string unreserved = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
+            StringBuilder builder = new StringBuilder();
+            foreach (byte b in bytes)
+            {
+                char c = (char)b;
+                if (unreserved.IndexOf(c) >= 0)
+                {
+                    builder.Append(c);
+                }
+                else
+                {
+                    builder.Append('%').Append(b.ToString("X2"));
+                }
+            }
+            return builder.ToString();
         }
 
         internal static string HexEncode(byte[] raw)
         {
-            return BytesUtils.ToHex(raw);
+            if (raw == null)
+            {
+                return null;
+            }
+            StringBuilder builder = new StringBuilder(raw.Length * 2);
+            for (int i = 0; i < raw.Length; i++)
+            {
+                builder.Append(raw[i].ToString("x2"));
+            }
+            return builder.ToString();
         }
 
         internal static byte[] Hash(byte[] raw, string signatureAlgorithm)
@@ -341,7 +398,9 @@ namespace AlibabaCloud.GatewayPop
 
         internal static List<string> AscSort(List<string> raw)
         {
-            return ListUtils.Sort(raw, "asc");
+            List<string> sorted = new List<string>(raw);
+            sorted.Sort(StringComparer.Ordinal);
+            return sorted;
         }
 
         internal static bool ListContains(List<string> raw, string str)
@@ -394,7 +453,7 @@ namespace AlibabaCloud.GatewayPop
                 int index = 1;
                 foreach (object temp in (IList)obj)
                 {
-                    TileDict(dicOut, temp, parentKey + "." + index.ToSafeString());
+                    TileDict(dicOut, temp, parentKey + "." + Tea.Utils.Extensions.ToSafeString(index, ""));
                     index++;
                 }
             }
@@ -406,9 +465,48 @@ namespace AlibabaCloud.GatewayPop
                 }
                 else
                 {
-                    dicOut.Add(parentKey.TrimStart('.'), obj.ToSafeString(""));
+                    dicOut.Add(parentKey.TrimStart('.'), Tea.Utils.Extensions.ToSafeString(obj, ""));
                 }
             }
+        }
+
+        private static object ParseJSON(string val)
+        {
+            if (string.IsNullOrEmpty(val))
+            {
+                return null;
+            }
+            return ConvertJSON(JsonConvert.DeserializeObject(val));
+        }
+
+        private static object ConvertJSON(object token)
+        {
+            JObject obj = token as JObject;
+            if (obj != null)
+            {
+                Dictionary<string, object> dict = new Dictionary<string, object>();
+                foreach (JProperty property in obj.Properties())
+                {
+                    dict.Add(property.Name, ConvertJSON(property.Value));
+                }
+                return dict;
+            }
+            JArray array = token as JArray;
+            if (array != null)
+            {
+                List<object> list = new List<object>();
+                foreach (JToken item in array)
+                {
+                    list.Add(ConvertJSON(item));
+                }
+                return list;
+            }
+            JValue value = token as JValue;
+            if (value != null)
+            {
+                return value.Value;
+            }
+            return token;
         }
     }
 }
