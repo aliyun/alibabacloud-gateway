@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
+	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/alibabacloud-go/tea/utils"
 	"github.com/aliyun/credentials-go/credentials"
@@ -336,7 +337,7 @@ func TestModifyRequestBodiesAndAuth(t *testing.T) {
 	missing.Credential = nil
 	err = client.ModifyRequest(newContext(missing, baseConfig()), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	sdkErr := err.(*tea.SDKError)
+	sdkErr := err.(*dara.SDKError)
 	utils.AssertEqual(t, "ParameterMissing", tea.StringValue(sdkErr.Code))
 
 	brokenCred := baseRequest()
@@ -386,7 +387,7 @@ func TestModifyResponse(t *testing.T) {
 
 	err = client.ModifyResponse(responseContext(400, "application/json", strings.NewReader(`{"Code":"Invalid","Message":"no","RequestId":"req-1","Description":"d","AccessDeniedDetail":{"Policy":"deny"}}`), "json"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	sdkErr := err.(*tea.SDKError)
+	sdkErr := err.(*dara.SDKError)
 	utils.AssertEqual(t, "Invalid", tea.StringValue(sdkErr.Code))
 	utils.AssertContains(t, tea.StringValue(sdkErr.Message), "request id: req-1")
 
@@ -394,13 +395,13 @@ func TestModifyResponse(t *testing.T) {
 	withHeader.Response.Headers["x-acs-request-id"] = tea.String("header-id")
 	err = client.ModifyResponse(withHeader, &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	utils.AssertEqual(t, "Denied", tea.StringValue(err.(*tea.SDKError).Code))
-	utils.AssertContains(t, tea.StringValue(err.(*tea.SDKError).Message), "request id:")
+	utils.AssertEqual(t, "Denied", tea.StringValue(err.(*dara.SDKError).Code))
+	utils.AssertContains(t, tea.StringValue(err.(*dara.SDKError).Message), "request id:")
 
 	xmlBody := `<Error><Code>XmlCode</Code><Message>xml</Message><RequestId>xml-id</RequestId><Description>xd</Description></Error>`
 	err = client.ModifyResponse(responseContext(500, "text/xml", strings.NewReader(xmlBody), "xml"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
-	utils.AssertEqual(t, "XmlCode", tea.StringValue(err.(*tea.SDKError).Code))
+	utils.AssertEqual(t, "XmlCode", tea.StringValue(err.(*dara.SDKError).Code))
 
 	err = client.ModifyResponse(responseContext(204, "", strings.NewReader(""), "string"), &spi.AttributeMap{})
 	utils.AssertNil(t, err)

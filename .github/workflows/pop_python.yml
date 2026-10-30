@@ -30,7 +30,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: pip install setuptools urllib3==1.26.20 'cryptography>=3.0.0, <45.0.0' alibabacloud-tea alibabacloud_darabonba_encode_util alibabacloud_darabonba_signature_util alibabacloud_gateway_spi alibabacloud_tea_util alibabacloud_openapi_util alibabacloud_endpoint_util alibabacloud_darabonba_string alibabacloud_darabonba_map alibabacloud_darabonba_array alibabacloud_tea_xml coverage pytest alibabacloud-credentials && python setup.py install
+      run: pip install setuptools urllib3==1.26.20 'cryptography>=3.0.0, <45.0.0' 'darabonba-core>=1.0.9,<2.0.0' alibabacloud-tea alibabacloud_gateway_spi coverage pytest alibabacloud-credentials && python setup.py install
     - name: Test with unittest
       run: |
         coverage run -m unittest discover

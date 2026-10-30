@@ -4,7 +4,6 @@ namespace Darabonba\GatewayPop\Tests;
 
 use AlibabaCloud\Credentials\Credential\CredentialModel;
 use AlibabaCloud\Tea\Exception\TeaError;
-use AlibabaCloud\Tea\Utils\Utils;
 use Darabonba\GatewayPop\Client;
 use Darabonba\GatewaySpi\Models\AttributeMap;
 use Darabonba\GatewaySpi\Models\InterceptorContext;
@@ -199,7 +198,7 @@ final class CoverageTest extends TestCase
 
         $bytes = $this->request($this->credential($this->model('access_key')));
         $bytes->reqBodyType = 'byte';
-        $bytes->body = Utils::toBytes('hello');
+        $bytes->body = array_values(unpack('C*', 'hello'));
         $bytes->action = '';
         $client->modifyRequest($this->context($bytes, $this->configuration()), new AttributeMap());
         $this->assertArrayNotHasKey('x-acs-action', $bytes->headers);

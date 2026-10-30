@@ -1,6 +1,5 @@
 import unittest
 
-from alibabacloud_darabonba_array.client import Client as ArrayClient
 from alibabacloud_gateway_pop.client import Client
 
 
@@ -71,7 +70,7 @@ class TestClient(unittest.TestCase):
             'x-acs-foobar': '1',
             'x-acs-foo': '2'
         }
-        self.assertFalse(ArrayClient.contains(['x-acs-foobar'], 'x-acs-foo'))
+        self.assertNotIn('x-acs-foo', ['x-acs-foobar'])
         self.assertEqual(['host', 'x-acs-foo', 'x-acs-foobar'], client.get_signed_headers(headers_prefix))
         canonical = client.build_canonicalized_headers(headers_prefix)
         self.assertIn('x-acs-foo:2\n', canonical)
