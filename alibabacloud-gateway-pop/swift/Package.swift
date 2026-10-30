@@ -21,7 +21,7 @@ let package = Package(
             // package after that SPI release.
             .package(path: "../GatewaySPI"),
             .package(url: "https://github.com/aliyun/credentials-swift", from: "1.0.1"),
-            .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.8.0"),
+            .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.10.0"),
         ],
         targets: [
             .target(
