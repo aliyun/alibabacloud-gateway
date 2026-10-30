@@ -396,16 +396,4 @@ trait Runtime
 
         return $flatten;
     }
-
-    private static function parseXml($xml)
-    {
-        if (PHP_VERSION_ID < 80000) {
-            libxml_disable_entity_loader(true);
-        }
-        $parsed = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
-        if ($parsed === false) {
-            return array();
-        }
-        return json_decode(json_encode($parsed), true);
-    }
 }

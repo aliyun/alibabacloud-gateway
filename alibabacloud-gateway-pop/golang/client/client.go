@@ -183,7 +183,7 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 				return _err
 			}
 
-			respMap := parseXml(_str)
+			respMap := dara.ParseXml(dara.StringValue(_str), nil)
 			err, _err = assertAsMap(respMap["Error"])
 			if _err != nil {
 				return _err

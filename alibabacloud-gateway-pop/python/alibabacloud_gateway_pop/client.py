@@ -2,6 +2,7 @@
 # This file is auto-generated, don't edit it. Thanks.
 from . import _codec as codec
 from . import _support as support
+from darabonba.utils.xml import XML
 from Tea.exceptions import TeaException
 from Tea.core import TeaCore
 from typing import Dict, Any, List
@@ -224,7 +225,7 @@ class Client(SPIClient):
             err = {}
             if not support.is_unset(response.headers.get('content-type')) and codec.contains(response.headers.get('content-type'), 'text/xml'):
                 _str = support.read_as_string(response.body)
-                resp_map = support.parse_xml(_str)
+                resp_map = XML.parse_xml(_str, None)
                 err = support.assert_as_map(resp_map.get('Error'))
             else:
                 _res = support.read_as_json(response.body)
@@ -271,7 +272,7 @@ class Client(SPIClient):
             err = {}
             if not support.is_unset(response.headers.get('content-type')) and codec.contains(response.headers.get('content-type'), 'text/xml'):
                 _str = await support.read_as_string_async(response.body)
-                resp_map = support.parse_xml(_str)
+                resp_map = XML.parse_xml(_str, None)
                 err = support.assert_as_map(resp_map.get('Error'))
             else:
                 _res = await support.read_as_json_async(response.body)
