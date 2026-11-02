@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import json
 import random
 import threading
 import time
@@ -79,8 +80,19 @@ def assert_as_map(value):
     return value
 
 
+class _ModelEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, TeaModel):
+            return o.to_map()
+        if isinstance(o, bytes):
+            return o.decode('utf-8')
+        return super().default(o)
+
+
 def to_jsonstring(val):
-    return DaraCore.to_json_string(val)
+    if isinstance(val, str):
+        return str(val)
+    return json.dumps(val, cls=_ModelEncoder, ensure_ascii=False, separators=(',', ':'))
 
 
 def get_nonce():

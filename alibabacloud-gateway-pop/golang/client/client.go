@@ -4,6 +4,7 @@ package client
 import (
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	"github.com/alibabacloud-go/tea/dara"
+	"github.com/alibabacloud-go/tea/tea"
 )
 
 type Client struct {
@@ -123,7 +124,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 	if !dara.BoolValue(equalString(request.AuthType, dara.String("Anonymous"))) {
 		credential := request.Credential
 		if dara.BoolValue(isUnset(credential)) {
-			_err = dara.NewSDKError(map[string]interface{}{
+			_err = tea.NewSDKError(map[string]interface{}{
 				"code":    "ParameterMissing",
 				"message": "'config.credential' can not be unset",
 			})
@@ -208,7 +209,7 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 		}
 
 		err["statusCode"] = response.StatusCode
-		_err = dara.NewSDKError(map[string]interface{}{
+		_err = tea.NewSDKError(map[string]interface{}{
 			"code":               dara.ToString(client.DefaultAny(err["Code"], err["code"])),
 			"message":            "code: " + dara.ToString(dara.IntValue(response.StatusCode)) + ", " + dara.ToString(client.DefaultAny(err["Message"], err["message"])) + " request id: " + dara.ToString(requestId),
 			"data":               err,
@@ -341,7 +342,7 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 
 func (client *Client) ValidateSignedHeaders(signedHeaders []*string) (_err error) {
 	if !dara.BoolValue(listContains(signedHeaders, dara.String("host"))) || !dara.BoolValue(listContains(signedHeaders, dara.String("x-acs-date"))) {
-		_err = dara.NewSDKError(map[string]interface{}{
+		_err = tea.NewSDKError(map[string]interface{}{
 			"code":    "InvalidSignedHeaders",
 			"message": "signed headers must include host and x-acs-date",
 		})
