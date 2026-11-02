@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"io"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -461,4 +462,43 @@ func TestModifyResponse(t *testing.T) {
 	notXMLError := responseContext(500, "text/xml", strings.NewReader(`<Other><Code>X</Code></Other>`), "xml")
 	err = client.ModifyResponse(notXMLError, &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
+
+	err = client.ModifyResponse(responseContext(400, "application/json", strings.NewReader(`[1,2]`), "json"), &spi.AttributeMap{})
+	utils.AssertNotNil(t, err)
+	arrayJSON := responseContext(200, "", strings.NewReader(`[1,2]`), "json")
+	err = client.ModifyResponse(arrayJSON, &spi.AttributeMap{})
+	utils.AssertNotNil(t, err)
+
+	_, err = client.GetAuthorization(tea.String("/"), tea.String("GET"), map[string]*string{}, map[string]*string{}, client.Sha256, tea.String("payload"), tea.String("ak"), []byte("key"), tea.String("ecs"), tea.String("cn-hangzhou"), tea.String("20240101"))
+	utils.AssertNotNil(t, err)
+}
+
+func TestSlimHelperEdges(t *testing.T) {
+	parts := splitString(tea.String("a-b-c"), tea.String("-"), tea.Int(2))
+	utils.AssertEqual(t, "a", tea.StringValue(parts[0]))
+	utils.AssertEqual(t, "b-c", tea.StringValue(parts[1]))
+	utils.AssertEqual(t, "a:b-c", tea.StringValue(replaceString(tea.String("a-b-c"), tea.String("-"), tea.String(":"), tea.Int(1))))
+	utils.AssertEqual(t, "bcde", tea.StringValue(subString(tea.String("abcdef"), tea.Int(1), tea.Int(-1))))
+	utils.AssertEqual(t, 0, len(keySet(1)))
+
+	pointer := tea.String("ptr")
+	utils.AssertEqual(t, "ptr", tea.StringValue(toJSONString(pointer)))
+	utils.AssertEqual(t, "str", tea.StringValue(toJSONString("str")))
+	utils.AssertEqual(t, "hi", tea.StringValue(toJSONString([]byte("hi"))))
+	utils.AssertEqual(t, "body", tea.StringValue(toJSONString(strings.NewReader("body"))))
+	utils.AssertEqual(t, true, toJSONString(failingReader()) == nil)
+	utils.AssertEqual(t, true, toJSONString(make(chan int)) == nil)
+
+	form := tea.StringValue(toForm(map[string]interface{}{
+		"empty":  nil,
+		"nested": map[string]interface{}{"k": "v"},
+		"items":  []interface{}{map[string]interface{}{"id": "1"}, "x"},
+	}))
+	utils.AssertContains(t, form, "nested.k=v")
+	utils.AssertContains(t, form, "items.1.id=1")
+	utils.AssertContains(t, form, "items.2=x")
+
+	result := map[string]*string{}
+	handleRepeatedParams(reflect.ValueOf([]interface{}(nil)), result, "items")
+	utils.AssertEqual(t, 0, len(result))
 }
