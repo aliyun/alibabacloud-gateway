@@ -230,7 +230,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (suffix == null) {
             return "";
         }
-        suffix = suffix.trim().toLowerCase();
+        suffix = suffix.trim().toLowerCase(java.util.Locale.ROOT);
         if (suffix.length() == 0) {
             return "";
         }
