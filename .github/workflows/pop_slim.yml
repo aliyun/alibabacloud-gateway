@@ -1,0 +1,24 @@
+name: POP slim dependencies
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_slim.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'alibabacloud-gateway-pop/**'
+      - '.github/workflows/pop_slim.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject removed utility packages
+        run: python3 alibabacloud-gateway-pop/scripts/verify_slim.py

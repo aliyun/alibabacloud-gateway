@@ -1,8 +1,6 @@
 import Client from '../src/client';
 import assert from 'assert';
 import 'mocha';
-import Array from '@alicloud/darabonba-array';
-
 describe('Client', function () {
 
     it('getRegion should ok', function () {
@@ -66,7 +64,7 @@ describe('Client', function () {
             'x-acs-foobar': '1',
             'x-acs-foo': '2'
         };
-        assert.strictEqual(false, Array.contains(['x-acs-foobar'], 'x-acs-foo'));
+        assert.strictEqual(false, ['x-acs-foobar'].includes('x-acs-foo'));
         assert.deepStrictEqual(['host', 'x-acs-foo', 'x-acs-foobar'], client.getSignedHeaders(headersPrefix));
         const canonical = client.buildCanonicalizedHeaders(headersPrefix);
         assert.ok(canonical.includes('x-acs-foo:2\n'));

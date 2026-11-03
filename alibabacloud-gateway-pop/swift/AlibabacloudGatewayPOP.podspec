@@ -17,17 +17,10 @@ Pod::Spec.new do |spec|
   spec.watchos.deployment_target = '6.0'
   spec.tvos.deployment_target    = '13.0'
 
-  spec.dependency 'Tea',  '~> 1.0.3'
-  spec.dependency 'AlibabacloudGatewaySPI',  '~> 0.0.2'
+  spec.dependency 'Tea',  '~> 1.1.0'
+  spec.dependency 'AlibabacloudGatewaySPI',  '~> 0.0.4'
   spec.dependency 'AlibabaCloudCredentials',  '~> 1.0.1'
-  spec.dependency 'TeaUtils',  '~> 1.0.6'
-  spec.dependency 'AlibabaCloudOpenApiUtil',  '~> 1.0.1'
-  spec.dependency 'AlibabacloudEndpointUtil',  '~> 1.0.0'
-  spec.dependency 'DarabonbaEncodeUtil',  '~> 0.0.6'
-  spec.dependency 'DarabonbaSignatureUtil',  '~> 0.0.10'
-  spec.dependency 'DarabonbaString',  '~> 0.0.13'
-  spec.dependency 'DarabonbaMap',  '~> 0.0.5'
-  spec.dependency 'DarabonbaArray',  '~> 0.1.0'
+  spec.dependency 'CryptoSwift',  '~> 1.10.0'
 
   spec.swift_version='5.6'
 end

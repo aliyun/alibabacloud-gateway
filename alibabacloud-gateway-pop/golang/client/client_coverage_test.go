@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"io"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -338,6 +339,7 @@ func TestModifyRequestBodiesAndAuth(t *testing.T) {
 	utils.AssertNotNil(t, err)
 	sdkErr := err.(*tea.SDKError)
 	utils.AssertEqual(t, "ParameterMissing", tea.StringValue(sdkErr.Code))
+	utils.AssertEqual(t, false, tea.BoolValue(tea.Retryable(err)))
 
 	brokenCred := baseRequest()
 	brokenCred.Credential = fixedCredential{err: errors.New("credential down")}
@@ -389,6 +391,7 @@ func TestModifyResponse(t *testing.T) {
 	sdkErr := err.(*tea.SDKError)
 	utils.AssertEqual(t, "Invalid", tea.StringValue(sdkErr.Code))
 	utils.AssertContains(t, tea.StringValue(sdkErr.Message), "request id: req-1")
+	utils.AssertEqual(t, false, tea.BoolValue(tea.Retryable(err)))
 
 	withHeader := responseContext(403, "application/json", strings.NewReader(`{"code":"Denied","message":"no","requestId":"body-id"}`), "json")
 	withHeader.Response.Headers["x-acs-request-id"] = tea.String("header-id")
@@ -396,11 +399,13 @@ func TestModifyResponse(t *testing.T) {
 	utils.AssertNotNil(t, err)
 	utils.AssertEqual(t, "Denied", tea.StringValue(err.(*tea.SDKError).Code))
 	utils.AssertContains(t, tea.StringValue(err.(*tea.SDKError).Message), "request id:")
+	utils.AssertEqual(t, false, tea.BoolValue(tea.Retryable(err)))
 
 	xmlBody := `<Error><Code>XmlCode</Code><Message>xml</Message><RequestId>xml-id</RequestId><Description>xd</Description></Error>`
 	err = client.ModifyResponse(responseContext(500, "text/xml", strings.NewReader(xmlBody), "xml"), &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
 	utils.AssertEqual(t, "XmlCode", tea.StringValue(err.(*tea.SDKError).Code))
+	utils.AssertEqual(t, true, tea.BoolValue(tea.Retryable(err)))
 
 	err = client.ModifyResponse(responseContext(204, "", strings.NewReader(""), "string"), &spi.AttributeMap{})
 	utils.AssertNil(t, err)
@@ -460,4 +465,45 @@ func TestModifyResponse(t *testing.T) {
 	notXMLError := responseContext(500, "text/xml", strings.NewReader(`<Other><Code>X</Code></Other>`), "xml")
 	err = client.ModifyResponse(notXMLError, &spi.AttributeMap{})
 	utils.AssertNotNil(t, err)
+
+	err = client.ModifyResponse(responseContext(400, "application/json", strings.NewReader(`[1,2]`), "json"), &spi.AttributeMap{})
+	utils.AssertNotNil(t, err)
+	arrayJSON := responseContext(200, "", strings.NewReader(`[1,2]`), "json")
+	err = client.ModifyResponse(arrayJSON, &spi.AttributeMap{})
+	utils.AssertNotNil(t, err)
+
+	_, err = client.GetAuthorization(tea.String("/"), tea.String("GET"), map[string]*string{}, map[string]*string{}, client.Sha256, tea.String("payload"), tea.String("ak"), []byte("key"), tea.String("ecs"), tea.String("cn-hangzhou"), tea.String("20240101"))
+	utils.AssertNotNil(t, err)
+	_, ok := err.(*tea.SDKError)
+	utils.AssertEqual(t, true, ok)
+}
+
+func TestSlimHelperEdges(t *testing.T) {
+	parts := splitString(tea.String("a-b-c"), tea.String("-"), tea.Int(2))
+	utils.AssertEqual(t, "a", tea.StringValue(parts[0]))
+	utils.AssertEqual(t, "b-c", tea.StringValue(parts[1]))
+	utils.AssertEqual(t, "a:b-c", tea.StringValue(replaceString(tea.String("a-b-c"), tea.String("-"), tea.String(":"), tea.Int(1))))
+	utils.AssertEqual(t, "bcde", tea.StringValue(subString(tea.String("abcdef"), tea.Int(1), tea.Int(-1))))
+	utils.AssertEqual(t, 0, len(keySet(1)))
+
+	pointer := tea.String("ptr")
+	utils.AssertEqual(t, "ptr", tea.StringValue(toJSONString(pointer)))
+	utils.AssertEqual(t, "str", tea.StringValue(toJSONString("str")))
+	utils.AssertEqual(t, "hi", tea.StringValue(toJSONString([]byte("hi"))))
+	utils.AssertEqual(t, "body", tea.StringValue(toJSONString(strings.NewReader("body"))))
+	utils.AssertEqual(t, true, toJSONString(failingReader()) == nil)
+	utils.AssertEqual(t, true, toJSONString(make(chan int)) == nil)
+
+	form := tea.StringValue(toForm(map[string]interface{}{
+		"empty":  nil,
+		"nested": map[string]interface{}{"k": "v"},
+		"items":  []interface{}{map[string]interface{}{"id": "1"}, "x"},
+	}))
+	utils.AssertContains(t, form, "nested.k=v")
+	utils.AssertContains(t, form, "items.1.id=1")
+	utils.AssertContains(t, form, "items.2=x")
+
+	result := map[string]*string{}
+	handleRepeatedParams(reflect.ValueOf([]interface{}(nil)), result, "items")
+	utils.AssertEqual(t, 0, len(result))
 }

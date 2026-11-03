@@ -103,8 +103,7 @@ namespace tests
                 { "x-acs-foobar", "1" },
                 { "x-acs-foo", "2" }
             };
-            Assert.False(AlibabaCloud.DarabonbaArray.ArrayUtil.Contains(
-                new List<string> { "x-acs-foobar" }, "x-acs-foo"));
+            Assert.False(new List<string> { "x-acs-foobar" }.Contains("x-acs-foo"));
             result = client.GetSignedHeaders(prefixHeaders);
             Assert.Equal(3, result.Count);
             Assert.Equal("host", result[0]);

@@ -3,6 +3,7 @@
     "target": "es2017",
     "module": "commonjs",
     "declaration": true,
+    "stripInternal": true,
     "sourceMap": true,
     "outDir": "./dist",
     "esModuleInterop": true
