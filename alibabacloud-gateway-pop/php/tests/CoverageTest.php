@@ -220,6 +220,48 @@ final class CoverageTest extends TestCase
         $this->assertEquals('ecs.cn-hangzhou.aliyuncs.com', $apply->invoke($fallback, 'ecs.cn-hangzhou.aliyuncs.com'));
     }
 
+    public function testRequestSuffixValidationAndLocalPrefixes()
+    {
+        $client = new Client();
+        $names = new \ReflectionMethod(Client::class, 'signatureNames');
+        $names->setAccessible(true);
+        $this->assertSame(array('custom_v4', 'CUSTOM-HMAC-SHA256', 'CUSTOM-HMAC-SM3'), $names->invoke($client, array('signatureTypePrefix' => 'CUSTOM-', 'signPrefix' => 'custom_v4')));
+        $this->assertSame(array('aliyun_v4', 'ACS4-HMAC-SHA256', 'ACS4-HMAC-SM3'), $names->invoke($client, array('signatureTypePrefix' => '', 'signPrefix' => '')));
+        $checked = new \ReflectionMethod(Client::class, 'checkedEndpointSuffix');
+        $checked->setAccessible(true);
+        $this->assertSame('', $checked->invoke($client, '  '));
+        $this->assertSame('aliyuncs.alibaba', $checked->invoke($client, ' ALIYUNCS.ALIBABA '));
+        foreach (array('evil.com', '.foo', 'a/b', 'host:8080') as $invalid) {
+            try {
+                $checked->invoke($client, $invalid);
+                $this->fail('invalid suffix accepted');
+            } catch (TeaError $expected) {
+                $this->assertNotEmpty($expected->getMessage());
+            }
+        }
+        foreach (array(
+            'oss-cn-hangzhou.aliyuncs.com' => 'oss-cn-hangzhou.aliyuncs.alibaba',
+            'ecs.cn-hangzhou-internal.aliyuncs.com' => 'ecs.cn-hangzhou-internal.aliyuncs.alibaba',
+            'ecs.aliyun.com' => 'ecs.aliyun.com',
+            'ecs.aliyuncs.alibaba' => 'ecs.aliyuncs.alibaba',
+            'ecs.aliyuncs.com.example.com' => 'ecs.aliyuncs.com.example.com',
+        ) as $original => $expected) {
+            foreach (array(false, true) as $mapped) {
+                $config = $this->configuration($original);
+                if ($mapped) {
+                    $config->endpoint = null;
+                    $config->endpointMap = array('cn-hangzhou' => $original);
+                }
+                $attributes = new AttributeMap();
+                $attributes->key = array('endpointSuffix' => 'aliyuncs.alibaba');
+                for ($i = 0; $i < 2; $i++) {
+                    $client->modifyConfiguration($this->context($this->request($this->credential($this->model('access_key'))), $config), $attributes);
+                    $this->assertSame($expected, $config->endpoint);
+                }
+            }
+        }
+    }
+
     public function testCanonicalAndSigning()
     {
         $client = new Client();
