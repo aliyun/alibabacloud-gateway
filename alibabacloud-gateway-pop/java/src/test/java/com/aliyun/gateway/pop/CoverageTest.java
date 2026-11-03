@@ -366,4 +366,44 @@ public class CoverageTest {
         } catch (Exception ignored) {
         }
     }
+
+    @Test
+    public void testEndpointSuffixOverride() throws Exception {
+        Client client = new Client();
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put("signatureTypePrefix", "ACS4-");
+        attributes.put("signPrefix", "aliyun_v4");
+        attributes.put("endpointSuffix", "example.net");
+        client.resolveEndpointSuffix(attributes);
+        Assert.assertEquals("example.net", client._endpointSuffix);
+        Assert.assertEquals("ACS4-HMAC-SHA256", client._sha256);
+        Assert.assertEquals("aliyun_v4", client._signPrefix);
+        Assert.assertEquals("ecs.cn-hangzhou.example.net", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
+        Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com"));
+        Assert.assertEquals("", client.withEndpointSuffix(""));
+
+        client._endpointSuffix = "";
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.com", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
+        client.resolveEndpointSuffix(new HashMap<String, String>());
+        Assert.assertEquals("aliyuncs.com", client._endpointSuffix);
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.com", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
+
+        Client fromEnv = new Client() {
+            @Override
+            String endpointSuffixFromEnv() {
+                return "example.com";
+            }
+        };
+        fromEnv.resolveEndpointSuffix(null);
+        Assert.assertEquals("example.com", fromEnv._endpointSuffix);
+        InterceptorContext.InterceptorContextConfiguration built = new InterceptorContext.InterceptorContextConfiguration();
+        built.regionId = "cn-hangzhou";
+        built.endpointRule = "regional";
+        InterceptorContext context = new InterceptorContext();
+        context.request = request(accessKey());
+        context.configuration = built;
+        fromEnv.modifyConfiguration(context, new AttributeMap());
+        Assert.assertEquals("ecs.cn-hangzhou.example.com", built.endpoint);
+        Assert.assertEquals(System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"), new Client().endpointSuffixFromEnv());
+    }
 }

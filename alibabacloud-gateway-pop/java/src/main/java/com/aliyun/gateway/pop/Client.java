@@ -211,7 +211,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
             }
         }
         if (!explicit) {
-            String envSuffix = System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
+            String envSuffix = this.endpointSuffixFromEnv();
             if (!Support.empty(envSuffix)) {
                 this._endpointSuffix = envSuffix;
             }
@@ -219,6 +219,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (Support.empty(this._endpointSuffix)) {
             this._endpointSuffix = "aliyuncs.com";
         }
+    }
+
+    String endpointSuffixFromEnv() {
+        return System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
     }
 
     String withEndpointSuffix(String endpoint) {

@@ -160,6 +160,63 @@ final class CoverageTest extends TestCase
         $this->assertEquals('already.example.com', $kept->endpoint);
     }
 
+    public function testEndpointSuffixOverride()
+    {
+        putenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX=example.com');
+        try {
+            $client = new Client();
+            $built = new configuration();
+            $built->regionId = 'cn-hangzhou';
+            $built->endpointRule = 'regional';
+            $built->network = '';
+            $built->suffix = '';
+            $client->modifyConfiguration($this->context($this->request($this->credential($this->model('access_key'))), $built), new AttributeMap());
+            $this->assertEquals('ecs.cn-hangzhou.example.com', $built->endpoint);
+
+            $prefixes = new AttributeMap();
+            $prefixes->key = array(
+                'signatureTypePrefix' => 'ACS4-',
+                'signPrefix' => 'aliyun_v4',
+                'endpointSuffix' => 'example.net',
+            );
+            $overridden = new configuration();
+            $overridden->regionId = 'cn-hangzhou';
+            $overridden->endpointRule = 'regional';
+            $client->modifyConfiguration($this->context($this->request($this->credential($this->model('access_key'))), $overridden), $prefixes);
+            $this->assertEquals('ecs.cn-hangzhou.example.net', $overridden->endpoint);
+
+            $resolve = new \ReflectionMethod(Client::class, 'resolveEndpointSuffix');
+            $resolve->setAccessible(true);
+            $suffix = new \ReflectionProperty(Client::class, '_endpointSuffix');
+            $suffix->setAccessible(true);
+            $suffix->setValue($client, '');
+            $resolve->invoke($client, array(
+                'signatureTypePrefix' => '',
+                'signPrefix' => '',
+                'endpointSuffix' => '',
+            ));
+            $this->assertEquals('example.com', $suffix->getValue($client));
+            $apply = new \ReflectionMethod(Client::class, 'withEndpointSuffix');
+            $apply->setAccessible(true);
+            $this->assertEquals('leave.example', $apply->invoke($client, 'leave.example'));
+            $this->assertEquals('', $apply->invoke($client, ''));
+        } finally {
+            putenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
+        }
+
+        $fallback = new Client();
+        $suffix = new \ReflectionProperty(Client::class, '_endpointSuffix');
+        $suffix->setAccessible(true);
+        $suffix->setValue($fallback, '');
+        $resolve = new \ReflectionMethod(Client::class, 'resolveEndpointSuffix');
+        $resolve->setAccessible(true);
+        $resolve->invoke($fallback, null);
+        $this->assertEquals('aliyuncs.com', $suffix->getValue($fallback));
+        $apply = new \ReflectionMethod(Client::class, 'withEndpointSuffix');
+        $apply->setAccessible(true);
+        $this->assertEquals('ecs.cn-hangzhou.aliyuncs.com', $apply->invoke($fallback, 'ecs.cn-hangzhou.aliyuncs.com'));
+    }
+
     public function testCanonicalAndSigning()
     {
         $client = new Client();

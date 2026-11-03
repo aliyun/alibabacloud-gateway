@@ -172,6 +172,20 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "ecs.cn-hangzhou.example.net", tea.StringValue(overridden.Endpoint))
 	utils.AssertEqual(t, "ACS4-HMAC-SHA256", tea.StringValue(client.Sha256))
+	utils.AssertEqual(t, "already.example.com", tea.StringValue(applyEndpointSuffix(tea.String("already.example.com"), tea.String("example.com"))))
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""))))
+	utils.AssertEqual(t, "", tea.StringValue(applyEndpointSuffix(tea.String(""), tea.String("example.com"))))
+
+	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	client.EndpointSuffix = nil
+	fallback := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), fallback), &spi.AttributeMap{})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "aliyuncs.com", tea.StringValue(client.EndpointSuffix))
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(fallback.Endpoint))
 }
 
 func TestModifyConfiguration(t *testing.T) {

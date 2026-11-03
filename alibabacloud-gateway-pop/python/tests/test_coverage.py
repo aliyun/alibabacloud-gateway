@@ -144,8 +144,21 @@ class TestCoverage(unittest.TestCase):
             }))
             self.assertEqual('ecs.cn-hangzhou.example.net', overridden.endpoint)
             self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
+            self.assertEqual('leave.example', client._with_endpoint_suffix('leave.example'))
+            self.assertEqual('', client._with_endpoint_suffix(''))
+            client._endpoint_suffix = ''
+            client._resolve_endpoint_suffix({
+                'signatureTypePrefix': '',
+                'signPrefix': '',
+                'endpointSuffix': '',
+            })
+            self.assertEqual('example.com', client._endpoint_suffix)
         finally:
             os.environ.pop('ALIBABA_CLOUD_ENDPOINT_SUFFIX', None)
+        fallback = Client()
+        fallback._endpoint_suffix = ''
+        fallback._resolve_endpoint_suffix(None)
+        self.assertEqual('aliyuncs.com', fallback._endpoint_suffix)
 
     def test_canonical_and_signing(self):
         client = Client()
