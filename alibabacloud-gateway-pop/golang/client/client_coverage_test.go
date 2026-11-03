@@ -146,6 +146,38 @@ func TestEndpointSelection(t *testing.T) {
 	utils.AssertNotNil(t, err)
 }
 
+func TestExplicitEndpointSuffix(t *testing.T) {
+	client, err := NewClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct{ input, want string }{
+		{"oss-cn-hangzhou.aliyuncs.com", "oss-cn-hangzhou.aliyuncs.alibaba"},
+		{"ecs.cn-hangzhou-internal.aliyuncs.com", "ecs.cn-hangzhou-internal.aliyuncs.alibaba"},
+		{"ecs.aliyun.com", "ecs.aliyun.com"},
+		{"custom.example.com", "custom.example.com"},
+		{"ecs.aliyuncs.alibaba", "ecs.aliyuncs.alibaba"},
+		{"ecs.aliyuncs.com.example.com", "ecs.aliyuncs.com.example.com"},
+	} {
+		for _, mapped := range []bool{false, true} {
+			cfg := &spi.InterceptorContextConfiguration{RegionId: tea.String("cn-hangzhou"), Endpoint: tea.String(tc.input)}
+			if mapped {
+				cfg.Endpoint = nil
+				cfg.EndpointMap = map[string]*string{"cn-hangzhou": tea.String(tc.input)}
+			}
+			attrs := &spi.AttributeMap{Key: map[string]*string{"endpointSuffix": tea.String("aliyuncs.alibaba")}}
+			for i := 0; i < 2; i++ {
+				if err := client.ModifyConfiguration(newContext(baseRequest(), cfg), attrs); err != nil {
+					t.Fatal(err)
+				}
+				if tea.StringValue(cfg.Endpoint) != tc.want {
+					t.Fatalf("mapped=%v input=%q got=%q want=%q", mapped, tc.input, tea.StringValue(cfg.Endpoint), tc.want)
+				}
+			}
+		}
+	}
+}
+
 func TestEndpointSuffixOverride(t *testing.T) {
 	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "aliyuncs.alibaba")
 	defer os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
@@ -206,7 +238,7 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "aliyuncs.alibaba")
 	err = client.ModifyConfiguration(newContext(baseRequest(), explicit), &spi.AttributeMap{})
 	utils.AssertNil(t, err)
-	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(explicit.Endpoint))
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(explicit.Endpoint))
 	resolved, err := endpointSuffixForRequest(nil)
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), explicit.Endpoint, explicit.RegionId, tea.String(resolved))))

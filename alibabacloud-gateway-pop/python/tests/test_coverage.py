@@ -102,6 +102,26 @@ def context(req, cfg):
 
 
 class TestCoverage(unittest.TestCase):
+    def test_explicit_endpoint_suffix(self):
+        client = Client()
+        for original, expected in [
+            ('oss-cn-hangzhou.aliyuncs.com', 'oss-cn-hangzhou.aliyuncs.alibaba'),
+            ('ecs.cn-hangzhou-internal.aliyuncs.com', 'ecs.cn-hangzhou-internal.aliyuncs.alibaba'),
+            ('ecs.aliyun.com', 'ecs.aliyun.com'),
+            ('custom.example.com', 'custom.example.com'),
+            ('ecs.aliyuncs.alibaba', 'ecs.aliyuncs.alibaba'),
+            ('ecs.aliyuncs.com.example.com', 'ecs.aliyuncs.com.example.com'),
+        ]:
+            for mapped in (False, True):
+                cfg = config(original)
+                if mapped:
+                    cfg.endpoint = None
+                    cfg.endpoint_map = {'cn-hangzhou': original}
+                attrs = AttributeMap(key={'endpointSuffix': 'aliyuncs.alibaba'})
+                for _ in range(2):
+                    client.modify_configuration(context(request(access_key()), cfg), attrs)
+                    self.assertEqual(expected, cfg.endpoint)
+
     def test_endpoint_and_configuration(self):
         client = Client()
         self.assertEqual('ecs.example.com', client.get_endpoint('ecs', 'cn-hangzhou', 'regional', '', '', None, 'ecs.example.com'))

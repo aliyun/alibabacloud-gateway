@@ -503,11 +503,11 @@ namespace AlibabaCloud.GatewayPop
         {
             if (!Runtime.Empty(endpoint))
             {
-                return endpoint;
+                return WithEndpointSuffix(endpoint, endpointSuffix);
             }
             if (!Runtime.IsUnset(endpointMap) && !Runtime.Empty(endpointMap.Get(regionId)))
             {
-                return endpointMap.Get(regionId);
+                return WithEndpointSuffix(endpointMap.Get(regionId), endpointSuffix);
             }
             return WithEndpointSuffix(Runtime.GetEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
         }

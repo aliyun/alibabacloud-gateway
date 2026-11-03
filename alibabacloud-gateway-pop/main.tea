@@ -232,11 +232,11 @@ function getEndpoint(productId: string, regionId: string, endpointRule: string, 
 
 function getEndpointWithSuffix(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string, endpointSuffix: string) throws: string{
   if (!Util.empty(endpoint)) {
-    return endpoint;
+    return applyEndpointSuffix(endpoint, endpointSuffix);
   }
 
   if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
-    return endpointMap[regionId];
+    return applyEndpointSuffix(endpointMap[regionId], endpointSuffix);
   }
   return applyEndpointSuffix(EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
 }

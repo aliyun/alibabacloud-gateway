@@ -171,9 +171,9 @@ class Client(SPIClient):
 
     def _get_endpoint_with_suffix(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint, endpoint_suffix):
         if not UtilClient.empty(endpoint):
-            return endpoint
+            return self._with_endpoint_suffix(endpoint, endpoint_suffix)
         if not UtilClient.is_unset(endpoint_map) and not UtilClient.empty(endpoint_map.get(region_id)):
-            return endpoint_map.get(region_id)
+            return self._with_endpoint_suffix(endpoint_map.get(region_id), endpoint_suffix)
         return self._with_endpoint_suffix(EndpointUtilClient.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix), endpoint_suffix)
 
     def default_any(self, input_value, default_value):

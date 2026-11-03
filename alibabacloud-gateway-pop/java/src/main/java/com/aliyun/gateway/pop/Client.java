@@ -186,11 +186,11 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
     String getEndpoint(String productId, String regionId, String endpointRule, String network, String suffix, java.util.Map<String, String> endpointMap, String endpoint, String endpointSuffix) throws Exception {
         if (!Support.empty(endpoint)) {
-            return endpoint;
+            return this.withEndpointSuffix(endpoint, endpointSuffix);
         }
 
         if (!Support.isUnset(endpointMap) && !Support.empty(endpointMap.get(regionId))) {
-            return endpointMap.get(regionId);
+            return this.withEndpointSuffix(endpointMap.get(regionId), endpointSuffix);
         }
 
         return this.withEndpointSuffix(Support.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);

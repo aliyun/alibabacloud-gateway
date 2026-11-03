@@ -180,10 +180,10 @@ open class Client : AlibabacloudGatewaySPI.Client {
 
     func getEndpointWithSuffix(_ productId: String, _ regionId: String, _ endpointRule: String, _ network: String, _ suffix: String, _ endpointMap: [String: String], _ endpoint: String, _ endpointSuffix: String?) throws -> String {
         if (!Runtime.empty(endpoint)) {
-            return endpoint as! String
+            return try withEndpointSuffix(endpoint, endpointSuffix)
         }
         if (!Runtime.isUnset(endpointMap) && !Runtime.empty(endpointMap[regionId as! String])) {
-            return endpointMap[regionId as! String] ?? ""
+            return try withEndpointSuffix(endpointMap[regionId as! String] ?? "", endpointSuffix)
         }
         return try withEndpointSuffix(Runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix)
     }

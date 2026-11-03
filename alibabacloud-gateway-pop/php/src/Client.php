@@ -218,10 +218,10 @@ class Client extends DarabonbaGatewaySpiClient
     private function getEndpointWithSuffix($productId, $regionId, $endpointRule, $network, $suffix, $endpointMap, $endpoint, $endpointSuffix)
     {
         if (!self::empty_($endpoint)) {
-            return $endpoint;
+            return $this->withEndpointSuffix($endpoint, $endpointSuffix);
         }
         if (!self::isUnset($endpointMap) && !self::empty_(@$endpointMap[$regionId])) {
-            return @$endpointMap[$regionId];
+            return $this->withEndpointSuffix(@$endpointMap[$regionId], $endpointSuffix);
         }
         return $this->withEndpointSuffix(self::getEndpointRules($productId, $regionId, $endpointRule, $network, $suffix), $endpointSuffix);
     }

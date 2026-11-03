@@ -4,6 +4,33 @@ import { Readable } from 'stream';
 import Client from '../src/client';
 import * as $SPI from '@alicloud/gateway-spi';
 
+describe('explicit endpoint suffix', () => {
+  it('rewrites explicit and mapped endpoints and preserves other suffixes', async () => {
+    const client = new Client();
+    for (const [original, expected] of [
+      ['oss-cn-hangzhou.aliyuncs.com', 'oss-cn-hangzhou.aliyuncs.alibaba'],
+      ['ecs.cn-hangzhou-internal.aliyuncs.com', 'ecs.cn-hangzhou-internal.aliyuncs.alibaba'],
+      ['ecs.aliyun.com', 'ecs.aliyun.com'],
+      ['custom.example.com', 'custom.example.com'],
+      ['ecs.aliyuncs.alibaba', 'ecs.aliyuncs.alibaba'],
+      ['ecs.aliyuncs.com.example.com', 'ecs.aliyuncs.com.example.com'],
+    ]) {
+      for (const mapped of [false, true]) {
+        const ctx = context(request(accessKey()), configuration(original));
+        if (mapped) {
+          ctx.configuration.endpoint = '';
+          ctx.configuration.endpointMap = { 'cn-hangzhou': original };
+        }
+        const attributes = new $SPI.AttributeMap({ key: { endpointSuffix: 'aliyuncs.alibaba' } });
+        for (let i = 0; i < 2; i++) {
+          await client.modifyConfiguration(ctx, attributes);
+          assert.strictEqual(ctx.configuration.endpoint, expected);
+        }
+      }
+    }
+  });
+});
+
 function readable(text: string): Readable {
   const stream = new Readable();
   stream.push(text);

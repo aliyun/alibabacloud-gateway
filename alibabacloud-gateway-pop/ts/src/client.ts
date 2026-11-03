@@ -188,11 +188,11 @@ export default class Client extends SPI {
   /** @internal */
   private getEndpointWithSuffix(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string, endpointSuffix: string): string {
     if (!runtime.empty(endpoint)) {
-      return endpoint;
+      return this.withEndpointSuffix(endpoint, endpointSuffix);
     }
 
     if (!runtime.isUnset(endpointMap) && !runtime.empty(endpointMap[regionId])) {
-      return endpointMap[regionId];
+      return this.withEndpointSuffix(endpointMap[regionId], endpointSuffix);
     }
 
     return this.withEndpointSuffix(runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);

@@ -381,9 +381,9 @@ class Client(SPIClient):
         endpoint_suffix: str,
     ) -> str:
         if not support.empty(endpoint):
-            return endpoint
+            return self._with_endpoint_suffix(endpoint, endpoint_suffix)
         if not support.is_unset(endpoint_map) and not support.empty(endpoint_map.get(region_id)):
-            return endpoint_map.get(region_id)
+            return self._with_endpoint_suffix(endpoint_map.get(region_id), endpoint_suffix)
         return self._with_endpoint_suffix(support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix), endpoint_suffix)
 
     def default_any(

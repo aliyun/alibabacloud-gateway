@@ -284,13 +284,11 @@ func (client *Client) GetEndpoint(productId *string, regionId *string, endpointR
 
 func (client *Client) getEndpointWithSuffix(productId *string, regionId *string, endpointRule *string, network *string, suffix *string, endpointMap map[string]*string, endpoint *string, endpointSuffix *string) (_result *string, _err error) {
 	if !dara.BoolValue(emptyString(endpoint)) {
-		_result = endpoint
-		return _result, _err
+		return applyEndpointSuffix(endpoint, endpointSuffix)
 	}
 
 	if !dara.BoolValue(isUnset(endpointMap)) && !dara.BoolValue(emptyString(endpointMap[dara.StringValue(regionId)])) {
-		_result = endpointMap[dara.StringValue(regionId)]
-		return _result, _err
+		return applyEndpointSuffix(endpointMap[dara.StringValue(regionId)], endpointSuffix)
 	}
 
 	_body, _err := getEndpointRules(productId, regionId, endpointRule, network, suffix)
