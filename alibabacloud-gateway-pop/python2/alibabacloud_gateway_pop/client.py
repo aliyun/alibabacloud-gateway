@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import os
+import re
 
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from Tea.exceptions import TeaException
@@ -38,17 +39,27 @@ class Client(SPIClient):
 
     def _resolve_endpoint_suffix(self, attributes):
         if not UtilClient.is_unset(attributes):
-            suffix = attributes.get('endpointSuffix')
+            suffix = self._checked_endpoint_suffix(attributes.get('endpointSuffix'))
             if not UtilClient.empty(suffix):
                 return suffix
-        env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+        env_suffix = self._checked_endpoint_suffix(os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX'))
         if env_suffix:
             return env_suffix
         return 'aliyuncs.com'
 
+    def _checked_endpoint_suffix(self, suffix):
+        if suffix is None:
+            return ''
+        suffix = suffix.strip().lower()
+        if suffix == '':
+            return ''
+        if suffix not in ('aliyuncs.com', 'aliyuncs.alibaba') or re.match(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$', suffix) is None:
+            raise Exception('endpointSuffix must be aliyuncs.com or aliyuncs.alibaba')
+        return suffix
+
     def _with_endpoint_suffix(self, endpoint, endpoint_suffix=None):
         suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
-        suffix = suffix or 'aliyuncs.com'
+        suffix = self._checked_endpoint_suffix(suffix) or 'aliyuncs.com'
         if not endpoint or suffix == 'aliyuncs.com':
             return endpoint
         old = '.aliyuncs.com'

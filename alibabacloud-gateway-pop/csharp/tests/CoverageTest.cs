@@ -157,10 +157,10 @@ namespace tests
             {
                 Key = new Dictionary<string, string>
                 {
-                    { "endpointSuffix", "example.net" }
+                    { "endpointSuffix", "aliyuncs.alibaba" }
                 }
             });
-            Assert.Equal("ecs.cn-hangzhou.example.net", overridden.Endpoint);
+            Assert.Equal("ecs.cn-hangzhou.aliyuncs.alibaba", overridden.Endpoint);
             var restored = new InterceptorContext.InterceptorContextConfiguration
             {
                 RegionId = "cn-hangzhou",

@@ -48,7 +48,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
             request.headers.put("x-acs-action", request.action);
         }
 
-        String signatureAlgorithm = Support.defaultString(request.signatureAlgorithm, _sha256);
+        String[] signatureNames = this.signatureNames(attributeMap.key);
+        String signatureAlgorithm = Support.defaultString(request.signatureAlgorithm, signatureNames[1]);
         String hashedRequestPayload = Codec.hexEncode(Codec.hash(Support.toBytes(""), signatureAlgorithm));
         if (!Support.isUnset(request.stream)) {
             byte[] tmp = Support.readAsBytes(request.stream);
@@ -78,7 +79,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         }
 
-        if (Support.equalString(signatureAlgorithm, _sm3)) {
+            if (Support.equalString(signatureAlgorithm, signatureNames[2])) {
             request.headers.put("x-acs-content-sm3", hashedRequestPayload);
         } else {
             request.headers.put("x-acs-content-sha256", hashedRequestPayload);
@@ -119,8 +120,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
                 String dateNew = Codec.subString(date, 0, 10);
                 dateNew = Codec.replace(dateNew, "-", "", null);
                 String region = this.regionFor(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
-                byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-                request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
+                byte[] signingkey = this.signingKey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew, signatureNames);
+                request.headers.put("Authorization", this.authorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew, signatureNames));
             }
 
         }
@@ -195,39 +196,63 @@ public class Client extends com.aliyun.gateway.spi.Client {
         return this.withEndpointSuffix(Support.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
     }
 
-    String resolveEndpointSuffix(java.util.Map<String, String> attributes) {
+    String[] signatureNames(java.util.Map<String, String> attributes) {
+        String prefix = "ACS4-";
+        String signPrefix = "aliyun_v4";
         if (!Support.isUnset(attributes)) {
-            String prefix = attributes.get("signatureTypePrefix");
-            if (!Support.empty(prefix)) {
-                this._signatureTypePrefix = prefix;
-                this._sha256 = "" + prefix + "HMAC-SHA256";
-                this._sm3 = "" + prefix + "HMAC-SM3";
+            String requestedPrefix = attributes.get("signatureTypePrefix");
+            if (!Support.empty(requestedPrefix)) {
+                prefix = requestedPrefix;
             }
-            String signPrefix = attributes.get("signPrefix");
-            if (!Support.empty(signPrefix)) {
-                this._signPrefix = signPrefix;
+            String requestedSignPrefix = attributes.get("signPrefix");
+            if (!Support.empty(requestedSignPrefix)) {
+                signPrefix = requestedSignPrefix;
             }
-            String suffix = attributes.get("endpointSuffix");
+        }
+        return new String[]{signPrefix, prefix + "HMAC-SHA256", prefix + "HMAC-SM3"};
+    }
+
+    String resolveEndpointSuffix(java.util.Map<String, String> attributes) throws Exception {
+        if (!Support.isUnset(attributes)) {
+            String suffix = this.checkedEndpointSuffix(attributes.get("endpointSuffix"));
             if (!Support.empty(suffix)) {
                 return suffix;
             }
         }
-        String envSuffix = this.endpointSuffixFromEnv();
+        String envSuffix = this.checkedEndpointSuffix(this.endpointSuffixFromEnv());
         if (!Support.empty(envSuffix)) {
             return envSuffix;
         }
         return "aliyuncs.com";
     }
 
+    String checkedEndpointSuffix(String suffix) throws Exception {
+        if (suffix == null) {
+            return "";
+        }
+        suffix = suffix.trim().toLowerCase();
+        if (suffix.length() == 0) {
+            return "";
+        }
+        if ((!"aliyuncs.com".equals(suffix) && !"aliyuncs.alibaba".equals(suffix)) || !java.util.regex.Pattern.compile("^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$").matcher(suffix).matches()) {
+            throw new TeaException(TeaConverter.buildMap(
+                new TeaPair("code", "InvalidEndpointSuffix"),
+                new TeaPair("message", "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba")
+            ));
+        }
+        return suffix;
+    }
+
     String endpointSuffixFromEnv() {
         return System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
     }
 
-    String withEndpointSuffix(String endpoint) {
+    String withEndpointSuffix(String endpoint) throws Exception {
         return this.withEndpointSuffix(endpoint, this._endpointSuffix);
     }
 
-    String withEndpointSuffix(String endpoint, String suffix) {
+    String withEndpointSuffix(String endpoint, String suffix) throws Exception {
+        suffix = this.checkedEndpointSuffix(suffix);
         if (Support.empty(suffix)) {
             suffix = "aliyuncs.com";
         }
@@ -250,13 +275,21 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getAuthorization(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, String ak, byte[] signingkey, String product, String region, String date) throws Exception {
-        String signature = this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
+        return this.authorization(pathname, method, query, headers, signatureAlgorithm, payload, ak, signingkey, product, region, date, new String[]{_signPrefix, _sha256, _sm3});
+    }
+
+    String authorization(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, String ak, byte[] signingkey, String product, String region, String date, String[] signatureNames) throws Exception {
+        String signature = this.signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, signatureNames);
         java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
         String signedHeadersStr = Codec.join(signedHeaders, ";");
-        return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/" + _signPrefix + "_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
+        return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/" + signatureNames[0] + "_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature + "";
     }
 
     public String getSignature(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, byte[] signingkey) throws Exception {
+        return this.signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, new String[]{_signPrefix, _sha256, _sm3});
+    }
+
+    String signature(String pathname, String method, java.util.Map<String, String> query, java.util.Map<String, String> headers, String signatureAlgorithm, String payload, byte[] signingkey, String[] signatureNames) throws Exception {
         String canonicalURI = "/";
         if (!Support.empty(pathname)) {
             canonicalURI = pathname;
@@ -272,9 +305,9 @@ public class Client extends com.aliyun.gateway.spi.Client {
         String hex = Codec.hexEncode(Codec.hash(Support.toBytes(stringToSign), signatureAlgorithm));
         stringToSign = "" + signatureAlgorithm + "\n" + hex + "";
         byte[] signature = Support.toBytes("");
-        if (Support.equalString(signatureAlgorithm, _sha256)) {
+        if (Support.equalString(signatureAlgorithm, signatureNames[1])) {
             signature = Codec.hmacSha256ByBytes(stringToSign, signingkey);
-        } else if (Support.equalString(signatureAlgorithm, _sm3)) {
+        } else if (Support.equalString(signatureAlgorithm, signatureNames[2])) {
             signature = Codec.hmacSm3ByBytes(stringToSign, signingkey);
         }
 
@@ -282,33 +315,37 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public byte[] getSigningkey(String signatureAlgorithm, String secret, String product, String region, String date) throws Exception {
-        String sc1 = "" + _signPrefix + "" + secret + "";
+        return this.signingKey(signatureAlgorithm, secret, product, region, date, new String[]{_signPrefix, _sha256, _sm3});
+    }
+
+    byte[] signingKey(String signatureAlgorithm, String secret, String product, String region, String date, String[] signatureNames) throws Exception {
+        String sc1 = "" + signatureNames[0] + "" + secret + "";
         byte[] sc2 = Support.toBytes("");
-        if (Support.equalString(signatureAlgorithm, _sha256)) {
+        if (Support.equalString(signatureAlgorithm, signatureNames[1])) {
             sc2 = Codec.hmacSha256(date, sc1);
-        } else if (Support.equalString(signatureAlgorithm, _sm3)) {
+        } else if (Support.equalString(signatureAlgorithm, signatureNames[2])) {
             sc2 = Codec.hmacSm3(date, sc1);
         }
 
         byte[] sc3 = Support.toBytes("");
-        if (Support.equalString(signatureAlgorithm, _sha256)) {
+        if (Support.equalString(signatureAlgorithm, signatureNames[1])) {
             sc3 = Codec.hmacSha256ByBytes(region, sc2);
-        } else if (Support.equalString(signatureAlgorithm, _sm3)) {
+        } else if (Support.equalString(signatureAlgorithm, signatureNames[2])) {
             sc3 = Codec.hmacSm3ByBytes(region, sc2);
         }
 
         byte[] sc4 = Support.toBytes("");
-        if (Support.equalString(signatureAlgorithm, _sha256)) {
+        if (Support.equalString(signatureAlgorithm, signatureNames[1])) {
             sc4 = Codec.hmacSha256ByBytes(product, sc3);
-        } else if (Support.equalString(signatureAlgorithm, _sm3)) {
+        } else if (Support.equalString(signatureAlgorithm, signatureNames[2])) {
             sc4 = Codec.hmacSm3ByBytes(product, sc3);
         }
 
         byte[] hmac = Support.toBytes("");
-        if (Support.equalString(signatureAlgorithm, _sha256)) {
-            hmac = Codec.hmacSha256ByBytes("" + _signPrefix + "_request", sc4);
-        } else if (Support.equalString(signatureAlgorithm, _sm3)) {
-            hmac = Codec.hmacSm3ByBytes("" + _signPrefix + "_request", sc4);
+        if (Support.equalString(signatureAlgorithm, signatureNames[1])) {
+            hmac = Codec.hmacSha256ByBytes("" + signatureNames[0] + "_request", sc4);
+        } else if (Support.equalString(signatureAlgorithm, signatureNames[2])) {
+            hmac = Codec.hmacSm3ByBytes("" + signatureNames[0] + "_request", sc4);
         }
 
         return hmac;

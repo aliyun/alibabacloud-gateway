@@ -147,7 +147,7 @@ func TestEndpointSelection(t *testing.T) {
 }
 
 func TestEndpointSuffixOverride(t *testing.T) {
-	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "example.com")
+	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "aliyuncs.alibaba")
 	defer os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
 
 	client, err := NewClient()
@@ -158,8 +158,8 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	}
 	err = client.ModifyConfiguration(newContext(baseRequest(), config), &spi.AttributeMap{})
 	utils.AssertNil(t, err)
-	utils.AssertEqual(t, "ecs.cn-hangzhou.example.com", tea.StringValue(config.Endpoint))
-	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), config.Endpoint, tea.String(""), tea.String("example.com"))))
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(config.Endpoint))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), config.Endpoint, tea.String(""), tea.String("aliyuncs.alibaba"))))
 	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""), tea.String("example.net"))))
 	utils.AssertEqual(t, "aliyuncs.com", tea.StringValue(client.EndpointSuffix))
 
@@ -169,15 +169,24 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	}
 	err = client.ModifyConfiguration(newContext(baseRequest(), overridden), &spi.AttributeMap{
 		Key: map[string]*string{
-			"endpointSuffix": tea.String("example.net"),
+			"endpointSuffix": tea.String(" ALIYUNCS.ALIBABA "),
 		},
 	})
 	utils.AssertNil(t, err)
-	utils.AssertEqual(t, "ecs.cn-hangzhou.example.net", tea.StringValue(overridden.Endpoint))
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(overridden.Endpoint))
+	utils.AssertEqual(t, "ACS4-", tea.StringValue(client.SignatureTypePrefix))
 	utils.AssertEqual(t, "ACS4-HMAC-SHA256", tea.StringValue(client.Sha256))
-	utils.AssertEqual(t, "already.example.com", tea.StringValue(applyEndpointSuffix(tea.String("already.example.com"), tea.String("example.com"))))
-	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""))))
-	utils.AssertEqual(t, "", tea.StringValue(applyEndpointSuffix(tea.String(""), tea.String("example.com"))))
+	unchanged, err := applyEndpointSuffix(tea.String("already.example.com"), tea.String("aliyuncs.alibaba"))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "already.example.com", tea.StringValue(unchanged))
+	sameHost, err := applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(sameHost))
+	emptyHost, err := applyEndpointSuffix(tea.String(""), tea.String("aliyuncs.alibaba"))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "", tea.StringValue(emptyHost))
+	_, err = applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String("example.net"))
+	utils.AssertNotNil(t, err)
 
 	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
 	fallback := &spi.InterceptorContextConfiguration{
@@ -194,11 +203,22 @@ func TestEndpointSuffixOverride(t *testing.T) {
 		EndpointRule: tea.String("regional"),
 		Endpoint:     tea.String("ecs.cn-hangzhou.aliyuncs.com"),
 	}
-	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "example.net")
+	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "aliyuncs.alibaba")
 	err = client.ModifyConfiguration(newContext(baseRequest(), explicit), &spi.AttributeMap{})
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(explicit.Endpoint))
-	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), explicit.Endpoint, explicit.RegionId, tea.String(endpointSuffixForRequest(nil)))))
+	resolved, err := endpointSuffixForRequest(nil)
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), explicit.Endpoint, explicit.RegionId, tea.String(resolved))))
+	blank := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), blank), &spi.AttributeMap{
+		Key: map[string]*string{"endpointSuffix": tea.String("   ")},
+	})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(blank.Endpoint))
 }
 
 func TestEndpointSuffixRequestsDoNotCross(t *testing.T) {
@@ -212,9 +232,9 @@ func TestEndpointSuffixRequestsDoNotCross(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			suffix := "example.net"
+			suffix := "aliyuncs.alibaba"
 			if i%2 == 1 {
-				suffix = "example.org"
+				suffix = "aliyuncs.com"
 			}
 			built := &spi.InterceptorContextConfiguration{
 				RegionId:     tea.String("cn-hangzhou"),
@@ -238,6 +258,52 @@ func TestEndpointSuffixRequestsDoNotCross(t *testing.T) {
 	for callErr := range errCh {
 		utils.AssertNil(t, callErr)
 	}
+}
+
+func TestSignaturePrefixesDoNotCross(t *testing.T) {
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+	var wg sync.WaitGroup
+	errCh := make(chan error, 16)
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			prefix := "ACS4-"
+			signPrefix := "aliyun_v4"
+			if i%2 == 1 {
+				prefix = "ACS3-"
+				signPrefix = "aliyun_v3"
+			}
+			request := baseRequest()
+			callErr := client.ModifyRequest(newContext(request, baseConfig()), &spi.AttributeMap{
+				Key: map[string]*string{
+					"signatureTypePrefix": tea.String(prefix),
+					"signPrefix":          tea.String(signPrefix),
+				},
+			})
+			if callErr != nil {
+				errCh <- callErr
+				return
+			}
+			authorization := tea.StringValue(request.Headers["Authorization"])
+			if !strings.HasPrefix(authorization, prefix+"HMAC-SHA256 ") {
+				errCh <- errors.New(authorization)
+				return
+			}
+			if !strings.Contains(authorization, "/"+signPrefix+"_request,") {
+				errCh <- errors.New(authorization)
+			}
+		}(i)
+	}
+	wg.Wait()
+	close(errCh)
+	for callErr := range errCh {
+		utils.AssertNil(t, callErr)
+	}
+	utils.AssertEqual(t, "ACS4-", tea.StringValue(client.SignatureTypePrefix))
+	utils.AssertEqual(t, "aliyun_v4", tea.StringValue(client.SignPrefix))
+	utils.AssertEqual(t, "ACS4-HMAC-SHA256", tea.StringValue(client.Sha256))
 }
 
 func TestModifyConfiguration(t *testing.T) {

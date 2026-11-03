@@ -48,29 +48,59 @@ namespace AlibabaCloud.GatewayPop
             config.Endpoint = GetEndpointWithSuffix(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint, endpointSuffix);
         }
 
+        internal string[] SignatureNames(Dictionary<string, string> attributes)
+        {
+            string prefix = "ACS4-";
+            string signPrefix = "aliyun_v4";
+            if (!Runtime.IsUnset(attributes))
+            {
+                string requested = attributes.Get("signatureTypePrefix");
+                if (!Runtime.Empty(requested))
+                {
+                    prefix = requested;
+                }
+                string requestedSign = attributes.Get("signPrefix");
+                if (!Runtime.Empty(requestedSign))
+                {
+                    signPrefix = requestedSign;
+                }
+            }
+            return new string[] { signPrefix, prefix + "HMAC-SHA256", prefix + "HMAC-SM3" };
+        }
+
+        internal string CheckedEndpointSuffix(string suffix)
+        {
+            if (suffix == null)
+            {
+                return "";
+            }
+            suffix = suffix.Trim().ToLower();
+            if (suffix.Length == 0)
+            {
+                return "";
+            }
+            if ((suffix != "aliyuncs.com" && suffix != "aliyuncs.alibaba") || !System.Text.RegularExpressions.Regex.IsMatch(suffix, "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"))
+            {
+                throw new TeaException(new Dictionary<string, object>
+                {
+                    {"code", "InvalidEndpointSuffix"},
+                    {"message", "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba"},
+                });
+            }
+            return suffix;
+        }
+
         internal string ResolveEndpointSuffix(Dictionary<string, string> attributes)
         {
             if (!Runtime.IsUnset(attributes))
             {
-                string prefix = attributes.Get("signatureTypePrefix");
-                if (!Runtime.Empty(prefix))
-                {
-                    this._signatureTypePrefix = prefix;
-                    this._sha256 = "" + prefix + "HMAC-SHA256";
-                    this._sm3 = "" + prefix + "HMAC-SM3";
-                }
-                string signPrefix = attributes.Get("signPrefix");
-                if (!Runtime.Empty(signPrefix))
-                {
-                    this._signPrefix = signPrefix;
-                }
-                string suffix = attributes.Get("endpointSuffix");
+                string suffix = CheckedEndpointSuffix(attributes.Get("endpointSuffix"));
                 if (!Runtime.Empty(suffix))
                 {
                     return suffix;
                 }
             }
-            string envSuffix = Environment.GetEnvironmentVariable("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
+            string envSuffix = CheckedEndpointSuffix(Environment.GetEnvironmentVariable("ALIBABA_CLOUD_ENDPOINT_SUFFIX"));
             if (!Runtime.Empty(envSuffix))
             {
                 return envSuffix;
@@ -81,6 +111,7 @@ namespace AlibabaCloud.GatewayPop
         internal string WithEndpointSuffix(string endpoint, string endpointSuffix = null)
         {
             string suffix = endpointSuffix == null ? this._endpointSuffix : endpointSuffix;
+            suffix = CheckedEndpointSuffix(suffix);
             if (Runtime.Empty(suffix))
             {
                 suffix = "aliyuncs.com";
@@ -119,7 +150,8 @@ namespace AlibabaCloud.GatewayPop
             {
                 request.Headers["x-acs-action"] = request.Action;
             }
-            string signatureAlgorithm = Runtime.DefaultString(request.SignatureAlgorithm, _sha256);
+            string[] names = SignatureNames(attributeMap.Key);
+            string signatureAlgorithm = Runtime.DefaultString(request.SignatureAlgorithm, names[1]);
             string hashedRequestPayload = Runtime.HexEncode(Runtime.Hash(Runtime.ToBytes(""), signatureAlgorithm));
             if (!Runtime.IsUnset(request.Stream))
             {
@@ -155,7 +187,7 @@ namespace AlibabaCloud.GatewayPop
                     }
                 }
             }
-            if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
                 request.Headers["x-acs-content-sm3"] = hashedRequestPayload;
             }
@@ -205,8 +237,8 @@ namespace AlibabaCloud.GatewayPop
                     string dateNew = Runtime.SubString(date, 0, 10);
                     dateNew = Runtime.Replace(dateNew, "-", "", null);
                     string region = GetRegionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, ResolveEndpointSuffix(attributeMap.Key));
-                    byte[] signingkey = GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew);
-                    request.Headers["Authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
+                    byte[] signingkey = SigningKey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew, names);
+                    request.Headers["Authorization"] = Authorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew, names);
                 }
             }
         }
@@ -233,7 +265,8 @@ namespace AlibabaCloud.GatewayPop
             {
                 request.Headers["x-acs-action"] = request.Action;
             }
-            string signatureAlgorithm = Runtime.DefaultString(request.SignatureAlgorithm, _sha256);
+            string[] names = SignatureNames(attributeMap.Key);
+            string signatureAlgorithm = Runtime.DefaultString(request.SignatureAlgorithm, names[1]);
             string hashedRequestPayload = Runtime.HexEncode(Runtime.Hash(Runtime.ToBytes(""), signatureAlgorithm));
             if (!Runtime.IsUnset(request.Stream))
             {
@@ -269,7 +302,7 @@ namespace AlibabaCloud.GatewayPop
                     }
                 }
             }
-            if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
                 request.Headers["x-acs-content-sm3"] = hashedRequestPayload;
             }
@@ -319,8 +352,8 @@ namespace AlibabaCloud.GatewayPop
                     string dateNew = Runtime.SubString(date, 0, 10);
                     dateNew = Runtime.Replace(dateNew, "-", "", null);
                     string region = GetRegionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, ResolveEndpointSuffix(attributeMap.Key));
-                    byte[] signingkey = GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew);
-                    request.Headers["Authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
+                    byte[] signingkey = SigningKey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew, names);
+                    request.Headers["Authorization"] = Authorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew, names);
                 }
             }
         }
@@ -490,13 +523,23 @@ namespace AlibabaCloud.GatewayPop
 
         public string GetAuthorization(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, byte[] signingkey, string product, string region, string date)
         {
-            string signature = GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
+            return Authorization(pathname, method, query, headers, signatureAlgorithm, payload, ak, signingkey, product, region, date, new string[] { _signPrefix, _sha256, _sm3 });
+        }
+
+        internal string Authorization(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, string ak, byte[] signingkey, string product, string region, string date, string[] names)
+        {
+            string signature = Signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, names);
             List<string> signedHeaders = GetSignedHeaders(headers);
             string signedHeadersStr = Runtime.Join(signedHeaders, ";");
-            return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/" + _signPrefix + "_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
+            return "" + signatureAlgorithm + " Credential=" + ak + "/" + date + "/" + region + "/" + product + "/" + names[0] + "_request,SignedHeaders=" + signedHeadersStr + ",Signature=" + signature;
         }
 
         public string GetSignature(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, byte[] signingkey)
+        {
+            return Signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, new string[] { _signPrefix, _sha256, _sm3 });
+        }
+
+        internal string Signature(string pathname, string method, Dictionary<string, string> query, Dictionary<string, string> headers, string signatureAlgorithm, string payload, byte[] signingkey, string[] names)
         {
             string canonicalURI = "/";
             if (!Runtime.Empty(pathname))
@@ -513,11 +556,11 @@ namespace AlibabaCloud.GatewayPop
             string hex = Runtime.HexEncode(Runtime.Hash(Runtime.ToBytes(stringToSign), signatureAlgorithm));
             stringToSign = "" + signatureAlgorithm + "\n" + hex;
             byte[] signature = Runtime.ToBytes("");
-            if (Runtime.EqualString(signatureAlgorithm, _sha256))
+            if (Runtime.EqualString(signatureAlgorithm, names[1]))
             {
                 signature = Runtime.HmacSHA256SignByBytes(stringToSign, signingkey);
             }
-            else if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            else if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
                 signature = Runtime.HmacSM3SignByBytes(stringToSign, signingkey);
             }
@@ -526,42 +569,47 @@ namespace AlibabaCloud.GatewayPop
 
         public byte[] GetSigningkey(string signatureAlgorithm, string secret, string product, string region, string date)
         {
-            string sc1 = "" + _signPrefix + secret;
+            return SigningKey(signatureAlgorithm, secret, product, region, date, new string[] { _signPrefix, _sha256, _sm3 });
+        }
+
+        internal byte[] SigningKey(string signatureAlgorithm, string secret, string product, string region, string date, string[] names)
+        {
+            string sc1 = "" + names[0] + secret;
             byte[] sc2 = Runtime.ToBytes("");
-            if (Runtime.EqualString(signatureAlgorithm, _sha256))
+            if (Runtime.EqualString(signatureAlgorithm, names[1]))
             {
                 sc2 = Runtime.HmacSHA256Sign(date, sc1);
             }
-            else if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            else if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
                 sc2 = Runtime.HmacSM3Sign(date, sc1);
             }
             byte[] sc3 = Runtime.ToBytes("");
-            if (Runtime.EqualString(signatureAlgorithm, _sha256))
+            if (Runtime.EqualString(signatureAlgorithm, names[1]))
             {
                 sc3 = Runtime.HmacSHA256SignByBytes(region, sc2);
             }
-            else if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            else if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
                 sc3 = Runtime.HmacSM3SignByBytes(region, sc2);
             }
             byte[] sc4 = Runtime.ToBytes("");
-            if (Runtime.EqualString(signatureAlgorithm, _sha256))
+            if (Runtime.EqualString(signatureAlgorithm, names[1]))
             {
                 sc4 = Runtime.HmacSHA256SignByBytes(product, sc3);
             }
-            else if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            else if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
                 sc4 = Runtime.HmacSM3SignByBytes(product, sc3);
             }
             byte[] hmac = Runtime.ToBytes("");
-            if (Runtime.EqualString(signatureAlgorithm, _sha256))
+            if (Runtime.EqualString(signatureAlgorithm, names[1]))
             {
-                hmac = Runtime.HmacSHA256SignByBytes("" + _signPrefix + "_request", sc4);
+                hmac = Runtime.HmacSHA256SignByBytes("" + names[0] + "_request", sc4);
             }
-            else if (Runtime.EqualString(signatureAlgorithm, _sm3))
+            else if (Runtime.EqualString(signatureAlgorithm, names[2]))
             {
-                hmac = Runtime.HmacSM3SignByBytes("" + _signPrefix + "_request", sc4);
+                hmac = Runtime.HmacSM3SignByBytes("" + names[0] + "_request", sc4);
             }
             return hmac;
         }

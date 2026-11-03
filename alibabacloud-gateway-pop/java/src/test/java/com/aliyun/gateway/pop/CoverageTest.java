@@ -194,6 +194,17 @@ public class CoverageTest {
         Assert.assertEquals("DescribeRegions", json.headers.get("x-acs-action"));
         Assert.assertTrue(json.headers.get("Authorization").contains("ACS4-HMAC-SHA256 Credential=ak/"));
         Assert.assertTrue(json.headers.get("x-acs-content-sha256").length() > 0);
+        InterceptorContext.InterceptorContextRequest prefixed = request(accessKey());
+        AttributeMap prefixAttributes = new AttributeMap();
+        prefixAttributes.key = new HashMap<String, String>();
+        prefixAttributes.key.put("signatureTypePrefix", "ACS3-");
+        prefixAttributes.key.put("signPrefix", "aliyun_v3");
+        client.modifyRequest(context(prefixed, config()), prefixAttributes);
+        Assert.assertTrue(prefixed.headers.get("Authorization").startsWith("ACS3-HMAC-SHA256 "));
+        Assert.assertTrue(prefixed.headers.get("Authorization").contains("/aliyun_v3_request,"));
+        Assert.assertEquals("ACS4-", client._signatureTypePrefix);
+        Assert.assertEquals("aliyun_v4", client._signPrefix);
+        Assert.assertEquals("ACS4-HMAC-SHA256", client._sha256);
 
         InterceptorContext.InterceptorContextRequest bytes = request(accessKey());
         bytes.reqBodyType = "byte";
@@ -373,14 +384,20 @@ public class CoverageTest {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("signatureTypePrefix", "ACS4-");
         attributes.put("signPrefix", "aliyun_v4");
-        attributes.put("endpointSuffix", "example.net");
-        Assert.assertEquals("example.net", client.resolveEndpointSuffix(attributes));
+        attributes.put("endpointSuffix", " ALIYUNCS.ALIBABA ");
+        Assert.assertEquals("aliyuncs.alibaba", client.resolveEndpointSuffix(attributes));
         Assert.assertEquals("aliyuncs.com", client._endpointSuffix);
         Assert.assertEquals("ACS4-HMAC-SHA256", client._sha256);
         Assert.assertEquals("aliyun_v4", client._signPrefix);
-        Assert.assertEquals("ecs.cn-hangzhou.example.net", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "example.net"));
-        Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com", "example.net"));
-        Assert.assertEquals("", client.withEndpointSuffix("", "example.net"));
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.alibaba", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "aliyuncs.alibaba"));
+        Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com", "aliyuncs.alibaba"));
+        Assert.assertEquals("", client.withEndpointSuffix("", "aliyuncs.alibaba"));
+        try {
+            client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "example.net");
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("endpointSuffix"));
+        }
         Assert.assertEquals("cn-hangzhou", client.regionFor("ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net"));
 
         client._endpointSuffix = "";
@@ -391,10 +408,10 @@ public class CoverageTest {
         Client fromEnv = new Client() {
             @Override
             String endpointSuffixFromEnv() {
-                return "example.com";
+                return "aliyuncs.alibaba";
             }
         };
-        Assert.assertEquals("example.com", fromEnv.resolveEndpointSuffix(null));
+        Assert.assertEquals("aliyuncs.alibaba", fromEnv.resolveEndpointSuffix(null));
         Assert.assertEquals("aliyuncs.com", fromEnv._endpointSuffix);
         InterceptorContext.InterceptorContextConfiguration built = new InterceptorContext.InterceptorContextConfiguration();
         built.regionId = "cn-hangzhou";
@@ -403,7 +420,7 @@ public class CoverageTest {
         context.request = request(accessKey());
         context.configuration = built;
         fromEnv.modifyConfiguration(context, new AttributeMap());
-        Assert.assertEquals("ecs.cn-hangzhou.example.com", built.endpoint);
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.alibaba", built.endpoint);
         Assert.assertEquals(System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"), new Client().endpointSuffixFromEnv());
     }
 }

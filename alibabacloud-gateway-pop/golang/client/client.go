@@ -44,17 +44,10 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 	if attributeMap != nil {
 		attributes = attributeMap.Key
 	}
-	if !dara.BoolValue(isUnset(attributes)) {
-		if !dara.BoolValue(emptyString(attributes["signatureTypePrefix"])) {
-			client.SignatureTypePrefix = attributes["signatureTypePrefix"]
-			client.Sha256 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
-			client.Sm3 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
-		}
-		if !dara.BoolValue(emptyString(attributes["signPrefix"])) {
-			client.SignPrefix = attributes["signPrefix"]
-		}
+	suffix, _err := endpointSuffixForRequest(attributes)
+	if _err != nil {
+		return _err
 	}
-	suffix := endpointSuffixForRequest(attributes)
 	config.Endpoint, _err = client.getEndpointWithSuffix(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint, dara.String(suffix))
 	if _err != nil {
 		return _err
@@ -79,7 +72,12 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 		request.Headers["x-acs-action"] = request.Action
 	}
 
-	signatureAlgorithm := defaultString(request.SignatureAlgorithm, client.Sha256)
+	var requestAttributes map[string]*string
+	if attributeMap != nil {
+		requestAttributes = attributeMap.Key
+	}
+	names := signatureNames(requestAttributes)
+	signatureAlgorithm := defaultString(request.SignatureAlgorithm, dara.String(names.sha256))
 	hashedRequestPayload := hexEncode(hashBytes(toBytes(dara.String("")), signatureAlgorithm))
 	if !dara.BoolValue(isUnset(request.Stream)) {
 		tmp, _err := dara.ReadAsBytes(request.Stream)
@@ -121,7 +119,7 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 	}
 
-	if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
+	if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sm3))) {
 		request.Headers["x-acs-content-sm3"] = hashedRequestPayload
 	} else {
 		request.Headers["x-acs-content-sha256"] = hashedRequestPayload
@@ -166,13 +164,13 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 			dateNew := subString(date, dara.Int(0), dara.Int(10))
 			dateNew = replaceString(dateNew, dara.String("-"), dara.String(""), nil)
-			var requestAttributes map[string]*string
-			if attributeMap != nil {
-				requestAttributes = attributeMap.Key
+			endpointSuffix, suffixErr := endpointSuffixForRequest(requestAttributes)
+			if suffixErr != nil {
+				return suffixErr
 			}
-			region := client.regionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, dara.String(endpointSuffixForRequest(requestAttributes)))
-			signingkey := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
-			request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
+			region := client.regionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, dara.String(endpointSuffix))
+			signingkey := client.signingKey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew, names)
+			request.Headers["Authorization"], _err = client.authorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew, names)
 			if _err != nil {
 				return _err
 			}
@@ -299,8 +297,7 @@ func (client *Client) getEndpointWithSuffix(productId *string, regionId *string,
 	if _err != nil {
 		return _result, _err
 	}
-	_result = applyEndpointSuffix(_body, endpointSuffix)
-	return _result, _err
+	return applyEndpointSuffix(_body, endpointSuffix)
 }
 
 func (client *Client) DefaultAny(inputValue interface{}, defaultValue interface{}) (_result interface{}) {
@@ -314,17 +311,33 @@ func (client *Client) DefaultAny(inputValue interface{}, defaultValue interface{
 }
 
 func (client *Client) GetAuthorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string) (_result *string, _err error) {
-	signature, _err := client.GetSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey)
+	return client.authorization(pathname, method, query, headers, signatureAlgorithm, payload, ak, signingkey, product, region, date, requestSignature{
+		signPrefix: dara.StringValue(client.SignPrefix),
+		sha256:     dara.StringValue(client.Sha256),
+		sm3:        dara.StringValue(client.Sm3),
+	})
+}
+
+func (client *Client) authorization(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, ak *string, signingkey []byte, product *string, region *string, date *string, names requestSignature) (_result *string, _err error) {
+	signature, _err := client.signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, names)
 	if _err != nil {
 		return _result, _err
 	}
 	signedHeaders := client.GetSignedHeaders(headers)
 	signedHeadersStr := join(signedHeaders, dara.String(";"))
-	_result = dara.String(dara.StringValue(signatureAlgorithm) + " Credential=" + dara.StringValue(ak) + "/" + dara.StringValue(date) + "/" + dara.StringValue(region) + "/" + dara.StringValue(product) + "/" + dara.StringValue(client.SignPrefix) + "_request,SignedHeaders=" + dara.StringValue(signedHeadersStr) + ",Signature=" + dara.StringValue(signature))
+	_result = dara.String(dara.StringValue(signatureAlgorithm) + " Credential=" + dara.StringValue(ak) + "/" + dara.StringValue(date) + "/" + dara.StringValue(region) + "/" + dara.StringValue(product) + "/" + names.signPrefix + "_request,SignedHeaders=" + dara.StringValue(signedHeadersStr) + ",Signature=" + dara.StringValue(signature))
 	return _result, _err
 }
 
 func (client *Client) GetSignature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte) (_result *string, _err error) {
+	return client.signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, requestSignature{
+		signPrefix: dara.StringValue(client.SignPrefix),
+		sha256:     dara.StringValue(client.Sha256),
+		sm3:        dara.StringValue(client.Sm3),
+	})
+}
+
+func (client *Client) signature(pathname *string, method *string, query map[string]*string, headers map[string]*string, signatureAlgorithm *string, payload *string, signingkey []byte, names requestSignature) (_result *string, _err error) {
 	canonicalURI := dara.String("/")
 	if !dara.BoolValue(emptyString(pathname)) {
 		canonicalURI = pathname
@@ -343,9 +356,9 @@ func (client *Client) GetSignature(pathname *string, method *string, query map[s
 	hex := hexEncode(hashBytes(toBytes(stringToSign), signatureAlgorithm))
 	stringToSign = dara.String(dara.StringValue(signatureAlgorithm) + "\n" + dara.StringValue(hex))
 	signature := toBytes(dara.String(""))
-	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
+	if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sha256))) {
 		signature = hmacSHA256ByBytes(stringToSign, signingkey)
-	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sm3))) {
 		signature = hmacSM3ByBytes(stringToSign, signingkey)
 	}
 
@@ -366,33 +379,41 @@ func (client *Client) ValidateSignedHeaders(signedHeaders []*string) (_err error
 }
 
 func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string) (_result []byte) {
-	sc1 := dara.String(dara.StringValue(client.SignPrefix) + dara.StringValue(secret))
+	return client.signingKey(signatureAlgorithm, secret, product, region, date, requestSignature{
+		signPrefix: dara.StringValue(client.SignPrefix),
+		sha256:     dara.StringValue(client.Sha256),
+		sm3:        dara.StringValue(client.Sm3),
+	})
+}
+
+func (client *Client) signingKey(signatureAlgorithm *string, secret *string, product *string, region *string, date *string, names requestSignature) (_result []byte) {
+	sc1 := dara.String(names.signPrefix + dara.StringValue(secret))
 	sc2 := toBytes(dara.String(""))
-	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
+	if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sha256))) {
 		sc2 = hmacSHA256(date, sc1)
-	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sm3))) {
 		sc2 = hmacSM3(date, sc1)
 	}
 
 	sc3 := toBytes(dara.String(""))
-	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
+	if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sha256))) {
 		sc3 = hmacSHA256ByBytes(region, sc2)
-	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sm3))) {
 		sc3 = hmacSM3ByBytes(region, sc2)
 	}
 
 	sc4 := toBytes(dara.String(""))
-	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
+	if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sha256))) {
 		sc4 = hmacSHA256ByBytes(product, sc3)
-	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
+	} else if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sm3))) {
 		sc4 = hmacSM3ByBytes(product, sc3)
 	}
 
 	hmac := toBytes(dara.String(""))
-	if dara.BoolValue(equalString(signatureAlgorithm, client.Sha256)) {
-		hmac = hmacSHA256ByBytes(dara.String(dara.StringValue(client.SignPrefix)+"_request"), sc4)
-	} else if dara.BoolValue(equalString(signatureAlgorithm, client.Sm3)) {
-		hmac = hmacSM3ByBytes(dara.String(dara.StringValue(client.SignPrefix)+"_request"), sc4)
+	if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sha256))) {
+		hmac = hmacSHA256ByBytes(dara.String(names.signPrefix+"_request"), sc4)
+	} else if dara.BoolValue(equalString(signatureAlgorithm, dara.String(names.sm3))) {
+		hmac = hmacSM3ByBytes(dara.String(names.signPrefix+"_request"), sc4)
 	}
 
 	_result = hmac

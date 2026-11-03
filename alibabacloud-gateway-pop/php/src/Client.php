@@ -72,7 +72,8 @@ class Client extends DarabonbaGatewaySpiClient
         if (!self::empty_($request->action)) {
             $request->headers["x-acs-action"] = $request->action;
         }
-        $signatureAlgorithm = self::defaultString($request->signatureAlgorithm, $this->_sha256);
+        $names = $this->signatureNames($attributeMap->key);
+        $signatureAlgorithm = self::defaultString($request->signatureAlgorithm, $names[1]);
         $hashedRequestPayload = self::hexEncode(self::hash(self::toBytes(""), $signatureAlgorithm));
         if (!self::isUnset($request->stream)) {
             $tmp = self::readAsBytes($request->stream);
@@ -99,7 +100,7 @@ class Client extends DarabonbaGatewaySpiClient
                 }
             }
         }
-        if (self::equalString($signatureAlgorithm, $this->_sm3)) {
+        if (self::equalString($signatureAlgorithm, $names[2])) {
             $request->headers["x-acs-content-sm3"] = $hashedRequestPayload;
         } else {
             $request->headers["x-acs-content-sha256"] = $hashedRequestPayload;
@@ -136,8 +137,8 @@ class Client extends DarabonbaGatewaySpiClient
                 $dateNew = self::subString($date, 0, 10);
                 $dateNew = self::replace($dateNew, "-", "", null);
                 $region = $this->getRegionWithSuffix($request->productId, $config->endpoint, $config->regionId, $this->resolveEndpointSuffix($attributeMap->key));
-                $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew);
-                $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
+                $signingkey = $this->signingKey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew, $names);
+                $request->headers["Authorization"] = $this->authorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew, $names);
             }
         }
     }
@@ -225,26 +226,52 @@ class Client extends DarabonbaGatewaySpiClient
         return $this->withEndpointSuffix(self::getEndpointRules($productId, $regionId, $endpointRule, $network, $suffix), $endpointSuffix);
     }
 
+    private function signatureNames($attributes)
+    {
+        $prefix = "ACS4-";
+        $signPrefix = "aliyun_v4";
+        if (!self::isUnset($attributes)) {
+            $requested = @$attributes["signatureTypePrefix"];
+            if (!self::empty_($requested)) {
+                $prefix = $requested;
+            }
+            $requestedSign = @$attributes["signPrefix"];
+            if (!self::empty_($requestedSign)) {
+                $signPrefix = $requestedSign;
+            }
+        }
+        return array($signPrefix, $prefix . "HMAC-SHA256", $prefix . "HMAC-SM3");
+    }
+
+    private function checkedEndpointSuffix($suffix)
+    {
+        if ($suffix === null || $suffix === false) {
+            return "";
+        }
+        $suffix = strtolower(trim($suffix));
+        if ($suffix === "") {
+            return "";
+        }
+        if (($suffix !== "aliyuncs.com" && $suffix !== "aliyuncs.alibaba") || !preg_match('/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/', $suffix)) {
+            throw new TeaError(array(
+                "code" => "InvalidEndpointSuffix",
+                "message" => "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba",
+            ));
+        }
+        return $suffix;
+    }
+
     private function resolveEndpointSuffix($attributes)
     {
         if (!self::isUnset($attributes)) {
-            $prefix = @$attributes["signatureTypePrefix"];
-            if (!self::empty_($prefix)) {
-                $this->_signatureTypePrefix = $prefix;
-                $this->_sha256 = "" . $prefix . "HMAC-SHA256";
-                $this->_sm3 = "" . $prefix . "HMAC-SM3";
-            }
-            $signPrefix = @$attributes["signPrefix"];
-            if (!self::empty_($signPrefix)) {
-                $this->_signPrefix = $signPrefix;
-            }
-            $suffix = @$attributes["endpointSuffix"];
+            $suffix = $this->checkedEndpointSuffix(@$attributes["endpointSuffix"]);
             if (!self::empty_($suffix)) {
                 return $suffix;
             }
         }
         $envSuffix = getenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
-        if ($envSuffix !== false && !self::empty_($envSuffix)) {
+        $envSuffix = $this->checkedEndpointSuffix($envSuffix);
+        if (!self::empty_($envSuffix)) {
             return $envSuffix;
         }
         return "aliyuncs.com";
@@ -253,6 +280,7 @@ class Client extends DarabonbaGatewaySpiClient
     private function withEndpointSuffix($endpoint, $endpointSuffix = null)
     {
         $suffix = $endpointSuffix === null ? $this->_endpointSuffix : $endpointSuffix;
+        $suffix = $this->checkedEndpointSuffix($suffix);
         if (self::empty_($suffix)) {
             $suffix = "aliyuncs.com";
         }
@@ -296,10 +324,15 @@ class Client extends DarabonbaGatewaySpiClient
      */
     public function getAuthorization($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $ak, $signingkey, $product, $region, $date)
     {
-        $signature = $this->getSignature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $signingkey);
+        return $this->authorization($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $ak, $signingkey, $product, $region, $date, array($this->_signPrefix, $this->_sha256, $this->_sm3));
+    }
+
+    private function authorization($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $ak, $signingkey, $product, $region, $date, $names)
+    {
+        $signature = $this->signature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $signingkey, $names);
         $signedHeaders = $this->getSignedHeaders($headers);
         $signedHeadersStr = self::join($signedHeaders, ";");
-        return "" . $signatureAlgorithm . " Credential=" . $ak . "/" . $date . "/" . $region . "/" . $product . "/" . $this->_signPrefix . "_request,SignedHeaders=" . $signedHeadersStr . ",Signature=" . $signature . "";
+        return "" . $signatureAlgorithm . " Credential=" . $ak . "/" . $date . "/" . $region . "/" . $product . "/" . $names[0] . "_request,SignedHeaders=" . $signedHeadersStr . ",Signature=" . $signature . "";
     }
 
     /**
@@ -313,6 +346,11 @@ class Client extends DarabonbaGatewaySpiClient
      * @return string
      */
     public function getSignature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $signingkey)
+    {
+        return $this->signature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $signingkey, array($this->_signPrefix, $this->_sha256, $this->_sm3));
+    }
+
+    private function signature($pathname, $method, $query, $headers, $signatureAlgorithm, $payload, $signingkey, $names)
     {
         $canonicalURI = "/";
         if (!self::empty_($pathname)) {
@@ -328,9 +366,9 @@ class Client extends DarabonbaGatewaySpiClient
         $hex = self::hexEncode(self::hash(self::toBytes($stringToSign), $signatureAlgorithm));
         $stringToSign = "" . $signatureAlgorithm . "\n" . $hex . "";
         $signature = self::toBytes("");
-        if (self::equalString($signatureAlgorithm, $this->_sha256)) {
+        if (self::equalString($signatureAlgorithm, $names[1])) {
             $signature = self::HmacSHA256SignByBytes($stringToSign, $signingkey);
-        } else if (self::equalString($signatureAlgorithm, $this->_sm3)) {
+        } else if (self::equalString($signatureAlgorithm, $names[2])) {
             $signature = self::HmacSM3SignByBytes($stringToSign, $signingkey);
         }
         return self::hexEncode($signature);
@@ -346,30 +384,35 @@ class Client extends DarabonbaGatewaySpiClient
      */
     public function getSigningkey($signatureAlgorithm, $secret, $product, $region, $date)
     {
-        $sc1 = "" . $this->_signPrefix . "" . $secret . "";
+        return $this->signingKey($signatureAlgorithm, $secret, $product, $region, $date, array($this->_signPrefix, $this->_sha256, $this->_sm3));
+    }
+
+    private function signingKey($signatureAlgorithm, $secret, $product, $region, $date, $names)
+    {
+        $sc1 = "" . $names[0] . "" . $secret . "";
         $sc2 = self::toBytes("");
-        if (self::equalString($signatureAlgorithm, $this->_sha256)) {
+        if (self::equalString($signatureAlgorithm, $names[1])) {
             $sc2 = self::HmacSHA256Sign($date, $sc1);
-        } else if (self::equalString($signatureAlgorithm, $this->_sm3)) {
+        } else if (self::equalString($signatureAlgorithm, $names[2])) {
             $sc2 = self::HmacSM3Sign($date, $sc1);
         }
         $sc3 = self::toBytes("");
-        if (self::equalString($signatureAlgorithm, $this->_sha256)) {
+        if (self::equalString($signatureAlgorithm, $names[1])) {
             $sc3 = self::HmacSHA256SignByBytes($region, $sc2);
-        } else if (self::equalString($signatureAlgorithm, $this->_sm3)) {
+        } else if (self::equalString($signatureAlgorithm, $names[2])) {
             $sc3 = self::HmacSM3SignByBytes($region, $sc2);
         }
         $sc4 = self::toBytes("");
-        if (self::equalString($signatureAlgorithm, $this->_sha256)) {
+        if (self::equalString($signatureAlgorithm, $names[1])) {
             $sc4 = self::HmacSHA256SignByBytes($product, $sc3);
-        } else if (self::equalString($signatureAlgorithm, $this->_sm3)) {
+        } else if (self::equalString($signatureAlgorithm, $names[2])) {
             $sc4 = self::HmacSM3SignByBytes($product, $sc3);
         }
         $hmac = self::toBytes("");
-        if (self::equalString($signatureAlgorithm, $this->_sha256)) {
-            $hmac = self::HmacSHA256SignByBytes("" . $this->_signPrefix . "_request", $sc4);
-        } else if (self::equalString($signatureAlgorithm, $this->_sm3)) {
-            $hmac = self::HmacSM3SignByBytes("" . $this->_signPrefix . "_request", $sc4);
+        if (self::equalString($signatureAlgorithm, $names[1])) {
+            $hmac = self::HmacSHA256SignByBytes("" . $names[0] . "_request", $sc4);
+        } else if (self::equalString($signatureAlgorithm, $names[2])) {
+            $hmac = self::HmacSM3SignByBytes("" . $names[0] . "_request", $sc4);
         }
         return $hmac;
     }

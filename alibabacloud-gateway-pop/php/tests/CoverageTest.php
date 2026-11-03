@@ -162,7 +162,7 @@ final class CoverageTest extends TestCase
 
     public function testEndpointSuffixOverride()
     {
-        putenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX=example.com');
+        putenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX=aliyuncs.alibaba');
         try {
             $client = new Client();
             $built = new configuration();
@@ -171,26 +171,26 @@ final class CoverageTest extends TestCase
             $built->network = '';
             $built->suffix = '';
             $client->modifyConfiguration($this->context($this->request($this->credential($this->model('access_key'))), $built), new AttributeMap());
-            $this->assertEquals('ecs.cn-hangzhou.example.com', $built->endpoint);
+            $this->assertEquals('ecs.cn-hangzhou.aliyuncs.alibaba', $built->endpoint);
 
             $prefixes = new AttributeMap();
             $prefixes->key = array(
                 'signatureTypePrefix' => 'ACS4-',
                 'signPrefix' => 'aliyun_v4',
-                'endpointSuffix' => 'example.net',
+                'endpointSuffix' => 'aliyuncs.alibaba',
             );
             $overridden = new configuration();
             $overridden->regionId = 'cn-hangzhou';
             $overridden->endpointRule = 'regional';
             $client->modifyConfiguration($this->context($this->request($this->credential($this->model('access_key'))), $overridden), $prefixes);
-            $this->assertEquals('ecs.cn-hangzhou.example.net', $overridden->endpoint);
+            $this->assertEquals('ecs.cn-hangzhou.aliyuncs.alibaba', $overridden->endpoint);
 
             $resolve = new \ReflectionMethod(Client::class, 'resolveEndpointSuffix');
             $resolve->setAccessible(true);
             $suffix = new \ReflectionProperty(Client::class, '_endpointSuffix');
             $suffix->setAccessible(true);
             $suffix->setValue($client, '');
-            $this->assertEquals('example.com', $resolve->invoke($client, array(
+            $this->assertEquals('aliyuncs.alibaba', $resolve->invoke($client, array(
                 'signatureTypePrefix' => '',
                 'signPrefix' => '',
                 'endpointSuffix' => '',

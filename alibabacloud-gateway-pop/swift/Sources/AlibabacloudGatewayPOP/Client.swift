@@ -27,7 +27,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
     public override func modifyConfiguration(_ context: AlibabacloudGatewaySPI.InterceptorContext, _ attributeMap: AlibabacloudGatewaySPI.AttributeMap) async throws -> Void {
         var request: AlibabacloudGatewaySPI.InterceptorContext.Request = context.request!
         var config: AlibabacloudGatewaySPI.InterceptorContext.Configuration = context.configuration!
-        let endpointSuffix = resolveEndpointSuffix(attributeMap.key ?? [:])
+        let endpointSuffix = try resolveEndpointSuffix(attributeMap.key ?? [:])
         config.endpoint = try getEndpointWithSuffix(request.productId ?? "", config.regionId ?? "", config.endpointRule ?? "", config.network ?? "", config.suffix ?? "", config.endpointMap ?? [:], config.endpoint ?? "", endpointSuffix)
     }
 
@@ -47,7 +47,8 @@ open class Client : AlibabacloudGatewaySPI.Client {
         if (!Runtime.empty(request.action)) {
             request.headers!["x-acs-action"] = request.action;
         }
-        var signatureAlgorithm: String = Runtime.defaultString(request.signatureAlgorithm, self._sha256)
+        let names = signatureNames(attributeMap.key)
+        var signatureAlgorithm: String = Runtime.defaultString(request.signatureAlgorithm, names.1)
         var hashedRequestPayload: String = Runtime.hexEncode(Runtime.hash(Runtime.toBytes(""), signatureAlgorithm))
         if (!Runtime.isUnset(request.stream)) {
             var tmp: [UInt8] = try await Runtime.readAsBytes(request.stream)
@@ -77,7 +78,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
                 }
             }
         }
-        if (Runtime.equalString(signatureAlgorithm, self._sm3)) {
+        if (Runtime.equalString(signatureAlgorithm, names.2)) {
             request.headers!["x-acs-content-sm3"] = hashedRequestPayload;
         }
         else {
@@ -113,9 +114,9 @@ open class Client : AlibabacloudGatewaySPI.Client {
                 }
                 var dateNew: String = Runtime.subString(date, 0, 10)
                 dateNew = Runtime.replace(dateNew, "-", "", nil)
-                var region: String = getRegionWithSuffix(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", resolveEndpointSuffix(attributeMap.key ?? [:]))
-                var signingkey: [UInt8] = getSigningkey(signatureAlgorithm as! String, accessKeySecret as! String, request.productId ?? "", region as! String, dateNew as! String)
-                request.headers!["Authorization"] = try getAuthorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String);
+                var region: String = getRegionWithSuffix(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", try resolveEndpointSuffix(attributeMap.key ?? [:]))
+                var signingkey: [UInt8] = signingKey(signatureAlgorithm as! String, accessKeySecret as! String, request.productId ?? "", region as! String, dateNew as! String, names)
+                request.headers!["Authorization"] = try authorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String, names);
             }
         }
     }
@@ -187,32 +188,57 @@ open class Client : AlibabacloudGatewaySPI.Client {
         return try withEndpointSuffix(Runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix)
     }
 
-    func resolveEndpointSuffix(_ attributes: [String: String]) -> String {
+    func signatureNames(_ attributes: [String: String]?) -> (String, String, String) {
+        var prefix = "ACS4-"
+        var signPrefix = "aliyun_v4"
         if (!Runtime.isUnset(attributes)) {
-            let prefix = attributes["signatureTypePrefix"]
-            if (!Runtime.empty(prefix)) {
-                self._signatureTypePrefix = prefix
-                self._sha256 = (prefix ?? "") + "HMAC-SHA256"
-                self._sm3 = (prefix ?? "") + "HMAC-SM3"
+            let requested = attributes?["signatureTypePrefix"]
+            if (!Runtime.empty(requested)) {
+                prefix = requested ?? prefix
             }
-            let signPrefix = attributes["signPrefix"]
-            if (!Runtime.empty(signPrefix)) {
-                self._signPrefix = signPrefix
-            }
-            let suffix = attributes["endpointSuffix"]
-            if (!Runtime.empty(suffix)) {
-                return suffix ?? ""
+            let requestedSign = attributes?["signPrefix"]
+            if (!Runtime.empty(requestedSign)) {
+                signPrefix = requestedSign ?? signPrefix
             }
         }
-        if let envSuffix = ProcessInfo.processInfo.environment["ALIBABA_CLOUD_ENDPOINT_SUFFIX"], !Runtime.empty(envSuffix) {
+        return (signPrefix, prefix + "HMAC-SHA256", prefix + "HMAC-SM3")
+    }
+
+    func checkedEndpointSuffix(_ suffix: String?) throws -> String {
+        guard let raw = suffix else {
+            return ""
+        }
+        let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if normalized.isEmpty {
+            return ""
+        }
+        let pattern = "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
+        if (normalized != "aliyuncs.com" && normalized != "aliyuncs.alibaba") || normalized.range(of: pattern, options: .regularExpression) == nil {
+            throw Tea.ReuqestError([
+                "code": "InvalidEndpointSuffix",
+                "message": "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba"
+            ])
+        }
+        return normalized
+    }
+
+    func resolveEndpointSuffix(_ attributes: [String: String]) throws -> String {
+        if (!Runtime.isUnset(attributes)) {
+            let suffix = try checkedEndpointSuffix(attributes["endpointSuffix"])
+            if (!Runtime.empty(suffix)) {
+                return suffix
+            }
+        }
+        let envSuffix = try checkedEndpointSuffix(ProcessInfo.processInfo.environment["ALIBABA_CLOUD_ENDPOINT_SUFFIX"])
+        if (!Runtime.empty(envSuffix)) {
             return envSuffix
         }
         return "aliyuncs.com"
     }
 
-    func withEndpointSuffix(_ endpoint: String, _ endpointSuffix: String? = nil) -> String {
-        let chosen = endpointSuffix ?? self._endpointSuffix
-        let suffix = Runtime.empty(chosen) ? "aliyuncs.com" : (chosen ?? "aliyuncs.com")
+    func withEndpointSuffix(_ endpoint: String, _ endpointSuffix: String? = nil) throws -> String {
+        let chosen = try checkedEndpointSuffix(endpointSuffix ?? self._endpointSuffix)
+        let suffix = Runtime.empty(chosen) ? "aliyuncs.com" : chosen
         if Runtime.empty(endpoint) || suffix == "aliyuncs.com" {
             return endpoint
         }
@@ -231,13 +257,21 @@ open class Client : AlibabacloudGatewaySPI.Client {
     }
 
     public func getAuthorization(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ ak: String, _ signingkey: [UInt8], _ product: String, _ region: String, _ date: String) throws -> String {
-        var signature: String = try getSignature(pathname as! String, method as! String, query as! [String: String], headers as! [String: String], signatureAlgorithm as! String, payload as! String, signingkey as! [UInt8])
+        return try authorization(pathname, method, query, headers, signatureAlgorithm, payload, ak, signingkey, product, region, date, (self._signPrefix ?? "aliyun_v4", self._sha256 ?? "ACS4-HMAC-SHA256", self._sm3 ?? "ACS4-HMAC-SM3"))
+    }
+
+    func authorization(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ ak: String, _ signingkey: [UInt8], _ product: String, _ region: String, _ date: String, _ names: (String, String, String)) throws -> String {
+        var signature: String = try signature(pathname as! String, method as! String, query as! [String: String], headers as! [String: String], signatureAlgorithm as! String, payload as! String, signingkey as! [UInt8], names)
         var signedHeaders: [String] = getSignedHeaders(headers as! [String: String])
         var signedHeadersStr: String = Runtime.join(signedHeaders, ";")
-        return (signatureAlgorithm as! String) + " Credential=" + (ak as! String) + "/" + (date as! String) + "/" + (region as! String) + "/" + (product as! String) + "/" + (self._signPrefix ?? "") + "_request,SignedHeaders=" + (signedHeadersStr as! String) + ",Signature=" + (signature as! String)
+        return (signatureAlgorithm as! String) + " Credential=" + (ak as! String) + "/" + (date as! String) + "/" + (region as! String) + "/" + (product as! String) + "/" + names.0 + "_request,SignedHeaders=" + (signedHeadersStr as! String) + ",Signature=" + (signature as! String)
     }
 
     public func getSignature(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ signingkey: [UInt8]) throws -> String {
+        return try signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, (self._signPrefix ?? "aliyun_v4", self._sha256 ?? "ACS4-HMAC-SHA256", self._sm3 ?? "ACS4-HMAC-SM3"))
+    }
+
+    func signature(_ pathname: String, _ method: String, _ query: [String: String], _ headers: [String: String], _ signatureAlgorithm: String, _ payload: String, _ signingkey: [UInt8], _ names: (String, String, String)) throws -> String {
         var canonicalURI: String = "/"
         if (!Runtime.empty(pathname)) {
             canonicalURI = pathname as! String
@@ -252,44 +286,48 @@ open class Client : AlibabacloudGatewaySPI.Client {
         var hex: String = Runtime.hexEncode(Runtime.hash(Runtime.toBytes(stringToSign), signatureAlgorithm))
         stringToSign = (signatureAlgorithm as! String) + "\n" + (hex as! String)
         var signature: [UInt8] = Runtime.toBytes("")
-        if (Runtime.equalString(signatureAlgorithm, self._sha256)) {
+        if (Runtime.equalString(signatureAlgorithm, names.1)) {
             signature = Runtime.HmacSHA256SignByBytes(stringToSign, signingkey)
         }
-        else if (Runtime.equalString(signatureAlgorithm, self._sm3)) {
+        else if (Runtime.equalString(signatureAlgorithm, names.2)) {
             signature = Runtime.HmacSM3SignByBytes(stringToSign, signingkey)
         }
         return Runtime.hexEncode(signature)
     }
 
     public func getSigningkey(_ signatureAlgorithm: String, _ secret: String, _ product: String, _ region: String, _ date: String) -> [UInt8] {
-        var sc1: String = (self._signPrefix ?? "") + (secret as! String)
+        return signingKey(signatureAlgorithm, secret, product, region, date, (self._signPrefix ?? "aliyun_v4", self._sha256 ?? "ACS4-HMAC-SHA256", self._sm3 ?? "ACS4-HMAC-SM3"))
+    }
+
+    func signingKey(_ signatureAlgorithm: String, _ secret: String, _ product: String, _ region: String, _ date: String, _ names: (String, String, String)) -> [UInt8] {
+        var sc1: String = names.0 + (secret as! String)
         var sc2: [UInt8] = Runtime.toBytes("")
-        if (Runtime.equalString(signatureAlgorithm, self._sha256)) {
+        if (Runtime.equalString(signatureAlgorithm, names.1)) {
             sc2 = Runtime.HmacSHA256Sign(date, sc1)
         }
-        else if (Runtime.equalString(signatureAlgorithm, self._sm3)) {
+        else if (Runtime.equalString(signatureAlgorithm, names.2)) {
             sc2 = Runtime.HmacSM3Sign(date, sc1)
         }
         var sc3: [UInt8] = Runtime.toBytes("")
-        if (Runtime.equalString(signatureAlgorithm, self._sha256)) {
+        if (Runtime.equalString(signatureAlgorithm, names.1)) {
             sc3 = Runtime.HmacSHA256SignByBytes(region, sc2)
         }
-        else if (Runtime.equalString(signatureAlgorithm, self._sm3)) {
+        else if (Runtime.equalString(signatureAlgorithm, names.2)) {
             sc3 = Runtime.HmacSM3SignByBytes(region, sc2)
         }
         var sc4: [UInt8] = Runtime.toBytes("")
-        if (Runtime.equalString(signatureAlgorithm, self._sha256)) {
+        if (Runtime.equalString(signatureAlgorithm, names.1)) {
             sc4 = Runtime.HmacSHA256SignByBytes(product, sc3)
         }
-        else if (Runtime.equalString(signatureAlgorithm, self._sm3)) {
+        else if (Runtime.equalString(signatureAlgorithm, names.2)) {
             sc4 = Runtime.HmacSM3SignByBytes(product, sc3)
         }
         var hmac: [UInt8] = Runtime.toBytes("")
-        if (Runtime.equalString(signatureAlgorithm, self._sha256)) {
-            hmac = Runtime.HmacSHA256SignByBytes((self._signPrefix ?? "") + "_request", sc4)
+        if (Runtime.equalString(signatureAlgorithm, names.1)) {
+            hmac = Runtime.HmacSHA256SignByBytes(names.0 + "_request", sc4)
         }
-        else if (Runtime.equalString(signatureAlgorithm, self._sm3)) {
-            hmac = Runtime.HmacSM3SignByBytes((self._signPrefix ?? "") + "_request", sc4)
+        else if (Runtime.equalString(signatureAlgorithm, names.2)) {
+            hmac = Runtime.HmacSM3SignByBytes(names.0 + "_request", sc4)
         }
         return hmac as! [UInt8]
     }
