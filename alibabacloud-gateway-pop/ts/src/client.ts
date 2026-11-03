@@ -28,15 +28,7 @@ export default class Client extends SPI {
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
-    let attributes = attributeMap.key;
-    if (!runtime.isUnset(attributes)) {
-      this._signatureTypePrefix = attributes["signatureTypePrefix"];
-      this._signPrefix = attributes["signPrefix"];
-      this._endpointSuffix = attributes["endpointSuffix"];
-      this._sha256 = `${this._signatureTypePrefix}HMAC-SHA256`;
-      this._sm3 = `${this._signatureTypePrefix}HMAC-SM3`;
-    }
-
+    this.resolveEndpointSuffix(attributeMap.key);
     config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
   }
 
@@ -197,7 +189,51 @@ export default class Client extends SPI {
       return endpointMap[regionId];
     }
 
-    return runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+    return this.withEndpointSuffix(runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix));
+  }
+
+  /** @internal */
+  resolveEndpointSuffix(attributes: {[key: string]: string}): void {
+    let explicit = false;
+    if (!runtime.isUnset(attributes)) {
+      let prefix = attributes["signatureTypePrefix"];
+      if (!runtime.empty(prefix)) {
+        this._signatureTypePrefix = prefix;
+        this._sha256 = `${prefix}HMAC-SHA256`;
+        this._sm3 = `${prefix}HMAC-SM3`;
+      }
+      let signPrefix = attributes["signPrefix"];
+      if (!runtime.empty(signPrefix)) {
+        this._signPrefix = signPrefix;
+      }
+      let suffix = attributes["endpointSuffix"];
+      if (!runtime.empty(suffix)) {
+        this._endpointSuffix = suffix;
+        explicit = true;
+      }
+    }
+    if (!explicit) {
+      let envSuffix = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+      if (!runtime.empty(envSuffix)) {
+        this._endpointSuffix = envSuffix;
+      }
+    }
+    if (runtime.empty(this._endpointSuffix)) {
+      this._endpointSuffix = "aliyuncs.com";
+    }
+  }
+
+  /** @internal */
+  withEndpointSuffix(endpoint: string): string {
+    let suffix = this._endpointSuffix || "aliyuncs.com";
+    if (runtime.empty(endpoint) || suffix === "aliyuncs.com") {
+      return endpoint;
+    }
+    let old = ".aliyuncs.com";
+    if (endpoint.length >= old.length && endpoint.substring(endpoint.length - old.length) === old) {
+      return endpoint.substring(0, endpoint.length - old.length) + "." + suffix;
+    }
+    return endpoint;
   }
 
   defaultAny(inputValue: any, defaultValue: any): any {

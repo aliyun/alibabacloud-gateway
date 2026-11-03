@@ -2,6 +2,8 @@
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import unicode_literals
 
+import os
+
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from Tea.exceptions import TeaException
 from alibabacloud_darabonba_signature_util.signer import Signer
@@ -20,16 +22,42 @@ from alibabacloud_darabonba_map.client import Client as MapClient
 class Client(SPIClient):
     _sha_256 = None  # type: str
     _sm_3 = None  # type: str
+    _endpoint_suffix = None  # type: str
 
     def __init__(self):
         super(Client, self).__init__()
         self._sha_256 = 'ACS4-HMAC-SHA256'
         self._sm_3 = 'ACS4-HMAC-SM3'
+        self._endpoint_suffix = 'aliyuncs.com'
 
     def modify_configuration(self, context, attribute_map):
         request = context.request
         config = context.configuration
+        self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None))
         config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+
+    def _resolve_endpoint_suffix(self, attributes):
+        explicit = False
+        if not UtilClient.is_unset(attributes):
+            suffix = attributes.get('endpointSuffix')
+            if not UtilClient.empty(suffix):
+                self._endpoint_suffix = suffix
+                explicit = True
+        if not explicit:
+            env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+            if env_suffix:
+                self._endpoint_suffix = env_suffix
+        if UtilClient.empty(self._endpoint_suffix):
+            self._endpoint_suffix = 'aliyuncs.com'
+
+    def _with_endpoint_suffix(self, endpoint):
+        suffix = self._endpoint_suffix or 'aliyuncs.com'
+        if not endpoint or suffix == 'aliyuncs.com':
+            return endpoint
+        old = '.aliyuncs.com'
+        if endpoint.endswith(old):
+            return endpoint[:-len(old)] + '.' + suffix
+        return endpoint
 
     def modify_request(self, context, attribute_map):
         request = context.request
@@ -135,7 +163,7 @@ class Client(SPIClient):
             return endpoint
         if not UtilClient.is_unset(endpoint_map) and not UtilClient.empty(endpoint_map.get(region_id)):
             return endpoint_map.get(region_id)
-        return EndpointUtilClient.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix)
+        return self._with_endpoint_suffix(EndpointUtilClient.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix))
 
     def default_any(self, input_value, default_value):
         if UtilClient.is_unset(input_value):
@@ -197,7 +225,7 @@ class Client(SPIClient):
             return 'center'
         popcode = StringClient.to_lower(product)
         region = StringClient.replace(endpoint, popcode, '', None)
-        region = StringClient.replace(region, 'aliyuncs.com', '', None)
+        region = StringClient.replace(region, self._endpoint_suffix or 'aliyuncs.com', '', None)
         region = StringClient.replace(region, '.', '', None)
         if not UtilClient.empty(region):
             return region

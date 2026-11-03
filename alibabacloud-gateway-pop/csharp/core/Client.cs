@@ -36,15 +36,7 @@ namespace AlibabaCloud.GatewayPop
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            Dictionary<string, string> attributes = attributeMap.Key;
-            if (!Runtime.IsUnset(attributes))
-            {
-                this._signatureTypePrefix = attributes.Get("signatureTypePrefix");
-                this._signPrefix = attributes.Get("signPrefix");
-                this._endpointSuffix = attributes.Get("endpointSuffix");
-                this._sha256 = "" + _signatureTypePrefix + "HMAC-SHA256";
-                this._sm3 = "" + _signatureTypePrefix + "HMAC-SM3";
-            }
+            ResolveEndpointSuffix(attributeMap.Key);
             config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint);
         }
 
@@ -52,16 +44,65 @@ namespace AlibabaCloud.GatewayPop
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            Dictionary<string, string> attributes = attributeMap.Key;
+            ResolveEndpointSuffix(attributeMap.Key);
+            config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint);
+        }
+
+        internal void ResolveEndpointSuffix(Dictionary<string, string> attributes)
+        {
+            bool explicitSuffix = false;
             if (!Runtime.IsUnset(attributes))
             {
-                this._signatureTypePrefix = attributes.Get("signatureTypePrefix");
-                this._signPrefix = attributes.Get("signPrefix");
-                this._endpointSuffix = attributes.Get("endpointSuffix");
-                this._sha256 = "" + _signatureTypePrefix + "HMAC-SHA256";
-                this._sm3 = "" + _signatureTypePrefix + "HMAC-SM3";
+                string prefix = attributes.Get("signatureTypePrefix");
+                if (!Runtime.Empty(prefix))
+                {
+                    this._signatureTypePrefix = prefix;
+                    this._sha256 = "" + prefix + "HMAC-SHA256";
+                    this._sm3 = "" + prefix + "HMAC-SM3";
+                }
+                string signPrefix = attributes.Get("signPrefix");
+                if (!Runtime.Empty(signPrefix))
+                {
+                    this._signPrefix = signPrefix;
+                }
+                string suffix = attributes.Get("endpointSuffix");
+                if (!Runtime.Empty(suffix))
+                {
+                    this._endpointSuffix = suffix;
+                    explicitSuffix = true;
+                }
             }
-            config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint);
+            if (!explicitSuffix)
+            {
+                string envSuffix = Environment.GetEnvironmentVariable("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
+                if (!Runtime.Empty(envSuffix))
+                {
+                    this._endpointSuffix = envSuffix;
+                }
+            }
+            if (Runtime.Empty(this._endpointSuffix))
+            {
+                this._endpointSuffix = "aliyuncs.com";
+            }
+        }
+
+        internal string WithEndpointSuffix(string endpoint)
+        {
+            string suffix = this._endpointSuffix;
+            if (Runtime.Empty(suffix))
+            {
+                suffix = "aliyuncs.com";
+            }
+            if (Runtime.Empty(endpoint) || suffix == "aliyuncs.com")
+            {
+                return endpoint;
+            }
+            string old = ".aliyuncs.com";
+            if (endpoint.EndsWith(old))
+            {
+                return endpoint.Substring(0, endpoint.Length - old.Length) + "." + suffix;
+            }
+            return endpoint;
         }
 
         public void ModifyRequest(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
@@ -438,7 +479,7 @@ namespace AlibabaCloud.GatewayPop
             {
                 return endpointMap.Get(regionId);
             }
-            return Runtime.GetEndpointRules(productId, regionId, endpointRule, network, suffix);
+            return WithEndpointSuffix(Runtime.GetEndpointRules(productId, regionId, endpointRule, network, suffix));
         }
 
         public object DefaultAny(object inputValue, object defaultValue)

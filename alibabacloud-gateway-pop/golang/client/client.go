@@ -2,6 +2,8 @@
 package client
 
 import (
+	"os"
+
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
@@ -41,12 +43,28 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 	request := context.Request
 	config := context.Configuration
 	attributes := attributeMap.Key
+	explicitSuffix := false
 	if !dara.BoolValue(isUnset(attributes)) {
-		client.SignatureTypePrefix = attributes["signatureTypePrefix"]
-		client.SignPrefix = attributes["signPrefix"]
-		client.EndpointSuffix = attributes["endpointSuffix"]
-		client.Sha256 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
-		client.Sm3 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
+		if !dara.BoolValue(emptyString(attributes["signatureTypePrefix"])) {
+			client.SignatureTypePrefix = attributes["signatureTypePrefix"]
+			client.Sha256 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SHA256")
+			client.Sm3 = dara.String(dara.StringValue(client.SignatureTypePrefix) + "HMAC-SM3")
+		}
+		if !dara.BoolValue(emptyString(attributes["signPrefix"])) {
+			client.SignPrefix = attributes["signPrefix"]
+		}
+		if !dara.BoolValue(emptyString(attributes["endpointSuffix"])) {
+			client.EndpointSuffix = attributes["endpointSuffix"]
+			explicitSuffix = true
+		}
+	}
+	if !explicitSuffix {
+		if envSuffix := os.Getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"); envSuffix != "" {
+			client.EndpointSuffix = dara.String(envSuffix)
+		}
+	}
+	if dara.BoolValue(emptyString(client.EndpointSuffix)) {
+		client.EndpointSuffix = dara.String("aliyuncs.com")
 	}
 
 	config.Endpoint, _err = client.GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint)
@@ -285,7 +303,7 @@ func (client *Client) GetEndpoint(productId *string, regionId *string, endpointR
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
+	_result = applyEndpointSuffix(_body, client.EndpointSuffix)
 	return _result, _err
 }
 

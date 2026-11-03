@@ -27,14 +27,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
     public override func modifyConfiguration(_ context: AlibabacloudGatewaySPI.InterceptorContext, _ attributeMap: AlibabacloudGatewaySPI.AttributeMap) async throws -> Void {
         var request: AlibabacloudGatewaySPI.InterceptorContext.Request = context.request!
         var config: AlibabacloudGatewaySPI.InterceptorContext.Configuration = context.configuration!
-        var attributes: [String: String] = attributeMap.key ?? [:]
-        if (!Runtime.isUnset(attributes)) {
-            self._signatureTypePrefix = attributes["signatureTypePrefix"]
-            self._signPrefix = attributes["signPrefix"]
-            self._endpointSuffix = attributes["endpointSuffix"]
-            self._sha256 = (self._signatureTypePrefix ?? "") + "HMAC-SHA256"
-            self._sm3 = (self._signatureTypePrefix ?? "") + "HMAC-SM3"
-        }
+        resolveEndpointSuffix(attributeMap.key ?? [:])
         config.endpoint = try getEndpoint(request.productId ?? "", config.regionId ?? "", config.endpointRule ?? "", config.network ?? "", config.suffix ?? "", config.endpointMap ?? [:], config.endpoint ?? "")
     }
 
@@ -187,7 +180,48 @@ open class Client : AlibabacloudGatewaySPI.Client {
         if (!Runtime.isUnset(endpointMap) && !Runtime.empty(endpointMap[regionId as! String])) {
             return endpointMap[regionId as! String] ?? ""
         }
-        return try Runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix)
+        return try withEndpointSuffix(Runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix))
+    }
+
+    func resolveEndpointSuffix(_ attributes: [String: String]) {
+        var explicit = false
+        if (!Runtime.isUnset(attributes)) {
+            let prefix = attributes["signatureTypePrefix"]
+            if (!Runtime.empty(prefix)) {
+                self._signatureTypePrefix = prefix
+                self._sha256 = (prefix ?? "") + "HMAC-SHA256"
+                self._sm3 = (prefix ?? "") + "HMAC-SM3"
+            }
+            let signPrefix = attributes["signPrefix"]
+            if (!Runtime.empty(signPrefix)) {
+                self._signPrefix = signPrefix
+            }
+            let suffix = attributes["endpointSuffix"]
+            if (!Runtime.empty(suffix)) {
+                self._endpointSuffix = suffix
+                explicit = true
+            }
+        }
+        if !explicit {
+            if let envSuffix = ProcessInfo.processInfo.environment["ALIBABA_CLOUD_ENDPOINT_SUFFIX"], !Runtime.empty(envSuffix) {
+                self._endpointSuffix = envSuffix
+            }
+        }
+        if Runtime.empty(self._endpointSuffix) {
+            self._endpointSuffix = "aliyuncs.com"
+        }
+    }
+
+    func withEndpointSuffix(_ endpoint: String) -> String {
+        let suffix = Runtime.empty(self._endpointSuffix) ? "aliyuncs.com" : (self._endpointSuffix ?? "aliyuncs.com")
+        if Runtime.empty(endpoint) || suffix == "aliyuncs.com" {
+            return endpoint
+        }
+        let old = ".aliyuncs.com"
+        if endpoint.hasSuffix(old) {
+            return String(endpoint.dropLast(old.count)) + "." + suffix
+        }
+        return endpoint
     }
 
     public func defaultAny(_ inputValue: Any, _ defaultValue: Any) -> Any {

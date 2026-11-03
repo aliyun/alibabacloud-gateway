@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import io
+import os
 import unittest
 
 from Tea.exceptions import TeaException
@@ -126,6 +127,25 @@ class TestCoverage(unittest.TestCase):
         broken = InterceptorContextConfiguration(region_id='', endpoint_rule='regional')
         with self.assertRaises(Exception):
             client.modify_configuration(context(request(access_key()), broken), AttributeMap())
+
+    def test_endpoint_suffix_env_and_attribute(self):
+        os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = 'example.com'
+        try:
+            client = Client()
+            built = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+            client.modify_configuration(context(request(access_key()), built), AttributeMap())
+            self.assertEqual('ecs.cn-hangzhou.example.com', built.endpoint)
+            self.assertEqual('cn-hangzhou', client.get_region('ecs', built.endpoint, ''))
+            self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
+
+            overridden = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+            client.modify_configuration(context(request(access_key()), overridden), AttributeMap(key={
+                'endpointSuffix': 'example.net',
+            }))
+            self.assertEqual('ecs.cn-hangzhou.example.net', overridden.endpoint)
+            self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
+        finally:
+            os.environ.pop('ALIBABA_CLOUD_ENDPOINT_SUFFIX', None)
 
     def test_canonical_and_signing(self):
         client = Client()

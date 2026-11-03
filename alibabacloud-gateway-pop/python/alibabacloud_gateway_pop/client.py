@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+import os
+
 from . import _codec as codec
 from . import _support as support
 from darabonba.utils.xml import XML
@@ -33,13 +35,7 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        attributes = attribute_map.key
-        if not support.is_unset(attributes):
-            self._signature_type_prefix = attributes.get('signatureTypePrefix')
-            self._sign_prefix = attributes.get('signPrefix')
-            self._endpoint_suffix = attributes.get('endpointSuffix')
-            self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
-            self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
+        self._resolve_endpoint_suffix(attribute_map.key)
         config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
 
     async def modify_configuration_async(
@@ -49,14 +45,39 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        attributes = attribute_map.key
-        if not support.is_unset(attributes):
-            self._signature_type_prefix = attributes.get('signatureTypePrefix')
-            self._sign_prefix = attributes.get('signPrefix')
-            self._endpoint_suffix = attributes.get('endpointSuffix')
-            self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
-            self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
+        self._resolve_endpoint_suffix(attribute_map.key)
         config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+
+    def _resolve_endpoint_suffix(self, attributes):
+        explicit = False
+        if not support.is_unset(attributes):
+            prefix = attributes.get('signatureTypePrefix')
+            if not support.empty(prefix):
+                self._signature_type_prefix = prefix
+                self._sha_256 = f'{prefix}HMAC-SHA256'
+                self._sm_3 = f'{prefix}HMAC-SM3'
+            sign_prefix = attributes.get('signPrefix')
+            if not support.empty(sign_prefix):
+                self._sign_prefix = sign_prefix
+            suffix = attributes.get('endpointSuffix')
+            if not support.empty(suffix):
+                self._endpoint_suffix = suffix
+                explicit = True
+        if not explicit:
+            env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+            if env_suffix:
+                self._endpoint_suffix = env_suffix
+        if support.empty(self._endpoint_suffix):
+            self._endpoint_suffix = 'aliyuncs.com'
+
+    def _with_endpoint_suffix(self, endpoint):
+        suffix = self._endpoint_suffix or 'aliyuncs.com'
+        if not endpoint or suffix == 'aliyuncs.com':
+            return endpoint
+        old = '.aliyuncs.com'
+        if endpoint.endswith(old):
+            return endpoint[:-len(old)] + '.' + suffix
+        return endpoint
 
     def modify_request(
         self,
@@ -322,7 +343,7 @@ class Client(SPIClient):
             return endpoint
         if not support.is_unset(endpoint_map) and not support.empty(endpoint_map.get(region_id)):
             return endpoint_map.get(region_id)
-        return support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix)
+        return self._with_endpoint_suffix(support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix))
 
     def default_any(
         self,

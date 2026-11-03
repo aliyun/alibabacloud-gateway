@@ -33,12 +33,29 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
   var request = context.request;
   var config = context.configuration;
   var attributes = attributeMap.key;
+  var explicitSuffix = false;
   if (!Util.isUnset(attributes)) {
-    @signatureTypePrefix = attributes.signatureTypePrefix;
-    @signPrefix = attributes.signPrefix;
-    @endpointSuffix = attributes.endpointSuffix;
-    @sha256 = `${@signatureTypePrefix}HMAC-SHA256`;
-    @sm3 = `${@signatureTypePrefix}HMAC-SM3`;
+    if (!Util.empty(attributes.signatureTypePrefix)) {
+      @signatureTypePrefix = attributes.signatureTypePrefix;
+      @sha256 = `${@signatureTypePrefix}HMAC-SHA256`;
+      @sm3 = `${@signatureTypePrefix}HMAC-SM3`;
+    }
+    if (!Util.empty(attributes.signPrefix)) {
+      @signPrefix = attributes.signPrefix;
+    }
+    if (!Util.empty(attributes.endpointSuffix)) {
+      @endpointSuffix = attributes.endpointSuffix;
+      explicitSuffix = true;
+    }
+  }
+  if (!explicitSuffix) {
+    var envSuffix = $Env.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
+    if (!Util.empty(envSuffix)) {
+      @endpointSuffix = envSuffix;
+    }
+  }
+  if (Util.empty(@endpointSuffix)) {
+    @endpointSuffix = 'aliyuncs.com';
   }
   config.endpoint = getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
 
@@ -194,7 +211,11 @@ function getEndpoint(productId: string, regionId: string, endpointRule: string, 
   if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
     return endpointMap[regionId];
   }
-  return EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+  var resolved = EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+  if (!Util.empty(@endpointSuffix) && !Util.equalString(@endpointSuffix, 'aliyuncs.com')) {
+    resolved = String.replace(resolved, '.aliyuncs.com', `.${@endpointSuffix}`, 1);
+  }
+  return resolved;
 }
 
 function defaultAny(inputValue: any, defaultValue: any): any {

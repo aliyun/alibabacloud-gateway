@@ -46,14 +46,7 @@ class Client extends DarabonbaGatewaySpiClient
     {
         $request = $context->request;
         $config = $context->configuration;
-        $attributes = $attributeMap->key;
-        if (!self::isUnset($attributes)) {
-            $this->_signatureTypePrefix = @$attributes["signatureTypePrefix"];
-            $this->_signPrefix = @$attributes["signPrefix"];
-            $this->_endpointSuffix = @$attributes["endpointSuffix"];
-            $this->_sha256 = "" . $this->_signatureTypePrefix . "HMAC-SHA256";
-            $this->_sm3 = "" . $this->_signatureTypePrefix . "HMAC-SM3";
-        }
+        $this->resolveEndpointSuffix($attributeMap->key);
         $config->endpoint = $this->getEndpoint($request->productId, $config->regionId, $config->endpointRule, $config->network, $config->suffix, $config->endpointMap, $config->endpoint);
     }
 
@@ -224,7 +217,55 @@ class Client extends DarabonbaGatewaySpiClient
         if (!self::isUnset($endpointMap) && !self::empty_(@$endpointMap[$regionId])) {
             return @$endpointMap[$regionId];
         }
-        return self::getEndpointRules($productId, $regionId, $endpointRule, $network, $suffix);
+        return $this->withEndpointSuffix(self::getEndpointRules($productId, $regionId, $endpointRule, $network, $suffix));
+    }
+
+    private function resolveEndpointSuffix($attributes)
+    {
+        $explicit = false;
+        if (!self::isUnset($attributes)) {
+            $prefix = @$attributes["signatureTypePrefix"];
+            if (!self::empty_($prefix)) {
+                $this->_signatureTypePrefix = $prefix;
+                $this->_sha256 = "" . $prefix . "HMAC-SHA256";
+                $this->_sm3 = "" . $prefix . "HMAC-SM3";
+            }
+            $signPrefix = @$attributes["signPrefix"];
+            if (!self::empty_($signPrefix)) {
+                $this->_signPrefix = $signPrefix;
+            }
+            $suffix = @$attributes["endpointSuffix"];
+            if (!self::empty_($suffix)) {
+                $this->_endpointSuffix = $suffix;
+                $explicit = true;
+            }
+        }
+        if (!$explicit) {
+            $envSuffix = getenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
+            if ($envSuffix !== false && !self::empty_($envSuffix)) {
+                $this->_endpointSuffix = $envSuffix;
+            }
+        }
+        if (self::empty_($this->_endpointSuffix)) {
+            $this->_endpointSuffix = "aliyuncs.com";
+        }
+    }
+
+    private function withEndpointSuffix($endpoint)
+    {
+        $suffix = $this->_endpointSuffix;
+        if (self::empty_($suffix)) {
+            $suffix = "aliyuncs.com";
+        }
+        if (self::empty_($endpoint) || $suffix === "aliyuncs.com") {
+            return $endpoint;
+        }
+        $old = ".aliyuncs.com";
+        $len = strlen($old);
+        if (strlen($endpoint) >= $len && substr($endpoint, -$len) === $old) {
+            return substr($endpoint, 0, -$len) . "." . $suffix;
+        }
+        return $endpoint;
     }
 
     /**

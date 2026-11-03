@@ -138,6 +138,19 @@ func getTimestamp() *string {
 	return dara.String(time.Now().In(gmt).Format("2006-01-02T15:04:05Z"))
 }
 
+func applyEndpointSuffix(endpoint, suffix *string) *string {
+	domain := dara.StringValue(suffix)
+	value := dara.StringValue(endpoint)
+	if domain == "" || domain == "aliyuncs.com" || value == "" {
+		return endpoint
+	}
+	const old = ".aliyuncs.com"
+	if strings.HasSuffix(value, old) {
+		return dara.String(strings.TrimSuffix(value, old) + "." + domain)
+	}
+	return endpoint
+}
+
 func getEndpointRules(product, regionId, endpointType, network, suffix *string) (*string, error) {
 	var result *string
 	if dara.StringValue(endpointType) == "regional" {

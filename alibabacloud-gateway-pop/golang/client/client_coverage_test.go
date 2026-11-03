@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"io"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -142,6 +143,35 @@ func TestEndpointSelection(t *testing.T) {
 
 	_, err = client.GetEndpoint(tea.String("Ecs"), tea.String(""), tea.String("regional"), tea.String(""), tea.String(""), nil, nil)
 	utils.AssertNotNil(t, err)
+}
+
+func TestEndpointSuffixOverride(t *testing.T) {
+	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "example.com")
+	defer os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+	config := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), config), &spi.AttributeMap{})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.example.com", tea.StringValue(config.Endpoint))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.GetRegion(tea.String("ecs"), config.Endpoint, tea.String(""))))
+
+	overridden := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), overridden), &spi.AttributeMap{
+		Key: map[string]*string{
+			"endpointSuffix": tea.String("example.net"),
+		},
+	})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.example.net", tea.StringValue(overridden.Endpoint))
+	utils.AssertEqual(t, "ACS4-HMAC-SHA256", tea.StringValue(client.Sha256))
 }
 
 func TestModifyConfiguration(t *testing.T) {
