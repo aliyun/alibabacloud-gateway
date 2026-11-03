@@ -29,7 +29,7 @@ export default class Client extends SPI {
     let request = context.request;
     let config = context.configuration;
     let endpointSuffix = this.resolveEndpointSuffix(attributeMap.key);
-    config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
+    config.endpoint = this.getEndpointWithSuffix(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
   }
 
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -119,7 +119,7 @@ export default class Client extends SPI {
 
         let dateNew = codec.subString(date, 0, 10);
         dateNew = codec.replace(dateNew, "-", "", null);
-        let region = this.getRegion(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
+        let region = this.getRegionWithSuffix(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
         let signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
         request.headers["Authorization"] = this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
       }
@@ -180,7 +180,12 @@ export default class Client extends SPI {
 
   }
 
-  getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string, endpointSuffix?: string): string {
+  getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string): string {
+    return this.getEndpointWithSuffix(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, this._endpointSuffix);
+  }
+
+  /** @internal */
+  private getEndpointWithSuffix(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string, endpointSuffix: string): string {
     if (!runtime.empty(endpoint)) {
       return endpoint;
     }
@@ -304,7 +309,12 @@ export default class Client extends SPI {
     return hmac;
   }
 
-  getRegion(product: string, endpoint: string, regionId: string, endpointSuffix?: string): string {
+  getRegion(product: string, endpoint: string, regionId: string): string {
+    return this.getRegionWithSuffix(product, endpoint, regionId, this._endpointSuffix);
+  }
+
+  /** @internal */
+  private getRegionWithSuffix(product: string, endpoint: string, regionId: string, endpointSuffix: string): string {
     if (!runtime.empty(regionId)) {
       return regionId;
     }
@@ -316,8 +326,7 @@ export default class Client extends SPI {
 
     let strs : string[] = codec.split(endpoint, ":", null);
     let withoutPort : string = strs[0];
-    let suffix = endpointSuffix === undefined ? this._endpointSuffix : endpointSuffix;
-    let preRegion : string = this.hostWithoutDomain(withoutPort, suffix);
+    let preRegion : string = this.hostWithoutDomain(withoutPort, endpointSuffix);
     let nodes = codec.split(preRegion, ".", null);
     if (runtime.equalNumber(codec.size(nodes), 2)) {
       region = nodes[1];

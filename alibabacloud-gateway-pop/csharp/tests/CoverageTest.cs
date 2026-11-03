@@ -143,7 +143,9 @@ namespace tests
             var kept = Config("already.example.com");
             client.ModifyConfiguration(Context(Request(AccessKey()), kept), new AttributeMap());
             Assert.Equal("already.example.com", kept.Endpoint);
-            Assert.Equal("cn-hangzhou", client.GetRegion("ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net"));
+            Assert.Equal("cn-hangzhou", client.GetRegion("ecs", "ecs.cn-hangzhou.aliyuncs.com", ""));
+            var regionWithSuffix = typeof(Client).GetMethod("GetRegionWithSuffix", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.Equal("cn-hangzhou", (string)regionWithSuffix.Invoke(client, new object[] { "ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net" }));
             var overridden = new InterceptorContext.InterceptorContextConfiguration
             {
                 RegionId = "cn-hangzhou",

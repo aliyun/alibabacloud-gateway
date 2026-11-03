@@ -28,7 +28,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
         var request: AlibabacloudGatewaySPI.InterceptorContext.Request = context.request!
         var config: AlibabacloudGatewaySPI.InterceptorContext.Configuration = context.configuration!
         let endpointSuffix = resolveEndpointSuffix(attributeMap.key ?? [:])
-        config.endpoint = try getEndpoint(request.productId ?? "", config.regionId ?? "", config.endpointRule ?? "", config.network ?? "", config.suffix ?? "", config.endpointMap ?? [:], config.endpoint ?? "", endpointSuffix)
+        config.endpoint = try getEndpointWithSuffix(request.productId ?? "", config.regionId ?? "", config.endpointRule ?? "", config.network ?? "", config.suffix ?? "", config.endpointMap ?? [:], config.endpoint ?? "", endpointSuffix)
     }
 
     @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -113,7 +113,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
                 }
                 var dateNew: String = Runtime.subString(date, 0, 10)
                 dateNew = Runtime.replace(dateNew, "-", "", nil)
-                var region: String = getRegion(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", resolveEndpointSuffix(attributeMap.key ?? [:]))
+                var region: String = getRegionWithSuffix(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", resolveEndpointSuffix(attributeMap.key ?? [:]))
                 var signingkey: [UInt8] = getSigningkey(signatureAlgorithm as! String, accessKeySecret as! String, request.productId ?? "", region as! String, dateNew as! String)
                 request.headers!["Authorization"] = try getAuthorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String);
             }
@@ -173,7 +173,11 @@ open class Client : AlibabacloudGatewaySPI.Client {
         }
     }
 
-    public func getEndpoint(_ productId: String, _ regionId: String, _ endpointRule: String, _ network: String, _ suffix: String, _ endpointMap: [String: String], _ endpoint: String, _ endpointSuffix: String? = nil) throws -> String {
+    public func getEndpoint(_ productId: String, _ regionId: String, _ endpointRule: String, _ network: String, _ suffix: String, _ endpointMap: [String: String], _ endpoint: String) throws -> String {
+        return try getEndpointWithSuffix(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, self._endpointSuffix)
+    }
+
+    func getEndpointWithSuffix(_ productId: String, _ regionId: String, _ endpointRule: String, _ network: String, _ suffix: String, _ endpointMap: [String: String], _ endpoint: String, _ endpointSuffix: String?) throws -> String {
         if (!Runtime.empty(endpoint)) {
             return endpoint as! String
         }
@@ -290,7 +294,11 @@ open class Client : AlibabacloudGatewaySPI.Client {
         return hmac as! [UInt8]
     }
 
-    public func getRegion(_ product: String, _ endpoint: String, _ regionId: String, _ endpointSuffix: String? = nil) -> String {
+    public func getRegion(_ product: String, _ endpoint: String, _ regionId: String) -> String {
+        return getRegionWithSuffix(product, endpoint, regionId, self._endpointSuffix)
+    }
+
+    func getRegionWithSuffix(_ product: String, _ endpoint: String, _ regionId: String, _ endpointSuffix: String?) -> String {
         if (!Runtime.empty(regionId)) {
             return regionId as! String
         }
@@ -300,8 +308,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
         }
         var strs: [String] = Runtime.split(endpoint, ":", nil)
         var withoutPort: String = strs[0]
-        let suffix = endpointSuffix ?? self._endpointSuffix
-        var preRegion: String = hostWithoutDomain(withoutPort, suffix ?? "")
+        var preRegion: String = hostWithoutDomain(withoutPort, endpointSuffix ?? "")
         var nodes: [String] = Runtime.split(preRegion, ".", nil)
         if (Runtime.equalNumber(Runtime.size(nodes), 2)) {
             region = nodes[1]

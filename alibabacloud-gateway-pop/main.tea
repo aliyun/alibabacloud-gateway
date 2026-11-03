@@ -33,7 +33,6 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
   var request = context.request;
   var config = context.configuration;
   var attributes = attributeMap.key;
-  var explicitSuffix = false;
   if (!Util.isUnset(attributes)) {
     if (!Util.empty(attributes.signatureTypePrefix)) {
       @signatureTypePrefix = attributes.signatureTypePrefix;
@@ -43,21 +42,9 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
     if (!Util.empty(attributes.signPrefix)) {
       @signPrefix = attributes.signPrefix;
     }
-    if (!Util.empty(attributes.endpointSuffix)) {
-      @endpointSuffix = attributes.endpointSuffix;
-      explicitSuffix = true;
-    }
   }
-  if (!explicitSuffix) {
-    var envSuffix = $Env.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
-    if (!Util.empty(envSuffix)) {
-      @endpointSuffix = envSuffix;
-    }
-  }
-  if (Util.empty(@endpointSuffix)) {
-    @endpointSuffix = 'aliyuncs.com';
-  }
-  config.endpoint = getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
+  var endpointSuffix = resolveEndpointSuffix(attributes);
+  config.endpoint = getEndpointWithSuffix(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
 
 }
 
@@ -146,7 +133,8 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       }
       var dateNew = String.subString(date, 0, 10);
       dateNew = String.replace(dateNew, '-', '', null);
-      var region = getRegion(request.productId, config.endpoint, config.regionId);
+      var endpointSuffix = resolveEndpointSuffix(attributeMap.key);
+      var region = getRegionWithSuffix(request.productId, config.endpoint, config.regionId, endpointSuffix);
       var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
       request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
     }
@@ -203,7 +191,22 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
   }
 }
 
+function resolveEndpointSuffix(attributes: map[string]string): string {
+  if (!Util.isUnset(attributes) && !Util.empty(attributes.endpointSuffix)) {
+    return attributes.endpointSuffix;
+  }
+  var envSuffix = $Env.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
+  if (!Util.empty(envSuffix)) {
+    return envSuffix;
+  }
+  return 'aliyuncs.com';
+}
+
 function getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string) throws: string{
+  return getEndpointWithSuffix(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, @endpointSuffix);
+}
+
+function getEndpointWithSuffix(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string, endpointSuffix: string) throws: string{
   if (!Util.empty(endpoint)) {
     return endpoint;
   }
@@ -211,11 +214,23 @@ function getEndpoint(productId: string, regionId: string, endpointRule: string, 
   if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
     return endpointMap[regionId];
   }
-  var resolved = EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
-  if (!Util.empty(@endpointSuffix) && !Util.equalString(@endpointSuffix, 'aliyuncs.com')) {
-    resolved = String.replace(resolved, '.aliyuncs.com', `.${@endpointSuffix}`, 1);
+  return applyEndpointSuffix(EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
+}
+
+function applyEndpointSuffix(endpoint: string, endpointSuffix: string): string {
+  var suffix = endpointSuffix;
+  if (Util.empty(suffix)) {
+    suffix = 'aliyuncs.com';
   }
-  return resolved;
+  if (Util.empty(endpoint) || Util.equalString(suffix, 'aliyuncs.com')) {
+    return endpoint;
+  }
+  var old = '.aliyuncs.com';
+  if (String.hasSuffix(endpoint, old)) {
+    var end = String.index(endpoint, old);
+    return `${String.subString(endpoint, 0, end)}.${suffix}`;
+  }
+  return endpoint;
 }
 
 function defaultAny(inputValue: any, defaultValue: any): any {
@@ -285,6 +300,10 @@ function getSigningkey(signatureAlgorithm: string, secret: string, product: stri
 }
 
 function getRegion(product: string, endpoint: string, regionId: string): string {
+  return getRegionWithSuffix(product, endpoint, regionId, @endpointSuffix);
+}
+
+function getRegionWithSuffix(product: string, endpoint: string, regionId: string, endpointSuffix: string): string {
   if (!Util.empty(regionId)) {
     return regionId;
   }
@@ -294,12 +313,23 @@ function getRegion(product: string, endpoint: string, regionId: string): string 
   }
   var strs : [string] = String.split(endpoint, ':', null);
   var withoutPort : string = strs[0];
-  var preRegion: string = String.replace(withoutPort, `.${@endpointSuffix}`, '', null);
+  var preRegion: string = hostWithoutDomain(withoutPort, endpointSuffix);
   var nodes = String.split(preRegion, '.', null);
   if (Util.equalNumber(Array.size(nodes), 2)) {
     region = nodes[1];
   }
   return region;
+}
+
+function hostWithoutDomain(host: string, suffix: string): string {
+  if (!Util.empty(suffix) && String.hasSuffix(host, `.${suffix}`)) {
+    var needle = `.${suffix}`;
+    return String.subString(host, 0, String.index(host, needle));
+  }
+  if (!Util.equalString(suffix, 'aliyuncs.com') && String.hasSuffix(host, '.aliyuncs.com')) {
+    return String.subString(host, 0, String.index(host, '.aliyuncs.com'));
+  }
+  return host;
 }
 
 function buildCanonicalizedResource(query: map[string]string): string {

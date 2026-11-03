@@ -196,7 +196,7 @@ final class CoverageTest extends TestCase
                 'endpointSuffix' => '',
             )));
             $this->assertEquals('', $suffix->getValue($client));
-            $region = new \ReflectionMethod(Client::class, 'getRegion');
+            $region = new \ReflectionMethod(Client::class, 'getRegionWithSuffix');
             $region->setAccessible(true);
             $this->assertEquals('cn-hangzhou', $region->invoke($client, 'ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'));
             $apply = new \ReflectionMethod(Client::class, 'withEndpointSuffix');

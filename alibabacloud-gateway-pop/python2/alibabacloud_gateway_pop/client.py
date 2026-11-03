@@ -34,7 +34,7 @@ class Client(SPIClient):
         request = context.request
         config = context.configuration
         endpoint_suffix = self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None))
-        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
+        config.endpoint = self._get_endpoint_with_suffix(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
 
     def _resolve_endpoint_suffix(self, attributes):
         if not UtilClient.is_unset(attributes):
@@ -114,7 +114,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = StringClient.sub_string(date, 0, 10)
                 date_new = StringClient.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint, self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None)))
+                region = self._get_region_with_suffix(request.product_id, config.endpoint, self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None)))
                 signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -155,7 +155,10 @@ class Client(SPIClient):
         else:
             response.deserialized_body = UtilClient.read_as_string(response.body)
 
-    def get_endpoint(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint, endpoint_suffix=None):
+    def get_endpoint(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint):
+        return self._get_endpoint_with_suffix(product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint, self._endpoint_suffix)
+
+    def _get_endpoint_with_suffix(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint, endpoint_suffix):
         if not UtilClient.empty(endpoint):
             return endpoint
         if not UtilClient.is_unset(endpoint_map) and not UtilClient.empty(endpoint_map.get(region_id)):
@@ -217,13 +220,15 @@ class Client(SPIClient):
             hmac = Signer.hmac_sm3sign_by_bytes('aliyun_v4_request', sc_4)
         return hmac
 
-    def get_region(self, product, endpoint, endpoint_suffix=None):
+    def get_region(self, product, endpoint):
+        return self._get_region_with_suffix(product, endpoint, self._endpoint_suffix)
+
+    def _get_region_with_suffix(self, product, endpoint, endpoint_suffix):
         if UtilClient.empty(product) or UtilClient.empty(endpoint):
             return 'center'
         popcode = StringClient.to_lower(product)
         region = StringClient.replace(endpoint, popcode, '', None)
-        suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
-        suffix = suffix or 'aliyuncs.com'
+        suffix = endpoint_suffix or 'aliyuncs.com'
         domain = suffix if endpoint.endswith(suffix) else 'aliyuncs.com'
         region = StringClient.replace(region, domain, '', None)
         region = StringClient.replace(region, '.', '', None)

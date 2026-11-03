@@ -135,8 +135,9 @@ class TestCoverage(unittest.TestCase):
             built = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
             client.modify_configuration(context(request(access_key()), built), AttributeMap())
             self.assertEqual('ecs.cn-hangzhou.example.com', built.endpoint)
-            self.assertEqual('cn-hangzhou', client.get_region('ecs', built.endpoint, '', 'example.com'))
-            self.assertEqual('cn-hangzhou', client.get_region('ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'))
+            self.assertEqual('cn-hangzhou', client.get_region('ecs', 'ecs.cn-hangzhou.aliyuncs.com', ''))
+            self.assertEqual('cn-hangzhou', client._get_region_with_suffix('ecs', built.endpoint, '', 'example.com'))
+            self.assertEqual('cn-hangzhou', client._get_region_with_suffix('ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'))
             self.assertEqual('aliyuncs.com', client._endpoint_suffix)
             self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
 
@@ -167,6 +168,22 @@ class TestCoverage(unittest.TestCase):
         again = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
         fallback.modify_configuration(context(request(access_key()), again), AttributeMap())
         self.assertEqual('ecs.cn-hangzhou.aliyuncs.com', again.endpoint)
+
+    def test_subclass_keeps_original_endpoint_signatures(self):
+        class Child(Client):
+            def get_endpoint(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint):
+                return 'child.example'
+
+            def get_region(self, product, endpoint, region_id):
+                return 'child-region'
+
+        child = Child()
+        built = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        child.modify_configuration(context(request(access_key()), built), AttributeMap(key={'endpointSuffix': 'example.net'}))
+        self.assertEqual('ecs.cn-hangzhou.example.net', built.endpoint)
+        self.assertEqual('child.example', child.get_endpoint('ecs', 'cn-hangzhou', 'regional', '', '', None, ''))
+        self.assertEqual('child-region', child.get_region('ecs', 'ecs.cn-hangzhou.aliyuncs.com', ''))
+        self.assertEqual('cn-hangzhou', child._get_region_with_suffix('ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'))
 
     def test_canonical_and_signing(self):
         client = Client()
