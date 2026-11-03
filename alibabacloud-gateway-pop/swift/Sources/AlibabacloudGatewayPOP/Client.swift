@@ -27,8 +27,8 @@ open class Client : AlibabacloudGatewaySPI.Client {
     public override func modifyConfiguration(_ context: AlibabacloudGatewaySPI.InterceptorContext, _ attributeMap: AlibabacloudGatewaySPI.AttributeMap) async throws -> Void {
         var request: AlibabacloudGatewaySPI.InterceptorContext.Request = context.request!
         var config: AlibabacloudGatewaySPI.InterceptorContext.Configuration = context.configuration!
-        resolveEndpointSuffix(attributeMap.key ?? [:])
-        config.endpoint = try getEndpoint(request.productId ?? "", config.regionId ?? "", config.endpointRule ?? "", config.network ?? "", config.suffix ?? "", config.endpointMap ?? [:], config.endpoint ?? "")
+        let endpointSuffix = resolveEndpointSuffix(attributeMap.key ?? [:])
+        config.endpoint = try getEndpoint(request.productId ?? "", config.regionId ?? "", config.endpointRule ?? "", config.network ?? "", config.suffix ?? "", config.endpointMap ?? [:], config.endpoint ?? "", endpointSuffix)
     }
 
     @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -113,7 +113,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
                 }
                 var dateNew: String = Runtime.subString(date, 0, 10)
                 dateNew = Runtime.replace(dateNew, "-", "", nil)
-                var region: String = getRegion(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "")
+                var region: String = getRegion(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", resolveEndpointSuffix(attributeMap.key ?? [:]))
                 var signingkey: [UInt8] = getSigningkey(signatureAlgorithm as! String, accessKeySecret as! String, request.productId ?? "", region as! String, dateNew as! String)
                 request.headers!["Authorization"] = try getAuthorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String);
             }
@@ -173,18 +173,17 @@ open class Client : AlibabacloudGatewaySPI.Client {
         }
     }
 
-    public func getEndpoint(_ productId: String, _ regionId: String, _ endpointRule: String, _ network: String, _ suffix: String, _ endpointMap: [String: String], _ endpoint: String) throws -> String {
+    public func getEndpoint(_ productId: String, _ regionId: String, _ endpointRule: String, _ network: String, _ suffix: String, _ endpointMap: [String: String], _ endpoint: String, _ endpointSuffix: String? = nil) throws -> String {
         if (!Runtime.empty(endpoint)) {
             return endpoint as! String
         }
         if (!Runtime.isUnset(endpointMap) && !Runtime.empty(endpointMap[regionId as! String])) {
             return endpointMap[regionId as! String] ?? ""
         }
-        return try withEndpointSuffix(Runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix))
+        return try withEndpointSuffix(Runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix)
     }
 
-    func resolveEndpointSuffix(_ attributes: [String: String]) {
-        var explicit = false
+    func resolveEndpointSuffix(_ attributes: [String: String]) -> String {
         if (!Runtime.isUnset(attributes)) {
             let prefix = attributes["signatureTypePrefix"]
             if (!Runtime.empty(prefix)) {
@@ -198,22 +197,18 @@ open class Client : AlibabacloudGatewaySPI.Client {
             }
             let suffix = attributes["endpointSuffix"]
             if (!Runtime.empty(suffix)) {
-                self._endpointSuffix = suffix
-                explicit = true
+                return suffix ?? ""
             }
         }
-        if !explicit {
-            if let envSuffix = ProcessInfo.processInfo.environment["ALIBABA_CLOUD_ENDPOINT_SUFFIX"], !Runtime.empty(envSuffix) {
-                self._endpointSuffix = envSuffix
-            }
+        if let envSuffix = ProcessInfo.processInfo.environment["ALIBABA_CLOUD_ENDPOINT_SUFFIX"], !Runtime.empty(envSuffix) {
+            return envSuffix
         }
-        if Runtime.empty(self._endpointSuffix) {
-            self._endpointSuffix = "aliyuncs.com"
-        }
+        return "aliyuncs.com"
     }
 
-    func withEndpointSuffix(_ endpoint: String) -> String {
-        let suffix = Runtime.empty(self._endpointSuffix) ? "aliyuncs.com" : (self._endpointSuffix ?? "aliyuncs.com")
+    func withEndpointSuffix(_ endpoint: String, _ endpointSuffix: String? = nil) -> String {
+        let chosen = endpointSuffix ?? self._endpointSuffix
+        let suffix = Runtime.empty(chosen) ? "aliyuncs.com" : (chosen ?? "aliyuncs.com")
         if Runtime.empty(endpoint) || suffix == "aliyuncs.com" {
             return endpoint
         }
@@ -295,7 +290,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
         return hmac as! [UInt8]
     }
 
-    public func getRegion(_ product: String, _ endpoint: String, _ regionId: String) -> String {
+    public func getRegion(_ product: String, _ endpoint: String, _ regionId: String, _ endpointSuffix: String? = nil) -> String {
         if (!Runtime.empty(regionId)) {
             return regionId as! String
         }
@@ -305,12 +300,29 @@ open class Client : AlibabacloudGatewaySPI.Client {
         }
         var strs: [String] = Runtime.split(endpoint, ":", nil)
         var withoutPort: String = strs[0]
-        var preRegion: String = Runtime.replace(withoutPort, "." + (self._endpointSuffix ?? ""), "", nil)
+        let suffix = endpointSuffix ?? self._endpointSuffix
+        var preRegion: String = hostWithoutDomain(withoutPort, suffix ?? "")
         var nodes: [String] = Runtime.split(preRegion, ".", nil)
         if (Runtime.equalNumber(Runtime.size(nodes), 2)) {
             region = nodes[1]
         }
         return region as! String
+    }
+
+    func hostWithoutDomain(_ host: String, _ suffix: String) -> String {
+        let domains = [suffix, "aliyuncs.com"]
+        var seen: [String: Bool] = [:]
+        for domain in domains {
+            if Runtime.empty(domain) || seen[domain] == true {
+                continue
+            }
+            seen[domain] = true
+            let needle = "." + domain
+            if host.hasSuffix(needle) {
+                return String(host.dropLast(needle.count))
+            }
+        }
+        return host
     }
 
     public func buildCanonicalizedResource(_ query: [String: String]) -> String {

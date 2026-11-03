@@ -33,25 +33,22 @@ class Client(SPIClient):
     def modify_configuration(self, context, attribute_map):
         request = context.request
         config = context.configuration
-        self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None))
-        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+        endpoint_suffix = self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None))
+        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
 
     def _resolve_endpoint_suffix(self, attributes):
-        explicit = False
         if not UtilClient.is_unset(attributes):
             suffix = attributes.get('endpointSuffix')
             if not UtilClient.empty(suffix):
-                self._endpoint_suffix = suffix
-                explicit = True
-        if not explicit:
-            env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
-            if env_suffix:
-                self._endpoint_suffix = env_suffix
-        if UtilClient.empty(self._endpoint_suffix):
-            self._endpoint_suffix = 'aliyuncs.com'
+                return suffix
+        env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+        if env_suffix:
+            return env_suffix
+        return 'aliyuncs.com'
 
-    def _with_endpoint_suffix(self, endpoint):
-        suffix = self._endpoint_suffix or 'aliyuncs.com'
+    def _with_endpoint_suffix(self, endpoint, endpoint_suffix=None):
+        suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
+        suffix = suffix or 'aliyuncs.com'
         if not endpoint or suffix == 'aliyuncs.com':
             return endpoint
         old = '.aliyuncs.com'
@@ -117,7 +114,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = StringClient.sub_string(date, 0, 10)
                 date_new = StringClient.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint)
+                region = self.get_region(request.product_id, config.endpoint, self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None)))
                 signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -158,12 +155,12 @@ class Client(SPIClient):
         else:
             response.deserialized_body = UtilClient.read_as_string(response.body)
 
-    def get_endpoint(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint):
+    def get_endpoint(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint, endpoint_suffix=None):
         if not UtilClient.empty(endpoint):
             return endpoint
         if not UtilClient.is_unset(endpoint_map) and not UtilClient.empty(endpoint_map.get(region_id)):
             return endpoint_map.get(region_id)
-        return self._with_endpoint_suffix(EndpointUtilClient.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix))
+        return self._with_endpoint_suffix(EndpointUtilClient.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix), endpoint_suffix)
 
     def default_any(self, input_value, default_value):
         if UtilClient.is_unset(input_value):
@@ -220,12 +217,15 @@ class Client(SPIClient):
             hmac = Signer.hmac_sm3sign_by_bytes('aliyun_v4_request', sc_4)
         return hmac
 
-    def get_region(self, product, endpoint):
+    def get_region(self, product, endpoint, endpoint_suffix=None):
         if UtilClient.empty(product) or UtilClient.empty(endpoint):
             return 'center'
         popcode = StringClient.to_lower(product)
         region = StringClient.replace(endpoint, popcode, '', None)
-        region = StringClient.replace(region, self._endpoint_suffix or 'aliyuncs.com', '', None)
+        suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
+        suffix = suffix or 'aliyuncs.com'
+        domain = suffix if endpoint.endswith(suffix) else 'aliyuncs.com'
+        region = StringClient.replace(region, domain, '', None)
         region = StringClient.replace(region, '.', '', None)
         if not UtilClient.empty(region):
             return region

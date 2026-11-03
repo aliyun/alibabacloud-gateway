@@ -46,8 +46,8 @@ class Client extends DarabonbaGatewaySpiClient
     {
         $request = $context->request;
         $config = $context->configuration;
-        $this->resolveEndpointSuffix($attributeMap->key);
-        $config->endpoint = $this->getEndpoint($request->productId, $config->regionId, $config->endpointRule, $config->network, $config->suffix, $config->endpointMap, $config->endpoint);
+        $endpointSuffix = $this->resolveEndpointSuffix($attributeMap->key);
+        $config->endpoint = $this->getEndpoint($request->productId, $config->regionId, $config->endpointRule, $config->network, $config->suffix, $config->endpointMap, $config->endpoint, $endpointSuffix);
     }
 
     /**
@@ -135,7 +135,7 @@ class Client extends DarabonbaGatewaySpiClient
                 }
                 $dateNew = self::subString($date, 0, 10);
                 $dateNew = self::replace($dateNew, "-", "", null);
-                $region = $this->getRegion($request->productId, $config->endpoint, $config->regionId);
+                $region = $this->getRegion($request->productId, $config->endpoint, $config->regionId, $this->resolveEndpointSuffix($attributeMap->key));
                 $signingkey = $this->getSigningkey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew);
                 $request->headers["Authorization"] = $this->getAuthorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew);
             }
@@ -209,7 +209,7 @@ class Client extends DarabonbaGatewaySpiClient
      * @param string $endpoint
      * @return string
      */
-    public function getEndpoint($productId, $regionId, $endpointRule, $network, $suffix, $endpointMap, $endpoint)
+    public function getEndpoint($productId, $regionId, $endpointRule, $network, $suffix, $endpointMap, $endpoint, $endpointSuffix = null)
     {
         if (!self::empty_($endpoint)) {
             return $endpoint;
@@ -217,12 +217,11 @@ class Client extends DarabonbaGatewaySpiClient
         if (!self::isUnset($endpointMap) && !self::empty_(@$endpointMap[$regionId])) {
             return @$endpointMap[$regionId];
         }
-        return $this->withEndpointSuffix(self::getEndpointRules($productId, $regionId, $endpointRule, $network, $suffix));
+        return $this->withEndpointSuffix(self::getEndpointRules($productId, $regionId, $endpointRule, $network, $suffix), $endpointSuffix);
     }
 
     private function resolveEndpointSuffix($attributes)
     {
-        $explicit = false;
         if (!self::isUnset($attributes)) {
             $prefix = @$attributes["signatureTypePrefix"];
             if (!self::empty_($prefix)) {
@@ -236,24 +235,19 @@ class Client extends DarabonbaGatewaySpiClient
             }
             $suffix = @$attributes["endpointSuffix"];
             if (!self::empty_($suffix)) {
-                $this->_endpointSuffix = $suffix;
-                $explicit = true;
+                return $suffix;
             }
         }
-        if (!$explicit) {
-            $envSuffix = getenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
-            if ($envSuffix !== false && !self::empty_($envSuffix)) {
-                $this->_endpointSuffix = $envSuffix;
-            }
+        $envSuffix = getenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
+        if ($envSuffix !== false && !self::empty_($envSuffix)) {
+            return $envSuffix;
         }
-        if (self::empty_($this->_endpointSuffix)) {
-            $this->_endpointSuffix = "aliyuncs.com";
-        }
+        return "aliyuncs.com";
     }
 
-    private function withEndpointSuffix($endpoint)
+    private function withEndpointSuffix($endpoint, $endpointSuffix = null)
     {
-        $suffix = $this->_endpointSuffix;
+        $suffix = $endpointSuffix === null ? $this->_endpointSuffix : $endpointSuffix;
         if (self::empty_($suffix)) {
             $suffix = "aliyuncs.com";
         }
@@ -381,7 +375,7 @@ class Client extends DarabonbaGatewaySpiClient
      * @param string $regionId
      * @return string
      */
-    public function getRegion($product, $endpoint, $regionId)
+    public function getRegion($product, $endpoint, $regionId, $endpointSuffix = null)
     {
         if (!self::empty_($regionId)) {
             return $regionId;
@@ -392,12 +386,31 @@ class Client extends DarabonbaGatewaySpiClient
         }
         $strs = self::split($endpoint, ":", null);
         $withoutPort = @$strs[0];
-        $preRegion = self::replace($withoutPort, "." . $this->_endpointSuffix . "", "", null);
+        $suffix = $endpointSuffix === null ? $this->_endpointSuffix : $endpointSuffix;
+        $preRegion = $this->hostWithoutDomain($withoutPort, $suffix);
         $nodes = self::split($preRegion, ".", null);
         if (self::equalNumber(self::size($nodes), 2)) {
             $region = @$nodes[1];
         }
         return $region;
+    }
+
+    private function hostWithoutDomain($host, $suffix)
+    {
+        $domains = array($suffix, "aliyuncs.com");
+        $seen = array();
+        foreach ($domains as $domain) {
+            if (self::empty_($domain) || isset($seen[$domain])) {
+                continue;
+            }
+            $seen[$domain] = true;
+            $needle = "." . $domain;
+            $length = strlen($needle);
+            if (strlen($host) >= $length && substr($host, -$length) === $needle) {
+                return substr($host, 0, -$length);
+            }
+        }
+        return $host;
     }
 
     /**

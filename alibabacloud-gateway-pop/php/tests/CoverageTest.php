@@ -190,12 +190,15 @@ final class CoverageTest extends TestCase
             $suffix = new \ReflectionProperty(Client::class, '_endpointSuffix');
             $suffix->setAccessible(true);
             $suffix->setValue($client, '');
-            $resolve->invoke($client, array(
+            $this->assertEquals('example.com', $resolve->invoke($client, array(
                 'signatureTypePrefix' => '',
                 'signPrefix' => '',
                 'endpointSuffix' => '',
-            ));
-            $this->assertEquals('example.com', $suffix->getValue($client));
+            )));
+            $this->assertEquals('', $suffix->getValue($client));
+            $region = new \ReflectionMethod(Client::class, 'getRegion');
+            $region->setAccessible(true);
+            $this->assertEquals('cn-hangzhou', $region->invoke($client, 'ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'));
             $apply = new \ReflectionMethod(Client::class, 'withEndpointSuffix');
             $apply->setAccessible(true);
             $this->assertEquals('leave.example', $apply->invoke($client, 'leave.example'));
@@ -210,8 +213,8 @@ final class CoverageTest extends TestCase
         $suffix->setValue($fallback, '');
         $resolve = new \ReflectionMethod(Client::class, 'resolveEndpointSuffix');
         $resolve->setAccessible(true);
-        $resolve->invoke($fallback, null);
-        $this->assertEquals('aliyuncs.com', $suffix->getValue($fallback));
+        $this->assertEquals('aliyuncs.com', $resolve->invoke($fallback, null));
+        $this->assertEquals('', $suffix->getValue($fallback));
         $apply = new \ReflectionMethod(Client::class, 'withEndpointSuffix');
         $apply->setAccessible(true);
         $this->assertEquals('ecs.cn-hangzhou.aliyuncs.com', $apply->invoke($fallback, 'ecs.cn-hangzhou.aliyuncs.com'));

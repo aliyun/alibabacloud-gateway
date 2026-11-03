@@ -36,21 +36,20 @@ namespace AlibabaCloud.GatewayPop
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            ResolveEndpointSuffix(attributeMap.Key);
-            config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint);
+            string endpointSuffix = ResolveEndpointSuffix(attributeMap.Key);
+            config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint, endpointSuffix);
         }
 
         public async Task ModifyConfigurationAsync(AlibabaCloud.GatewaySpi.Models.InterceptorContext context, AlibabaCloud.GatewaySpi.Models.AttributeMap attributeMap)
         {
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextRequest request = context.Request;
             AlibabaCloud.GatewaySpi.Models.InterceptorContext.InterceptorContextConfiguration config = context.Configuration;
-            ResolveEndpointSuffix(attributeMap.Key);
-            config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint);
+            string endpointSuffix = ResolveEndpointSuffix(attributeMap.Key);
+            config.Endpoint = GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint, endpointSuffix);
         }
 
-        internal void ResolveEndpointSuffix(Dictionary<string, string> attributes)
+        internal string ResolveEndpointSuffix(Dictionary<string, string> attributes)
         {
-            bool explicitSuffix = false;
             if (!Runtime.IsUnset(attributes))
             {
                 string prefix = attributes.Get("signatureTypePrefix");
@@ -68,27 +67,20 @@ namespace AlibabaCloud.GatewayPop
                 string suffix = attributes.Get("endpointSuffix");
                 if (!Runtime.Empty(suffix))
                 {
-                    this._endpointSuffix = suffix;
-                    explicitSuffix = true;
+                    return suffix;
                 }
             }
-            if (!explicitSuffix)
+            string envSuffix = Environment.GetEnvironmentVariable("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
+            if (!Runtime.Empty(envSuffix))
             {
-                string envSuffix = Environment.GetEnvironmentVariable("ALIBABA_CLOUD_ENDPOINT_SUFFIX");
-                if (!Runtime.Empty(envSuffix))
-                {
-                    this._endpointSuffix = envSuffix;
-                }
+                return envSuffix;
             }
-            if (Runtime.Empty(this._endpointSuffix))
-            {
-                this._endpointSuffix = "aliyuncs.com";
-            }
+            return "aliyuncs.com";
         }
 
-        internal string WithEndpointSuffix(string endpoint)
+        internal string WithEndpointSuffix(string endpoint, string endpointSuffix = null)
         {
-            string suffix = this._endpointSuffix;
+            string suffix = endpointSuffix == null ? this._endpointSuffix : endpointSuffix;
             if (Runtime.Empty(suffix))
             {
                 suffix = "aliyuncs.com";
@@ -212,7 +204,7 @@ namespace AlibabaCloud.GatewayPop
                     }
                     string dateNew = Runtime.SubString(date, 0, 10);
                     dateNew = Runtime.Replace(dateNew, "-", "", null);
-                    string region = GetRegion(request.ProductId, config.Endpoint, config.RegionId);
+                    string region = GetRegion(request.ProductId, config.Endpoint, config.RegionId, ResolveEndpointSuffix(attributeMap.Key));
                     byte[] signingkey = GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew);
                     request.Headers["Authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
                 }
@@ -326,7 +318,7 @@ namespace AlibabaCloud.GatewayPop
                     }
                     string dateNew = Runtime.SubString(date, 0, 10);
                     dateNew = Runtime.Replace(dateNew, "-", "", null);
-                    string region = GetRegion(request.ProductId, config.Endpoint, config.RegionId);
+                    string region = GetRegion(request.ProductId, config.Endpoint, config.RegionId, ResolveEndpointSuffix(attributeMap.Key));
                     byte[] signingkey = GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew);
                     request.Headers["Authorization"] = GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew);
                 }
@@ -469,7 +461,7 @@ namespace AlibabaCloud.GatewayPop
             }
         }
 
-        public string GetEndpoint(string productId, string regionId, string endpointRule, string network, string suffix, Dictionary<string, string> endpointMap, string endpoint)
+        public string GetEndpoint(string productId, string regionId, string endpointRule, string network, string suffix, Dictionary<string, string> endpointMap, string endpoint, string endpointSuffix = null)
         {
             if (!Runtime.Empty(endpoint))
             {
@@ -479,7 +471,7 @@ namespace AlibabaCloud.GatewayPop
             {
                 return endpointMap.Get(regionId);
             }
-            return WithEndpointSuffix(Runtime.GetEndpointRules(productId, regionId, endpointRule, network, suffix));
+            return WithEndpointSuffix(Runtime.GetEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
         }
 
         public object DefaultAny(object inputValue, object defaultValue)
@@ -569,7 +561,7 @@ namespace AlibabaCloud.GatewayPop
             return hmac;
         }
 
-        public string GetRegion(string product, string endpoint, string regionId)
+        public string GetRegion(string product, string endpoint, string regionId, string endpointSuffix = null)
         {
             if (!Runtime.Empty(regionId))
             {
@@ -582,13 +574,34 @@ namespace AlibabaCloud.GatewayPop
             }
             List<string> strs = Runtime.Split(endpoint, ":", null);
             string withoutPort = strs[0];
-            string preRegion = Runtime.Replace(withoutPort, "." + _endpointSuffix, "", null);
+            string suffix = endpointSuffix == null ? _endpointSuffix : endpointSuffix;
+            string preRegion = HostWithoutDomain(withoutPort, suffix);
             List<string> nodes = Runtime.Split(preRegion, ".", null);
             if (Runtime.EqualNumber(Runtime.Size(nodes), 2))
             {
                 region = nodes[1];
             }
             return region;
+        }
+
+        internal string HostWithoutDomain(string host, string suffix)
+        {
+            string[] domains = new string[] { suffix, "aliyuncs.com" };
+            Dictionary<string, bool> seen = new Dictionary<string, bool>();
+            foreach (string domain in domains)
+            {
+                if (Runtime.Empty(domain) || seen.ContainsKey(domain))
+                {
+                    continue;
+                }
+                seen[domain] = true;
+                string needle = "." + domain;
+                if (!Runtime.Empty(host) && host.EndsWith(needle))
+                {
+                    return host.Substring(0, host.Length - needle.Length);
+                }
+            }
+            return host;
         }
 
         public string BuildCanonicalizedResource(Dictionary<string, string> query)

@@ -135,7 +135,9 @@ class TestCoverage(unittest.TestCase):
             built = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
             client.modify_configuration(context(request(access_key()), built), AttributeMap())
             self.assertEqual('ecs.cn-hangzhou.example.com', built.endpoint)
-            self.assertEqual('cn-hangzhou', client.get_region('ecs', built.endpoint, ''))
+            self.assertEqual('cn-hangzhou', client.get_region('ecs', built.endpoint, '', 'example.com'))
+            self.assertEqual('cn-hangzhou', client.get_region('ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'))
+            self.assertEqual('aliyuncs.com', client._endpoint_suffix)
             self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
 
             overridden = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
@@ -147,18 +149,24 @@ class TestCoverage(unittest.TestCase):
             self.assertEqual('leave.example', client._with_endpoint_suffix('leave.example'))
             self.assertEqual('', client._with_endpoint_suffix(''))
             client._endpoint_suffix = ''
-            client._resolve_endpoint_suffix({
+            self.assertEqual('example.com', client._resolve_endpoint_suffix({
                 'signatureTypePrefix': '',
                 'signPrefix': '',
                 'endpointSuffix': '',
-            })
-            self.assertEqual('example.com', client._endpoint_suffix)
+            }))
+            self.assertEqual('', client._endpoint_suffix)
         finally:
             os.environ.pop('ALIBABA_CLOUD_ENDPOINT_SUFFIX', None)
         fallback = Client()
         fallback._endpoint_suffix = ''
-        fallback._resolve_endpoint_suffix(None)
-        self.assertEqual('aliyuncs.com', fallback._endpoint_suffix)
+        self.assertEqual('aliyuncs.com', fallback._resolve_endpoint_suffix(None))
+        self.assertEqual('', fallback._endpoint_suffix)
+        kept = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        fallback.modify_configuration(context(request(access_key()), kept), AttributeMap(key={'endpointSuffix': 'example.net'}))
+        self.assertEqual('ecs.cn-hangzhou.example.net', kept.endpoint)
+        again = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        fallback.modify_configuration(context(request(access_key()), again), AttributeMap())
+        self.assertEqual('ecs.cn-hangzhou.aliyuncs.com', again.endpoint)
 
     def test_canonical_and_signing(self):
         client = Client()

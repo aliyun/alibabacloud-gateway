@@ -25,8 +25,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
     public void modifyConfiguration(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextRequest request = context.request;
         com.aliyun.gateway.spi.models.InterceptorContext.InterceptorContextConfiguration config = context.configuration;
-        this.resolveEndpointSuffix(attributeMap.key);
-        config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
+        String endpointSuffix = this.resolveEndpointSuffix(attributeMap.key);
+        config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
     }
 
     public void modifyRequest(com.aliyun.gateway.spi.models.InterceptorContext context, com.aliyun.gateway.spi.models.AttributeMap attributeMap) throws Exception {
@@ -118,7 +118,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
                 String dateNew = Codec.subString(date, 0, 10);
                 dateNew = Codec.replace(dateNew, "-", "", null);
-                String region = this.getRegion(request.productId, config.endpoint, config.regionId);
+                String region = this.regionFor(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
                 byte[] signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
                 request.headers.put("Authorization", this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew));
             }
@@ -180,6 +180,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getEndpoint(String productId, String regionId, String endpointRule, String network, String suffix, java.util.Map<String, String> endpointMap, String endpoint) throws Exception {
+        return this.getEndpoint(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, this._endpointSuffix);
+    }
+
+    String getEndpoint(String productId, String regionId, String endpointRule, String network, String suffix, java.util.Map<String, String> endpointMap, String endpoint, String endpointSuffix) throws Exception {
         if (!Support.empty(endpoint)) {
             return endpoint;
         }
@@ -188,11 +192,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
             return endpointMap.get(regionId);
         }
 
-        return this.withEndpointSuffix(Support.getEndpointRules(productId, regionId, endpointRule, network, suffix));
+        return this.withEndpointSuffix(Support.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
     }
 
-    void resolveEndpointSuffix(java.util.Map<String, String> attributes) {
-        boolean explicit = false;
+    String resolveEndpointSuffix(java.util.Map<String, String> attributes) {
         if (!Support.isUnset(attributes)) {
             String prefix = attributes.get("signatureTypePrefix");
             if (!Support.empty(prefix)) {
@@ -206,19 +209,14 @@ public class Client extends com.aliyun.gateway.spi.Client {
             }
             String suffix = attributes.get("endpointSuffix");
             if (!Support.empty(suffix)) {
-                this._endpointSuffix = suffix;
-                explicit = true;
+                return suffix;
             }
         }
-        if (!explicit) {
-            String envSuffix = this.endpointSuffixFromEnv();
-            if (!Support.empty(envSuffix)) {
-                this._endpointSuffix = envSuffix;
-            }
+        String envSuffix = this.endpointSuffixFromEnv();
+        if (!Support.empty(envSuffix)) {
+            return envSuffix;
         }
-        if (Support.empty(this._endpointSuffix)) {
-            this._endpointSuffix = "aliyuncs.com";
-        }
+        return "aliyuncs.com";
     }
 
     String endpointSuffixFromEnv() {
@@ -226,7 +224,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     String withEndpointSuffix(String endpoint) {
-        String suffix = this._endpointSuffix;
+        return this.withEndpointSuffix(endpoint, this._endpointSuffix);
+    }
+
+    String withEndpointSuffix(String endpoint, String suffix) {
         if (Support.empty(suffix)) {
             suffix = "aliyuncs.com";
         }
@@ -314,6 +315,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String getRegion(String product, String endpoint, String regionId) throws Exception {
+        return this.regionFor(product, endpoint, regionId, this._endpointSuffix);
+    }
+
+    String regionFor(String product, String endpoint, String regionId, String endpointSuffix) throws Exception {
         if (!Support.empty(regionId)) {
             return regionId;
         }
@@ -325,13 +330,31 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
         java.util.List<String> strs = Codec.split(endpoint, ":", null);
         String withoutPort = strs.get(0);
-        String preRegion = Codec.replace(withoutPort, "." + _endpointSuffix + "", "", null);
+        String preRegion = this.hostWithoutDomain(withoutPort, endpointSuffix);
         java.util.List<String> nodes = Codec.split(preRegion, ".", null);
         if (Support.equalNumber(Codec.size(nodes), 2)) {
             region = nodes.get(1);
         }
 
         return region;
+    }
+
+    String hostWithoutDomain(String host, String suffix) {
+        String[] domains = new String[] {suffix, "aliyuncs.com"};
+        for (int i = 0; i < domains.length; i++) {
+            String domain = domains[i];
+            if (Support.empty(domain)) {
+                continue;
+            }
+            if (i > 0 && domain.equals(domains[0])) {
+                continue;
+            }
+            String needle = "." + domain;
+            if (host.endsWith(needle)) {
+                return host.substring(0, host.length() - needle.length());
+            }
+        }
+        return host;
     }
 
     public String buildCanonicalizedResource(java.util.Map<String, String> query) throws Exception {

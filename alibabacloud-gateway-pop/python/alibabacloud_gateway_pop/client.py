@@ -35,8 +35,8 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        self._resolve_endpoint_suffix(attribute_map.key)
-        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+        endpoint_suffix = self._resolve_endpoint_suffix(attribute_map.key)
+        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
 
     async def modify_configuration_async(
         self,
@@ -45,11 +45,10 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        self._resolve_endpoint_suffix(attribute_map.key)
-        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+        endpoint_suffix = self._resolve_endpoint_suffix(attribute_map.key)
+        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
 
     def _resolve_endpoint_suffix(self, attributes):
-        explicit = False
         if not support.is_unset(attributes):
             prefix = attributes.get('signatureTypePrefix')
             if not support.empty(prefix):
@@ -61,23 +60,32 @@ class Client(SPIClient):
                 self._sign_prefix = sign_prefix
             suffix = attributes.get('endpointSuffix')
             if not support.empty(suffix):
-                self._endpoint_suffix = suffix
-                explicit = True
-        if not explicit:
-            env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
-            if env_suffix:
-                self._endpoint_suffix = env_suffix
-        if support.empty(self._endpoint_suffix):
-            self._endpoint_suffix = 'aliyuncs.com'
+                return suffix
+        env_suffix = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+        if env_suffix:
+            return env_suffix
+        return 'aliyuncs.com'
 
-    def _with_endpoint_suffix(self, endpoint):
-        suffix = self._endpoint_suffix or 'aliyuncs.com'
+    def _with_endpoint_suffix(self, endpoint, endpoint_suffix=None):
+        suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
+        suffix = suffix or 'aliyuncs.com'
         if not endpoint or suffix == 'aliyuncs.com':
             return endpoint
         old = '.aliyuncs.com'
         if endpoint.endswith(old):
             return endpoint[:-len(old)] + '.' + suffix
         return endpoint
+
+    def _host_without_domain(self, host, suffix):
+        seen = set()
+        for domain in (suffix, 'aliyuncs.com'):
+            if support.empty(domain) or domain in seen:
+                continue
+            seen.add(domain)
+            needle = '.' + domain
+            if host.endswith(needle):
+                return host[:-len(needle)]
+        return host
 
     def modify_request(
         self,
@@ -153,7 +161,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = codec.sub_string(date, 0, 10)
                 date_new = codec.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint, config.region_id)
+                region = self.get_region(request.product_id, config.endpoint, config.region_id, self._resolve_endpoint_suffix(attribute_map.key))
                 signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -231,7 +239,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = codec.sub_string(date, 0, 10)
                 date_new = codec.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint, config.region_id)
+                region = self.get_region(request.product_id, config.endpoint, config.region_id, self._resolve_endpoint_suffix(attribute_map.key))
                 signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -338,12 +346,13 @@ class Client(SPIClient):
         suffix: str,
         endpoint_map: Dict[str, str],
         endpoint: str,
+        endpoint_suffix: str = None,
     ) -> str:
         if not support.empty(endpoint):
             return endpoint
         if not support.is_unset(endpoint_map) and not support.empty(endpoint_map.get(region_id)):
             return endpoint_map.get(region_id)
-        return self._with_endpoint_suffix(support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix))
+        return self._with_endpoint_suffix(support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix), endpoint_suffix)
 
     def default_any(
         self,
@@ -438,6 +447,7 @@ class Client(SPIClient):
         product: str,
         endpoint: str,
         region_id: str,
+        endpoint_suffix: str = None,
     ) -> str:
         if not support.empty(region_id):
             return region_id
@@ -446,7 +456,8 @@ class Client(SPIClient):
             return region
         strs = codec.split(endpoint, ':', None)
         without_port = strs[0]
-        pre_region = codec.replace(without_port, f'.{self._endpoint_suffix}', '', None)
+        suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
+        pre_region = self._host_without_domain(without_port, suffix)
         nodes = codec.split(pre_region, '.', None)
         if support.equal_number(codec.size(nodes), 2):
             region = nodes[1]

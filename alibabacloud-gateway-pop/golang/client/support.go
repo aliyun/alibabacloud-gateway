@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math/rand"
+	"os"
 	"reflect"
 	"runtime"
 	"strconv"
@@ -136,6 +137,35 @@ func is5xx(code *int) *bool {
 func getTimestamp() *string {
 	gmt := time.FixedZone("GMT", 0)
 	return dara.String(time.Now().In(gmt).Format("2006-01-02T15:04:05Z"))
+}
+
+func endpointSuffixForRequest(attributes map[string]*string) string {
+	if !dara.BoolValue(isUnset(attributes)) && !dara.BoolValue(emptyString(attributes["endpointSuffix"])) {
+		return dara.StringValue(attributes["endpointSuffix"])
+	}
+	if envSuffix := os.Getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"); envSuffix != "" {
+		return envSuffix
+	}
+	return "aliyuncs.com"
+}
+
+func hostWithoutDomain(host, suffix string) string {
+	domains := []string{suffix, "aliyuncs.com"}
+	seen := map[string]struct{}{}
+	for _, domain := range domains {
+		if domain == "" {
+			continue
+		}
+		if _, ok := seen[domain]; ok {
+			continue
+		}
+		seen[domain] = struct{}{}
+		needle := "." + domain
+		if strings.HasSuffix(host, needle) {
+			return strings.TrimSuffix(host, needle)
+		}
+	}
+	return host
 }
 
 func applyEndpointSuffix(endpoint, suffix *string) *string {

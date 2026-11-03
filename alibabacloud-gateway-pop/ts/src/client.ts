@@ -28,8 +28,8 @@ export default class Client extends SPI {
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
-    this.resolveEndpointSuffix(attributeMap.key);
-    config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
+    let endpointSuffix = this.resolveEndpointSuffix(attributeMap.key);
+    config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
   }
 
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -119,7 +119,7 @@ export default class Client extends SPI {
 
         let dateNew = codec.subString(date, 0, 10);
         dateNew = codec.replace(dateNew, "-", "", null);
-        let region = this.getRegion(request.productId, config.endpoint, config.regionId);
+        let region = this.getRegion(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
         let signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
         request.headers["Authorization"] = this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
       }
@@ -180,7 +180,7 @@ export default class Client extends SPI {
 
   }
 
-  getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string): string {
+  getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string, endpointSuffix?: string): string {
     if (!runtime.empty(endpoint)) {
       return endpoint;
     }
@@ -189,12 +189,11 @@ export default class Client extends SPI {
       return endpointMap[regionId];
     }
 
-    return this.withEndpointSuffix(runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix));
+    return this.withEndpointSuffix(runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
   }
 
   /** @internal */
-  resolveEndpointSuffix(attributes: {[key: string]: string}): void {
-    let explicit = false;
+  resolveEndpointSuffix(attributes: {[key: string]: string}): string {
     if (!runtime.isUnset(attributes)) {
       let prefix = attributes["signatureTypePrefix"];
       if (!runtime.empty(prefix)) {
@@ -208,24 +207,20 @@ export default class Client extends SPI {
       }
       let suffix = attributes["endpointSuffix"];
       if (!runtime.empty(suffix)) {
-        this._endpointSuffix = suffix;
-        explicit = true;
+        return suffix;
       }
     }
-    if (!explicit) {
-      let envSuffix = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
-      if (!runtime.empty(envSuffix)) {
-        this._endpointSuffix = envSuffix;
-      }
+    let envSuffix = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+    if (!runtime.empty(envSuffix)) {
+      return envSuffix;
     }
-    if (runtime.empty(this._endpointSuffix)) {
-      this._endpointSuffix = "aliyuncs.com";
-    }
+    return "aliyuncs.com";
   }
 
   /** @internal */
-  withEndpointSuffix(endpoint: string): string {
-    let suffix = this._endpointSuffix || "aliyuncs.com";
+  withEndpointSuffix(endpoint: string, endpointSuffix?: string): string {
+    let suffix = endpointSuffix === undefined ? this._endpointSuffix : endpointSuffix;
+    suffix = suffix || "aliyuncs.com";
     if (runtime.empty(endpoint) || suffix === "aliyuncs.com") {
       return endpoint;
     }
@@ -309,7 +304,7 @@ export default class Client extends SPI {
     return hmac;
   }
 
-  getRegion(product: string, endpoint: string, regionId: string): string {
+  getRegion(product: string, endpoint: string, regionId: string, endpointSuffix?: string): string {
     if (!runtime.empty(regionId)) {
       return regionId;
     }
@@ -321,13 +316,31 @@ export default class Client extends SPI {
 
     let strs : string[] = codec.split(endpoint, ":", null);
     let withoutPort : string = strs[0];
-    let preRegion : string = codec.replace(withoutPort, `.${this._endpointSuffix}`, "", null);
+    let suffix = endpointSuffix === undefined ? this._endpointSuffix : endpointSuffix;
+    let preRegion : string = this.hostWithoutDomain(withoutPort, suffix);
     let nodes = codec.split(preRegion, ".", null);
     if (runtime.equalNumber(codec.size(nodes), 2)) {
       region = nodes[1];
     }
 
     return region;
+  }
+
+  /** @internal */
+  hostWithoutDomain(host: string, suffix: string): string {
+    let domains = [suffix, "aliyuncs.com"];
+    let seen: {[key: string]: boolean} = {};
+    for (let domain of domains) {
+      if (runtime.empty(domain) || seen[domain]) {
+        continue;
+      }
+      seen[domain] = true;
+      let needle = `.${domain}`;
+      if (host.length >= needle.length && host.substring(host.length - needle.length) === needle) {
+        return host.substring(0, host.length - needle.length);
+      }
+    }
+    return host;
   }
 
   buildCanonicalizedResource(query: {[key: string ]: string}): string {

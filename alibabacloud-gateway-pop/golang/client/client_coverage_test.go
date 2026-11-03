@@ -6,6 +6,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
@@ -158,7 +159,9 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	err = client.ModifyConfiguration(newContext(baseRequest(), config), &spi.AttributeMap{})
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "ecs.cn-hangzhou.example.com", tea.StringValue(config.Endpoint))
-	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.GetRegion(tea.String("ecs"), config.Endpoint, tea.String(""))))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), config.Endpoint, tea.String(""), tea.String("example.com"))))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""), tea.String("example.net"))))
+	utils.AssertEqual(t, "aliyuncs.com", tea.StringValue(client.EndpointSuffix))
 
 	overridden := &spi.InterceptorContextConfiguration{
 		RegionId:     tea.String("cn-hangzhou"),
@@ -177,7 +180,6 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	utils.AssertEqual(t, "", tea.StringValue(applyEndpointSuffix(tea.String(""), tea.String("example.com"))))
 
 	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
-	client.EndpointSuffix = nil
 	fallback := &spi.InterceptorContextConfiguration{
 		RegionId:     tea.String("cn-hangzhou"),
 		EndpointRule: tea.String("regional"),
@@ -186,6 +188,56 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "aliyuncs.com", tea.StringValue(client.EndpointSuffix))
 	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(fallback.Endpoint))
+
+	explicit := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String(""),
+		EndpointRule: tea.String("regional"),
+		Endpoint:     tea.String("ecs.cn-hangzhou.aliyuncs.com"),
+	}
+	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "example.net")
+	err = client.ModifyConfiguration(newContext(baseRequest(), explicit), &spi.AttributeMap{})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(explicit.Endpoint))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), explicit.Endpoint, explicit.RegionId, tea.String(endpointSuffixForRequest(nil)))))
+}
+
+func TestEndpointSuffixRequestsDoNotCross(t *testing.T) {
+	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	defer os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+	var wg sync.WaitGroup
+	errCh := make(chan error, 16)
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			suffix := "example.net"
+			if i%2 == 1 {
+				suffix = "example.org"
+			}
+			built := &spi.InterceptorContextConfiguration{
+				RegionId:     tea.String("cn-hangzhou"),
+				EndpointRule: tea.String("regional"),
+			}
+			callErr := client.ModifyConfiguration(newContext(baseRequest(), built), &spi.AttributeMap{
+				Key: map[string]*string{"endpointSuffix": tea.String(suffix)},
+			})
+			if callErr != nil {
+				errCh <- callErr
+				return
+			}
+			want := "ecs.cn-hangzhou." + suffix
+			if tea.StringValue(built.Endpoint) != want {
+				errCh <- errors.New(tea.StringValue(built.Endpoint) + " != " + want)
+			}
+		}(i)
+	}
+	wg.Wait()
+	close(errCh)
+	for callErr := range errCh {
+		utils.AssertNil(t, callErr)
+	}
 }
 
 func TestModifyConfiguration(t *testing.T) {

@@ -374,19 +374,19 @@ public class CoverageTest {
         attributes.put("signatureTypePrefix", "ACS4-");
         attributes.put("signPrefix", "aliyun_v4");
         attributes.put("endpointSuffix", "example.net");
-        client.resolveEndpointSuffix(attributes);
-        Assert.assertEquals("example.net", client._endpointSuffix);
+        Assert.assertEquals("example.net", client.resolveEndpointSuffix(attributes));
+        Assert.assertEquals("aliyuncs.com", client._endpointSuffix);
         Assert.assertEquals("ACS4-HMAC-SHA256", client._sha256);
         Assert.assertEquals("aliyun_v4", client._signPrefix);
-        Assert.assertEquals("ecs.cn-hangzhou.example.net", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
-        Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com"));
-        Assert.assertEquals("", client.withEndpointSuffix(""));
+        Assert.assertEquals("ecs.cn-hangzhou.example.net", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "example.net"));
+        Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com", "example.net"));
+        Assert.assertEquals("", client.withEndpointSuffix("", "example.net"));
+        Assert.assertEquals("cn-hangzhou", client.regionFor("ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net"));
 
         client._endpointSuffix = "";
         Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.com", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
-        client.resolveEndpointSuffix(new HashMap<String, String>());
-        Assert.assertEquals("aliyuncs.com", client._endpointSuffix);
-        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.com", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
+        Assert.assertEquals("aliyuncs.com", client.resolveEndpointSuffix(new HashMap<String, String>()));
+        Assert.assertEquals("", client._endpointSuffix);
 
         Client fromEnv = new Client() {
             @Override
@@ -394,8 +394,8 @@ public class CoverageTest {
                 return "example.com";
             }
         };
-        fromEnv.resolveEndpointSuffix(null);
-        Assert.assertEquals("example.com", fromEnv._endpointSuffix);
+        Assert.assertEquals("example.com", fromEnv.resolveEndpointSuffix(null));
+        Assert.assertEquals("aliyuncs.com", fromEnv._endpointSuffix);
         InterceptorContext.InterceptorContextConfiguration built = new InterceptorContext.InterceptorContextConfiguration();
         built.regionId = "cn-hangzhou";
         built.endpointRule = "regional";

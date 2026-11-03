@@ -2,8 +2,6 @@
 package client
 
 import (
-	"os"
-
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
@@ -42,8 +40,10 @@ func (client *Client) Init() (_err error) {
 func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attributeMap *spi.AttributeMap) (_err error) {
 	request := context.Request
 	config := context.Configuration
-	attributes := attributeMap.Key
-	explicitSuffix := false
+	var attributes map[string]*string
+	if attributeMap != nil {
+		attributes = attributeMap.Key
+	}
 	if !dara.BoolValue(isUnset(attributes)) {
 		if !dara.BoolValue(emptyString(attributes["signatureTypePrefix"])) {
 			client.SignatureTypePrefix = attributes["signatureTypePrefix"]
@@ -53,21 +53,9 @@ func (client *Client) ModifyConfiguration(context *spi.InterceptorContext, attri
 		if !dara.BoolValue(emptyString(attributes["signPrefix"])) {
 			client.SignPrefix = attributes["signPrefix"]
 		}
-		if !dara.BoolValue(emptyString(attributes["endpointSuffix"])) {
-			client.EndpointSuffix = attributes["endpointSuffix"]
-			explicitSuffix = true
-		}
 	}
-	if !explicitSuffix {
-		if envSuffix := os.Getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"); envSuffix != "" {
-			client.EndpointSuffix = dara.String(envSuffix)
-		}
-	}
-	if dara.BoolValue(emptyString(client.EndpointSuffix)) {
-		client.EndpointSuffix = dara.String("aliyuncs.com")
-	}
-
-	config.Endpoint, _err = client.GetEndpoint(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint)
+	suffix := endpointSuffixForRequest(attributes)
+	config.Endpoint, _err = client.getEndpointWithSuffix(request.ProductId, config.RegionId, config.EndpointRule, config.Network, config.Suffix, config.EndpointMap, config.Endpoint, dara.String(suffix))
 	if _err != nil {
 		return _err
 	}
@@ -178,7 +166,11 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 			dateNew := subString(date, dara.Int(0), dara.Int(10))
 			dateNew = replaceString(dateNew, dara.String("-"), dara.String(""), nil)
-			region := client.GetRegion(request.ProductId, config.Endpoint, config.RegionId)
+			var requestAttributes map[string]*string
+			if attributeMap != nil {
+				requestAttributes = attributeMap.Key
+			}
+			region := client.regionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, dara.String(endpointSuffixForRequest(requestAttributes)))
 			signingkey := client.GetSigningkey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew)
 			request.Headers["Authorization"], _err = client.GetAuthorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew)
 			if _err != nil {
@@ -289,6 +281,10 @@ func (client *Client) ModifyResponse(context *spi.InterceptorContext, attributeM
 }
 
 func (client *Client) GetEndpoint(productId *string, regionId *string, endpointRule *string, network *string, suffix *string, endpointMap map[string]*string, endpoint *string) (_result *string, _err error) {
+	return client.getEndpointWithSuffix(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, client.EndpointSuffix)
+}
+
+func (client *Client) getEndpointWithSuffix(productId *string, regionId *string, endpointRule *string, network *string, suffix *string, endpointMap map[string]*string, endpoint *string, endpointSuffix *string) (_result *string, _err error) {
 	if !dara.BoolValue(emptyString(endpoint)) {
 		_result = endpoint
 		return _result, _err
@@ -303,7 +299,7 @@ func (client *Client) GetEndpoint(productId *string, regionId *string, endpointR
 	if _err != nil {
 		return _result, _err
 	}
-	_result = applyEndpointSuffix(_body, client.EndpointSuffix)
+	_result = applyEndpointSuffix(_body, endpointSuffix)
 	return _result, _err
 }
 
@@ -404,6 +400,10 @@ func (client *Client) GetSigningkey(signatureAlgorithm *string, secret *string, 
 }
 
 func (client *Client) GetRegion(product *string, endpoint *string, regionId *string) (_result *string) {
+	return client.regionWithSuffix(product, endpoint, regionId, client.EndpointSuffix)
+}
+
+func (client *Client) regionWithSuffix(product *string, endpoint *string, regionId *string, endpointSuffix *string) (_result *string) {
 	if !dara.BoolValue(emptyString(regionId)) {
 		_result = regionId
 		return _result
@@ -417,7 +417,7 @@ func (client *Client) GetRegion(product *string, endpoint *string, regionId *str
 
 	strs := splitString(endpoint, dara.String(":"), nil)
 	withoutPort := strs[0]
-	preRegion := replaceString(withoutPort, dara.String("."+dara.StringValue(client.EndpointSuffix)), dara.String(""), nil)
+	preRegion := dara.String(hostWithoutDomain(dara.StringValue(withoutPort), dara.StringValue(endpointSuffix)))
 	nodes := splitString(preRegion, dara.String("."), nil)
 	if dara.BoolValue(equalNumber(sizeOf(nodes), dara.Int(2))) {
 		region = nodes[1]

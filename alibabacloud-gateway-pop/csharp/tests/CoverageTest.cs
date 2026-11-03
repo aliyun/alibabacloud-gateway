@@ -143,6 +143,31 @@ namespace tests
             var kept = Config("already.example.com");
             client.ModifyConfiguration(Context(Request(AccessKey()), kept), new AttributeMap());
             Assert.Equal("already.example.com", kept.Endpoint);
+            Assert.Equal("cn-hangzhou", client.GetRegion("ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net"));
+            var overridden = new InterceptorContext.InterceptorContextConfiguration
+            {
+                RegionId = "cn-hangzhou",
+                EndpointRule = "regional",
+                Network = "",
+                Suffix = ""
+            };
+            client.ModifyConfiguration(Context(Request(AccessKey()), overridden), new AttributeMap
+            {
+                Key = new Dictionary<string, string>
+                {
+                    { "endpointSuffix", "example.net" }
+                }
+            });
+            Assert.Equal("ecs.cn-hangzhou.example.net", overridden.Endpoint);
+            var restored = new InterceptorContext.InterceptorContextConfiguration
+            {
+                RegionId = "cn-hangzhou",
+                EndpointRule = "regional",
+                Network = "",
+                Suffix = ""
+            };
+            client.ModifyConfiguration(Context(Request(AccessKey()), restored), new AttributeMap());
+            Assert.Equal("ecs.cn-hangzhou.aliyuncs.com", restored.Endpoint);
         }
 
         [Fact]
