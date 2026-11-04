@@ -125,7 +125,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = StringClient.sub_string(date, 0, 10)
                 date_new = StringClient.replace(date_new, '-', '', None)
-                region = self._get_region_with_suffix(request.product_id, config.endpoint, self._resolve_endpoint_suffix(getattr(attribute_map, 'key', None)))
+                region = self._get_region_with_suffix(request.product_id, config.endpoint, self._endpoint_suffix)
                 signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
                 request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
 
@@ -240,7 +240,7 @@ class Client(SPIClient):
         popcode = StringClient.to_lower(product)
         region = StringClient.replace(endpoint, popcode, '', None)
         suffix = endpoint_suffix or 'aliyuncs.com'
-        domain = suffix if endpoint.endswith(suffix) else 'aliyuncs.com'
+        domain = 'aliyuncs.alibaba' if endpoint.endswith('.aliyuncs.alibaba') else (suffix if endpoint.endswith(suffix) else 'aliyuncs.com')
         region = StringClient.replace(region, domain, '', None)
         region = StringClient.replace(region, '.', '', None)
         if not UtilClient.empty(region):

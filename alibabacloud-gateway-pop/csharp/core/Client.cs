@@ -74,7 +74,7 @@ namespace AlibabaCloud.GatewayPop
             {
                 return "";
             }
-            suffix = suffix.Trim().ToLower();
+            suffix = suffix.Trim().ToLowerInvariant();
             if (suffix.Length == 0)
             {
                 return "";
@@ -236,7 +236,7 @@ namespace AlibabaCloud.GatewayPop
                     }
                     string dateNew = Runtime.SubString(date, 0, 10);
                     dateNew = Runtime.Replace(dateNew, "-", "", null);
-                    string region = GetRegionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, ResolveEndpointSuffix(attributeMap.Key));
+                    string region = GetRegionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, this._endpointSuffix);
                     byte[] signingkey = SigningKey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew, names);
                     request.Headers["Authorization"] = Authorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew, names);
                 }
@@ -351,7 +351,7 @@ namespace AlibabaCloud.GatewayPop
                     }
                     string dateNew = Runtime.SubString(date, 0, 10);
                     dateNew = Runtime.Replace(dateNew, "-", "", null);
-                    string region = GetRegionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, ResolveEndpointSuffix(attributeMap.Key));
+                    string region = GetRegionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, this._endpointSuffix);
                     byte[] signingkey = SigningKey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew, names);
                     request.Headers["Authorization"] = Authorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew, names);
                 }
@@ -643,7 +643,7 @@ namespace AlibabaCloud.GatewayPop
 
         internal string HostWithoutDomain(string host, string suffix)
         {
-            string[] domains = new string[] { suffix, "aliyuncs.com" };
+            string[] domains = new string[] { suffix, "aliyuncs.com", "aliyuncs.alibaba" };
             Dictionary<string, bool> seen = new Dictionary<string, bool>();
             foreach (string domain in domains)
             {

@@ -349,3 +349,28 @@ describe('coverage', function () {
     await assert.rejects(client.modifyResponse(response(200, '', '{"ok":', 'json'), new $SPI.AttributeMap({})));
   });
 });
+
+describe('signing after endpoint selection', () => {
+  it('uses the selected host when the environment changes', async () => {
+    const previous = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+    try {
+      for (const selected of ['aliyuncs.com', 'aliyuncs.alibaba']) {
+        for (const changed of ['aliyuncs.com', 'aliyuncs.alibaba', 'invalid.example']) {
+          process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = selected;
+          const client = new Client();
+          const ctx = context(request(accessKey()), configuration('ecs.cn-hangzhou.aliyuncs.com'));
+          ctx.configuration.regionId = '';
+          const attributes = new $SPI.AttributeMap({});
+          await client.modifyConfiguration(ctx, attributes);
+          process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = changed;
+          await client.modifyRequest(ctx, attributes);
+          assert.strictEqual(ctx.request.headers.host, 'ecs.cn-hangzhou.' + selected);
+          assert(ctx.request.headers.Authorization.includes('/cn-hangzhou/ecs/aliyun_v4_request'));
+        }
+      }
+    } finally {
+      if (previous === undefined) delete process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+      else process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = previous;
+    }
+  });
+});

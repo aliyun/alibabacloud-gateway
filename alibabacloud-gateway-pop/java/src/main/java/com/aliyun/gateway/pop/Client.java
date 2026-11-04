@@ -119,7 +119,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
 
                 String dateNew = Codec.subString(date, 0, 10);
                 dateNew = Codec.replace(dateNew, "-", "", null);
-                String region = this.regionFor(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
+                String region = this.regionFor(request.productId, config.endpoint, config.regionId, this._endpointSuffix);
                 byte[] signingkey = this.signingKey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew, signatureNames);
                 request.headers.put("Authorization", this.authorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew, signatureNames));
             }
@@ -377,7 +377,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     String hostWithoutDomain(String host, String suffix) {
-        String[] domains = new String[] {suffix, "aliyuncs.com"};
+        String[] domains = new String[] {suffix, "aliyuncs.com", "aliyuncs.alibaba"};
         for (int i = 0; i < domains.length; i++) {
             String domain = domains[i];
             if (Support.empty(domain)) {

@@ -136,7 +136,7 @@ class Client extends DarabonbaGatewaySpiClient
                 }
                 $dateNew = self::subString($date, 0, 10);
                 $dateNew = self::replace($dateNew, "-", "", null);
-                $region = $this->getRegionWithSuffix($request->productId, $config->endpoint, $config->regionId, $this->resolveEndpointSuffix($attributeMap->key));
+                $region = $this->getRegionWithSuffix($request->productId, $config->endpoint, $config->regionId, $this->_endpointSuffix);
                 $signingkey = $this->signingKey($signatureAlgorithm, $accessKeySecret, $request->productId, $region, $dateNew, $names);
                 $request->headers["Authorization"] = $this->authorization($request->pathname, $request->method, $request->query, $request->headers, $signatureAlgorithm, $hashedRequestPayload, $accessKeyId, $signingkey, $request->productId, $region, $dateNew, $names);
             }
@@ -449,7 +449,7 @@ class Client extends DarabonbaGatewaySpiClient
 
     private function hostWithoutDomain($host, $suffix)
     {
-        $domains = array($suffix, "aliyuncs.com");
+        $domains = array($suffix, "aliyuncs.com", "aliyuncs.alibaba");
         $seen = array();
         foreach ($domains as $domain) {
             if (self::empty_($domain) || isset($seen[$domain])) {

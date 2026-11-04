@@ -701,3 +701,32 @@ func TestSlimHelperEdges(t *testing.T) {
 	handleRepeatedParams(reflect.ValueOf([]interface{}(nil)), result, "items")
 	utils.AssertEqual(t, 0, len(result))
 }
+
+// Changing the process environment after endpoint selection must not affect signing.
+func TestSigningUsesSelectedEndpointAfterEnvironmentChange(t *testing.T) {
+	previous, had := os.LookupEnv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	defer func() {
+		if had {
+			os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", previous)
+		} else {
+			os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+		}
+	}()
+	for _, selected := range []string{"aliyuncs.com", "aliyuncs.alibaba"} {
+		for _, changed := range []string{"aliyuncs.com", "aliyuncs.alibaba", "invalid.example"} {
+			os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", selected)
+			client, err := NewClient()
+			utils.AssertNil(t, err)
+			ctx := newContext(baseRequest(), baseConfig())
+			ctx.Configuration.RegionId = tea.String("")
+			attributes := &spi.AttributeMap{}
+			utils.AssertNil(t, client.ModifyConfiguration(ctx, attributes))
+			os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", changed)
+			utils.AssertNil(t, client.ModifyRequest(ctx, attributes))
+			utils.AssertEqual(t, "ecs.cn-hangzhou."+selected, tea.StringValue(ctx.Request.Headers["host"]))
+			if !strings.Contains(tea.StringValue(ctx.Request.Headers["Authorization"]), "/cn-hangzhou/ecs/aliyun_v4_request") {
+				t.Fatal("signing region does not match selected host")
+			}
+		}
+	}
+}

@@ -114,7 +114,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
                 }
                 var dateNew: String = Runtime.subString(date, 0, 10)
                 dateNew = Runtime.replace(dateNew, "-", "", nil)
-                var region: String = getRegionWithSuffix(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", try resolveEndpointSuffix(attributeMap.key ?? [:]))
+                var region: String = getRegionWithSuffix(request.productId ?? "", config.endpoint ?? "", config.regionId ?? "", self._endpointSuffix)
                 var signingkey: [UInt8] = signingKey(signatureAlgorithm as! String, accessKeySecret as! String, request.productId ?? "", region as! String, dateNew as! String, names)
                 request.headers!["Authorization"] = try authorization(request.pathname ?? "", request.method ?? "", request.query ?? [:], request.headers ?? [:], signatureAlgorithm as! String, hashedRequestPayload as! String, accessKeyId as! String, signingkey as! [UInt8], request.productId ?? "", region as! String, dateNew as! String, names);
             }
@@ -355,7 +355,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
     }
 
     func hostWithoutDomain(_ host: String, _ suffix: String) -> String {
-        let domains = [suffix, "aliyuncs.com"]
+        let domains = [suffix, "aliyuncs.com", "aliyuncs.alibaba"]
         var seen: [String: Bool] = [:]
         for domain in domains {
             if Runtime.empty(domain) || seen[domain] == true {

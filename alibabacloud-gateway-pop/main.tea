@@ -137,8 +137,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       }
       var dateNew = String.subString(date, 0, 10);
       dateNew = String.replace(dateNew, '-', '', null);
-      var endpointSuffix = resolveEndpointSuffix(attributeMap.key);
-      var region = getRegionWithSuffix(request.productId, config.endpoint, config.regionId, endpointSuffix);
+      var region = getRegionWithSuffix(request.productId, config.endpoint, config.regionId, @endpointSuffix);
       var signingkey = getSigningkeyWith(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew, signPrefix, sha256, sm3);
       request.headers.Authorization = getAuthorizationWith(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew, signPrefix, sha256, sm3);
     }
@@ -367,6 +366,10 @@ function hostWithoutDomain(host: string, suffix: string): string {
     var old = '.aliyuncs.com';
     var aliyunEnd = host.length() - old.length();
     return String.subString(host, 0, aliyunEnd);
+  }
+  if (String.hasSuffix(host, '.aliyuncs.alibaba')) {
+    var alternate = '.aliyuncs.alibaba';
+    return String.subString(host, 0, host.length() - alternate.length());
   }
   return host;
 }

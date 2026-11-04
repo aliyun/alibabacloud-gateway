@@ -423,4 +423,27 @@ public class CoverageTest {
         Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.alibaba", built.endpoint);
         Assert.assertEquals(System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"), new Client().endpointSuffixFromEnv());
     }
+    @Test
+    public void signingDoesNotReadEnvironmentAgain() throws Exception {
+        for (final String selected : new String[]{"aliyuncs.com", "aliyuncs.alibaba"}) {
+            final int[] reads = new int[]{0};
+            Client client = new Client() {
+                @Override String endpointSuffixFromEnv() {
+                    if (++reads[0] > 1) throw new AssertionError("environment read again during signing");
+                    return selected;
+                }
+            };
+            InterceptorContext ctx = new InterceptorContext();
+            ctx.request = request(accessKey());
+            ctx.configuration = new InterceptorContext.InterceptorContextConfiguration();
+            ctx.configuration.endpoint = "ecs.cn-hangzhou.aliyuncs.com";
+            ctx.configuration.regionId = "";
+            AttributeMap attributes = new AttributeMap();
+            client.modifyConfiguration(ctx, attributes);
+            client.modifyRequest(ctx, attributes);
+            Assert.assertEquals(1, reads[0]);
+            Assert.assertEquals("ecs.cn-hangzhou." + selected, ctx.request.headers.get("host"));
+            Assert.assertTrue(ctx.request.headers.get("Authorization").contains("/cn-hangzhou/ecs/aliyun_v4_request"));
+        }
+    }
 }

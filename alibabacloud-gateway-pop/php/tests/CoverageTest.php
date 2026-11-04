@@ -70,6 +70,30 @@ class FixedCredential
 
 final class CoverageTest extends TestCase
 {
+    public function testSigningUsesSelectedEndpointAfterEnvironmentChange()
+    {
+        $previous = getenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX');
+        try {
+            foreach (array('aliyuncs.com', 'aliyuncs.alibaba') as $selected) {
+                foreach (array('aliyuncs.com', 'aliyuncs.alibaba', 'invalid.example') as $changed) {
+                    putenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX=' . $selected);
+                    $client = new Client();
+                    $config = $this->configuration();
+                    $config->regionId = '';
+                    $ctx = $this->context($this->request($this->credential($this->model('access_key'))), $config);
+                    $attributes = new AttributeMap();
+                    $client->modifyConfiguration($ctx, $attributes);
+                    putenv('ALIBABA_CLOUD_ENDPOINT_SUFFIX=' . $changed);
+                    $client->modifyRequest($ctx, $attributes);
+                    $this->assertEquals('ecs.cn-hangzhou.' . $selected, $ctx->request->headers['host']);
+                    $this->assertNotFalse(strpos($ctx->request->headers['Authorization'], '/cn-hangzhou/ecs/aliyun_v4_request'));
+                }
+            }
+        } finally {
+            putenv($previous === false ? 'ALIBABA_CLOUD_ENDPOINT_SUFFIX' : 'ALIBABA_CLOUD_ENDPOINT_SUFFIX=' . $previous);
+        }
+    }
+
     private function model($type)
     {
         $model = new CredentialModel();

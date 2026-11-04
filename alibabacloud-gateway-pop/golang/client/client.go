@@ -164,11 +164,8 @@ func (client *Client) ModifyRequest(context *spi.InterceptorContext, attributeMa
 
 			dateNew := subString(date, dara.Int(0), dara.Int(10))
 			dateNew = replaceString(dateNew, dara.String("-"), dara.String(""), nil)
-			endpointSuffix, suffixErr := endpointSuffixForRequest(requestAttributes)
-			if suffixErr != nil {
-				return suffixErr
-			}
-			region := client.regionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, dara.String(endpointSuffix))
+			// Derive the signing region from the selected endpoint, without rereading the environment.
+			region := client.regionWithSuffix(request.ProductId, config.Endpoint, config.RegionId, client.EndpointSuffix)
 			signingkey := client.signingKey(signatureAlgorithm, accessKeySecret, request.ProductId, region, dateNew, names)
 			request.Headers["Authorization"], _err = client.authorization(request.Pathname, request.Method, request.Query, request.Headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.ProductId, region, dateNew, names)
 			if _err != nil {

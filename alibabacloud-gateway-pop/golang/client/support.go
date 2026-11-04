@@ -190,7 +190,7 @@ func endpointSuffixForRequest(attributes map[string]*string) (string, error) {
 }
 
 func hostWithoutDomain(host, suffix string) string {
-	domains := []string{suffix, "aliyuncs.com"}
+	domains := []string{suffix, "aliyuncs.com", "aliyuncs.alibaba"}
 	seen := map[string]struct{}{}
 	for _, domain := range domains {
 		if domain == "" {

@@ -96,7 +96,7 @@ class Client(SPIClient):
 
     def _host_without_domain(self, host, suffix):
         seen = set()
-        for domain in (suffix, 'aliyuncs.com'):
+        for domain in (suffix, 'aliyuncs.com', 'aliyuncs.alibaba'):
             if support.empty(domain) or domain in seen:
                 continue
             seen.add(domain)
@@ -180,7 +180,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = codec.sub_string(date, 0, 10)
                 date_new = codec.replace(date_new, '-', '', None)
-                region = self._get_region_with_suffix(request.product_id, config.endpoint, config.region_id, self._resolve_endpoint_suffix(attribute_map.key))
+                region = self._get_region_with_suffix(request.product_id, config.endpoint, config.region_id, self._endpoint_suffix)
                 signingkey = self._signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new, sign_prefix, sha256, sm3)
                 request.headers['Authorization'] = self._authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new, sign_prefix, sha256, sm3)
 
@@ -259,7 +259,7 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = codec.sub_string(date, 0, 10)
                 date_new = codec.replace(date_new, '-', '', None)
-                region = self._get_region_with_suffix(request.product_id, config.endpoint, config.region_id, self._resolve_endpoint_suffix(attribute_map.key))
+                region = self._get_region_with_suffix(request.product_id, config.endpoint, config.region_id, self._endpoint_suffix)
                 signingkey = self._signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new, sign_prefix, sha256, sm3)
                 request.headers['Authorization'] = self._authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new, sign_prefix, sha256, sm3)
 

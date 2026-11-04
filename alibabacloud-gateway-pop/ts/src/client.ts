@@ -120,7 +120,7 @@ export default class Client extends SPI {
 
         let dateNew = codec.subString(date, 0, 10);
         dateNew = codec.replace(dateNew, "-", "", null);
-        let region = this.getRegionWithSuffix(request.productId, config.endpoint, config.regionId, this.resolveEndpointSuffix(attributeMap.key));
+        let region = this.getRegionWithSuffix(request.productId, config.endpoint, config.regionId, this._endpointSuffix);
         let signingkey = this.signingKey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew, names);
         request.headers["Authorization"] = this.authorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew, names);
       }
@@ -388,7 +388,7 @@ export default class Client extends SPI {
 
   /** @internal */
   hostWithoutDomain(host: string, suffix: string): string {
-    let domains = [suffix, "aliyuncs.com"];
+    let domains = [suffix, "aliyuncs.com", "aliyuncs.alibaba"];
     let seen: {[key: string]: boolean} = {};
     for (let domain of domains) {
       if (runtime.empty(domain) || seen[domain]) {

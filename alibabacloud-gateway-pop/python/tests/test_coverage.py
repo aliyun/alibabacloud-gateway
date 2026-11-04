@@ -148,6 +148,36 @@ class TestCoverage(unittest.TestCase):
         with self.assertRaises(Exception):
             client.modify_configuration(context(request(access_key()), broken), AttributeMap())
 
+    def test_signing_uses_selected_endpoint_after_environment_change(self):
+        previous = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+        try:
+            for asynchronous in (False, True):
+                for selected in ('aliyuncs.com', 'aliyuncs.alibaba'):
+                    for changed in ('aliyuncs.com', 'aliyuncs.alibaba', 'invalid.example'):
+                        os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = selected
+                        client = Client()
+                        built = config('ecs.cn-hangzhou.aliyuncs.com')
+                        built.region_id = ''
+                        ctx = context(request(access_key()), built)
+                        attributes = AttributeMap()
+                        client.modify_configuration(ctx, attributes)
+                        os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = changed
+                        if asynchronous:
+                            loop = asyncio.new_event_loop()
+                            try:
+                                loop.run_until_complete(client.modify_request_async(ctx, attributes))
+                            finally:
+                                loop.close()
+                        else:
+                            client.modify_request(ctx, attributes)
+                        self.assertEqual('ecs.cn-hangzhou.' + selected, ctx.request.headers['host'])
+                        self.assertIn('/cn-hangzhou/ecs/aliyun_v4_request', ctx.request.headers['Authorization'])
+        finally:
+            if previous is None:
+                os.environ.pop('ALIBABA_CLOUD_ENDPOINT_SUFFIX', None)
+            else:
+                os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = previous
+
     def test_endpoint_suffix_env_and_attribute(self):
         os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = 'aliyuncs.alibaba'
         try:
