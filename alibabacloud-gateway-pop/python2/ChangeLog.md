@@ -1,3 +1,3 @@
-### 2026-11-03 Version 0.0.4
+### 2026-11-05 Version 0.0.4
 
-* This release does not change the Python 2 package. The version stays 0.0.4.
+* Python 2 is not part of this release. The package version stays 0.0.4.

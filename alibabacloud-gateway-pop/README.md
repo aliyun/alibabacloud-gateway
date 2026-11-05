@@ -19,7 +19,7 @@ SHA-256 signing does not depend on the endpoint, OpenAPI, or Tea utility package
 | PHP | `alibabacloud/gateway-pop` | [0.1.5](php/ChangeLog.md) |
 | C# | `AlibabaCloud.GatewayPop` | [0.1.4](csharp/ChangeLog.md) |
 | Swift | `AlibabacloudGatewayPOP` | [0.0.2](swift/ChangeLog.md) |
-| Python 2 | `alibabacloud_gateway_pop_py2` | [0.0.4, unchanged](python2/ChangeLog.md) |
+| Python 2 | `alibabacloud_gateway_pop_py2` | [0.0.4, not in this release](python2/ChangeLog.md) |
 
 C++ has an OpenAPI signature version field, and this repository does not contain a C++ POP gateway.
 

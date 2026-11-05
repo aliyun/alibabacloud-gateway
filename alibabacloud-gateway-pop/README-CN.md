@@ -19,7 +19,7 @@ SHA-256 签名不再依赖 endpoint、OpenAPI 和 Tea 的工具包。SM3 仍使�
 | PHP | `alibabacloud/gateway-pop` | [0.1.5](php/ChangeLog.md) |
 | C# | `AlibabaCloud.GatewayPop` | [0.1.4](csharp/ChangeLog.md) |
 | Swift | `AlibabacloudGatewayPOP` | [0.0.2](swift/ChangeLog.md) |
-| Python 2 | `alibabacloud_gateway_pop_py2` | [0.0.4，未变更](python2/ChangeLog.md) |
+| Python 2 | `alibabacloud_gateway_pop_py2` | [0.0.4，本次不发布](python2/ChangeLog.md) |
 
 C++ 的 OpenAPI 有签名版本字段，本仓库没有 C++ POP gateway。
 
