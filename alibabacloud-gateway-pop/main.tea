@@ -33,14 +33,8 @@ async function modifyConfiguration(context: SPI.InterceptorContext, attributeMap
   var request = context.request;
   var config = context.configuration;
   var attributes = attributeMap.key;
-  if (!Util.isUnset(attributes)) {
-    @signatureTypePrefix = attributes.signatureTypePrefix;
-    @signPrefix = attributes.signPrefix;
-    @endpointSuffix = attributes.endpointSuffix;
-    @sha256 = `${@signatureTypePrefix}HMAC-SHA256`;
-    @sm3 = `${@signatureTypePrefix}HMAC-SM3`;
-  }
-  config.endpoint = getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
+  var endpointSuffix = resolveEndpointSuffix(attributes);
+  config.endpoint = getEndpointWithSuffix(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
 
 }
 
@@ -60,7 +54,21 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
   if (!Util.empty(request.action)) {
     request.headers.x-acs-action = request.action;
   }
-  var signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, @sha256);
+  var signatureTypePrefix = @signatureTypePrefix;
+  var signPrefix = @signPrefix;
+  var sha256 = @sha256;
+  var sm3 = @sm3;
+  if (!Util.isUnset(attributeMap.key)) {
+    if (!Util.empty(attributeMap.key.signatureTypePrefix)) {
+      signatureTypePrefix = attributeMap.key.signatureTypePrefix;
+      sha256 = `${signatureTypePrefix}HMAC-SHA256`;
+      sm3 = `${signatureTypePrefix}HMAC-SM3`;
+    }
+    if (!Util.empty(attributeMap.key.signPrefix)) {
+      signPrefix = attributeMap.key.signPrefix;
+    }
+  }
+  var signatureAlgorithm : string = Util.defaultString(request.signatureAlgorithm, sha256);
   var hashedRequestPayload = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(''), signatureAlgorithm));
 
   if (!Util.isUnset(request.stream)) {
@@ -89,7 +97,7 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
     }
   }
 
-  if (Util.equalString(signatureAlgorithm, @sm3)) {
+  if (Util.equalString(signatureAlgorithm, sm3)) {
     request.headers.x-acs-content-sm3 = hashedRequestPayload;
   } else {
     request.headers.x-acs-content-sha256 = hashedRequestPayload;
@@ -129,9 +137,9 @@ async function modifyRequest(context: SPI.InterceptorContext, attributeMap: SPI.
       }
       var dateNew = String.subString(date, 0, 10);
       dateNew = String.replace(dateNew, '-', '', null);
-      var region = getRegion(request.productId, config.endpoint, config.regionId);
-      var signingkey = getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-      request.headers.Authorization = getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+      var region = getRegionWithSuffix(request.productId, config.endpoint, config.regionId, @endpointSuffix);
+      var signingkey = getSigningkeyWith(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew, signPrefix, sha256, sm3);
+      request.headers.Authorization = getAuthorizationWith(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew, signPrefix, sha256, sm3);
     }
     
   }
@@ -186,15 +194,66 @@ async function modifyResponse(context: SPI.InterceptorContext, attributeMap: SPI
   }
 }
 
+function resolveEndpointSuffix(attributes: map[string]string) throws : string {
+  if (!Util.isUnset(attributes)) {
+    var suffix = checkedEndpointSuffix(attributes.endpointSuffix);
+    if (!Util.empty(suffix)) {
+      return suffix;
+    }
+  }
+  var envSuffix = checkedEndpointSuffix($Env.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX'));
+  if (!Util.empty(envSuffix)) {
+    return envSuffix;
+  }
+  return 'aliyuncs.com';
+}
+
+function checkedEndpointSuffix(suffix: string) throws : string {
+  if (Util.empty(suffix)) {
+    return '';
+  }
+  var normalized = String.toLower(String.trim(suffix));
+  if (Util.empty(normalized)) {
+    return '';
+  }
+  if (Util.equalString(normalized, 'aliyuncs.com') || Util.equalString(normalized, 'aliyuncs.alibaba')) {
+    return normalized;
+  }
+  throw {
+    code = 'InvalidEndpointSuffix',
+    message = 'endpointSuffix must be aliyuncs.com or aliyuncs.alibaba'
+  };
+}
+
 function getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string) throws: string{
+  return getEndpointWithSuffix(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, @endpointSuffix);
+}
+
+function getEndpointWithSuffix(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string, endpointSuffix: string) throws: string{
   if (!Util.empty(endpoint)) {
-    return endpoint;
+    return applyEndpointSuffix(endpoint, endpointSuffix);
   }
 
   if (!Util.isUnset(endpointMap) && !Util.empty(endpointMap[regionId])) {
-    return endpointMap[regionId];
+    return applyEndpointSuffix(endpointMap[regionId], endpointSuffix);
   }
-  return EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+  return applyEndpointSuffix(EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
+}
+
+function applyEndpointSuffix(endpoint: string, endpointSuffix: string) throws : string {
+  var suffix = checkedEndpointSuffix(endpointSuffix);
+  if (Util.empty(suffix)) {
+    suffix = 'aliyuncs.com';
+  }
+  if (Util.empty(endpoint) || Util.equalString(suffix, 'aliyuncs.com')) {
+    return endpoint;
+  }
+  var old = '.aliyuncs.com';
+  if (String.hasSuffix(endpoint, old)) {
+    var end = endpoint.length() - old.length();
+    return `${String.subString(endpoint, 0, end)}.${suffix}`;
+  }
+  return endpoint;
 }
 
 function defaultAny(inputValue: any, defaultValue: any): any {
@@ -205,13 +264,21 @@ function defaultAny(inputValue: any, defaultValue: any): any {
 }
 
 function getAuthorization(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, signingkey: bytes, product: string, region: string, date: string) throws: string {
-  var signature = getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
+  return getAuthorizationWith(pathname, method, query, headers, signatureAlgorithm, payload, ak, signingkey, product, region, date, @signPrefix, @sha256, @sm3);
+}
+
+function getAuthorizationWith(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, ak: string, signingkey: bytes, product: string, region: string, date: string, signPrefix: string, sha256: string, sm3: string) throws: string {
+  var signature = getSignatureWith(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, sha256, sm3);
   var signedHeaders = getSignedHeaders(headers);
   var signedHeadersStr = Array.join(signedHeaders, ';');
-  return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${@signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+  return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
 }
 
 function getSignature(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, signingkey: bytes) throws: string {
+  return getSignatureWith(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, @sha256, @sm3);
+}
+
+function getSignatureWith(pathname: string, method: string, query: map[string]string, headers: map[string]string, signatureAlgorithm: string, payload: string, signingkey: bytes, sha256: string, sm3: string) throws: string {
   var canonicalURI : string = '/';
   if (!Util.empty(pathname)) {
     canonicalURI = pathname;
@@ -226,44 +293,52 @@ function getSignature(pathname: string, method: string, query: map[string]string
   var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
   stringToSign = `${signatureAlgorithm}\n${hex}`;
   var signature = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  if (Util.equalString(signatureAlgorithm, sha256)) {
     signature = SignatureUtil.HmacSHA256SignByBytes(stringToSign, signingkey);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (Util.equalString(signatureAlgorithm, sm3)) {
     signature = SignatureUtil.HmacSM3SignByBytes(stringToSign, signingkey);
   }
   return EncodeUtil.hexEncode(signature);
 }
 
 function getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): bytes {
-  var sc1 = `${@signPrefix}${secret}`;
+  return getSigningkeyWith(signatureAlgorithm, secret, product, region, date, @signPrefix, @sha256, @sm3);
+}
+
+function getSigningkeyWith(signatureAlgorithm: string, secret: string, product: string, region: string, date: string, signPrefix: string, sha256: string, sm3: string): bytes {
+  var sc1 = `${signPrefix}${secret}`;
   var sc2 = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  if (Util.equalString(signatureAlgorithm, sha256)) {
     sc2 = SignatureUtil.HmacSHA256Sign(date, sc1);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (Util.equalString(signatureAlgorithm, sm3)) {
     sc2 = SignatureUtil.HmacSM3Sign(date, sc1);
   }
   var sc3 = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  if (Util.equalString(signatureAlgorithm, sha256)) {
     sc3 = SignatureUtil.HmacSHA256SignByBytes(region, sc2);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (Util.equalString(signatureAlgorithm, sm3)) {
     sc3 = SignatureUtil.HmacSM3SignByBytes(region, sc2);
   }
   var sc4 = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
+  if (Util.equalString(signatureAlgorithm, sha256)) {
     sc4 = SignatureUtil.HmacSHA256SignByBytes(product, sc3);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
+  } else if (Util.equalString(signatureAlgorithm, sm3)) {
     sc4 = SignatureUtil.HmacSM3SignByBytes(product, sc3);
   }
   var hmac = Util.toBytes('');
-  if (Util.equalString(signatureAlgorithm, @sha256)) {
-    hmac = SignatureUtil.HmacSHA256SignByBytes(`${@signPrefix}_request`, sc4);
-  } else if (Util.equalString(signatureAlgorithm, @sm3)) {
-    hmac = SignatureUtil.HmacSM3SignByBytes(`${@signPrefix}_request`, sc4);
+  if (Util.equalString(signatureAlgorithm, sha256)) {
+    hmac = SignatureUtil.HmacSHA256SignByBytes(`${signPrefix}_request`, sc4);
+  } else if (Util.equalString(signatureAlgorithm, sm3)) {
+    hmac = SignatureUtil.HmacSM3SignByBytes(`${signPrefix}_request`, sc4);
   }
   return hmac;
 }
 
 function getRegion(product: string, endpoint: string, regionId: string): string {
+  return getRegionWithSuffix(product, endpoint, regionId, @endpointSuffix);
+}
+
+function getRegionWithSuffix(product: string, endpoint: string, regionId: string, endpointSuffix: string): string {
   if (!Util.empty(regionId)) {
     return regionId;
   }
@@ -273,12 +348,30 @@ function getRegion(product: string, endpoint: string, regionId: string): string 
   }
   var strs : [string] = String.split(endpoint, ':', null);
   var withoutPort : string = strs[0];
-  var preRegion: string = String.replace(withoutPort, `.${@endpointSuffix}`, '', null);
+  var preRegion: string = hostWithoutDomain(withoutPort, endpointSuffix);
   var nodes = String.split(preRegion, '.', null);
   if (Util.equalNumber(Array.size(nodes), 2)) {
     region = nodes[1];
   }
   return region;
+}
+
+function hostWithoutDomain(host: string, suffix: string): string {
+  if (!Util.empty(suffix) && String.hasSuffix(host, `.${suffix}`)) {
+    var needle = `.${suffix}`;
+    var end = host.length() - needle.length();
+    return String.subString(host, 0, end);
+  }
+  if (!Util.equalString(suffix, 'aliyuncs.com') && String.hasSuffix(host, '.aliyuncs.com')) {
+    var old = '.aliyuncs.com';
+    var aliyunEnd = host.length() - old.length();
+    return String.subString(host, 0, aliyunEnd);
+  }
+  if (String.hasSuffix(host, '.aliyuncs.alibaba')) {
+    var alternate = '.aliyuncs.alibaba';
+    return String.subString(host, 0, host.length() - alternate.length());
+  }
+  return host;
 }
 
 function buildCanonicalizedResource(query: map[string]string): string {

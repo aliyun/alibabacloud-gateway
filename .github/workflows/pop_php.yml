@@ -9,11 +9,13 @@ on:
     paths:
       - 'alibabacloud-gateway-pop/**'
       - '.github/workflows/pop_php.yml'
+      - '.github/scripts/require_diff_coverage.py'
   pull_request:
     branches: [ master ]
     paths:
       - 'alibabacloud-gateway-pop/**'
       - '.github/workflows/pop_php.yml'
+      - '.github/scripts/require_diff_coverage.py'
 defaults:
   run:
     shell: bash
@@ -56,6 +58,15 @@ jobs:
     - name: Verify coverage report
       if: matrix.php-versions == '8.1'
       run: test -f cache/coverage.clover
+    - name: Require 90% diff coverage
+      if: github.event_name == 'pull_request' && matrix.php-versions == '8.1'
+      run: |
+        git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }}
+        python3 "${{ github.workspace }}/.github/scripts/require_diff_coverage.py" \
+          --base "${{ github.event.pull_request.base.sha }}" \
+          --report cache/coverage.clover \
+          --format clover \
+          --minimum 90
     - uses: codecov/codecov-action@v4
       if: matrix.php-versions == '8.1'
       with:

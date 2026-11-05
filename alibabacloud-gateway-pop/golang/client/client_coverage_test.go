@@ -3,8 +3,10 @@ package client
 import (
 	"errors"
 	"io"
+	"os"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
@@ -142,6 +144,198 @@ func TestEndpointSelection(t *testing.T) {
 
 	_, err = client.GetEndpoint(tea.String("Ecs"), tea.String(""), tea.String("regional"), tea.String(""), tea.String(""), nil, nil)
 	utils.AssertNotNil(t, err)
+}
+
+func TestExplicitEndpointSuffix(t *testing.T) {
+	client, err := NewClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct{ input, want string }{
+		{"oss-cn-hangzhou.aliyuncs.com", "oss-cn-hangzhou.aliyuncs.alibaba"},
+		{"ecs.cn-hangzhou-internal.aliyuncs.com", "ecs.cn-hangzhou-internal.aliyuncs.alibaba"},
+		{"ecs.aliyun.com", "ecs.aliyun.com"},
+		{"custom.example.com", "custom.example.com"},
+		{"ecs.aliyuncs.alibaba", "ecs.aliyuncs.alibaba"},
+		{"ecs.aliyuncs.com.example.com", "ecs.aliyuncs.com.example.com"},
+	} {
+		for _, mapped := range []bool{false, true} {
+			cfg := &spi.InterceptorContextConfiguration{RegionId: tea.String("cn-hangzhou"), Endpoint: tea.String(tc.input)}
+			if mapped {
+				cfg.Endpoint = nil
+				cfg.EndpointMap = map[string]*string{"cn-hangzhou": tea.String(tc.input)}
+			}
+			attrs := &spi.AttributeMap{Key: map[string]*string{"endpointSuffix": tea.String("aliyuncs.alibaba")}}
+			for i := 0; i < 2; i++ {
+				if err := client.ModifyConfiguration(newContext(baseRequest(), cfg), attrs); err != nil {
+					t.Fatal(err)
+				}
+				if tea.StringValue(cfg.Endpoint) != tc.want {
+					t.Fatalf("mapped=%v input=%q got=%q want=%q", mapped, tc.input, tea.StringValue(cfg.Endpoint), tc.want)
+				}
+			}
+		}
+	}
+}
+
+func TestEndpointSuffixOverride(t *testing.T) {
+	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "aliyuncs.alibaba")
+	defer os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+	config := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), config), &spi.AttributeMap{})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(config.Endpoint))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), config.Endpoint, tea.String(""), tea.String("aliyuncs.alibaba"))))
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""), tea.String("example.net"))))
+	utils.AssertEqual(t, "aliyuncs.com", tea.StringValue(client.EndpointSuffix))
+
+	overridden := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), overridden), &spi.AttributeMap{
+		Key: map[string]*string{
+			"endpointSuffix": tea.String(" ALIYUNCS.ALIBABA "),
+		},
+	})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(overridden.Endpoint))
+	utils.AssertEqual(t, "ACS4-", tea.StringValue(client.SignatureTypePrefix))
+	utils.AssertEqual(t, "ACS4-HMAC-SHA256", tea.StringValue(client.Sha256))
+	unchanged, err := applyEndpointSuffix(tea.String("already.example.com"), tea.String("aliyuncs.alibaba"))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "already.example.com", tea.StringValue(unchanged))
+	sameHost, err := applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String(""))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(sameHost))
+	emptyHost, err := applyEndpointSuffix(tea.String(""), tea.String("aliyuncs.alibaba"))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "", tea.StringValue(emptyHost))
+	_, err = applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String("example.net"))
+	utils.AssertNotNil(t, err)
+
+	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	fallback := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), fallback), &spi.AttributeMap{})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "aliyuncs.com", tea.StringValue(client.EndpointSuffix))
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.com", tea.StringValue(fallback.Endpoint))
+
+	explicit := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String(""),
+		EndpointRule: tea.String("regional"),
+		Endpoint:     tea.String("ecs.cn-hangzhou.aliyuncs.com"),
+	}
+	os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", "aliyuncs.alibaba")
+	err = client.ModifyConfiguration(newContext(baseRequest(), explicit), &spi.AttributeMap{})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(explicit.Endpoint))
+	resolved, err := endpointSuffixForRequest(nil)
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "cn-hangzhou", tea.StringValue(client.regionWithSuffix(tea.String("ecs"), explicit.Endpoint, explicit.RegionId, tea.String(resolved))))
+	blank := &spi.InterceptorContextConfiguration{
+		RegionId:     tea.String("cn-hangzhou"),
+		EndpointRule: tea.String("regional"),
+	}
+	err = client.ModifyConfiguration(newContext(baseRequest(), blank), &spi.AttributeMap{
+		Key: map[string]*string{"endpointSuffix": tea.String("   ")},
+	})
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.aliyuncs.alibaba", tea.StringValue(blank.Endpoint))
+}
+
+func TestEndpointSuffixRequestsDoNotCross(t *testing.T) {
+	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	defer os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+	var wg sync.WaitGroup
+	errCh := make(chan error, 16)
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			suffix := "aliyuncs.alibaba"
+			if i%2 == 1 {
+				suffix = "aliyuncs.com"
+			}
+			built := &spi.InterceptorContextConfiguration{
+				RegionId:     tea.String("cn-hangzhou"),
+				EndpointRule: tea.String("regional"),
+			}
+			callErr := client.ModifyConfiguration(newContext(baseRequest(), built), &spi.AttributeMap{
+				Key: map[string]*string{"endpointSuffix": tea.String(suffix)},
+			})
+			if callErr != nil {
+				errCh <- callErr
+				return
+			}
+			want := "ecs.cn-hangzhou." + suffix
+			if tea.StringValue(built.Endpoint) != want {
+				errCh <- errors.New(tea.StringValue(built.Endpoint) + " != " + want)
+			}
+		}(i)
+	}
+	wg.Wait()
+	close(errCh)
+	for callErr := range errCh {
+		utils.AssertNil(t, callErr)
+	}
+}
+
+func TestSignaturePrefixesDoNotCross(t *testing.T) {
+	client, err := NewClient()
+	utils.AssertNil(t, err)
+	var wg sync.WaitGroup
+	errCh := make(chan error, 16)
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			prefix := "ACS4-"
+			signPrefix := "aliyun_v4"
+			if i%2 == 1 {
+				prefix = "ACS3-"
+				signPrefix = "aliyun_v3"
+			}
+			request := baseRequest()
+			callErr := client.ModifyRequest(newContext(request, baseConfig()), &spi.AttributeMap{
+				Key: map[string]*string{
+					"signatureTypePrefix": tea.String(prefix),
+					"signPrefix":          tea.String(signPrefix),
+				},
+			})
+			if callErr != nil {
+				errCh <- callErr
+				return
+			}
+			authorization := tea.StringValue(request.Headers["Authorization"])
+			if !strings.HasPrefix(authorization, prefix+"HMAC-SHA256 ") {
+				errCh <- errors.New(authorization)
+				return
+			}
+			if !strings.Contains(authorization, "/"+signPrefix+"_request,") {
+				errCh <- errors.New(authorization)
+			}
+		}(i)
+	}
+	wg.Wait()
+	close(errCh)
+	for callErr := range errCh {
+		utils.AssertNil(t, callErr)
+	}
+	utils.AssertEqual(t, "ACS4-", tea.StringValue(client.SignatureTypePrefix))
+	utils.AssertEqual(t, "aliyun_v4", tea.StringValue(client.SignPrefix))
+	utils.AssertEqual(t, "ACS4-HMAC-SHA256", tea.StringValue(client.Sha256))
 }
 
 func TestModifyConfiguration(t *testing.T) {
@@ -506,4 +700,33 @@ func TestSlimHelperEdges(t *testing.T) {
 	result := map[string]*string{}
 	handleRepeatedParams(reflect.ValueOf([]interface{}(nil)), result, "items")
 	utils.AssertEqual(t, 0, len(result))
+}
+
+// Changing the process environment after endpoint selection must not affect signing.
+func TestSigningUsesSelectedEndpointAfterEnvironmentChange(t *testing.T) {
+	previous, had := os.LookupEnv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+	defer func() {
+		if had {
+			os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", previous)
+		} else {
+			os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
+		}
+	}()
+	for _, selected := range []string{"aliyuncs.com", "aliyuncs.alibaba"} {
+		for _, changed := range []string{"aliyuncs.com", "aliyuncs.alibaba", "invalid.example"} {
+			os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", selected)
+			client, err := NewClient()
+			utils.AssertNil(t, err)
+			ctx := newContext(baseRequest(), baseConfig())
+			ctx.Configuration.RegionId = tea.String("")
+			attributes := &spi.AttributeMap{}
+			utils.AssertNil(t, client.ModifyConfiguration(ctx, attributes))
+			os.Setenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX", changed)
+			utils.AssertNil(t, client.ModifyRequest(ctx, attributes))
+			utils.AssertEqual(t, "ecs.cn-hangzhou."+selected, tea.StringValue(ctx.Request.Headers["host"]))
+			if !strings.Contains(tea.StringValue(ctx.Request.Headers["Authorization"]), "/cn-hangzhou/ecs/aliyun_v4_request") {
+				t.Fatal("signing region does not match selected host")
+			}
+		}
+	}
 }

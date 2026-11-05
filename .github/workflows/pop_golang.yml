@@ -6,11 +6,13 @@ on:
     paths:
       - 'alibabacloud-gateway-pop/**'
       - '.github/workflows/pop_golang.yml'
+      - '.github/scripts/require_diff_coverage.py'
   pull_request:
     branches: [ master ]
     paths:
       - 'alibabacloud-gateway-pop/**'
       - '.github/workflows/pop_golang.yml'
+      - '.github/scripts/require_diff_coverage.py'
 defaults:
   run:
     shell: bash
@@ -47,6 +49,15 @@ jobs:
       run: go test -mod=readonly -race -coverprofile=coverage.txt -covermode=atomic ./client/...
     - name: Verify coverage report
       run: test -f coverage.txt
+    - name: Require 90% diff coverage
+      if: github.event_name == 'pull_request'
+      run: |
+        git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }}
+        python3 "${{ github.workspace }}/.github/scripts/require_diff_coverage.py" \
+          --base "${{ github.event.pull_request.base.sha }}" \
+          --report coverage.txt \
+          --format go \
+          --minimum 90
     - uses: codecov/codecov-action@v4
       with:
         files: alibabacloud-gateway-pop/golang/coverage.txt

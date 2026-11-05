@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+import os
+import re
+
 from . import _codec as codec
 from . import _support as support
 from darabonba.utils.xml import XML
@@ -33,14 +36,8 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        attributes = attribute_map.key
-        if not support.is_unset(attributes):
-            self._signature_type_prefix = attributes.get('signatureTypePrefix')
-            self._sign_prefix = attributes.get('signPrefix')
-            self._endpoint_suffix = attributes.get('endpointSuffix')
-            self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
-            self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
-        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+        endpoint_suffix = self._resolve_endpoint_suffix(attribute_map.key)
+        config.endpoint = self._get_endpoint_with_suffix(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
 
     async def modify_configuration_async(
         self,
@@ -49,14 +46,64 @@ class Client(SPIClient):
     ) -> None:
         request = context.request
         config = context.configuration
-        attributes = attribute_map.key
+        endpoint_suffix = self._resolve_endpoint_suffix(attribute_map.key)
+        config.endpoint = self._get_endpoint_with_suffix(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint, endpoint_suffix)
+
+    def _signature_names(self, attributes):
+        prefix = 'ACS4-'
+        sign_prefix = 'aliyun_v4'
         if not support.is_unset(attributes):
-            self._signature_type_prefix = attributes.get('signatureTypePrefix')
-            self._sign_prefix = attributes.get('signPrefix')
-            self._endpoint_suffix = attributes.get('endpointSuffix')
-            self._sha_256 = f'{self._signature_type_prefix}HMAC-SHA256'
-            self._sm_3 = f'{self._signature_type_prefix}HMAC-SM3'
-        config.endpoint = self.get_endpoint(request.product_id, config.region_id, config.endpoint_rule, config.network, config.suffix, config.endpoint_map, config.endpoint)
+            requested = attributes.get('signatureTypePrefix')
+            if not support.empty(requested):
+                prefix = requested
+            requested_sign = attributes.get('signPrefix')
+            if not support.empty(requested_sign):
+                sign_prefix = requested_sign
+        return sign_prefix, f'{prefix}HMAC-SHA256', f'{prefix}HMAC-SM3'
+
+    def _checked_endpoint_suffix(self, suffix):
+        if suffix is None:
+            return ''
+        suffix = suffix.strip().lower()
+        if suffix == '':
+            return ''
+        if suffix not in ('aliyuncs.com', 'aliyuncs.alibaba') or re.match(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$', suffix) is None:
+            raise TeaException({
+                'code': 'InvalidEndpointSuffix',
+                'message': 'endpointSuffix must be aliyuncs.com or aliyuncs.alibaba',
+            })
+        return suffix
+
+    def _resolve_endpoint_suffix(self, attributes):
+        if not support.is_unset(attributes):
+            suffix = self._checked_endpoint_suffix(attributes.get('endpointSuffix'))
+            if not support.empty(suffix):
+                return suffix
+        env_suffix = self._checked_endpoint_suffix(os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX'))
+        if env_suffix:
+            return env_suffix
+        return 'aliyuncs.com'
+
+    def _with_endpoint_suffix(self, endpoint, endpoint_suffix=None):
+        suffix = self._endpoint_suffix if endpoint_suffix is None else endpoint_suffix
+        suffix = self._checked_endpoint_suffix(suffix) or 'aliyuncs.com'
+        if not endpoint or suffix == 'aliyuncs.com':
+            return endpoint
+        old = '.aliyuncs.com'
+        if endpoint.endswith(old):
+            return endpoint[:-len(old)] + '.' + suffix
+        return endpoint
+
+    def _host_without_domain(self, host, suffix):
+        seen = set()
+        for domain in (suffix, 'aliyuncs.com', 'aliyuncs.alibaba'):
+            if support.empty(domain) or domain in seen:
+                continue
+            seen.add(domain)
+            needle = '.' + domain
+            if host.endswith(needle):
+                return host[:-len(needle)]
+        return host
 
     def modify_request(
         self,
@@ -76,7 +123,8 @@ class Client(SPIClient):
         }, request.headers)
         if not support.empty(request.action):
             request.headers['x-acs-action'] = request.action
-        signature_algorithm = support.default_string(request.signature_algorithm, self._sha_256)
+        sign_prefix, sha256, sm3 = self._signature_names(attribute_map.key)
+        signature_algorithm = support.default_string(request.signature_algorithm, sha256)
         hashed_request_payload = codec.hex_encode(codec.hash_bytes(support.to_bytes(''), signature_algorithm))
         if not support.is_unset(request.stream):
             tmp = support.read_as_bytes(request.stream)
@@ -100,7 +148,7 @@ class Client(SPIClient):
                     hashed_request_payload = codec.hex_encode(codec.hash_bytes(support.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
-        if support.equal_string(signature_algorithm, self._sm_3):
+        if support.equal_string(signature_algorithm, sm3):
             request.headers['x-acs-content-sm3'] = hashed_request_payload
         else:
             request.headers['x-acs-content-sha256'] = hashed_request_payload
@@ -132,9 +180,9 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = codec.sub_string(date, 0, 10)
                 date_new = codec.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint, config.region_id)
-                signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
-                request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
+                region = self._get_region_with_suffix(request.product_id, config.endpoint, config.region_id, self._endpoint_suffix)
+                signingkey = self._signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new, sign_prefix, sha256, sm3)
+                request.headers['Authorization'] = self._authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new, sign_prefix, sha256, sm3)
 
     async def modify_request_async(
         self,
@@ -154,7 +202,8 @@ class Client(SPIClient):
         }, request.headers)
         if not support.empty(request.action):
             request.headers['x-acs-action'] = request.action
-        signature_algorithm = support.default_string(request.signature_algorithm, self._sha_256)
+        sign_prefix, sha256, sm3 = self._signature_names(attribute_map.key)
+        signature_algorithm = support.default_string(request.signature_algorithm, sha256)
         hashed_request_payload = codec.hex_encode(codec.hash_bytes(support.to_bytes(''), signature_algorithm))
         if not support.is_unset(request.stream):
             tmp = await support.read_as_bytes_async(request.stream)
@@ -178,7 +227,7 @@ class Client(SPIClient):
                     hashed_request_payload = codec.hex_encode(codec.hash_bytes(support.to_bytes(form_obj), signature_algorithm))
                     request.stream = form_obj
                     request.headers['content-type'] = 'application/x-www-form-urlencoded'
-        if support.equal_string(signature_algorithm, self._sm_3):
+        if support.equal_string(signature_algorithm, sm3):
             request.headers['x-acs-content-sm3'] = hashed_request_payload
         else:
             request.headers['x-acs-content-sha256'] = hashed_request_payload
@@ -210,9 +259,9 @@ class Client(SPIClient):
                     request.headers['x-acs-security-token'] = security_token
                 date_new = codec.sub_string(date, 0, 10)
                 date_new = codec.replace(date_new, '-', '', None)
-                region = self.get_region(request.product_id, config.endpoint, config.region_id)
-                signingkey = self.get_signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new)
-                request.headers['Authorization'] = self.get_authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new)
+                region = self._get_region_with_suffix(request.product_id, config.endpoint, config.region_id, self._endpoint_suffix)
+                signingkey = self._signingkey(signature_algorithm, access_key_secret, request.product_id, region, date_new, sign_prefix, sha256, sm3)
+                request.headers['Authorization'] = self._authorization(request.pathname, request.method, request.query, request.headers, signature_algorithm, hashed_request_payload, access_key_id, signingkey, request.product_id, region, date_new, sign_prefix, sha256, sm3)
 
     def modify_response(
         self,
@@ -318,11 +367,24 @@ class Client(SPIClient):
         endpoint_map: Dict[str, str],
         endpoint: str,
     ) -> str:
+        return self._get_endpoint_with_suffix(product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint, self._endpoint_suffix)
+
+    def _get_endpoint_with_suffix(
+        self,
+        product_id: str,
+        region_id: str,
+        endpoint_rule: str,
+        network: str,
+        suffix: str,
+        endpoint_map: Dict[str, str],
+        endpoint: str,
+        endpoint_suffix: str,
+    ) -> str:
         if not support.empty(endpoint):
-            return endpoint
+            return self._with_endpoint_suffix(endpoint, endpoint_suffix)
         if not support.is_unset(endpoint_map) and not support.empty(endpoint_map.get(region_id)):
-            return endpoint_map.get(region_id)
-        return support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix)
+            return self._with_endpoint_suffix(endpoint_map.get(region_id), endpoint_suffix)
+        return self._with_endpoint_suffix(support.get_endpoint_rules(product_id, region_id, endpoint_rule, network, suffix), endpoint_suffix)
 
     def default_any(
         self,
@@ -347,10 +409,29 @@ class Client(SPIClient):
         region: str,
         date: str,
     ) -> str:
-        signature = self.get_signature(pathname, method, query, headers, signature_algorithm, payload, signingkey)
+        return self._authorization(pathname, method, query, headers, signature_algorithm, payload, ak, signingkey, product, region, date, self._sign_prefix, self._sha_256, self._sm_3)
+
+    def _authorization(
+        self,
+        pathname: str,
+        method: str,
+        query: Dict[str, str],
+        headers: Dict[str, str],
+        signature_algorithm: str,
+        payload: str,
+        ak: str,
+        signingkey: bytes,
+        product: str,
+        region: str,
+        date: str,
+        sign_prefix: str,
+        sha256: str,
+        sm3: str,
+    ) -> str:
+        signature = self._signature(pathname, method, query, headers, signature_algorithm, payload, signingkey, sha256, sm3)
         signed_headers = self.get_signed_headers(headers)
         signed_headers_str = codec.join(signed_headers, ';')
-        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/{self._sign_prefix}_request,SignedHeaders={signed_headers_str},Signature={signature}'
+        return f'{signature_algorithm} Credential={ak}/{date}/{region}/{product}/{sign_prefix}_request,SignedHeaders={signed_headers_str},Signature={signature}'
 
     def get_signature(
         self,
@@ -361,6 +442,20 @@ class Client(SPIClient):
         signature_algorithm: str,
         payload: str,
         signingkey: bytes,
+    ) -> str:
+        return self._signature(pathname, method, query, headers, signature_algorithm, payload, signingkey, self._sha_256, self._sm_3)
+
+    def _signature(
+        self,
+        pathname: str,
+        method: str,
+        query: Dict[str, str],
+        headers: Dict[str, str],
+        signature_algorithm: str,
+        payload: str,
+        signingkey: bytes,
+        sha256: str,
+        sm3: str,
     ) -> str:
         canonical_uri = '/'
         if not support.empty(pathname):
@@ -375,9 +470,9 @@ class Client(SPIClient):
         hex = codec.hex_encode(codec.hash_bytes(support.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = support.to_bytes('')
-        if support.equal_string(signature_algorithm, self._sha_256):
+        if support.equal_string(signature_algorithm, sha256):
             signature = codec.hmac_sha256_by_bytes(string_to_sign, signingkey)
-        elif support.equal_string(signature_algorithm, self._sm_3):
+        elif support.equal_string(signature_algorithm, sm3):
             signature = codec.hmac_sm3_by_bytes(string_to_sign, signingkey)
         return codec.hex_encode(signature)
 
@@ -389,27 +484,40 @@ class Client(SPIClient):
         region: str,
         date: str,
     ) -> bytes:
-        sc_1 = f'{self._sign_prefix}{secret}'
+        return self._signingkey(signature_algorithm, secret, product, region, date, self._sign_prefix, self._sha_256, self._sm_3)
+
+    def _signingkey(
+        self,
+        signature_algorithm: str,
+        secret: str,
+        product: str,
+        region: str,
+        date: str,
+        sign_prefix: str,
+        sha256: str,
+        sm3: str,
+    ) -> bytes:
+        sc_1 = f'{sign_prefix}{secret}'
         sc_2 = support.to_bytes('')
-        if support.equal_string(signature_algorithm, self._sha_256):
+        if support.equal_string(signature_algorithm, sha256):
             sc_2 = codec.hmac_sha256(date, sc_1)
-        elif support.equal_string(signature_algorithm, self._sm_3):
+        elif support.equal_string(signature_algorithm, sm3):
             sc_2 = codec.hmac_sm3(date, sc_1)
         sc_3 = support.to_bytes('')
-        if support.equal_string(signature_algorithm, self._sha_256):
+        if support.equal_string(signature_algorithm, sha256):
             sc_3 = codec.hmac_sha256_by_bytes(region, sc_2)
-        elif support.equal_string(signature_algorithm, self._sm_3):
+        elif support.equal_string(signature_algorithm, sm3):
             sc_3 = codec.hmac_sm3_by_bytes(region, sc_2)
         sc_4 = support.to_bytes('')
-        if support.equal_string(signature_algorithm, self._sha_256):
+        if support.equal_string(signature_algorithm, sha256):
             sc_4 = codec.hmac_sha256_by_bytes(product, sc_3)
-        elif support.equal_string(signature_algorithm, self._sm_3):
+        elif support.equal_string(signature_algorithm, sm3):
             sc_4 = codec.hmac_sm3_by_bytes(product, sc_3)
         hmac = support.to_bytes('')
-        if support.equal_string(signature_algorithm, self._sha_256):
-            hmac = codec.hmac_sha256_by_bytes(f'{self._sign_prefix}_request', sc_4)
-        elif support.equal_string(signature_algorithm, self._sm_3):
-            hmac = codec.hmac_sm3_by_bytes(f'{self._sign_prefix}_request', sc_4)
+        if support.equal_string(signature_algorithm, sha256):
+            hmac = codec.hmac_sha256_by_bytes(f'{sign_prefix}_request', sc_4)
+        elif support.equal_string(signature_algorithm, sm3):
+            hmac = codec.hmac_sm3_by_bytes(f'{sign_prefix}_request', sc_4)
         return hmac
 
     def get_region(
@@ -418,6 +526,15 @@ class Client(SPIClient):
         endpoint: str,
         region_id: str,
     ) -> str:
+        return self._get_region_with_suffix(product, endpoint, region_id, self._endpoint_suffix)
+
+    def _get_region_with_suffix(
+        self,
+        product: str,
+        endpoint: str,
+        region_id: str,
+        endpoint_suffix: str,
+    ) -> str:
         if not support.empty(region_id):
             return region_id
         region = 'center'
@@ -425,7 +542,7 @@ class Client(SPIClient):
             return region
         strs = codec.split(endpoint, ':', None)
         without_port = strs[0]
-        pre_region = codec.replace(without_port, f'.{self._endpoint_suffix}', '', None)
+        pre_region = self._host_without_domain(without_port, endpoint_suffix)
         nodes = codec.split(pre_region, '.', None)
         if support.equal_number(codec.size(nodes), 2):
             region = nodes[1]

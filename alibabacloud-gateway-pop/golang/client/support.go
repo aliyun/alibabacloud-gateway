@@ -10,7 +10,9 @@ import (
 	"io"
 	"io/ioutil"
 	"math/rand"
+	"os"
 	"reflect"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -136,6 +138,90 @@ func is5xx(code *int) *bool {
 func getTimestamp() *string {
 	gmt := time.FixedZone("GMT", 0)
 	return dara.String(time.Now().In(gmt).Format("2006-01-02T15:04:05Z"))
+}
+
+type requestSignature struct {
+	signPrefix string
+	sha256     string
+	sm3        string
+}
+
+func signatureNames(attributes map[string]*string) requestSignature {
+	prefix := "ACS4-"
+	signPrefix := "aliyun_v4"
+	if attributes != nil {
+		if value := dara.StringValue(attributes["signatureTypePrefix"]); value != "" {
+			prefix = value
+		}
+		if value := dara.StringValue(attributes["signPrefix"]); value != "" {
+			signPrefix = value
+		}
+	}
+	return requestSignature{
+		signPrefix: signPrefix,
+		sha256:     prefix + "HMAC-SHA256",
+		sm3:        prefix + "HMAC-SM3",
+	}
+}
+
+var endpointSuffixPattern = regexp.MustCompile(`^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$`)
+
+func normalizeEndpointSuffix(suffix string) (string, error) {
+	suffix = strings.ToLower(strings.TrimSpace(suffix))
+	if suffix == "" {
+		return "", nil
+	}
+	if (suffix != "aliyuncs.com" && suffix != "aliyuncs.alibaba") || !endpointSuffixPattern.MatchString(suffix) {
+		return "", errors.New("endpointSuffix must be aliyuncs.com or aliyuncs.alibaba")
+	}
+	return suffix, nil
+}
+
+func endpointSuffixForRequest(attributes map[string]*string) (string, error) {
+	if attributes != nil {
+		if raw := strings.TrimSpace(dara.StringValue(attributes["endpointSuffix"])); raw != "" {
+			return normalizeEndpointSuffix(raw)
+		}
+	}
+	if envSuffix := strings.TrimSpace(os.Getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")); envSuffix != "" {
+		return normalizeEndpointSuffix(envSuffix)
+	}
+	return "aliyuncs.com", nil
+}
+
+func hostWithoutDomain(host, suffix string) string {
+	domains := []string{suffix, "aliyuncs.com", "aliyuncs.alibaba"}
+	seen := map[string]struct{}{}
+	for _, domain := range domains {
+		if domain == "" {
+			continue
+		}
+		if _, ok := seen[domain]; ok {
+			continue
+		}
+		seen[domain] = struct{}{}
+		needle := "." + domain
+		if strings.HasSuffix(host, needle) {
+			return strings.TrimSuffix(host, needle)
+		}
+	}
+	return host
+}
+
+func applyEndpointSuffix(endpoint, suffix *string) (*string, error) {
+	domain, err := normalizeEndpointSuffix(dara.StringValue(suffix))
+	if err != nil {
+		return nil, err
+	}
+	value := dara.StringValue(endpoint)
+	if domain == "" || domain == "aliyuncs.com" || value == "" {
+		return endpoint, nil
+	}
+	const old = ".aliyuncs.com"
+	if strings.HasSuffix(value, old) {
+		return dara.String(strings.TrimSuffix(value, old) + "." + domain), nil
+	}
+	return endpoint, nil
 }
 
 func getEndpointRules(product, regionId, endpointType, network, suffix *string) (*string, error) {
