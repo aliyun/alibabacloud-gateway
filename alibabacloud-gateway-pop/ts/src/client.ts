@@ -28,16 +28,8 @@ export default class Client extends SPI {
   async modifyConfiguration(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
     let request = context.request;
     let config = context.configuration;
-    let attributes = attributeMap.key;
-    if (!runtime.isUnset(attributes)) {
-      this._signatureTypePrefix = attributes["signatureTypePrefix"];
-      this._signPrefix = attributes["signPrefix"];
-      this._endpointSuffix = attributes["endpointSuffix"];
-      this._sha256 = `${this._signatureTypePrefix}HMAC-SHA256`;
-      this._sm3 = `${this._signatureTypePrefix}HMAC-SM3`;
-    }
-
-    config.endpoint = this.getEndpoint(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint);
+    let endpointSuffix = this.resolveEndpointSuffix(attributeMap.key);
+    config.endpoint = this.getEndpointWithSuffix(request.productId, config.regionId, config.endpointRule, config.network, config.suffix, config.endpointMap, config.endpoint, endpointSuffix);
   }
 
   async modifyRequest(context: $SPI.InterceptorContext, attributeMap: $SPI.AttributeMap): Promise<void> {
@@ -57,7 +49,8 @@ export default class Client extends SPI {
       request.headers["x-acs-action"] = request.action;
     }
 
-    let signatureAlgorithm : string = runtime.defaultString(request.signatureAlgorithm, this._sha256);
+    let names = this.signatureNames(attributeMap.key);
+    let signatureAlgorithm : string = runtime.defaultString(request.signatureAlgorithm, names.sha256);
     let hashedRequestPayload = codec.hexEncode(codec.hash(runtime.toBytes(""), signatureAlgorithm));
     if (!runtime.isUnset(request.stream)) {
       let tmp = await runtime.readAsBytes(request.stream);
@@ -87,7 +80,7 @@ export default class Client extends SPI {
 
     }
 
-    if (runtime.equalString(signatureAlgorithm, this._sm3)) {
+    if (runtime.equalString(signatureAlgorithm, names.sm3)) {
       request.headers["x-acs-content-sm3"] = hashedRequestPayload;
     } else {
       request.headers["x-acs-content-sha256"] = hashedRequestPayload;
@@ -127,9 +120,9 @@ export default class Client extends SPI {
 
         let dateNew = codec.subString(date, 0, 10);
         dateNew = codec.replace(dateNew, "-", "", null);
-        let region = this.getRegion(request.productId, config.endpoint, config.regionId);
-        let signingkey = this.getSigningkey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew);
-        request.headers["Authorization"] = this.getAuthorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew);
+        let region = this.getRegionWithSuffix(request.productId, config.endpoint, config.regionId, this._endpointSuffix);
+        let signingkey = this.signingKey(signatureAlgorithm, accessKeySecret, request.productId, region, dateNew, names);
+        request.headers["Authorization"] = this.authorization(request.pathname, request.method, request.query, request.headers, signatureAlgorithm, hashedRequestPayload, accessKeyId, signingkey, request.productId, region, dateNew, names);
       }
 
     }
@@ -189,15 +182,85 @@ export default class Client extends SPI {
   }
 
   getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string): string {
+    return this.getEndpointWithSuffix(productId, regionId, endpointRule, network, suffix, endpointMap, endpoint, this._endpointSuffix);
+  }
+
+  /** @internal */
+  private getEndpointWithSuffix(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: {[key: string ]: string}, endpoint: string, endpointSuffix: string): string {
     if (!runtime.empty(endpoint)) {
-      return endpoint;
+      return this.withEndpointSuffix(endpoint, endpointSuffix);
     }
 
     if (!runtime.isUnset(endpointMap) && !runtime.empty(endpointMap[regionId])) {
-      return endpointMap[regionId];
+      return this.withEndpointSuffix(endpointMap[regionId], endpointSuffix);
     }
 
-    return runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix);
+    return this.withEndpointSuffix(runtime.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
+  }
+
+  /** @internal */
+  signatureNames(attributes: {[key: string]: string}): {signPrefix: string, sha256: string, sm3: string} {
+    let prefix = "ACS4-";
+    let signPrefix = "aliyun_v4";
+    if (!runtime.isUnset(attributes)) {
+      let requested = attributes["signatureTypePrefix"];
+      if (!runtime.empty(requested)) {
+        prefix = requested;
+      }
+      let requestedSign = attributes["signPrefix"];
+      if (!runtime.empty(requestedSign)) {
+        signPrefix = requestedSign;
+      }
+    }
+    return {
+      signPrefix: signPrefix,
+      sha256: `${prefix}HMAC-SHA256`,
+      sm3: `${prefix}HMAC-SM3`,
+    };
+  }
+
+  resolveEndpointSuffix(attributes: {[key: string]: string}): string {
+    if (!runtime.isUnset(attributes)) {
+      let suffix = this.checkedEndpointSuffix(attributes["endpointSuffix"]);
+      if (!runtime.empty(suffix)) {
+        return suffix;
+      }
+    }
+    let envSuffix = this.checkedEndpointSuffix(process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX);
+    if (!runtime.empty(envSuffix)) {
+      return envSuffix;
+    }
+    return "aliyuncs.com";
+  }
+
+  checkedEndpointSuffix(suffix: string): string {
+    if (runtime.isUnset(suffix)) {
+      return "";
+    }
+    suffix = suffix.trim().toLowerCase();
+    if (!suffix) {
+      return "";
+    }
+    if ((suffix !== "aliyuncs.com" && suffix !== "aliyuncs.alibaba") || !/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(suffix)) {
+      let error: any = new Error("endpointSuffix must be aliyuncs.com or aliyuncs.alibaba");
+      error.code = "InvalidEndpointSuffix";
+      throw error;
+    }
+    return suffix;
+  }
+
+  /** @internal */
+  withEndpointSuffix(endpoint: string, endpointSuffix?: string): string {
+    let suffix = endpointSuffix === undefined ? this._endpointSuffix : endpointSuffix;
+    suffix = this.checkedEndpointSuffix(suffix) || "aliyuncs.com";
+    if (runtime.empty(endpoint) || suffix === "aliyuncs.com") {
+      return endpoint;
+    }
+    let old = ".aliyuncs.com";
+    if (endpoint.length >= old.length && endpoint.substring(endpoint.length - old.length) === old) {
+      return endpoint.substring(0, endpoint.length - old.length) + "." + suffix;
+    }
+    return endpoint;
   }
 
   defaultAny(inputValue: any, defaultValue: any): any {
@@ -209,13 +272,29 @@ export default class Client extends SPI {
   }
 
   getAuthorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, signingkey: Buffer, product: string, region: string, date: string): string {
-    let signature = this.getSignature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey);
+    return this.authorization(pathname, method, query, headers, signatureAlgorithm, payload, ak, signingkey, product, region, date, {
+      signPrefix: this._signPrefix,
+      sha256: this._sha256,
+      sm3: this._sm3,
+    });
+  }
+
+  private authorization(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, ak: string, signingkey: Buffer, product: string, region: string, date: string, names: {signPrefix: string, sha256: string, sm3: string}): string {
+    let signature = this.signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, names);
     let signedHeaders = this.getSignedHeaders(headers);
     let signedHeadersStr = codec.join(signedHeaders, ";");
-    return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${this._signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
+    return `${signatureAlgorithm} Credential=${ak}/${date}/${region}/${product}/${names.signPrefix}_request,SignedHeaders=${signedHeadersStr},Signature=${signature}`;
   }
 
   getSignature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer): string {
+    return this.signature(pathname, method, query, headers, signatureAlgorithm, payload, signingkey, {
+      signPrefix: this._signPrefix,
+      sha256: this._sha256,
+      sm3: this._sm3,
+    });
+  }
+
+  private signature(pathname: string, method: string, query: {[key: string ]: string}, headers: {[key: string ]: string}, signatureAlgorithm: string, payload: string, signingkey: Buffer, names: {signPrefix: string, sha256: string, sm3: string}): string {
     let canonicalURI : string = "/";
     if (!runtime.empty(pathname)) {
       canonicalURI = pathname;
@@ -231,9 +310,9 @@ export default class Client extends SPI {
     let hex = codec.hexEncode(codec.hash(runtime.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
     let signature = runtime.toBytes("");
-    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
+    if (runtime.equalString(signatureAlgorithm, names.sha256)) {
       signature = codec.hmacSha256ByBytes(stringToSign, signingkey);
-    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, names.sm3)) {
       signature = codec.hmacSm3ByBytes(stringToSign, signingkey);
     }
 
@@ -241,39 +320,52 @@ export default class Client extends SPI {
   }
 
   getSigningkey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string): Buffer {
-    let sc1 = `${this._signPrefix}${secret}`;
+    return this.signingKey(signatureAlgorithm, secret, product, region, date, {
+      signPrefix: this._signPrefix,
+      sha256: this._sha256,
+      sm3: this._sm3,
+    });
+  }
+
+  private signingKey(signatureAlgorithm: string, secret: string, product: string, region: string, date: string, names: {signPrefix: string, sha256: string, sm3: string}): Buffer {
+    let sc1 = `${names.signPrefix}${secret}`;
     let sc2 = runtime.toBytes("");
-    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
+    if (runtime.equalString(signatureAlgorithm, names.sha256)) {
       sc2 = codec.hmacSha256(date, sc1);
-    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, names.sm3)) {
       sc2 = codec.hmacSm3(date, sc1);
     }
 
     let sc3 = runtime.toBytes("");
-    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
+    if (runtime.equalString(signatureAlgorithm, names.sha256)) {
       sc3 = codec.hmacSha256ByBytes(region, sc2);
-    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, names.sm3)) {
       sc3 = codec.hmacSm3ByBytes(region, sc2);
     }
 
     let sc4 = runtime.toBytes("");
-    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
+    if (runtime.equalString(signatureAlgorithm, names.sha256)) {
       sc4 = codec.hmacSha256ByBytes(product, sc3);
-    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
+    } else if (runtime.equalString(signatureAlgorithm, names.sm3)) {
       sc4 = codec.hmacSm3ByBytes(product, sc3);
     }
 
     let hmac = runtime.toBytes("");
-    if (runtime.equalString(signatureAlgorithm, this._sha256)) {
-      hmac = codec.hmacSha256ByBytes(`${this._signPrefix}_request`, sc4);
-    } else if (runtime.equalString(signatureAlgorithm, this._sm3)) {
-      hmac = codec.hmacSm3ByBytes(`${this._signPrefix}_request`, sc4);
+    if (runtime.equalString(signatureAlgorithm, names.sha256)) {
+      hmac = codec.hmacSha256ByBytes(`${names.signPrefix}_request`, sc4);
+    } else if (runtime.equalString(signatureAlgorithm, names.sm3)) {
+      hmac = codec.hmacSm3ByBytes(`${names.signPrefix}_request`, sc4);
     }
 
     return hmac;
   }
 
   getRegion(product: string, endpoint: string, regionId: string): string {
+    return this.getRegionWithSuffix(product, endpoint, regionId, this._endpointSuffix);
+  }
+
+  /** @internal */
+  private getRegionWithSuffix(product: string, endpoint: string, regionId: string, endpointSuffix: string): string {
     if (!runtime.empty(regionId)) {
       return regionId;
     }
@@ -285,13 +377,30 @@ export default class Client extends SPI {
 
     let strs : string[] = codec.split(endpoint, ":", null);
     let withoutPort : string = strs[0];
-    let preRegion : string = codec.replace(withoutPort, `.${this._endpointSuffix}`, "", null);
+    let preRegion : string = this.hostWithoutDomain(withoutPort, endpointSuffix);
     let nodes = codec.split(preRegion, ".", null);
     if (runtime.equalNumber(codec.size(nodes), 2)) {
       region = nodes[1];
     }
 
     return region;
+  }
+
+  /** @internal */
+  hostWithoutDomain(host: string, suffix: string): string {
+    let domains = [suffix, "aliyuncs.com", "aliyuncs.alibaba"];
+    let seen: {[key: string]: boolean} = {};
+    for (let domain of domains) {
+      if (runtime.empty(domain) || seen[domain]) {
+        continue;
+      }
+      seen[domain] = true;
+      let needle = `.${domain}`;
+      if (host.length >= needle.length && host.substring(host.length - needle.length) === needle) {
+        return host.substring(0, host.length - needle.length);
+      }
+    }
+    return host;
   }
 
   buildCanonicalizedResource(query: {[key: string ]: string}): string {

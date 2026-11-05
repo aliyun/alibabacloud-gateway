@@ -194,6 +194,17 @@ public class CoverageTest {
         Assert.assertEquals("DescribeRegions", json.headers.get("x-acs-action"));
         Assert.assertTrue(json.headers.get("Authorization").contains("ACS4-HMAC-SHA256 Credential=ak/"));
         Assert.assertTrue(json.headers.get("x-acs-content-sha256").length() > 0);
+        InterceptorContext.InterceptorContextRequest prefixed = request(accessKey());
+        AttributeMap prefixAttributes = new AttributeMap();
+        prefixAttributes.key = new HashMap<String, String>();
+        prefixAttributes.key.put("signatureTypePrefix", "ACS3-");
+        prefixAttributes.key.put("signPrefix", "aliyun_v3");
+        client.modifyRequest(context(prefixed, config()), prefixAttributes);
+        Assert.assertTrue(prefixed.headers.get("Authorization").startsWith("ACS3-HMAC-SHA256 "));
+        Assert.assertTrue(prefixed.headers.get("Authorization").contains("/aliyun_v3_request,"));
+        Assert.assertEquals("ACS4-", client._signatureTypePrefix);
+        Assert.assertEquals("aliyun_v4", client._signPrefix);
+        Assert.assertEquals("ACS4-HMAC-SHA256", client._sha256);
 
         InterceptorContext.InterceptorContextRequest bytes = request(accessKey());
         bytes.reqBodyType = "byte";
@@ -364,6 +375,75 @@ public class CoverageTest {
             client.modifyResponse(response(200, null, new ByteArrayInputStream("{\"ok\":".getBytes("UTF-8")), "json"), new AttributeMap());
             Assert.fail();
         } catch (Exception ignored) {
+        }
+    }
+
+    @Test
+    public void testEndpointSuffixOverride() throws Exception {
+        Client client = new Client();
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put("signatureTypePrefix", "ACS4-");
+        attributes.put("signPrefix", "aliyun_v4");
+        attributes.put("endpointSuffix", " ALIYUNCS.ALIBABA ");
+        Assert.assertEquals("aliyuncs.alibaba", client.resolveEndpointSuffix(attributes));
+        Assert.assertEquals("aliyuncs.com", client._endpointSuffix);
+        Assert.assertEquals("ACS4-HMAC-SHA256", client._sha256);
+        Assert.assertEquals("aliyun_v4", client._signPrefix);
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.alibaba", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "aliyuncs.alibaba"));
+        Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com", "aliyuncs.alibaba"));
+        Assert.assertEquals("", client.withEndpointSuffix("", "aliyuncs.alibaba"));
+        try {
+            client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "example.net");
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("endpointSuffix"));
+        }
+        Assert.assertEquals("cn-hangzhou", client.regionFor("ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net"));
+
+        client._endpointSuffix = "";
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.com", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com"));
+        Assert.assertEquals("aliyuncs.com", client.resolveEndpointSuffix(new HashMap<String, String>()));
+        Assert.assertEquals("", client._endpointSuffix);
+
+        Client fromEnv = new Client() {
+            @Override
+            String endpointSuffixFromEnv() {
+                return "aliyuncs.alibaba";
+            }
+        };
+        Assert.assertEquals("aliyuncs.alibaba", fromEnv.resolveEndpointSuffix(null));
+        Assert.assertEquals("aliyuncs.com", fromEnv._endpointSuffix);
+        InterceptorContext.InterceptorContextConfiguration built = new InterceptorContext.InterceptorContextConfiguration();
+        built.regionId = "cn-hangzhou";
+        built.endpointRule = "regional";
+        InterceptorContext context = new InterceptorContext();
+        context.request = request(accessKey());
+        context.configuration = built;
+        fromEnv.modifyConfiguration(context, new AttributeMap());
+        Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.alibaba", built.endpoint);
+        Assert.assertEquals(System.getenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX"), new Client().endpointSuffixFromEnv());
+    }
+    @Test
+    public void signingDoesNotReadEnvironmentAgain() throws Exception {
+        for (final String selected : new String[]{"aliyuncs.com", "aliyuncs.alibaba"}) {
+            final int[] reads = new int[]{0};
+            Client client = new Client() {
+                @Override String endpointSuffixFromEnv() {
+                    if (++reads[0] > 1) throw new AssertionError("environment read again during signing");
+                    return selected;
+                }
+            };
+            InterceptorContext ctx = new InterceptorContext();
+            ctx.request = request(accessKey());
+            ctx.configuration = new InterceptorContext.InterceptorContextConfiguration();
+            ctx.configuration.endpoint = "ecs.cn-hangzhou.aliyuncs.com";
+            ctx.configuration.regionId = "";
+            AttributeMap attributes = new AttributeMap();
+            client.modifyConfiguration(ctx, attributes);
+            client.modifyRequest(ctx, attributes);
+            Assert.assertEquals(1, reads[0]);
+            Assert.assertEquals("ecs.cn-hangzhou." + selected, ctx.request.headers.get("host"));
+            Assert.assertTrue(ctx.request.headers.get("Authorization").contains("/cn-hangzhou/ecs/aliyun_v4_request"));
         }
     }
 }

@@ -4,6 +4,33 @@ import { Readable } from 'stream';
 import Client from '../src/client';
 import * as $SPI from '@alicloud/gateway-spi';
 
+describe('explicit endpoint suffix', () => {
+  it('rewrites explicit and mapped endpoints and preserves other suffixes', async () => {
+    const client = new Client();
+    for (const [original, expected] of [
+      ['oss-cn-hangzhou.aliyuncs.com', 'oss-cn-hangzhou.aliyuncs.alibaba'],
+      ['ecs.cn-hangzhou-internal.aliyuncs.com', 'ecs.cn-hangzhou-internal.aliyuncs.alibaba'],
+      ['ecs.aliyun.com', 'ecs.aliyun.com'],
+      ['custom.example.com', 'custom.example.com'],
+      ['ecs.aliyuncs.alibaba', 'ecs.aliyuncs.alibaba'],
+      ['ecs.aliyuncs.com.example.com', 'ecs.aliyuncs.com.example.com'],
+    ]) {
+      for (const mapped of [false, true]) {
+        const ctx = context(request(accessKey()), configuration(original));
+        if (mapped) {
+          ctx.configuration.endpoint = '';
+          ctx.configuration.endpointMap = { 'cn-hangzhou': original };
+        }
+        const attributes = new $SPI.AttributeMap({ key: { endpointSuffix: 'aliyuncs.alibaba' } });
+        for (let i = 0; i < 2; i++) {
+          await client.modifyConfiguration(ctx, attributes);
+          assert.strictEqual(ctx.configuration.endpoint, expected);
+        }
+      }
+    }
+  });
+});
+
 function readable(text: string): Readable {
   const stream = new Readable();
   stream.push(text);
@@ -95,6 +122,69 @@ describe('coverage', function () {
     const kept = context(request(accessKey()), configuration('already.example.com'));
     await client.modifyConfiguration(kept, new $SPI.AttributeMap({}));
     assert.strictEqual(kept.configuration.endpoint, 'already.example.com');
+
+    assert.strictEqual(client.resolveEndpointSuffix({}), 'aliyuncs.com');
+    assert.strictEqual(client.resolveEndpointSuffix({
+      signatureTypePrefix: '',
+      signPrefix: '',
+      endpointSuffix: ''
+    }), 'aliyuncs.com');
+    assert.strictEqual(client.resolveEndpointSuffix({
+      signatureTypePrefix: 'ACS3-',
+      signPrefix: 'aliyun_v3',
+      endpointSuffix: ' ALIYUNCS.ALIBABA '
+    }), 'aliyuncs.alibaba');
+    assert.strictEqual(client._signatureTypePrefix, 'ACS4-');
+    assert.strictEqual(client._signPrefix, 'aliyun_v4');
+    assert.strictEqual(client._sha256, 'ACS4-HMAC-SHA256');
+    assert.strictEqual(client._sm3, 'ACS4-HMAC-SM3');
+    assert.throws(() => client.resolveEndpointSuffix({ endpointSuffix: 'example.net' }));
+
+    const previousSuffix = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+    try {
+      process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = 'aliyuncs.alibaba';
+      assert.strictEqual(client.resolveEndpointSuffix(null), 'aliyuncs.alibaba');
+      assert.strictEqual(client.resolveEndpointSuffix({ endpointSuffix: '' }), 'aliyuncs.alibaba');
+      process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = '';
+      assert.strictEqual(client.resolveEndpointSuffix(null), 'aliyuncs.com');
+    } finally {
+      if (previousSuffix === undefined) {
+        delete process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+      } else {
+        process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = previousSuffix;
+      }
+    }
+
+    assert.strictEqual(client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com'), 'ecs.cn-hangzhou.aliyuncs.com');
+    assert.strictEqual(client.withEndpointSuffix('', 'aliyuncs.alibaba'), '');
+    assert.strictEqual(client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', ''), 'ecs.cn-hangzhou.aliyuncs.com');
+    assert.strictEqual(client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', 'aliyuncs.com'), 'ecs.cn-hangzhou.aliyuncs.com');
+    assert.strictEqual(client.withEndpointSuffix('x', 'aliyuncs.alibaba'), 'x');
+    assert.strictEqual(client.withEndpointSuffix('already.example.net', 'aliyuncs.alibaba'), 'already.example.net');
+    assert.strictEqual(client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', 'aliyuncs.alibaba'), 'ecs.cn-hangzhou.aliyuncs.alibaba');
+    assert.throws(() => client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', 'example.net'));
+
+    const overridden = context(request(accessKey()), new $SPI.InterceptorContextConfiguration({
+      regionId: 'cn-hangzhou',
+      endpointRule: 'regional',
+      network: '',
+      suffix: ''
+    }));
+    await client.modifyConfiguration(overridden, new $SPI.AttributeMap({
+      key: { endpointSuffix: 'aliyuncs.alibaba' }
+    }));
+    assert.strictEqual(overridden.configuration.endpoint, 'ecs.cn-hangzhou.aliyuncs.alibaba');
+
+    const explicit = context(request(accessKey()), configuration('ecs.cn-hangzhou.aliyuncs.com'));
+    explicit.configuration.regionId = '';
+    await client.modifyRequest(explicit, new $SPI.AttributeMap({
+      key: { endpointSuffix: 'aliyuncs.alibaba', signatureTypePrefix: 'ACS3-', signPrefix: 'aliyun_v3' }
+    }));
+    assert.ok(explicit.request.headers['Authorization'].indexOf('/cn-hangzhou/ecs/') >= 0);
+    assert.ok(explicit.request.headers['Authorization'].indexOf('ACS3-HMAC-SHA256 ') === 0);
+    assert.ok(explicit.request.headers['Authorization'].indexOf('/aliyun_v3_request,') >= 0);
+    assert.strictEqual(client._signatureTypePrefix, 'ACS4-');
+    assert.strictEqual(client._signPrefix, 'aliyun_v4');
   });
 
   it('builds canonical requests and signatures', function () {
@@ -114,11 +204,25 @@ describe('coverage', function () {
     assert.strictEqual(client.defaultAny('kept', 'fallback'), 'kept');
     const signingkey = client.getSigningkey(client._sha256, 'secret', 'ecs', 'cn-hangzhou', '20240101');
     assert.ok(signingkey.length > 0);
+    const sm3key = client.getSigningkey(client._sm3, 'secret', 'ecs', 'cn-hangzhou', '20240101');
+    assert.ok(sm3key.length > 0);
     const unknown = client.getSigningkey('OTHER', 'secret', 'ecs', 'cn-hangzhou', '20240101');
     assert.strictEqual(unknown.length, 0);
     const headers = { host: 'example.com', 'x-acs-date': '2024-01-01T00:00:00Z' };
     const signature = client.getSignature('', 'GET', { q: 'a b' }, headers, client._sha256, 'payload', signingkey);
     assert.strictEqual(signature.length, 64);
+    const sm3Signature = client.getSignature('/', 'GET', null, headers, client._sm3, 'payload', sm3key);
+    assert.strictEqual(sm3Signature.length, 64);
+    assert.deepStrictEqual(client.signatureNames(null), {
+      signPrefix: 'aliyun_v4',
+      sha256: 'ACS4-HMAC-SHA256',
+      sm3: 'ACS4-HMAC-SM3'
+    });
+    assert.deepStrictEqual(client.signatureNames({ signatureTypePrefix: '', signPrefix: '' }), {
+      signPrefix: 'aliyun_v4',
+      sha256: 'ACS4-HMAC-SHA256',
+      sm3: 'ACS4-HMAC-SM3'
+    });
     const authorization = client.getAuthorization('/', 'GET', null, headers, client._sha256, 'payload', 'ak', signingkey, 'ecs', 'cn-hangzhou', '20240101');
     assert.ok(authorization.indexOf('ACS4-HMAC-SHA256 Credential=ak/20240101/cn-hangzhou/ecs/aliyun_v4_request,SignedHeaders=') === 0);
     assert.ok(authorization.indexOf('host;x-acs-date') >= 0);
@@ -134,6 +238,12 @@ describe('coverage', function () {
     assert.strictEqual(json.request.headers['x-acs-action'], 'DescribeRegions');
     assert.ok(json.request.headers['Authorization'].indexOf('ACS4-HMAC-SHA256 Credential=ak/') === 0);
     assert.ok(json.request.headers['x-acs-content-sha256'].length > 0);
+    const sm3 = context(request(accessKey()), configuration('ecs.cn-hangzhou.aliyuncs.com'));
+    sm3.request.signatureAlgorithm = client._sm3;
+    await client.modifyRequest(sm3, new $SPI.AttributeMap({
+      key: { signatureTypePrefix: '', signPrefix: '' }
+    }));
+    assert.ok(sm3.request.headers['x-acs-content-sm3'].length > 0);
     assert.strictEqual(json.request.headers['x-acs-credentials-provider'], 'static_ak');
 
     const bytes = context(request(accessKey()), configuration('ecs.cn-hangzhou.aliyuncs.com'));
@@ -237,5 +347,30 @@ describe('coverage', function () {
     await client.modifyResponse(other, new $SPI.AttributeMap({}));
     assert.strictEqual(other.response.deserializedBody, 'plain');
     await assert.rejects(client.modifyResponse(response(200, '', '{"ok":', 'json'), new $SPI.AttributeMap({})));
+  });
+});
+
+describe('signing after endpoint selection', () => {
+  it('uses the selected host when the environment changes', async () => {
+    const previous = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+    try {
+      for (const selected of ['aliyuncs.com', 'aliyuncs.alibaba']) {
+        for (const changed of ['aliyuncs.com', 'aliyuncs.alibaba', 'invalid.example']) {
+          process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = selected;
+          const client = new Client();
+          const ctx = context(request(accessKey()), configuration('ecs.cn-hangzhou.aliyuncs.com'));
+          ctx.configuration.regionId = '';
+          const attributes = new $SPI.AttributeMap({});
+          await client.modifyConfiguration(ctx, attributes);
+          process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = changed;
+          await client.modifyRequest(ctx, attributes);
+          assert.strictEqual(ctx.request.headers.host, 'ecs.cn-hangzhou.' + selected);
+          assert(ctx.request.headers.Authorization.includes('/cn-hangzhou/ecs/aliyun_v4_request'));
+        }
+      }
+    } finally {
+      if (previous === undefined) delete process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
+      else process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX = previous;
+    }
   });
 });

@@ -94,6 +94,44 @@ namespace tests
             }
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void SigningUsesSelectedEndpoint(bool asyncCall)
+        {
+            foreach (var selected in new[] { "aliyuncs.com", "aliyuncs.alibaba" })
+            {
+                var client = new Client();
+                var ctx = Context(Request(AccessKey()), Config("ecs.cn-hangzhou.aliyuncs.com"));
+                ctx.Configuration.RegionId = "";
+                var attributes = new AttributeMap { Key = new Dictionary<string, string> { { "endpointSuffix", selected } } };
+                Call(asyncCall, () => client.ModifyConfiguration(ctx, attributes), () => client.ModifyConfigurationAsync(ctx, attributes));
+                attributes.Key["endpointSuffix"] = "invalid.example";
+                Call(asyncCall, () => client.ModifyRequest(ctx, attributes), () => client.ModifyRequestAsync(ctx, attributes));
+                Assert.Equal("ecs.cn-hangzhou." + selected, ctx.Request.Headers["host"]);
+                Assert.Contains("/cn-hangzhou/ecs/aliyun_v4_request", ctx.Request.Headers["Authorization"]);
+            }
+        }
+
+        [Fact]
+        public void EndpointSuffixUsesInvariantCasing()
+        {
+            var previous = System.Globalization.CultureInfo.CurrentCulture;
+            try
+            {
+                System.Globalization.CultureInfo.CurrentCulture = new System.Globalization.CultureInfo("tr-TR");
+                var client = new Client();
+                var ctx = Context(Request(AccessKey()), Config("ecs.cn-hangzhou.aliyuncs.com"));
+                var attributes = new AttributeMap { Key = new Dictionary<string, string> { { "endpointSuffix", " ALIYUNCS.ALIBABA " } } };
+                client.ModifyConfiguration(ctx, attributes);
+                Assert.Equal("ecs.cn-hangzhou.aliyuncs.alibaba", ctx.Configuration.Endpoint);
+            }
+            finally
+            {
+                System.Globalization.CultureInfo.CurrentCulture = previous;
+            }
+        }
+
         [Fact]
         public void EndpointAndConfiguration()
         {
@@ -143,6 +181,33 @@ namespace tests
             var kept = Config("already.example.com");
             client.ModifyConfiguration(Context(Request(AccessKey()), kept), new AttributeMap());
             Assert.Equal("already.example.com", kept.Endpoint);
+            Assert.Equal("cn-hangzhou", client.GetRegion("ecs", "ecs.cn-hangzhou.aliyuncs.com", ""));
+            var regionWithSuffix = typeof(Client).GetMethod("GetRegionWithSuffix", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.Equal("cn-hangzhou", (string)regionWithSuffix.Invoke(client, new object[] { "ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net" }));
+            var overridden = new InterceptorContext.InterceptorContextConfiguration
+            {
+                RegionId = "cn-hangzhou",
+                EndpointRule = "regional",
+                Network = "",
+                Suffix = ""
+            };
+            client.ModifyConfiguration(Context(Request(AccessKey()), overridden), new AttributeMap
+            {
+                Key = new Dictionary<string, string>
+                {
+                    { "endpointSuffix", "aliyuncs.alibaba" }
+                }
+            });
+            Assert.Equal("ecs.cn-hangzhou.aliyuncs.alibaba", overridden.Endpoint);
+            var restored = new InterceptorContext.InterceptorContextConfiguration
+            {
+                RegionId = "cn-hangzhou",
+                EndpointRule = "regional",
+                Network = "",
+                Suffix = ""
+            };
+            client.ModifyConfiguration(Context(Request(AccessKey()), restored), new AttributeMap());
+            Assert.Equal("ecs.cn-hangzhou.aliyuncs.com", restored.Endpoint);
         }
 
         [Fact]

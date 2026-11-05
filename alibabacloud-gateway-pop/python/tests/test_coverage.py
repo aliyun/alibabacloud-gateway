@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import io
+import os
 import unittest
 
 from Tea.exceptions import TeaException
@@ -101,6 +102,26 @@ def context(req, cfg):
 
 
 class TestCoverage(unittest.TestCase):
+    def test_explicit_endpoint_suffix(self):
+        client = Client()
+        for original, expected in [
+            ('oss-cn-hangzhou.aliyuncs.com', 'oss-cn-hangzhou.aliyuncs.alibaba'),
+            ('ecs.cn-hangzhou-internal.aliyuncs.com', 'ecs.cn-hangzhou-internal.aliyuncs.alibaba'),
+            ('ecs.aliyun.com', 'ecs.aliyun.com'),
+            ('custom.example.com', 'custom.example.com'),
+            ('ecs.aliyuncs.alibaba', 'ecs.aliyuncs.alibaba'),
+            ('ecs.aliyuncs.com.example.com', 'ecs.aliyuncs.com.example.com'),
+        ]:
+            for mapped in (False, True):
+                cfg = config(original)
+                if mapped:
+                    cfg.endpoint = None
+                    cfg.endpoint_map = {'cn-hangzhou': original}
+                attrs = AttributeMap(key={'endpointSuffix': 'aliyuncs.alibaba'})
+                for _ in range(2):
+                    client.modify_configuration(context(request(access_key()), cfg), attrs)
+                    self.assertEqual(expected, cfg.endpoint)
+
     def test_endpoint_and_configuration(self):
         client = Client()
         self.assertEqual('ecs.example.com', client.get_endpoint('ecs', 'cn-hangzhou', 'regional', '', '', None, 'ecs.example.com'))
@@ -126,6 +147,95 @@ class TestCoverage(unittest.TestCase):
         broken = InterceptorContextConfiguration(region_id='', endpoint_rule='regional')
         with self.assertRaises(Exception):
             client.modify_configuration(context(request(access_key()), broken), AttributeMap())
+
+    def test_signing_uses_selected_endpoint_after_environment_change(self):
+        previous = os.environ.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX')
+        try:
+            for asynchronous in (False, True):
+                for selected in ('aliyuncs.com', 'aliyuncs.alibaba'):
+                    for changed in ('aliyuncs.com', 'aliyuncs.alibaba', 'invalid.example'):
+                        os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = selected
+                        client = Client()
+                        built = config('ecs.cn-hangzhou.aliyuncs.com')
+                        built.region_id = ''
+                        ctx = context(request(access_key()), built)
+                        attributes = AttributeMap()
+                        client.modify_configuration(ctx, attributes)
+                        os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = changed
+                        if asynchronous:
+                            loop = asyncio.new_event_loop()
+                            try:
+                                loop.run_until_complete(client.modify_request_async(ctx, attributes))
+                            finally:
+                                loop.close()
+                        else:
+                            client.modify_request(ctx, attributes)
+                        self.assertEqual('ecs.cn-hangzhou.' + selected, ctx.request.headers['host'])
+                        self.assertIn('/cn-hangzhou/ecs/aliyun_v4_request', ctx.request.headers['Authorization'])
+        finally:
+            if previous is None:
+                os.environ.pop('ALIBABA_CLOUD_ENDPOINT_SUFFIX', None)
+            else:
+                os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = previous
+
+    def test_endpoint_suffix_env_and_attribute(self):
+        os.environ['ALIBABA_CLOUD_ENDPOINT_SUFFIX'] = 'aliyuncs.alibaba'
+        try:
+            client = Client()
+            built = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+            client.modify_configuration(context(request(access_key()), built), AttributeMap())
+            self.assertEqual('ecs.cn-hangzhou.aliyuncs.alibaba', built.endpoint)
+            self.assertEqual('cn-hangzhou', client.get_region('ecs', 'ecs.cn-hangzhou.aliyuncs.com', ''))
+            self.assertEqual('cn-hangzhou', client._get_region_with_suffix('ecs', built.endpoint, '', 'aliyuncs.alibaba'))
+            self.assertEqual('cn-hangzhou', client._get_region_with_suffix('ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'))
+            self.assertEqual('aliyuncs.com', client._endpoint_suffix)
+            self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
+
+            overridden = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+            client.modify_configuration(context(request(access_key()), overridden), AttributeMap(key={
+                'endpointSuffix': ' ALIYUNCS.ALIBABA ',
+            }))
+            self.assertEqual('ecs.cn-hangzhou.aliyuncs.alibaba', overridden.endpoint)
+            self.assertEqual('ACS4-HMAC-SHA256', client._sha_256)
+            self.assertEqual('leave.example', client._with_endpoint_suffix('leave.example'))
+            self.assertEqual('', client._with_endpoint_suffix(''))
+            client._endpoint_suffix = ''
+            self.assertEqual('aliyuncs.alibaba', client._resolve_endpoint_suffix({
+                'signatureTypePrefix': '',
+                'signPrefix': '',
+                'endpointSuffix': '',
+            }))
+            self.assertEqual('', client._endpoint_suffix)
+        finally:
+            os.environ.pop('ALIBABA_CLOUD_ENDPOINT_SUFFIX', None)
+        fallback = Client()
+        fallback._endpoint_suffix = ''
+        self.assertEqual('aliyuncs.com', fallback._resolve_endpoint_suffix(None))
+        self.assertEqual('', fallback._endpoint_suffix)
+        kept = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        fallback.modify_configuration(context(request(access_key()), kept), AttributeMap(key={'endpointSuffix': 'aliyuncs.alibaba'}))
+        self.assertEqual('ecs.cn-hangzhou.aliyuncs.alibaba', kept.endpoint)
+        with self.assertRaises(Exception):
+            fallback.modify_configuration(context(request(access_key()), kept), AttributeMap(key={'endpointSuffix': 'example.net'}))
+        again = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        fallback.modify_configuration(context(request(access_key()), again), AttributeMap())
+        self.assertEqual('ecs.cn-hangzhou.aliyuncs.com', again.endpoint)
+
+    def test_subclass_keeps_original_endpoint_signatures(self):
+        class Child(Client):
+            def get_endpoint(self, product_id, region_id, endpoint_rule, network, suffix, endpoint_map, endpoint):
+                return 'child.example'
+
+            def get_region(self, product, endpoint, region_id):
+                return 'child-region'
+
+        child = Child()
+        built = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        child.modify_configuration(context(request(access_key()), built), AttributeMap(key={'endpointSuffix': 'aliyuncs.alibaba'}))
+        self.assertEqual('ecs.cn-hangzhou.aliyuncs.alibaba', built.endpoint)
+        self.assertEqual('child.example', child.get_endpoint('ecs', 'cn-hangzhou', 'regional', '', '', None, ''))
+        self.assertEqual('child-region', child.get_region('ecs', 'ecs.cn-hangzhou.aliyuncs.com', ''))
+        self.assertEqual('cn-hangzhou', child._get_region_with_suffix('ecs', 'ecs.cn-hangzhou.aliyuncs.com', '', 'example.net'))
 
     def test_canonical_and_signing(self):
         client = Client()
