@@ -306,7 +306,7 @@ export default class Client extends SPI {
     let signedHeaders = this.getSignedHeaders(headers);
     this.validateSignedHeaders(signedHeaders);
     let signedHeadersStr = codec.join(signedHeaders, ";");
-    stringToSign = `${method.toUpperCase()}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
+    stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
     let hex = codec.hexEncode(codec.hash(runtime.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
     let signature = runtime.toBytes("");

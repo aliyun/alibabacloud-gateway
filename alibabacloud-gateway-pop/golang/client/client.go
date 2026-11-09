@@ -349,7 +349,7 @@ func (client *Client) signature(pathname *string, method *string, query map[stri
 		return _result, _err
 	}
 	signedHeadersStr := join(signedHeaders, dara.String(";"))
-	stringToSign = dara.String(strings.ToUpper(dara.StringValue(method)) + "\n" + dara.StringValue(canonicalURI) + "\n" + dara.StringValue(canonicalizedResource) + "\n" + dara.StringValue(canonicalizedHeaders) + "\n" + dara.StringValue(signedHeadersStr) + "\n" + dara.StringValue(payload))
+	stringToSign = dara.String(dara.StringValue(method) + "\n" + dara.StringValue(canonicalURI) + "\n" + dara.StringValue(canonicalizedResource) + "\n" + dara.StringValue(canonicalizedHeaders) + "\n" + dara.StringValue(signedHeadersStr) + "\n" + dara.StringValue(payload))
 	hex := hexEncode(hashBytes(toBytes(stringToSign), signatureAlgorithm))
 	stringToSign = dara.String(dara.StringValue(signatureAlgorithm) + "\n" + dara.StringValue(hex))
 	signature := toBytes(dara.String(""))

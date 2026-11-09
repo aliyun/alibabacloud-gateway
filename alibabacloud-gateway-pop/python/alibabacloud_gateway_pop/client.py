@@ -466,7 +466,7 @@ class Client(SPIClient):
         signed_headers = self.get_signed_headers(headers)
         self.validate_signed_headers(signed_headers)
         signed_headers_str = codec.join(signed_headers, ';')
-        string_to_sign = f'{method.upper()}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
+        string_to_sign = f'{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
         hex = codec.hex_encode(codec.hash_bytes(support.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = support.to_bytes('')

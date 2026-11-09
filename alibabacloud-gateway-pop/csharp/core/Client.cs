@@ -552,7 +552,7 @@ namespace AlibabaCloud.GatewayPop
             List<string> signedHeaders = GetSignedHeaders(headers);
             ValidateSignedHeaders(signedHeaders);
             string signedHeadersStr = Runtime.Join(signedHeaders, ";");
-            stringToSign = "" + method.ToUpperInvariant() + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
+            stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
             string hex = Runtime.HexEncode(Runtime.Hash(Runtime.ToBytes(stringToSign), signatureAlgorithm));
             stringToSign = "" + signatureAlgorithm + "\n" + hex;
             byte[] signature = Runtime.ToBytes("");

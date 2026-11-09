@@ -42,8 +42,8 @@ func TestV4CanonicalQuerySignature(t *testing.T) {
 		payload   string
 		signature string
 	}{
-		{client.Sha256, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "d5b8fb7a183e2e8773170a77534441983872ca20110d67d71c98baf342dbeb33"},
-		{client.Sm3, "1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b", "30c63c3fc403aa8955bfd2f6ca9e6a715731ee8c9b320cf7465d75390043a3b6"},
+		{client.Sha256, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "6a4bed968fa9e417380dbea97a003ca2861777b47565075631cd602af98351e2"},
+		{client.Sm3, "1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b", "82b1f962d9dc4072ebcabf59cf649df29c83bd69d1d2b9646dff35fcb6c2e56b"},
 	} {
 		t.Run(tea.StringValue(vector.algorithm), func(t *testing.T) {
 			key := client.GetSigningkey(vector.algorithm, tea.String("secret"), tea.String("ecs"), tea.String("cn-hangzhou"), tea.String("20240101"))

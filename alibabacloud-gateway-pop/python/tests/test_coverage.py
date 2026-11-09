@@ -267,7 +267,7 @@ class TestCoverage(unittest.TestCase):
         signature = client.get_signature('', 'GET', {'q': 'a b'}, headers, client._sha_256, 'payload', signingkey)
         self.assertEqual(64, len(signature))
         payload = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
-        self.assertEqual('d5b8fb7a183e2e8773170a77534441983872ca20110d67d71c98baf342dbeb33',
+        self.assertEqual('6a4bed968fa9e417380dbea97a003ca2861777b47565075631cd602af98351e2',
                          client.get_signature('/', 'get', query, headers, client._sha_256, payload, signingkey))
         authorization = client.get_authorization('/', 'GET', None, headers, client._sha_256, 'payload', 'ak', signingkey, 'ecs', 'cn-hangzhou', '20240101')
         self.assertIn('ACS4-HMAC-SHA256 Credential=ak/20240101/cn-hangzhou/ecs/aliyun_v4_request,SignedHeaders=', authorization)

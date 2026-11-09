@@ -301,7 +301,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
         this.validateSignedHeaders(signedHeaders);
         String signedHeadersStr = Codec.join(signedHeaders, ";");
-        stringToSign = "" + method.toUpperCase(java.util.Locale.ROOT) + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload + "";
+        stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload + "";
         String hex = Codec.hexEncode(Codec.hash(Support.toBytes(stringToSign), signatureAlgorithm));
         stringToSign = "" + signatureAlgorithm + "\n" + hex + "";
         byte[] signature = Support.toBytes("");

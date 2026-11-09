@@ -282,7 +282,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
         var signedHeaders: [String] = getSignedHeaders(headers as! [String: String])
         try validateSignedHeaders(signedHeaders)
         var signedHeadersStr: String = Runtime.join(signedHeaders, ";")
-        stringToSign = (method as! String).uppercased() + "\n" + (canonicalURI as! String) + "\n" + (canonicalizedResource as! String) + "\n" + (canonicalizedHeaders as! String) + "\n" + (signedHeadersStr as! String) + "\n" + (payload as! String)
+        stringToSign = (method as! String) + "\n" + (canonicalURI as! String) + "\n" + (canonicalizedResource as! String) + "\n" + (canonicalizedHeaders as! String) + "\n" + (signedHeadersStr as! String) + "\n" + (payload as! String)
         var hex: String = Runtime.hexEncode(Runtime.hash(Runtime.toBytes(stringToSign), signatureAlgorithm))
         stringToSign = (signatureAlgorithm as! String) + "\n" + (hex as! String)
         var signature: [UInt8] = Runtime.toBytes("")

@@ -196,7 +196,7 @@ class Client(SPIClient):
         signed_headers = self.get_signed_headers(headers)
         self.validate_signed_headers(signed_headers)
         signed_headers_str = ArrayClient.join(signed_headers, ';')
-        string_to_sign = '%s\n%s\n%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(method).upper(), TeaConverter.to_unicode(canonical_uri), TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(payload))
+        string_to_sign = '%s\n%s\n%s\n%s\n%s\n%s' % (TeaConverter.to_unicode(method), TeaConverter.to_unicode(canonical_uri), TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(signed_headers_str), TeaConverter.to_unicode(payload))
         hex = Encoder.hex_encode(Encoder.hash(UtilClient.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = '%s\n%s' % (TeaConverter.to_unicode(signature_algorithm), TeaConverter.to_unicode(hex))
         signature = UtilClient.to_bytes('')

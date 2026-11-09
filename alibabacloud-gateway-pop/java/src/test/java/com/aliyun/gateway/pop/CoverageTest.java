@@ -161,7 +161,7 @@ public class CoverageTest {
         headers.put("x-acs-date", "2024-01-01T00:00:00Z");
         byte[] key = client.getSigningkey(client._sha256, "secret", "ecs", "cn-hangzhou", "20240101");
         String payload = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        Assert.assertEquals("d5b8fb7a183e2e8773170a77534441983872ca20110d67d71c98baf342dbeb33",
+        Assert.assertEquals("6a4bed968fa9e417380dbea97a003ca2861777b47565075631cd602af98351e2",
                 client.getSignature("/", "get", query, headers, client._sha256, payload, key));
     }
 

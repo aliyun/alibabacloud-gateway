@@ -294,7 +294,7 @@ function getSignatureWith(pathname: string, method: string, query: map[string]st
   var signedHeaders = getSignedHeaders(headers);
   validateSignedHeaders(signedHeaders);
   var signedHeadersStr = Array.join(signedHeaders, ';');
-  stringToSign = `${String.toUpper(method)}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
+  stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
   var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
   stringToSign = `${signatureAlgorithm}\n${hex}`;
   var signature = Util.toBytes('');
