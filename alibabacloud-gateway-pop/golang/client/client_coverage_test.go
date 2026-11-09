@@ -20,6 +20,41 @@ type fixedCredential struct {
 	err   error
 }
 
+func TestV4CanonicalQuerySignature(t *testing.T) {
+	client, err := NewClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	query := map[string]*string{
+		"a-b": tea.String("1"), "a/b": tea.String("2"), "a": tea.String(""),
+		"é": tea.String("中"), "10": tea.String("x"), "2": tea.String("y"),
+		"null": nil, "punct": tea.String("!+*~"), "Signature": tea.String("ignored"),
+	}
+	const wantQuery = "%C3%A9=%E4%B8%AD&10=x&2=y&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~"
+	if got := tea.StringValue(client.BuildCanonicalizedResource(query)); got != wantQuery {
+		t.Errorf("canonical query = %q, want %q", got, wantQuery)
+	}
+	headers := map[string]*string{
+		"Host": tea.String(" example.com "), "x-acs-date": tea.String("2024-01-01T00:00:00Z"),
+	}
+	for _, vector := range []struct {
+		algorithm *string
+		payload   string
+		signature string
+	}{
+		{client.Sha256, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "d5b8fb7a183e2e8773170a77534441983872ca20110d67d71c98baf342dbeb33"},
+		{client.Sm3, "1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b", "30c63c3fc403aa8955bfd2f6ca9e6a715731ee8c9b320cf7465d75390043a3b6"},
+	} {
+		t.Run(tea.StringValue(vector.algorithm), func(t *testing.T) {
+			key := client.GetSigningkey(vector.algorithm, tea.String("secret"), tea.String("ecs"), tea.String("cn-hangzhou"), tea.String("20240101"))
+			signature, err := client.GetSignature(tea.String("/"), tea.String("get"), query, headers, vector.algorithm, tea.String(vector.payload), key)
+			if err != nil || tea.StringValue(signature) != vector.signature {
+				t.Fatalf("signature = %q, error = %v; want %s", tea.StringValue(signature), err, vector.signature)
+			}
+		})
+	}
+}
+
 func (f fixedCredential) GetCredential() (*credentials.CredentialModel, error) {
 	return f.model, f.err
 }
@@ -395,7 +430,7 @@ func TestCanonicalRequestPieces(t *testing.T) {
 	}
 	canonical := tea.StringValue(client.BuildCanonicalizedHeaders(headers))
 	utils.AssertContains(t, canonical, "host:example.com\n")
-	utils.AssertContains(t, canonical, "x-acs-action:")
+	utils.AssertContains(t, canonical, "x-acs-action:One,Two\n")
 
 	utils.AssertEqual(t, "fallback", client.DefaultAny(nil, "fallback"))
 	utils.AssertEqual(t, "kept", client.DefaultAny("kept", "fallback"))

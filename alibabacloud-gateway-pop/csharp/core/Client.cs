@@ -552,7 +552,7 @@ namespace AlibabaCloud.GatewayPop
             List<string> signedHeaders = GetSignedHeaders(headers);
             ValidateSignedHeaders(signedHeaders);
             string signedHeadersStr = Runtime.Join(signedHeaders, ";");
-            stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
+            stringToSign = "" + method.ToUpperInvariant() + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload;
             string hex = Runtime.HexEncode(Runtime.Hash(Runtime.ToBytes(stringToSign), signatureAlgorithm));
             stringToSign = "" + signatureAlgorithm + "\n" + hex;
             byte[] signature = Runtime.ToBytes("");
@@ -663,23 +663,23 @@ namespace AlibabaCloud.GatewayPop
 
         public string BuildCanonicalizedResource(Dictionary<string, string> query)
         {
-            string canonicalizedResource = "";
-            if (!Runtime.IsUnset(query))
+            var encoded = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            if (query != null)
             {
-                List<string> queryArray = Runtime.KeySet(query);
-                List<string> sortedQueryArray = Runtime.AscSort(queryArray);
-                string separator = "";
-
-                foreach (var key in sortedQueryArray) {
-                    canonicalizedResource = "" + canonicalizedResource + separator + Runtime.PercentEncode(key) + "=";
-                    if (!Runtime.Empty(query.Get(key)))
+                foreach (var entry in query)
+                {
+                    if (entry.Key != "Signature")
                     {
-                        canonicalizedResource = "" + canonicalizedResource + Runtime.PercentEncode(query.Get(key));
+                        encoded.Add(Runtime.PercentEncode(entry.Key), Runtime.PercentEncode(entry.Value ?? ""));
                     }
-                    separator = "&";
                 }
             }
-            return canonicalizedResource;
+            var pairs = new List<string>();
+            foreach (var entry in encoded)
+            {
+                pairs.Add(entry.Key + "=" + entry.Value);
+            }
+            return string.Join("&", pairs);
         }
 
         public string BuildCanonicalizedHeaders(Dictionary<string, string> headers)

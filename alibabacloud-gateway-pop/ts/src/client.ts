@@ -306,7 +306,7 @@ export default class Client extends SPI {
     let signedHeaders = this.getSignedHeaders(headers);
     this.validateSignedHeaders(signedHeaders);
     let signedHeadersStr = codec.join(signedHeaders, ";");
-    stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
+    stringToSign = `${method.toUpperCase()}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
     let hex = codec.hexEncode(codec.hash(runtime.toBytes(stringToSign), signatureAlgorithm));
     stringToSign = `${signatureAlgorithm}\n${hex}`;
     let signature = runtime.toBytes("");
@@ -404,23 +404,10 @@ export default class Client extends SPI {
   }
 
   buildCanonicalizedResource(query: {[key: string ]: string}): string {
-    let canonicalizedResource : string = "";
-    if (!runtime.isUnset(query)) {
-      let queryArray : string[] = codec.keySet(query);
-      let sortedQueryArray = codec.ascSort(queryArray);
-      let separator : string = "";
-
-      for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}${separator}${codec.percentEncode(key)}=`;
-        if (!runtime.empty(query[key])) {
-          canonicalizedResource = `${canonicalizedResource}${codec.percentEncode(query[key])}`;
-        }
-
-        separator = "&";
-      }
-    }
-
-    return canonicalizedResource;
+    const encoded = Object.keys(query || {}).filter(key => key !== "Signature")
+      .map(key => ({ key: codec.percentEncode(key), value: codec.percentEncode(query[key] ?? "") }));
+    encoded.sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
+    return encoded.map(({key, value}) => `${key}=${value}`).join("&");
   }
 
   buildCanonicalizedHeaders(headers: {[key: string ]: string}): string {

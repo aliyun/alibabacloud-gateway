@@ -466,7 +466,7 @@ class Client(SPIClient):
         signed_headers = self.get_signed_headers(headers)
         self.validate_signed_headers(signed_headers)
         signed_headers_str = codec.join(signed_headers, ';')
-        string_to_sign = f'{method}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
+        string_to_sign = f'{method.upper()}\n{canonical_uri}\n{canonicalized_resource}\n{canonicalized_headers}\n{signed_headers_str}\n{payload}'
         hex = codec.hex_encode(codec.hash_bytes(support.to_bytes(string_to_sign), signature_algorithm))
         string_to_sign = f'{signature_algorithm}\n{hex}'
         signature = support.to_bytes('')
@@ -552,17 +552,12 @@ class Client(SPIClient):
         self,
         query: Dict[str, str],
     ) -> str:
-        canonicalized_resource = ''
-        if not support.is_unset(query):
-            query_array = codec.key_set(query)
-            sorted_query_array = codec.asc_sort(query_array)
-            separator = ''
-            for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}{separator}{codec.percent_encode(key)}='
-                if not support.empty(query.get(key)):
-                    canonicalized_resource = f'{canonicalized_resource}{codec.percent_encode(query.get(key))}'
-                separator = '&'
-        return canonicalized_resource
+        encoded = {
+            codec.percent_encode(key): codec.percent_encode(value if value is not None else '')
+            for key, value in (query or {}).items()
+            if key != 'Signature'
+        }
+        return '&'.join(f'{key}={encoded[key]}' for key in sorted(encoded))
 
     def build_canonicalized_headers(
         self,

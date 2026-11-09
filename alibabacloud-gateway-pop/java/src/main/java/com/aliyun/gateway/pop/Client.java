@@ -301,7 +301,7 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.List<String> signedHeaders = this.getSignedHeaders(headers);
         this.validateSignedHeaders(signedHeaders);
         String signedHeadersStr = Codec.join(signedHeaders, ";");
-        stringToSign = "" + method + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload + "";
+        stringToSign = "" + method.toUpperCase(java.util.Locale.ROOT) + "\n" + canonicalURI + "\n" + canonicalizedResource + "\n" + canonicalizedHeaders + "\n" + signedHeadersStr + "\n" + payload + "";
         String hex = Codec.hexEncode(Codec.hash(Support.toBytes(stringToSign), signatureAlgorithm));
         stringToSign = "" + signatureAlgorithm + "\n" + hex + "";
         byte[] signature = Support.toBytes("");
@@ -395,22 +395,23 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String buildCanonicalizedResource(java.util.Map<String, String> query) throws Exception {
-        String canonicalizedResource = "";
-        if (!Support.isUnset(query)) {
-            java.util.List<String> queryArray = Codec.keySet(query);
-            java.util.List<String> sortedQueryArray = Codec.ascSort(queryArray);
-            String separator = "";
-            for (String key : sortedQueryArray) {
-                canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + Codec.percentEncode(key) + "=";
-                if (!Support.empty(query.get(key))) {
-                    canonicalizedResource = "" + canonicalizedResource + "" + Codec.percentEncode(query.get(key)) + "";
+        java.util.Map<String, String> encoded = new java.util.TreeMap<>();
+        if (query != null) {
+            for (java.util.Map.Entry<String, String> entry : query.entrySet()) {
+                if (!"Signature".equals(entry.getKey())) {
+                    String value = entry.getValue();
+                    encoded.put(Codec.percentEncode(entry.getKey()), value == null ? "" : Codec.percentEncode(value));
                 }
-
-                separator = "&";
             }
         }
-
-        return canonicalizedResource;
+        StringBuilder result = new StringBuilder();
+        for (java.util.Map.Entry<String, String> entry : encoded.entrySet()) {
+            if (result.length() > 0) {
+                result.append('&');
+            }
+            result.append(entry.getKey()).append('=').append(entry.getValue());
+        }
+        return result.toString();
     }
 
     public String buildCanonicalizedHeaders(java.util.Map<String, String> headers) throws Exception {

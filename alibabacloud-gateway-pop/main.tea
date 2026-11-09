@@ -294,7 +294,7 @@ function getSignatureWith(pathname: string, method: string, query: map[string]st
   var signedHeaders = getSignedHeaders(headers);
   validateSignedHeaders(signedHeaders);
   var signedHeadersStr = Array.join(signedHeaders, ';');
-  stringToSign = `${method}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
+  stringToSign = `${String.toUpper(method)}\n${canonicalURI}\n${canonicalizedResource}\n${canonicalizedHeaders}\n${signedHeadersStr}\n${payload}`;
   var hex = EncodeUtil.hexEncode(EncodeUtil.hash(Util.toBytes(stringToSign), signatureAlgorithm));
   stringToSign = `${signatureAlgorithm}\n${hex}`;
   var signature = Util.toBytes('');
@@ -375,20 +375,24 @@ function hostWithoutDomain(host: string, suffix: string): string {
 }
 
 function buildCanonicalizedResource(query: map[string]string): string {
-  var canonicalizedResource : string = '';
+  var encodedQuery : map[string]string = {};
   if (!Util.isUnset(query)) {
-    var queryArray : [string] = Map.keySet(query);
-    var sortedQueryArray = Array.ascSort(queryArray);
-    var separator : string = '';
-    for(var key : sortedQueryArray) {
-      canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}=`;
-      if (!Util.empty(query[key])) {
-        canonicalizedResource = `${canonicalizedResource}${EncodeUtil.percentEncode(query[key])}`;
+    for (var key : Map.keySet(query)) {
+      if (!String.equals(key, 'Signature')) {
+        var encodedKey = EncodeUtil.percentEncode(key);
+        var value = query[key];
+        encodedQuery[encodedKey] = '';
+        if (!Util.empty(value)) {
+          encodedQuery[encodedKey] = EncodeUtil.percentEncode(value);
+        }
       }
-      separator = '&';
     }
   }
-  return canonicalizedResource;
+  var pairs : [string] = [];
+  for (var key : Array.ascSort(Map.keySet(encodedQuery))) {
+    Array.append(pairs, `${key}=${encodedQuery[key]}`);
+  }
+  return Array.join(pairs, '&');
 }
 
 function buildCanonicalizedHeaders(headers: map[string]string): string {
