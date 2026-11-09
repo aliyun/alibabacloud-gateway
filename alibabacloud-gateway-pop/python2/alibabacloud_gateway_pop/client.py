@@ -249,9 +249,8 @@ class Client(SPIClient):
     def build_canonicalized_resource(self, query):
         encoded = {}
         for key, value in (query or {}).items():
-            if key != 'Signature':
-                encoded_key = TeaConverter.to_unicode(Encoder.percent_encode(key))
-                encoded[encoded_key] = TeaConverter.to_unicode(Encoder.percent_encode(value if value is not None else ''))
+            encoded_key = TeaConverter.to_unicode(Encoder.percent_encode(key))
+            encoded[encoded_key] = TeaConverter.to_unicode(Encoder.percent_encode(value if value is not None else ''))
         return '&'.join('%s=%s' % (key, encoded[key]) for key in sorted(encoded))
 
     def build_canonicalized_headers(self, headers):

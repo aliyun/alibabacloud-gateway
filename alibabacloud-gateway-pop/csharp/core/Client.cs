@@ -668,10 +668,7 @@ namespace AlibabaCloud.GatewayPop
             {
                 foreach (var entry in query)
                 {
-                    if (entry.Key != "Signature")
-                    {
-                        encoded.Add(Runtime.PercentEncode(entry.Key), Runtime.PercentEncode(entry.Value ?? ""));
-                    }
+                    encoded.Add(Runtime.PercentEncode(entry.Key), Runtime.PercentEncode(entry.Value ?? ""));
                 }
             }
             var pairs = new List<string>();

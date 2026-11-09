@@ -473,9 +473,7 @@ class Client extends DarabonbaGatewaySpiClient
     {
         $encoded = array();
         foreach ((array) $query as $key => $value) {
-            if ($key !== 'Signature') {
-                $encoded[self::percentEncode((string) $key)] = self::percentEncode($value === null ? '' : $value);
-            }
+            $encoded[self::percentEncode((string) $key)] = self::percentEncode($value === null ? '' : $value);
         }
         ksort($encoded, SORT_STRING);
         $pairs = array();

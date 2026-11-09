@@ -28,9 +28,9 @@ func TestV4CanonicalQuerySignature(t *testing.T) {
 	query := map[string]*string{
 		"a-b": tea.String("1"), "a/b": tea.String("2"), "a": tea.String(""),
 		"é": tea.String("中"), "10": tea.String("x"), "2": tea.String("y"),
-		"null": nil, "punct": tea.String("!+*~"), "Signature": tea.String("ignored"),
+		"null": nil, "punct": tea.String("!+*~"), "Signature": tea.String("example"),
 	}
-	const wantQuery = "%C3%A9=%E4%B8%AD&10=x&2=y&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~"
+	const wantQuery = "%C3%A9=%E4%B8%AD&10=x&2=y&Signature=example&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~"
 	if got := tea.StringValue(client.BuildCanonicalizedResource(query)); got != wantQuery {
 		t.Errorf("canonical query = %q, want %q", got, wantQuery)
 	}
@@ -42,8 +42,8 @@ func TestV4CanonicalQuerySignature(t *testing.T) {
 		payload   string
 		signature string
 	}{
-		{client.Sha256, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "6a4bed968fa9e417380dbea97a003ca2861777b47565075631cd602af98351e2"},
-		{client.Sm3, "1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b", "82b1f962d9dc4072ebcabf59cf649df29c83bd69d1d2b9646dff35fcb6c2e56b"},
+		{client.Sha256, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "cf5cc1b6bbc3dfe4ede5f5275fa7e9d83332569d60ca2f0d21f842bb2b251e95"},
+		{client.Sm3, "1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b", "71036a179f032d957323de93e68c6fa54fabbe498eff4abbfd81ed4f82019c3f"},
 	} {
 		t.Run(tea.StringValue(vector.algorithm), func(t *testing.T) {
 			key := client.GetSigningkey(vector.algorithm, tea.String("secret"), tea.String("ecs"), tea.String("cn-hangzhou"), tea.String("20240101"))

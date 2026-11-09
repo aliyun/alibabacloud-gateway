@@ -6,8 +6,8 @@ final class ClientTests: XCTestCase {
         let client = try Client()
         XCTAssertEqual(
             client.buildCanonicalizedResource(["a-b": "1", "a/b": "2", "a": "",
-                                               "é": "中", "punct": "!+*~", "Signature": "ignored"]),
-            "%C3%A9=%E4%B8%AD&a=&a%2Fb=2&a-b=1&punct=%21%2B%2A~"
+                                               "é": "中", "punct": "!+*~", "Signature": "example"]),
+            "%C3%A9=%E4%B8%AD&Signature=example&a=&a%2Fb=2&a-b=1&punct=%21%2B%2A~"
         )
         XCTAssertEqual(
             client.buildCanonicalizedHeaders(["Host": " example.com ", "x-acs-date": "date", "X-Acs-Foo": " foo "]),

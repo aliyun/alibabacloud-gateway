@@ -398,10 +398,8 @@ public class Client extends com.aliyun.gateway.spi.Client {
         java.util.Map<String, String> encoded = new java.util.TreeMap<>();
         if (query != null) {
             for (java.util.Map.Entry<String, String> entry : query.entrySet()) {
-                if (!"Signature".equals(entry.getKey())) {
-                    String value = entry.getValue();
-                    encoded.put(Codec.percentEncode(entry.getKey()), value == null ? "" : Codec.percentEncode(value));
-                }
+                String value = entry.getValue();
+                encoded.put(Codec.percentEncode(entry.getKey()), value == null ? "" : Codec.percentEncode(value));
             }
         }
         StringBuilder result = new StringBuilder();

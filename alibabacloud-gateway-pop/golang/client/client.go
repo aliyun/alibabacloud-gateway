@@ -448,9 +448,7 @@ func (client *Client) regionWithSuffix(product *string, endpoint *string, region
 func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_result *string) {
 	encoded := make(map[string]*string, len(query))
 	for key, value := range query {
-		if key != "Signature" {
-			encoded[dara.StringValue(percentEncode(dara.String(key)))] = percentEncode(value)
-		}
+		encoded[dara.StringValue(percentEncode(dara.String(key)))] = percentEncode(value)
 	}
 	pairs := make([]string, 0, len(encoded))
 	for _, key := range ascSort(keySet(encoded)) {

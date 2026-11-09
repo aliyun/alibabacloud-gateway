@@ -371,7 +371,7 @@ open class Client : AlibabacloudGatewaySPI.Client {
     }
 
     public func buildCanonicalizedResource(_ query: [String: String]) -> String {
-        return query.filter { $0.key != "Signature" }
+        return query
             .map { (key: Runtime.percentEncode($0.key), value: Runtime.percentEncode($0.value)) }
             .sorted { $0.key < $1.key }
             .map { "\($0.key)=\($0.value)" }

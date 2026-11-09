@@ -406,9 +406,7 @@ export default class Client extends SPI {
   buildCanonicalizedResource(query: {[key: string ]: string}): string {
     const encoded = new Map<string, string>();
     for (const key of Object.keys(query || {})) {
-      if (key !== "Signature") {
-        encoded.set(codec.percentEncode(key), codec.percentEncode(query[key] ?? ""));
-      }
+      encoded.set(codec.percentEncode(key), codec.percentEncode(query[key] ?? ""));
     }
     return Array.from(encoded.keys()).sort().map(key => `${key}=${encoded.get(key)}`).join("&");
   }

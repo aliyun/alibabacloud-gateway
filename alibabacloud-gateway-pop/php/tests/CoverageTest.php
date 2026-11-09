@@ -291,9 +291,9 @@ final class CoverageTest extends TestCase
         $client = new Client();
         $this->assertEquals('', $client->buildCanonicalizedResource(null));
         $resource = $client->buildCanonicalizedResource(array('b' => 'x y', 'a' => 'm*n', 'empty' => ''));
-        $this->assertSame('10=x&2=y&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~',
+        $this->assertSame('10=x&2=y&Signature=example&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~',
             $client->buildCanonicalizedResource(array('2' => 'y', '10' => 'x', 'a-b' => '1', 'a/b' => '2',
-                'a' => '', 'null' => null, 'punct' => '!+*~', 'Signature' => 'ignored')));
+                'a' => '', 'null' => null, 'punct' => '!+*~', 'Signature' => 'example')));
         $this->assertTrue(strpos($resource, 'a=m%2An') !== false);
         $this->assertTrue(strpos($resource, 'b=x%20y') !== false);
         $canonical = $client->buildCanonicalizedHeaders(array(

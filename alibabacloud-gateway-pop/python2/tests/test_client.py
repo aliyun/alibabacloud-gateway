@@ -11,8 +11,8 @@ class TestClient(unittest.TestCase):
 
     def test_canonical_query_and_mixed_case_headers(self):
         client = Client()
-        query = {'a-b': '1', 'a/b': '2', 'a': '', 'null': None, 'Signature': 'ignored'}
-        self.assertEqual('a=&a%2Fb=2&a-b=1&null=', client.build_canonicalized_resource(query))
+        query = {'a-b': '1', 'a/b': '2', 'a': '', 'null': None, 'Signature': 'example'}
+        self.assertEqual('Signature=example&a=&a%2Fb=2&a-b=1&null=', client.build_canonicalized_resource(query))
         self.assertEqual('host:example.com\nx-acs-date:date\nx-acs-foo:foo\n',
                          client.build_canonicalized_headers({
                              'Host': ' example.com ', 'x-acs-date': 'date', 'X-Acs-Foo': ' foo ',

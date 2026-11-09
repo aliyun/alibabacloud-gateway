@@ -378,13 +378,11 @@ function buildCanonicalizedResource(query: map[string]string): string {
   var encodedQuery : map[string]string = {};
   if (!Util.isUnset(query)) {
     for (var key : Map.keySet(query)) {
-      if (!String.equals(key, 'Signature')) {
-        var encodedKey = EncodeUtil.percentEncode(key);
-        var value = query[key];
-        encodedQuery[encodedKey] = '';
-        if (!Util.empty(value)) {
-          encodedQuery[encodedKey] = EncodeUtil.percentEncode(value);
-        }
+      var encodedKey = EncodeUtil.percentEncode(key);
+      var value = query[key];
+      encodedQuery[encodedKey] = '';
+      if (!Util.empty(value)) {
+        encodedQuery[encodedKey] = EncodeUtil.percentEncode(value);
       }
     }
   }

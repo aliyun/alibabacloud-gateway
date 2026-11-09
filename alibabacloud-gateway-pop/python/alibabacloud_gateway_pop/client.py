@@ -555,7 +555,6 @@ class Client(SPIClient):
         encoded = {
             codec.percent_encode(key): codec.percent_encode(value if value is not None else '')
             for key, value in (query or {}).items()
-            if key != 'Signature'
         }
         return '&'.join(f'{key}={encoded[key]}' for key in sorted(encoded))
 

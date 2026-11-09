@@ -141,7 +141,7 @@ public class CoverageTest {
     }
 
     @Test
-    public void canonicalQueryMatchesVerifier() throws Exception {
+    public void canonicalQueryIncludesSignatureParameter() throws Exception {
         Client client = new Client();
         Map<String, String> query = new HashMap<String, String>();
         query.put("a-b", "1");
@@ -152,8 +152,8 @@ public class CoverageTest {
         query.put("2", "y");
         query.put("null", null);
         query.put("punct", "!+*~");
-        query.put("Signature", "ignored");
-        Assert.assertEquals("%C3%A9=%E4%B8%AD&10=x&2=y&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~",
+        query.put("Signature", "example");
+        Assert.assertEquals("%C3%A9=%E4%B8%AD&10=x&2=y&Signature=example&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~",
                 client.buildCanonicalizedResource(query));
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -161,7 +161,7 @@ public class CoverageTest {
         headers.put("x-acs-date", "2024-01-01T00:00:00Z");
         byte[] key = client.getSigningkey(client._sha256, "secret", "ecs", "cn-hangzhou", "20240101");
         String payload = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        Assert.assertEquals("6a4bed968fa9e417380dbea97a003ca2861777b47565075631cd602af98351e2",
+        Assert.assertEquals("cf5cc1b6bbc3dfe4ede5f5275fa7e9d83332569d60ca2f0d21f842bb2b251e95",
                 client.getSignature("/", "get", query, headers, client._sha256, payload, key));
     }
 
