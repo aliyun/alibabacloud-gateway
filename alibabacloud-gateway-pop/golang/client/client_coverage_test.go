@@ -423,14 +423,15 @@ func TestCanonicalRequestPieces(t *testing.T) {
 	utils.AssertEqual(t, "a=m%2An&b=x%20y&empty=", tea.StringValue(resource))
 
 	headers := map[string]*string{
-		"Host":         tea.String("  example.com  "),
+		"HOST":         tea.String("ignored-uppercase.example"),
+		"Host":         tea.String("ignored-titlecase.example"),
+		"host":         tea.String("  example.com  "),
 		"X-Acs-Action": tea.String("One"),
 		"x-acs-action": tea.String("Two"),
 		"user-agent":   tea.String("skip"),
 	}
 	canonical := tea.StringValue(client.BuildCanonicalizedHeaders(headers))
-	utils.AssertContains(t, canonical, "host:example.com\n")
-	utils.AssertContains(t, canonical, "x-acs-action:One,Two\n")
+	utils.AssertEqual(t, "host:example.com\nx-acs-action:One,Two\n", canonical)
 
 	utils.AssertEqual(t, "fallback", client.DefaultAny(nil, "fallback"))
 	utils.AssertEqual(t, "kept", client.DefaultAny("kept", "fallback"))

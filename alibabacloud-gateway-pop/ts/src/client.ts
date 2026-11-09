@@ -404,10 +404,13 @@ export default class Client extends SPI {
   }
 
   buildCanonicalizedResource(query: {[key: string ]: string}): string {
-    const encoded = Object.keys(query || {}).filter(key => key !== "Signature")
-      .map(key => ({ key: codec.percentEncode(key), value: codec.percentEncode(query[key] ?? "") }));
-    encoded.sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
-    return encoded.map(({key, value}) => `${key}=${value}`).join("&");
+    const encoded = new Map<string, string>();
+    for (const key of Object.keys(query || {})) {
+      if (key !== "Signature") {
+        encoded.set(codec.percentEncode(key), codec.percentEncode(query[key] ?? ""));
+      }
+    }
+    return Array.from(encoded.keys()).sort().map(key => `${key}=${encoded.get(key)}`).join("&");
   }
 
   buildCanonicalizedHeaders(headers: {[key: string ]: string}): string {
