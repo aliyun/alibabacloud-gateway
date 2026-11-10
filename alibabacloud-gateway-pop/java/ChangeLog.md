@@ -1,3 +1,7 @@
+### 2026-11-10 Version 0.1.6
+
+* Fix POP V4 query signing by percent-encoding parameter names and values before sorting by the encoded names.
+
 ### 2026-11-05 Version 0.1.5
 
 * Sign POP V4 without endpoint-util, openapi-util, tea-util, or tea-xml.

@@ -1,7 +1,7 @@
 {
   "scope": "alibabacloud",
   "name": "GatewayPOP",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "./main.tea",
   "maintainers": [
     {
@@ -23,14 +23,14 @@
     "XML": "darabonba:XML:*"
   },
   "releases": {
-    "ts": "@alicloud/gateway-pop:^0.1.7",
-    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pop/client:v0.1.5",
-    "java": "com.aliyun:alibabacloud-gateway-pop:0.1.5",
-    "python": "alibabacloud_gateway_pop:0.1.5",
-    "python2": "alibabacloud_gateway_pop_py2:0.0.4",
-    "csharp": "AlibabaCloud.GatewayPop:0.1.4",
-    "php": "alibabacloud/gateway-pop:^0.1.5",
-    "swift": "alibabacloud-sdk-swift/alibabacloud-gateway-pop:0.0.2"
+    "ts": "@alicloud/gateway-pop:^0.1.8",
+    "go": "github.com/alibabacloud-go/alibabacloud-gateway-pop/client:v0.1.6",
+    "java": "com.aliyun:alibabacloud-gateway-pop:0.1.6",
+    "python": "alibabacloud_gateway_pop:0.1.6",
+    "python2": "alibabacloud_gateway_pop_py2:0.0.5",
+    "csharp": "AlibabaCloud.GatewayPop:0.1.5",
+    "php": "alibabacloud/gateway-pop:^0.1.6",
+    "swift": "alibabacloud-sdk-swift/alibabacloud-gateway-pop:0.0.3"
   },
   "csharp": {
     "namespace": "AlibabaCloud.GatewayPop",
@@ -104,8 +104,7 @@
   },
   "releaselog": {
     "changelog": [
-      "Sign POP V4 without the endpoint, OpenAPI, and Tea utility packages.",
-      "Keep the previous error type and model JSON encoding."
+      "Fix POP V4 canonical query signing by sorting percent-encoded parameter names."
     ],
     "compatible": true
   }

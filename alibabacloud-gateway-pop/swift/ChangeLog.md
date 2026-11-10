@@ -1,3 +1,9 @@
+### 2026-11-10 Version 0.0.3
+
+* Fix POP V4 query signing by percent-encoding parameter names and values before sorting by the encoded names.
+* Correct query percent-encoding and canonicalize signed header names case-insensitively.
+* Use a single entry per header name. Tea Swift can collapse keys that differ only in case when sending the request.
+
 ### 2026-11-05 Version 0.0.2
 
 * Sign POP V4 without the endpoint, OpenAPI, and Tea utility packages.
