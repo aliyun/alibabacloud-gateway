@@ -552,17 +552,11 @@ class Client(SPIClient):
         self,
         query: Dict[str, str],
     ) -> str:
-        canonicalized_resource = ''
-        if not support.is_unset(query):
-            query_array = codec.key_set(query)
-            sorted_query_array = codec.asc_sort(query_array)
-            separator = ''
-            for key in sorted_query_array:
-                canonicalized_resource = f'{canonicalized_resource}{separator}{codec.percent_encode(key)}='
-                if not support.empty(query.get(key)):
-                    canonicalized_resource = f'{canonicalized_resource}{codec.percent_encode(query.get(key))}'
-                separator = '&'
-        return canonicalized_resource
+        encoded = {
+            codec.percent_encode(key): codec.percent_encode(value if value is not None else '')
+            for key, value in (query or {}).items()
+        }
+        return '&'.join(f'{key}={encoded[key]}' for key in sorted(encoded))
 
     def build_canonicalized_headers(
         self,

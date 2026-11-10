@@ -471,20 +471,16 @@ class Client extends DarabonbaGatewaySpiClient
      */
     public function buildCanonicalizedResource($query)
     {
-        $canonicalizedResource = "";
-        if (!self::isUnset($query)) {
-            $queryArray = self::keySet($query);
-            $sortedQueryArray = self::ascSort($queryArray);
-            $separator = "";
-            foreach ($sortedQueryArray as $key) {
-                $canonicalizedResource = "" . $canonicalizedResource . "" . $separator . "" . self::percentEncode($key) . "=";
-                if (!self::empty_(@$query[$key])) {
-                    $canonicalizedResource = "" . $canonicalizedResource . "" . self::percentEncode(@$query[$key]) . "";
-                }
-                $separator = "&";
-            }
+        $encoded = array();
+        foreach ((array) $query as $key => $value) {
+            $encoded[self::percentEncode((string) $key)] = self::percentEncode($value === null ? '' : $value);
         }
-        return $canonicalizedResource;
+        ksort($encoded, SORT_STRING);
+        $pairs = array();
+        foreach ($encoded as $key => $value) {
+            $pairs[] = $key . '=' . $value;
+        }
+        return implode('&', $pairs);
     }
 
     /**

@@ -201,10 +201,7 @@ function resolveEndpointSuffix(attributes: map[string]string) throws : string {
       return suffix;
     }
   }
-  var envSuffix = checkedEndpointSuffix($Env.get('ALIBABA_CLOUD_ENDPOINT_SUFFIX'));
-  if (!Util.empty(envSuffix)) {
-    return envSuffix;
-  }
+  // Tea has no $Env builtin. The language clients read ALIBABA_CLOUD_ENDPOINT_SUFFIX.
   return 'aliyuncs.com';
 }
 
@@ -240,6 +237,15 @@ function getEndpointWithSuffix(productId: string, regionId: string, endpointRule
   return applyEndpointSuffix(EndpointUtil.getEndpointRules(productId, regionId, endpointRule, network, suffix), endpointSuffix);
 }
 
+function stripSuffix(value: string, suffix: string): string {
+  if (Util.empty(suffix) || !String.hasSuffix(value, suffix)) {
+    return value;
+  }
+  // Darabonba lexes "-" as a signed number, so length subtraction is not an expression.
+  // The extra dot anchors the match to the trailing suffix.
+  return String.replace(`${value}.`, `${suffix}.`, '', null);
+}
+
 function applyEndpointSuffix(endpoint: string, endpointSuffix: string) throws : string {
   var suffix = checkedEndpointSuffix(endpointSuffix);
   if (Util.empty(suffix)) {
@@ -250,8 +256,7 @@ function applyEndpointSuffix(endpoint: string, endpointSuffix: string) throws : 
   }
   var old = '.aliyuncs.com';
   if (String.hasSuffix(endpoint, old)) {
-    var end = endpoint.length() - old.length();
-    return `${String.subString(endpoint, 0, end)}.${suffix}`;
+    return `${stripSuffix(endpoint, old)}.${suffix}`;
   }
   return endpoint;
 }
@@ -358,37 +363,34 @@ function getRegionWithSuffix(product: string, endpoint: string, regionId: string
 
 function hostWithoutDomain(host: string, suffix: string): string {
   if (!Util.empty(suffix) && String.hasSuffix(host, `.${suffix}`)) {
-    var needle = `.${suffix}`;
-    var end = host.length() - needle.length();
-    return String.subString(host, 0, end);
+    return stripSuffix(host, `.${suffix}`);
   }
   if (!Util.equalString(suffix, 'aliyuncs.com') && String.hasSuffix(host, '.aliyuncs.com')) {
-    var old = '.aliyuncs.com';
-    var aliyunEnd = host.length() - old.length();
-    return String.subString(host, 0, aliyunEnd);
+    return stripSuffix(host, '.aliyuncs.com');
   }
   if (String.hasSuffix(host, '.aliyuncs.alibaba')) {
-    var alternate = '.aliyuncs.alibaba';
-    return String.subString(host, 0, host.length() - alternate.length());
+    return stripSuffix(host, '.aliyuncs.alibaba');
   }
   return host;
 }
 
 function buildCanonicalizedResource(query: map[string]string): string {
-  var canonicalizedResource : string = '';
+  var encodedQuery : map[string]string = {};
   if (!Util.isUnset(query)) {
-    var queryArray : [string] = Map.keySet(query);
-    var sortedQueryArray = Array.ascSort(queryArray);
-    var separator : string = '';
-    for(var key : sortedQueryArray) {
-      canonicalizedResource = `${canonicalizedResource}${separator}${EncodeUtil.percentEncode(key)}=`;
-      if (!Util.empty(query[key])) {
-        canonicalizedResource = `${canonicalizedResource}${EncodeUtil.percentEncode(query[key])}`;
+    for (var key : Map.keySet(query)) {
+      var encodedKey = EncodeUtil.percentEncode(key);
+      var value = query[key];
+      encodedQuery[encodedKey] = '';
+      if (!Util.empty(value)) {
+        encodedQuery[encodedKey] = EncodeUtil.percentEncode(value);
       }
-      separator = '&';
     }
   }
-  return canonicalizedResource;
+  var pairs : [string] = [];
+  for (var key : Array.ascSort(Map.keySet(encodedQuery))) {
+    Array.append(pairs, `${key}=${encodedQuery[key]}`);
+  }
+  return Array.join(pairs, '&');
 }
 
 function buildCanonicalizedHeaders(headers: map[string]string): string {

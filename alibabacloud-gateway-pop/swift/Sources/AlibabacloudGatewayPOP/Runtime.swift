@@ -182,13 +182,8 @@ enum Runtime {
         guard let raw = raw else {
             return ""
         }
-        var allowed = CharacterSet.alphanumerics
-        allowed.insert(charactersIn: "-_.!~*'()")
-        var encoded = raw.addingPercentEncoding(withAllowedCharacters: allowed) ?? ""
-        encoded = encoded.replacingOccurrences(of: "+", with: "%20")
-        encoded = encoded.replacingOccurrences(of: "*", with: "%2A")
-        encoded = encoded.replacingOccurrences(of: "%7E", with: "~")
-        return encoded
+        let allowed = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~")
+        return raw.addingPercentEncoding(withAllowedCharacters: allowed) ?? ""
     }
 
     static func HmacSHA256Sign(_ stringToSign: String, _ secret: String) -> [UInt8] {

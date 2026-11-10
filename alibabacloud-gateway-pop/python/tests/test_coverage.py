@@ -244,6 +244,10 @@ class TestCoverage(unittest.TestCase):
         self.assertIn('a=m%2An', resource)
         self.assertIn('b=x%20y', resource)
         self.assertIn('empty=', resource)
+        query = {'a-b': '1', 'a/b': '2', 'a': '', 'é': '中', '10': 'x', '2': 'y',
+                 'null': None, 'punct': '!+*~', 'Signature': 'example'}
+        self.assertEqual('%C3%A9=%E4%B8%AD&10=x&2=y&Signature=example&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~',
+                         client.build_canonicalized_resource(query))
 
         canonical = client.build_canonicalized_headers({
             'Host': '  example.com  ',
@@ -262,6 +266,9 @@ class TestCoverage(unittest.TestCase):
         headers = {'host': 'example.com', 'x-acs-date': '2024-01-01T00:00:00Z'}
         signature = client.get_signature('', 'GET', {'q': 'a b'}, headers, client._sha_256, 'payload', signingkey)
         self.assertEqual(64, len(signature))
+        payload = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        self.assertEqual('cf5cc1b6bbc3dfe4ede5f5275fa7e9d83332569d60ca2f0d21f842bb2b251e95',
+                         client.get_signature('/', 'get', query, headers, client._sha_256, payload, signingkey))
         authorization = client.get_authorization('/', 'GET', None, headers, client._sha_256, 'payload', 'ak', signingkey, 'ecs', 'cn-hangzhou', '20240101')
         self.assertIn('ACS4-HMAC-SHA256 Credential=ak/20240101/cn-hangzhou/ecs/aliyun_v4_request,SignedHeaders=', authorization)
         self.assertIn('host;x-acs-date', authorization)

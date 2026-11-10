@@ -17,7 +17,6 @@ from alibabacloud_tea_util.client import Client as UtilClient
 from alibabacloud_darabonba_string.client import Client as StringClient
 from alibabacloud_endpoint_util.client import Client as EndpointUtilClient
 from alibabacloud_darabonba_array.client import Client as ArrayClient
-from alibabacloud_darabonba_map.client import Client as MapClient
 
 
 class Client(SPIClient):
@@ -248,24 +247,23 @@ class Client(SPIClient):
         return 'center'
 
     def build_canonicalized_resource(self, query):
-        canonicalized_resource = ''
-        if not UtilClient.is_unset(query):
-            query_array = MapClient.key_set(query)
-            sorted_query_array = ArrayClient.asc_sort(query_array)
-            separator = ''
-            for key in sorted_query_array:
-                canonicalized_resource = '%s%s%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(separator), TeaConverter.to_unicode(Encoder.percent_encode(key)))
-                if not UtilClient.empty(query.get(key)):
-                    canonicalized_resource = '%s=%s' % (TeaConverter.to_unicode(canonicalized_resource), TeaConverter.to_unicode(Encoder.percent_encode(query.get(key))))
-                separator = '&'
-        return canonicalized_resource
+        encoded = {}
+        for key, value in (query or {}).items():
+            encoded_key = TeaConverter.to_unicode(Encoder.percent_encode(key))
+            encoded[encoded_key] = TeaConverter.to_unicode(Encoder.percent_encode(value if value is not None else ''))
+        return '&'.join('%s=%s' % (key, encoded[key]) for key in sorted(encoded))
 
     def build_canonicalized_headers(self, headers):
-        canonicalized_headers = ''
-        sorted_headers = self.get_signed_headers(headers)
-        for header in sorted_headers:
-            canonicalized_headers = '%s%s:%s\n' % (TeaConverter.to_unicode(canonicalized_headers), TeaConverter.to_unicode(header), TeaConverter.to_unicode(StringClient.trim(headers.get(header))))
-        return canonicalized_headers
+        normalized = {}
+        for key, value in sorted(headers.items()):
+            if value is not None:
+                lower_key = key.lower()
+                if lower_key == 'host' and lower_key in normalized and key != lower_key:
+                    continue
+                if lower_key == 'host':
+                    normalized[lower_key] = []
+                normalized.setdefault(lower_key, []).append(TeaConverter.to_unicode(StringClient.trim(value)))
+        return ''.join('%s:%s\n' % (key, ','.join(normalized[key])) for key in self.get_signed_headers(headers))
 
     def validate_signed_headers(self, signed_headers):
         if not ArrayClient.contains(signed_headers, 'host') or not ArrayClient.contains(signed_headers, 'x-acs-date'):
@@ -275,12 +273,5 @@ class Client(SPIClient):
             })
 
     def get_signed_headers(self, headers):
-        headers_array = MapClient.key_set(headers)
-        sorted_headers_array = ArrayClient.asc_sort(headers_array)
-        result = []
-        for key in sorted_headers_array:
-            lower_key = StringClient.to_lower(key)
-            if StringClient.has_prefix(lower_key, 'x-acs-') or StringClient.equals(lower_key, 'host') or StringClient.equals(lower_key, 'content-type'):
-                if not ArrayClient.contains(result, lower_key):
-                    ArrayClient.append(result, lower_key)
-        return result
+        keys = set(key.lower() for key, value in headers.items() if value is not None)
+        return sorted(key for key in keys if key.startswith('x-acs-') or key in ('host', 'content-type'))

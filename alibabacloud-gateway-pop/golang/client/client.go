@@ -2,6 +2,8 @@
 package client
 
 import (
+	"strings"
+
 	spi "github.com/alibabacloud-go/alibabacloud-gateway-spi/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
@@ -444,33 +446,29 @@ func (client *Client) regionWithSuffix(product *string, endpoint *string, region
 }
 
 func (client *Client) BuildCanonicalizedResource(query map[string]*string) (_result *string) {
-	canonicalizedResource := dara.String("")
-	if !dara.BoolValue(isUnset(query)) {
-		queryArray := keySet(query)
-		sortedQueryArray := ascSort(queryArray)
-		separator := dara.String("")
-		for _, key := range sortedQueryArray {
-			canonicalizedResource = dara.String(dara.StringValue(canonicalizedResource) + dara.StringValue(separator) + dara.StringValue(percentEncode(key)) + "=")
-			if !dara.BoolValue(emptyString(query[dara.StringValue(key)])) {
-				canonicalizedResource = dara.String(dara.StringValue(canonicalizedResource) + dara.StringValue(percentEncode(query[dara.StringValue(key)])))
-			}
-
-			separator = dara.String("&")
-		}
+	encoded := make(map[string]*string, len(query))
+	for key, value := range query {
+		encoded[dara.StringValue(percentEncode(dara.String(key)))] = percentEncode(value)
 	}
-
-	_result = canonicalizedResource
-	return _result
+	pairs := make([]string, 0, len(encoded))
+	for _, key := range ascSort(keySet(encoded)) {
+		pairs = append(pairs, dara.StringValue(key)+"="+dara.StringValue(encoded[dara.StringValue(key)]))
+	}
+	return dara.String(strings.Join(pairs, "&"))
 }
 
 func (client *Client) BuildCanonicalizedHeaders(headers map[string]*string) (_result *string) {
-	// lower header key
-	headersArray := keySet(headers)
+	// net/http writes distinct header keys in lexical order. Preserve that order
+	// when merging keys that differ only by case.
+	headersArray := ascSort(keySet(headers))
 	newHeaders := make(map[string]*string)
 	for _, key := range headersArray {
 		lowerKey := toLower(key)
 		value := headers[dara.StringValue(key)]
 		if !dara.BoolValue(isUnset(value)) {
+			if dara.StringValue(lowerKey) == "host" && newHeaders["host"] != nil && dara.StringValue(key) != "host" {
+				continue
+			}
 			if dara.BoolValue(isUnset(newHeaders[dara.StringValue(lowerKey)])) || dara.BoolValue(equalsString(lowerKey, dara.String("host"))) {
 				newHeaders[dara.StringValue(lowerKey)] = trimString(value)
 			} else {

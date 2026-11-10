@@ -395,22 +395,21 @@ public class Client extends com.aliyun.gateway.spi.Client {
     }
 
     public String buildCanonicalizedResource(java.util.Map<String, String> query) throws Exception {
-        String canonicalizedResource = "";
-        if (!Support.isUnset(query)) {
-            java.util.List<String> queryArray = Codec.keySet(query);
-            java.util.List<String> sortedQueryArray = Codec.ascSort(queryArray);
-            String separator = "";
-            for (String key : sortedQueryArray) {
-                canonicalizedResource = "" + canonicalizedResource + "" + separator + "" + Codec.percentEncode(key) + "=";
-                if (!Support.empty(query.get(key))) {
-                    canonicalizedResource = "" + canonicalizedResource + "" + Codec.percentEncode(query.get(key)) + "";
-                }
-
-                separator = "&";
+        java.util.Map<String, String> encoded = new java.util.TreeMap<>();
+        if (query != null) {
+            for (java.util.Map.Entry<String, String> entry : query.entrySet()) {
+                String value = entry.getValue();
+                encoded.put(Codec.percentEncode(entry.getKey()), value == null ? "" : Codec.percentEncode(value));
             }
         }
-
-        return canonicalizedResource;
+        StringBuilder result = new StringBuilder();
+        for (java.util.Map.Entry<String, String> entry : encoded.entrySet()) {
+            if (result.length() > 0) {
+                result.append('&');
+            }
+            result.append(entry.getKey()).append('=').append(entry.getValue());
+        }
+        return result.toString();
     }
 
     public String buildCanonicalizedHeaders(java.util.Map<String, String> headers) throws Exception {

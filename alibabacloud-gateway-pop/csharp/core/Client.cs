@@ -663,23 +663,20 @@ namespace AlibabaCloud.GatewayPop
 
         public string BuildCanonicalizedResource(Dictionary<string, string> query)
         {
-            string canonicalizedResource = "";
-            if (!Runtime.IsUnset(query))
+            var encoded = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            if (query != null)
             {
-                List<string> queryArray = Runtime.KeySet(query);
-                List<string> sortedQueryArray = Runtime.AscSort(queryArray);
-                string separator = "";
-
-                foreach (var key in sortedQueryArray) {
-                    canonicalizedResource = "" + canonicalizedResource + separator + Runtime.PercentEncode(key) + "=";
-                    if (!Runtime.Empty(query.Get(key)))
-                    {
-                        canonicalizedResource = "" + canonicalizedResource + Runtime.PercentEncode(query.Get(key));
-                    }
-                    separator = "&";
+                foreach (var entry in query)
+                {
+                    encoded.Add(Runtime.PercentEncode(entry.Key), Runtime.PercentEncode(entry.Value ?? ""));
                 }
             }
-            return canonicalizedResource;
+            var pairs = new List<string>();
+            foreach (var entry in encoded)
+            {
+                pairs.Add(entry.Key + "=" + entry.Value);
+            }
+            return string.Join("&", pairs);
         }
 
         public string BuildCanonicalizedHeaders(Dictionary<string, string> headers)

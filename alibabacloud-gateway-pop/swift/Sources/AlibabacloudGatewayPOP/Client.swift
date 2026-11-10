@@ -371,29 +371,27 @@ open class Client : AlibabacloudGatewaySPI.Client {
     }
 
     public func buildCanonicalizedResource(_ query: [String: String]) -> String {
-        var canonicalizedResource: String = ""
-        if (!Runtime.isUnset(query)) {
-            var queryArray: [String] = Runtime.keySet(query)
-            var sortedQueryArray: [String] = Runtime.ascSort(queryArray)
-            var separator: String = ""
-            for key in sortedQueryArray {
-                canonicalizedResource = (canonicalizedResource as! String) + (separator as! String) + (Runtime.percentEncode(key)) + "="
-                if (!Runtime.empty(query[key as! String])) {
-                    canonicalizedResource = (canonicalizedResource as! String) + (Runtime.percentEncode(query[key as! String]))
-                }
-                separator = "&"
-            }
-        }
-        return canonicalizedResource as! String
+        return query
+            .map { (key: Runtime.percentEncode($0.key), value: Runtime.percentEncode($0.value)) }
+            .sorted { $0.key < $1.key }
+            .map { "\($0.key)=\($0.value)" }
+            .joined(separator: "&")
     }
 
     public func buildCanonicalizedHeaders(_ headers: [String: String]) -> String {
-        var canonicalizedHeaders: String = ""
-        var sortedHeaders: [String] = getSignedHeaders(headers as! [String: String])
-        for header in sortedHeaders {
-            canonicalizedHeaders = (canonicalizedHeaders as! String) + (header as! String) + ":" + (Runtime.trim(headers[header as! String])) + "\n"
+        var normalized: [String: [String]] = [:]
+        for key in headers.keys.sorted() {
+            let lowerKey = key.lowercased()
+            let value = Runtime.trim(headers[key])
+            if lowerKey == "host" {
+                if normalized[lowerKey] == nil || key == lowerKey {
+                    normalized[lowerKey] = [value]
+                }
+            } else {
+                normalized[lowerKey, default: []].append(value)
+            }
         }
-        return canonicalizedHeaders as! String
+        return getSignedHeaders(headers).map { "\($0):\(normalized[$0, default: []].joined(separator: ","))\n" }.joined()
     }
 
     public func validateSignedHeaders(_ signedHeaders: [String]) throws {
@@ -406,17 +404,8 @@ open class Client : AlibabacloudGatewaySPI.Client {
     }
 
     public func getSignedHeaders(_ headers: [String: String]) -> [String] {
-        var headersArray: [String] = Runtime.keySet(headers)
-        var sortedHeadersArray: [String] = Runtime.ascSort(headersArray)
-        var result: [String] = []
-        for key in sortedHeadersArray {
-            var lowerKey: String = Runtime.toLower(key)
-            if (Runtime.hasPrefix(lowerKey, "x-acs-") || Runtime.equals(lowerKey, "host") || Runtime.equals(lowerKey, "content-type")) {
-                if (!result.contains(lowerKey)) {
-                    result.append(lowerKey)
-                }
-            }
-        }
-        return result
+        return Set(headers.keys.map { $0.lowercased() })
+            .filter { $0.hasPrefix("x-acs-") || $0 == "host" || $0 == "content-type" }
+            .sorted()
     }
 }

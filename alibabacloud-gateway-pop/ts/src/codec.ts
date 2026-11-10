@@ -32,7 +32,8 @@ export function hash(raw: Buffer, signatureAlgorithm: string): Buffer {
 
 /** @internal */
 export function percentEncode(raw: string): string {
-  return $dara.URL.percentEncode(raw);
+  return encodeURIComponent(raw).replace(/[!'()*]/g, character =>
+    "%" + character.charCodeAt(0).toString(16).toUpperCase());
 }
 
 /** @internal */

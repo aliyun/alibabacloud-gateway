@@ -191,6 +191,10 @@ describe('coverage', function () {
     const client = new Client();
     assert.strictEqual(client.buildCanonicalizedResource(null), '');
     const resource = client.buildCanonicalizedResource({ b: 'x y', a: 'm*n', empty: '' });
+    assert.strictEqual(client.buildCanonicalizedResource({
+      'a-b': '1', 'a/b': '2', a: '', 'é': '中', '10': 'x', '2': 'y',
+      null: null, punct: '!+*~', Signature: 'example'
+    }), '%C3%A9=%E4%B8%AD&10=x&2=y&Signature=example&a=&a%2Fb=2&a-b=1&null=&punct=%21%2B%2A~');
     assert.ok(resource.indexOf('a=m%2An') >= 0);
     assert.ok(resource.indexOf('b=x%20y') >= 0);
     assert.ok(resource.indexOf('empty=') >= 0);

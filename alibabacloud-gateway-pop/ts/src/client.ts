@@ -404,23 +404,11 @@ export default class Client extends SPI {
   }
 
   buildCanonicalizedResource(query: {[key: string ]: string}): string {
-    let canonicalizedResource : string = "";
-    if (!runtime.isUnset(query)) {
-      let queryArray : string[] = codec.keySet(query);
-      let sortedQueryArray = codec.ascSort(queryArray);
-      let separator : string = "";
-
-      for (let key of sortedQueryArray) {
-        canonicalizedResource = `${canonicalizedResource}${separator}${codec.percentEncode(key)}=`;
-        if (!runtime.empty(query[key])) {
-          canonicalizedResource = `${canonicalizedResource}${codec.percentEncode(query[key])}`;
-        }
-
-        separator = "&";
-      }
+    const encoded = new Map<string, string>();
+    for (const key of Object.keys(query || {})) {
+      encoded.set(codec.percentEncode(key), codec.percentEncode(query[key] ?? ""));
     }
-
-    return canonicalizedResource;
+    return Array.from(encoded.keys()).sort().map(key => `${key}=${encoded.get(key)}`).join("&");
   }
 
   buildCanonicalizedHeaders(headers: {[key: string ]: string}): string {
