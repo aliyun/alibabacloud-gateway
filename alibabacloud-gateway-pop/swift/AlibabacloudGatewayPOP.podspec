@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "AlibabacloudGatewayPOP"
-  spec.version      = "0.0.2"
+  spec.version      = "0.0.3"
   spec.license      = "Apache 2.0"
   spec.summary      = "Alibaba Cloud Gateway SPI SDK Library for Swift"
   spec.homepage     = "https://github.com/alibabacloud-sdk-swift/alibabacloud-gateway-pop" 
