@@ -28,7 +28,7 @@
     "java": "com.aliyun:alibabacloud-gateway-pop:0.1.6",
     "python": "alibabacloud_gateway_pop:0.1.6",
     "python2": "alibabacloud_gateway_pop_py2:0.0.5",
-    "csharp": "AlibabaCloud.GatewayPop:0.1.5",
+    "csharp": "AlibabaCloud.GatewayPop:0.1.6",
     "php": "alibabacloud/gateway-pop:^0.1.6",
     "swift": "alibabacloud-sdk-swift/alibabacloud-gateway-pop:0.0.3"
   },

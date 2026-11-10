@@ -1,3 +1,7 @@
+### 2026-11-10 Version 0.1.6
+
+* Set the minimum Tea dependency to 1.1.3 so generated SDKs that reference Tea 1.1.3 build without NU1605.
+
 ### 2026-11-10 Version 0.1.5
 
 * Fix POP V4 query signing by percent-encoding parameter names and values before sorting by the encoded names.
