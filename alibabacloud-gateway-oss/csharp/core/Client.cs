@@ -476,9 +476,8 @@ namespace AlibabaCloud.GatewayOss
                     response.DeserializedBody = bodyStr;
                     if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                     {
-                        object result = AlibabaCloud.GatewayOss_Util.Common.ParseXml(bodyStr, request.Action);
-                        // for no util language
-                        // var result : any = XML.parseXml(bodyStr, null);
+                        // C# has no GatewayOss_Util package; fall back like TS / TeaXML path
+                        object result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
                         try
                         {
                             response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result);
@@ -612,9 +611,8 @@ namespace AlibabaCloud.GatewayOss
                     response.DeserializedBody = bodyStr;
                     if (!AlibabaCloud.TeaUtil.Common.Empty(bodyStr))
                     {
-                        object result = AlibabaCloud.GatewayOss_Util.Common.ParseXml(bodyStr, request.Action);
-                        // for no util language
-                        // var result : any = XML.parseXml(bodyStr, null);
+                        // C# has no GatewayOss_Util package; fall back like TS / TeaXML path
+                        object result = AlibabaCloud.TeaXML.Client.ParseXml(bodyStr, null);
                         try
                         {
                             response.DeserializedBody = AlibabaCloud.TeaUtil.Common.AssertAsMap(result);
@@ -970,10 +968,10 @@ namespace AlibabaCloud.GatewayOss
                     queryValue = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(queryKey));
                     queryValue = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryValue, "+", "%20", null);
                 }
-                queryKey = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(queryKey);
-                queryKey = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryKey, "+", "%20", null);
+                string encodedQueryKey = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(queryKey);
+                encodedQueryKey = AlibabaCloud.DarabonbaString.StringUtil.Replace(encodedQueryKey, "+", "%20", null);
                 // for go : queryMap[tea.StringValue(queryKey)] = queryValue
-                queryMap[queryKey] = queryValue;
+                queryMap[encodedQueryKey] = queryValue;
             }
             string canonicalizedQueryString = BuildCanonicalizedQueryStringV4(queryMap);
             string canonicalizedHeaders = BuildCanonicalizedHeadersV4(headers);
@@ -1021,10 +1019,10 @@ namespace AlibabaCloud.GatewayOss
                     queryValue = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(query.Get(queryKey));
                     queryValue = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryValue, "+", "%20", null);
                 }
-                queryKey = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(queryKey);
-                queryKey = AlibabaCloud.DarabonbaString.StringUtil.Replace(queryKey, "+", "%20", null);
+                string encodedQueryKey = AlibabaCloud.DarabonbaEncodeUtil.Encoder.PercentEncode(queryKey);
+                encodedQueryKey = AlibabaCloud.DarabonbaString.StringUtil.Replace(encodedQueryKey, "+", "%20", null);
                 // for go : queryMap[tea.StringValue(queryKey)] = queryValue
-                queryMap[queryKey] = queryValue;
+                queryMap[encodedQueryKey] = queryValue;
             }
             string canonicalizedQueryString = await BuildCanonicalizedQueryStringV4Async(queryMap);
             string canonicalizedHeaders = await BuildCanonicalizedHeadersV4Async(headers);
