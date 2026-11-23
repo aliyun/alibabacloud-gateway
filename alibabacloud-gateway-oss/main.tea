@@ -303,21 +303,8 @@ async function getEndpoint(regionId: string, network: string, endpoint: string) 
 }
 
 async function getHost(endpointType: string, bucketName: string, endpoint: string, context: SPI.InterceptorContext): string {
-  if (String.contains(endpoint,'.mgw.aliyuncs.com') && !Util.isUnset(context.request.hostMap.userid)) {
+  if (String.contains(endpoint,'.mgw') && !Util.isUnset(context.request.hostMap.userid)) {
     return `${context.request.hostMap.userid}.${endpoint}`;
-  }
-  if (String.contains(endpoint,'.mgw-internal.aliyuncs.com') && !Util.isUnset(context.request.hostMap.userid)) {
-    return `${context.request.hostMap.userid}.${endpoint}`;
-  }
-  if (!Util.empty(endpoint)) {
-    var endpointParts : [string] = String.split(endpoint, '.', null);
-    if (Util.equalNumber(Array.size(endpointParts), 5)
-        && String.equals(endpointParts[2], 'mgw')
-        && String.hasPrefix(endpointParts[3], 'idptcloud')
-        && String.equals(endpointParts[4], 'alibaba')
-        && !Util.isUnset(context.request.hostMap.userid)) {
-      return `${context.request.hostMap.userid}.${endpoint}`;
-    }
   }
   if (Util.empty(bucketName)) {
     return endpoint;
