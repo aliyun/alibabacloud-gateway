@@ -443,10 +443,7 @@ class Client extends DarabonbaGatewaySpiClient {
      * @return string
      */
     public function getHost($endpointType, $bucketName, $endpoint, $context){
-        if (StringUtil::contains($endpoint, ".mgw.aliyuncs.com") && !Utils::isUnset(@$context->request->hostMap["userid"])) {
-            return "" . @$context->request->hostMap["userid"] . "." . $endpoint . "";
-        }
-        if (StringUtil::contains($endpoint, ".mgw-internal.aliyuncs.com") && !Utils::isUnset(@$context->request->hostMap["userid"])) {
+        if (StringUtil::contains($endpoint, ".mgw") && !Utils::isUnset(@$context->request->hostMap["userid"])) {
             return "" . @$context->request->hostMap["userid"] . "." . $endpoint . "";
         }
         if (Utils::empty_($bucketName)) {

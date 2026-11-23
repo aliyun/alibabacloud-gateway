@@ -604,14 +604,8 @@ class Client(SPIClient):
         endpoint: str,
         context: spi_models.InterceptorContext,
     ) -> str:
-        if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+        if StringClient.contains(endpoint, '.mgw') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
-        if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
-            return f"{context.request.host_map.get('userid')}.{endpoint}"
-        if not UtilClient.empty(endpoint):
-            endpoint_parts = StringClient.split(endpoint, '.', None)
-            if UtilClient.equal_number(ArrayClient.size(endpoint_parts), 5) and StringClient.equals(endpoint_parts[2], 'mgw') and StringClient.has_prefix(endpoint_parts[3], 'idptcloud') and StringClient.equals(endpoint_parts[4], 'alibaba') and not UtilClient.is_unset(context.request.host_map.get('userid')):
-                return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'
@@ -629,14 +623,8 @@ class Client(SPIClient):
         endpoint: str,
         context: spi_models.InterceptorContext,
     ) -> str:
-        if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+        if StringClient.contains(endpoint, '.mgw') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return f"{context.request.host_map.get('userid')}.{endpoint}"
-        if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
-            return f"{context.request.host_map.get('userid')}.{endpoint}"
-        if not UtilClient.empty(endpoint):
-            endpoint_parts = StringClient.split(endpoint, '.', None)
-            if UtilClient.equal_number(ArrayClient.size(endpoint_parts), 5) and StringClient.equals(endpoint_parts[2], 'mgw') and StringClient.has_prefix(endpoint_parts[3], 'idptcloud') and StringClient.equals(endpoint_parts[4], 'alibaba') and not UtilClient.is_unset(context.request.host_map.get('userid')):
-                return f"{context.request.host_map.get('userid')}.{endpoint}"
         if UtilClient.empty(bucket_name):
             return endpoint
         host = f'{bucket_name}.{endpoint}'

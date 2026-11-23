@@ -445,23 +445,9 @@ func (client *Client) GetEndpoint (regionId *string, network *string, endpoint *
 }
 
 func (client *Client) GetHost (endpointType *string, bucketName *string, endpoint *string, context *spi.InterceptorContext) (_result *string, _err error) {
-  if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw.aliyuncs.com"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
+  if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
     _result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
     return _result, _err
-  }
-
-  if tea.BoolValue(string_.Contains(endpoint, tea.String(".mgw-internal.aliyuncs.com"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
-    _result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
-    return _result, _err
-  }
-
-  if !tea.BoolValue(util.Empty(endpoint)) {
-    endpointParts := string_.Split(endpoint, tea.String("."), nil)
-    if tea.BoolValue(util.EqualNumber(array.Size(endpointParts), tea.Int(5))) && tea.BoolValue(string_.Equals(endpointParts[2], tea.String("mgw"))) && tea.BoolValue(string_.HasPrefix(endpointParts[3], tea.String("idptcloud"))) && tea.BoolValue(string_.Equals(endpointParts[4], tea.String("alibaba"))) && !tea.BoolValue(util.IsUnset(context.Request.HostMap["userid"])) {
-      _result = tea.String(tea.StringValue(context.Request.HostMap["userid"]) + "." + tea.StringValue(endpoint))
-      return _result, _err
-    }
-
   }
 
   if tea.BoolValue(util.Empty(bucketName)) {

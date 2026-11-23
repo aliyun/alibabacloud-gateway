@@ -393,7 +393,7 @@ export default class Client extends SPI {
   }
 
   async getHost(endpointType: string, bucketName: string, endpoint: string, context: $SPI.InterceptorContext): Promise<string> {
-    if (String.contains(endpoint, ".mgw.aliyuncs.com") && !Util.isUnset(context.request.hostMap["userid"])) {
+    if (String.contains(endpoint, ".mgw") && !Util.isUnset(context.request.hostMap["userid"])) {
       return `${context.request.hostMap["userid"]}.${endpoint}`;
     }
 

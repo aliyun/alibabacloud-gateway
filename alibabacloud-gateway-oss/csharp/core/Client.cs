@@ -801,11 +801,7 @@ namespace AlibabaCloud.GatewayOss
 
         public string GetHost(string endpointType, string bucketName, string endpoint, AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
         {
-            if (AlibabaCloud.DarabonbaString.StringUtil.Contains(endpoint, ".mgw.aliyuncs.com") && !AlibabaCloud.TeaUtil.Common.IsUnset(context.Request.HostMap.Get("userid")))
-            {
-                return "" + context.Request.HostMap.Get("userid") + "." + endpoint;
-            }
-            if (AlibabaCloud.DarabonbaString.StringUtil.Contains(endpoint, ".mgw-internal.aliyuncs.com") && !AlibabaCloud.TeaUtil.Common.IsUnset(context.Request.HostMap.Get("userid")))
+            if (AlibabaCloud.DarabonbaString.StringUtil.Contains(endpoint, ".mgw") && !AlibabaCloud.TeaUtil.Common.IsUnset(context.Request.HostMap.Get("userid")))
             {
                 return "" + context.Request.HostMap.Get("userid") + "." + endpoint;
             }
@@ -830,11 +826,7 @@ namespace AlibabaCloud.GatewayOss
 
         public async Task<string> GetHostAsync(string endpointType, string bucketName, string endpoint, AlibabaCloud.GatewaySpi.Models.InterceptorContext context)
         {
-            if (AlibabaCloud.DarabonbaString.StringUtil.Contains(endpoint, ".mgw.aliyuncs.com") && !AlibabaCloud.TeaUtil.Common.IsUnset(context.Request.HostMap.Get("userid")))
-            {
-                return "" + context.Request.HostMap.Get("userid") + "." + endpoint;
-            }
-            if (AlibabaCloud.DarabonbaString.StringUtil.Contains(endpoint, ".mgw-internal.aliyuncs.com") && !AlibabaCloud.TeaUtil.Common.IsUnset(context.Request.HostMap.Get("userid")))
+            if (AlibabaCloud.DarabonbaString.StringUtil.Contains(endpoint, ".mgw") && !AlibabaCloud.TeaUtil.Common.IsUnset(context.Request.HostMap.Get("userid")))
             {
                 return "" + context.Request.HostMap.Get("userid") + "." + endpoint;
             }

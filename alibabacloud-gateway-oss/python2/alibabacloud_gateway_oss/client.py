@@ -350,9 +350,7 @@ class Client(SPIClient):
         return 'oss-%s.aliyuncs.com' % TeaConverter.to_unicode(region_id)
 
     def get_host(self, endpoint_type, bucket_name, endpoint, context):
-        if StringClient.contains(endpoint, '.mgw.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
-            return '%s.%s' % (TeaConverter.to_unicode(context.request.host_map.get('userid')), TeaConverter.to_unicode(endpoint))
-        if StringClient.contains(endpoint, '.mgw-internal.aliyuncs.com') and not UtilClient.is_unset(context.request.host_map.get('userid')):
+        if StringClient.contains(endpoint, '.mgw') and not UtilClient.is_unset(context.request.host_map.get('userid')):
             return '%s.%s' % (TeaConverter.to_unicode(context.request.host_map.get('userid')), TeaConverter.to_unicode(endpoint))
         if UtilClient.empty(bucket_name):
             return endpoint
