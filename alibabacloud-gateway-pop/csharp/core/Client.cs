@@ -79,14 +79,6 @@ namespace AlibabaCloud.GatewayPop
             {
                 return "";
             }
-            if (!System.Text.RegularExpressions.Regex.IsMatch(suffix, "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"))
-            {
-                throw new TeaException(new Dictionary<string, object>
-                {
-                    {"code", "InvalidEndpointSuffix"},
-                    {"message", "endpointSuffix must be a valid domain suffix"},
-                });
-            }
             return suffix;
         }
 

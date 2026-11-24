@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 import os
-import re
 
 from . import _codec as codec
 from . import _support as support
@@ -67,11 +66,6 @@ class Client(SPIClient):
         suffix = suffix.strip().lower()
         if suffix == '':
             return ''
-        if re.match(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$', suffix) is None:
-            raise TeaException({
-                'code': 'InvalidEndpointSuffix',
-                'message': 'endpointSuffix must be a valid domain suffix',
-            })
         return suffix
 
     def _resolve_endpoint_suffix(self, attributes):

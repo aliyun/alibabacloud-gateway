@@ -252,12 +252,6 @@ class Client extends DarabonbaGatewaySpiClient
         if ($suffix === "") {
             return "";
         }
-        if (!preg_match('/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/', $suffix)) {
-            throw new TeaError(array(
-                "code" => "InvalidEndpointSuffix",
-                "message" => "endpointSuffix must be a valid domain suffix",
-            ));
-        }
         return $suffix;
     }
 

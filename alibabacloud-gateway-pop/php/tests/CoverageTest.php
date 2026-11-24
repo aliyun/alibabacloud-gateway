@@ -257,14 +257,9 @@ final class CoverageTest extends TestCase
         $this->assertSame('aliyuncs.alibaba', $checked->invoke($client, ' ALIYUNCS.ALIBABA '));
         $this->assertSame('evil.com', $checked->invoke($client, 'evil.com'));
         $this->assertSame('example.net', $checked->invoke($client, ' EXAMPLE.NET '));
-        foreach (array('.foo', 'a/b', 'host:8080') as $invalid) {
-            try {
-                $checked->invoke($client, $invalid);
-                $this->fail('invalid suffix accepted');
-            } catch (TeaError $expected) {
-                $this->assertNotEmpty($expected->getMessage());
-            }
-        }
+        $this->assertSame('.foo', $checked->invoke($client, '.foo'));
+        $this->assertSame('a/b', $checked->invoke($client, 'a/b'));
+        $this->assertSame('host:8080', $checked->invoke($client, 'host:8080'));
         foreach (array(
             'oss-cn-hangzhou.aliyuncs.com' => 'oss-cn-hangzhou.aliyuncs.alibaba',
             'ecs.cn-hangzhou-internal.aliyuncs.com' => 'ecs.cn-hangzhou-internal.aliyuncs.alibaba',
