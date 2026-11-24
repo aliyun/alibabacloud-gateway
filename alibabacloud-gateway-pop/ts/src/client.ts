@@ -241,11 +241,6 @@ export default class Client extends SPI {
     if (!suffix) {
       return "";
     }
-    if ((suffix !== "aliyuncs.com" && suffix !== "aliyuncs.alibaba") || !/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(suffix)) {
-      let error: any = new Error("endpointSuffix must be aliyuncs.com or aliyuncs.alibaba");
-      error.code = "InvalidEndpointSuffix";
-      throw error;
-    }
     return suffix;
   }
 

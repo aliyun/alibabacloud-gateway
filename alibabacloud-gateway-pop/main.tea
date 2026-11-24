@@ -213,13 +213,7 @@ function checkedEndpointSuffix(suffix: string) throws : string {
   if (Util.empty(normalized)) {
     return '';
   }
-  if (Util.equalString(normalized, 'aliyuncs.com') || Util.equalString(normalized, 'aliyuncs.alibaba')) {
-    return normalized;
-  }
-  throw {
-    code = 'InvalidEndpointSuffix',
-    message = 'endpointSuffix must be aliyuncs.com or aliyuncs.alibaba'
-  };
+  return normalized;
 }
 
 function getEndpoint(productId: string, regionId: string, endpointRule: string, network: string, suffix: string, endpointMap: map[string]string, endpoint: string) throws: string{

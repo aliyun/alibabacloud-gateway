@@ -215,8 +215,9 @@ class TestCoverage(unittest.TestCase):
         kept = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
         fallback.modify_configuration(context(request(access_key()), kept), AttributeMap(key={'endpointSuffix': 'aliyuncs.alibaba'}))
         self.assertEqual('ecs.cn-hangzhou.aliyuncs.alibaba', kept.endpoint)
-        with self.assertRaises(Exception):
-            fallback.modify_configuration(context(request(access_key()), kept), AttributeMap(key={'endpointSuffix': 'example.net'}))
+        custom = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
+        fallback.modify_configuration(context(request(access_key()), custom), AttributeMap(key={'endpointSuffix': 'example.net'}))
+        self.assertEqual('ecs.cn-hangzhou.example.net', custom.endpoint)
         again = InterceptorContextConfiguration(region_id='cn-hangzhou', endpoint_rule='regional', network='', suffix='')
         fallback.modify_configuration(context(request(access_key()), again), AttributeMap())
         self.assertEqual('ecs.cn-hangzhou.aliyuncs.com', again.endpoint)

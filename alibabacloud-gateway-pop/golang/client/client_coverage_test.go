@@ -252,8 +252,9 @@ func TestEndpointSuffixOverride(t *testing.T) {
 	emptyHost, err := applyEndpointSuffix(tea.String(""), tea.String("aliyuncs.alibaba"))
 	utils.AssertNil(t, err)
 	utils.AssertEqual(t, "", tea.StringValue(emptyHost))
-	_, err = applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String("example.net"))
-	utils.AssertNotNil(t, err)
+	customHost, err := applyEndpointSuffix(tea.String("ecs.cn-hangzhou.aliyuncs.com"), tea.String("example.net"))
+	utils.AssertNil(t, err)
+	utils.AssertEqual(t, "ecs.cn-hangzhou.example.net", tea.StringValue(customHost))
 
 	os.Unsetenv("ALIBABA_CLOUD_ENDPOINT_SUFFIX")
 	fallback := &spi.InterceptorContextConfiguration{

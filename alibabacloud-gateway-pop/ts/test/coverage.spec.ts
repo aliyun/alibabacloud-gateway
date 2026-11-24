@@ -138,7 +138,7 @@ describe('coverage', function () {
     assert.strictEqual(client._signPrefix, 'aliyun_v4');
     assert.strictEqual(client._sha256, 'ACS4-HMAC-SHA256');
     assert.strictEqual(client._sm3, 'ACS4-HMAC-SM3');
-    assert.throws(() => client.resolveEndpointSuffix({ endpointSuffix: 'example.net' }));
+    assert.strictEqual(client.resolveEndpointSuffix({ endpointSuffix: 'example.net' }), 'example.net');
 
     const previousSuffix = process.env.ALIBABA_CLOUD_ENDPOINT_SUFFIX;
     try {
@@ -162,7 +162,7 @@ describe('coverage', function () {
     assert.strictEqual(client.withEndpointSuffix('x', 'aliyuncs.alibaba'), 'x');
     assert.strictEqual(client.withEndpointSuffix('already.example.net', 'aliyuncs.alibaba'), 'already.example.net');
     assert.strictEqual(client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', 'aliyuncs.alibaba'), 'ecs.cn-hangzhou.aliyuncs.alibaba');
-    assert.throws(() => client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', 'example.net'));
+    assert.strictEqual(client.withEndpointSuffix('ecs.cn-hangzhou.aliyuncs.com', 'example.net'), 'ecs.cn-hangzhou.example.net');
 
     const overridden = context(request(accessKey()), new $SPI.InterceptorContextConfiguration({
       regionId: 'cn-hangzhou',

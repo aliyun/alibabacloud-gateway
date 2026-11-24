@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import os
-import re
 
 from alibabacloud_darabonba_encode_util.encoder import Encoder
 from Tea.exceptions import TeaException
@@ -52,8 +51,6 @@ class Client(SPIClient):
         suffix = suffix.strip().lower()
         if suffix == '':
             return ''
-        if suffix not in ('aliyuncs.com', 'aliyuncs.alibaba') or re.match(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$', suffix) is None:
-            raise Exception('endpointSuffix must be aliyuncs.com or aliyuncs.alibaba')
         return suffix
 
     def _with_endpoint_suffix(self, endpoint, endpoint_suffix=None):

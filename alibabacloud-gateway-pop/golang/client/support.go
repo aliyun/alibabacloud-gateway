@@ -12,7 +12,6 @@ import (
 	"math/rand"
 	"os"
 	"reflect"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -164,15 +163,10 @@ func signatureNames(attributes map[string]*string) requestSignature {
 	}
 }
 
-var endpointSuffixPattern = regexp.MustCompile(`^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$`)
-
 func normalizeEndpointSuffix(suffix string) (string, error) {
 	suffix = strings.ToLower(strings.TrimSpace(suffix))
 	if suffix == "" {
 		return "", nil
-	}
-	if (suffix != "aliyuncs.com" && suffix != "aliyuncs.alibaba") || !endpointSuffixPattern.MatchString(suffix) {
-		return "", errors.New("endpointSuffix must be aliyuncs.com or aliyuncs.alibaba")
 	}
 	return suffix, nil
 }
