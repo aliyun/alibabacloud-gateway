@@ -67,10 +67,10 @@ class Client(SPIClient):
         suffix = suffix.strip().lower()
         if suffix == '':
             return ''
-        if suffix not in ('aliyuncs.com', 'aliyuncs.alibaba') or re.match(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$', suffix) is None:
+        if re.match(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$', suffix) is None:
             raise TeaException({
                 'code': 'InvalidEndpointSuffix',
-                'message': 'endpointSuffix must be aliyuncs.com or aliyuncs.alibaba',
+                'message': 'endpointSuffix must be a valid domain suffix',
             })
         return suffix
 

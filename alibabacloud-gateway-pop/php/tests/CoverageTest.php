@@ -255,7 +255,9 @@ final class CoverageTest extends TestCase
         $checked->setAccessible(true);
         $this->assertSame('', $checked->invoke($client, '  '));
         $this->assertSame('aliyuncs.alibaba', $checked->invoke($client, ' ALIYUNCS.ALIBABA '));
-        foreach (array('evil.com', '.foo', 'a/b', 'host:8080') as $invalid) {
+        $this->assertSame('evil.com', $checked->invoke($client, 'evil.com'));
+        $this->assertSame('example.net', $checked->invoke($client, ' EXAMPLE.NET '));
+        foreach (array('.foo', 'a/b', 'host:8080') as $invalid) {
             try {
                 $checked->invoke($client, $invalid);
                 $this->fail('invalid suffix accepted');

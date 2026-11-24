@@ -79,12 +79,12 @@ namespace AlibabaCloud.GatewayPop
             {
                 return "";
             }
-            if ((suffix != "aliyuncs.com" && suffix != "aliyuncs.alibaba") || !System.Text.RegularExpressions.Regex.IsMatch(suffix, "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch(suffix, "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"))
             {
                 throw new TeaException(new Dictionary<string, object>
                 {
                     {"code", "InvalidEndpointSuffix"},
-                    {"message", "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba"},
+                    {"message", "endpointSuffix must be a valid domain suffix"},
                 });
             }
             return suffix;

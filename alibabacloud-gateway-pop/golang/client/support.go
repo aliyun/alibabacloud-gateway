@@ -171,8 +171,8 @@ func normalizeEndpointSuffix(suffix string) (string, error) {
 	if suffix == "" {
 		return "", nil
 	}
-	if (suffix != "aliyuncs.com" && suffix != "aliyuncs.alibaba") || !endpointSuffixPattern.MatchString(suffix) {
-		return "", errors.New("endpointSuffix must be aliyuncs.com or aliyuncs.alibaba")
+	if !endpointSuffixPattern.MatchString(suffix) {
+		return "", errors.New("endpointSuffix must be a valid domain suffix")
 	}
 	return suffix, nil
 }

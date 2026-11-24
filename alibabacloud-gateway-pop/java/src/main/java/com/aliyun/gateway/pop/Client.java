@@ -234,10 +234,10 @@ public class Client extends com.aliyun.gateway.spi.Client {
         if (suffix.length() == 0) {
             return "";
         }
-        if ((!"aliyuncs.com".equals(suffix) && !"aliyuncs.alibaba".equals(suffix)) || !java.util.regex.Pattern.compile("^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$").matcher(suffix).matches()) {
+        if (!java.util.regex.Pattern.compile("^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$").matcher(suffix).matches()) {
             throw new TeaException(TeaConverter.buildMap(
                 new TeaPair("code", "InvalidEndpointSuffix"),
-                new TeaPair("message", "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba")
+                new TeaPair("message", "endpointSuffix must be a valid domain suffix")
             ));
         }
         return suffix;

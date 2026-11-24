@@ -213,10 +213,10 @@ open class Client : AlibabacloudGatewaySPI.Client {
             return ""
         }
         let pattern = "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
-        if (normalized != "aliyuncs.com" && normalized != "aliyuncs.alibaba") || normalized.range(of: pattern, options: .regularExpression) == nil {
+        if normalized.range(of: pattern, options: .regularExpression) == nil {
             throw Tea.ReuqestError([
                 "code": "InvalidEndpointSuffix",
-                "message": "endpointSuffix must be aliyuncs.com or aliyuncs.alibaba"
+                "message": "endpointSuffix must be a valid domain suffix"
             ])
         }
         return normalized

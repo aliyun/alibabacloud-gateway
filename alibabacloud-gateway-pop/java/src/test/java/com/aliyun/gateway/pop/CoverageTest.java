@@ -417,12 +417,7 @@ public class CoverageTest {
         Assert.assertEquals("ecs.cn-hangzhou.aliyuncs.alibaba", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "aliyuncs.alibaba"));
         Assert.assertEquals("already.example.com", client.withEndpointSuffix("already.example.com", "aliyuncs.alibaba"));
         Assert.assertEquals("", client.withEndpointSuffix("", "aliyuncs.alibaba"));
-        try {
-            client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "example.net");
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("endpointSuffix"));
-        }
+        Assert.assertEquals("ecs.cn-hangzhou.example.net", client.withEndpointSuffix("ecs.cn-hangzhou.aliyuncs.com", "example.net"));
         Assert.assertEquals("cn-hangzhou", client.regionFor("ecs", "ecs.cn-hangzhou.aliyuncs.com", "", "example.net"));
 
         client._endpointSuffix = "";
