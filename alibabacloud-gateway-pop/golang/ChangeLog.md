@@ -1,3 +1,7 @@
+### 2026-11-24 Version 0.1.7
+
+* Allow any domain as `endpointSuffix`. Do not reject values other than `aliyuncs.com` or `aliyuncs.alibaba`.
+
 ### 2026-11-10 Version 0.1.6
 
 * Fix POP V4 query signing by percent-encoding parameter names and values before sorting by the encoded names.
