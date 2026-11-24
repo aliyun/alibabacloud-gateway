@@ -95,6 +95,7 @@
   },
   "releaselog": {
     "changelog": [
+      "Simplify MGW host matching with contains('.mgw').",
       "Fix C# publish build: use TeaXML for response parse and avoid assigning foreach iteration variables."
     ],
     "compatible": true
